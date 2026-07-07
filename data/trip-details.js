@@ -211,20 +211,20 @@ const TRIP = {
     isHelsinki: true,
     areas: [
       {
-        label:'起点 · Hallgrímskirkja 大教堂',
+        label:'大教堂 · Hallgrímskirkja',
         spots: [
           { icon:'⛪', name:'Hallgrímskirkja 大教堂', img:'hallgrimskirkja.jpg', tags:['地标','建筑地标'],
             desc:'雷克雅未克的地标教堂，外形仿冰岛玄武岩柱设计，是这座城市最醒目的地标建筑。',
             deepDesc:'哈尔格林姆教堂是雷克雅未克的地标，也是冰岛最大的教堂。它的外形设计灵感来自冰岛的玄武岩柱，塔身高达74.5米，从任何角度看都像是从地底生长出来的管风琴。站在教堂正门前的广场，能完整拍下教堂对称的立面与门口的莱夫·埃里克松雕像。对建筑爱好者来说，这是北欧现代主义与自然形态的完美结合；对闺蜜来说，白色阶梯前也是「City Walk 起点打卡」的绝佳位置。',
-            tips:'今天会走一圈路线A、路线B再折返回这里，届时可以入内参观教堂内部。',
+            tips:'今天会走一圈路线A、路线B再折返回这里，届时可以入内参观教堂内部；正确导航请搜「Hallgrímskirkja 主入口」，避免定位到教堂后方或侧门。',
             parking:'教堂周边。',
             toilet:'教堂内免费。',
-            map:'Hallgrimskirkja Reykjavik，正确导航请搜「Hallgrímskirkja 主入口」',
+            map:'Hallgrimskirkja Reykjavik',
             nextStop:{ type:'walk', text:'🚶 沿彩虹街下坡（路线A）', detail:'约 5 分钟' } }
         ]
       },
       {
-        label:'去程 Route A · 彩虹街周边',
+        label:'去程路线A · 彩虹街 → 主街 → Grandi 旧港区',
         spots: [
           { icon:'🌈', name:'Skólavörðustígur 彩虹街', tags:['购物街','去程','下坡'], isShop:true,
             desc:'从教堂正门沿彩虹步道下坡，两侧设计小店、咖啡馆。',
@@ -237,12 +237,7 @@ const TRIP = {
           { icon:'🧣', name:'Geysir 服饰店', tags:['羊毛制品','伴手礼'], isShop:true,
             desc:'冰岛羊毛制品（帽/手套/围巾），有时尚设计款，比 Lopapeysa 毛衣平价。',
             map:'Geysir Reykjavik shop',
-            nextStop:{ type:'walk', text:'🚶 前往 Laugavegur 主街', detail:'约 8 分钟' } }
-        ]
-      },
-      {
-        label:'去程 Route A · 主街周边',
-        spots: [
+            nextStop:{ type:'walk', text:'🚶 前往 Laugavegur 主街', detail:'约 8 分钟' } },
           { icon:'🛍️', name:'Laugavegur 主街', tags:['购物街','去程'], isShop:true,
             desc:'雷克雅未克最热闹的购物街。',
             map:'Laugavegur Reykjavik',
@@ -262,12 +257,7 @@ const TRIP = {
           { icon:'🧂', name:'Saltverk 火山岩/熔岩盐', tags:['火山盐','伴手礼'], isShop:true,
             desc:'火山地热蒸发制成，黑火山盐、烟熏盐，包装具北欧设计感。',
             map:'Saltverk Reykjavik',
-            nextStop:{ type:'walk', text:'🚶 前往 Grandi 旧港区', detail:'约 10 分钟' } }
-        ]
-      },
-      {
-        label:'去程 Route A · Grandi 旧港区',
-        spots: [
+            nextStop:{ type:'walk', text:'🚶 前往 Grandi 旧港区', detail:'约 10 分钟' } },
           { icon:'⚓', name:'Grandi 旧港区', tags:['旧港区','去程','海滨'], isShop:true,
             desc:'往海滨方向前进，仓库改建的文创小区。',
             map:'Grandi Reykjavik',
@@ -287,7 +277,7 @@ const TRIP = {
         ]
       },
       {
-        label:'Harpa 音乐厅',
+        label:'音乐厅 · Harpa',
         spots: [
           { icon:'🎭', name:'Harpa 音乐厅', img:'harpa.jpg', tags:['建筑亮点','拍照打卡'],
             desc:'外观以蜂巢状玄武岩造型玻璃幕墙为特色的音乐厅，随光线变化呈现不同色彩，是热门拍照景点。',
@@ -300,7 +290,7 @@ const TRIP = {
         ]
       },
       {
-        label:'回程 Route B · Grandi 旧港区',
+        label:'回程路线B · Grandi → 主街 → 彩虹街 → 返回大教堂',
         spots: [
           { icon:'⚓', name:'Grandi 旧港区', tags:['旧港区','回程'], isShop:true,
             desc:'沿旧港区步行，回程可补买去程还没决定的商品。',
@@ -317,12 +307,7 @@ const TRIP = {
           { icon:'🧴', name:'蓝湖保养品（Blue Lagoon Skincare）', tags:['保养品','回程'], isShop:true,
             desc:'矽土面膜、身体乳等，富含地热矿物质。',
             map:'Blue Lagoon Skincare Grandi',
-            nextStop:{ type:'walk', text:'🚶 前往 Laugavegur 主街', detail:'约 8 分钟' } }
-        ]
-      },
-      {
-        label:'回程 Route B · 主街周边',
-        spots: [
+            nextStop:{ type:'walk', text:'🚶 前往 Laugavegur 主街', detail:'约 8 分钟' } },
           { icon:'🛍️', name:'Laugavegur 主街', tags:['购物街','回程'], isShop:true,
             desc:'穿越雷克雅未克最热闹的购物街。',
             map:'Laugavegur Reykjavik',
@@ -342,12 +327,7 @@ const TRIP = {
           { icon:'🧂', name:'Saltverk 火山岩/熔岩盐', tags:['火山盐','回程'], isShop:true,
             desc:'火山地热蒸发制成，黑火山盐、烟熏盐。',
             map:'Saltverk Reykjavik',
-            nextStop:{ type:'walk', text:'🚶 前往彩虹街', detail:'约 10 分钟' } }
-        ]
-      },
-      {
-        label:'回程 Route B · 彩虹街周边',
-        spots: [
+            nextStop:{ type:'walk', text:'🚶 前往彩虹街', detail:'约 10 分钟' } },
           { icon:'🌈', name:'Skólavörðustígur 彩虹街', tags:['购物街','回程','上坡'], isShop:true,
             desc:'沿彩虹步道上坡，两侧设计小店、咖啡馆。',
             map:'Skolavordustigur Reykjavik',
@@ -359,12 +339,7 @@ const TRIP = {
           { icon:'🧣', name:'Geysir 服饰店', tags:['羊毛制品','回程'], isShop:true,
             desc:'冰岛羊毛制品（帽/手套/围巾），有时尚设计款。',
             map:'Geysir Reykjavik shop',
-            nextStop:{ type:'walk', text:'🚶 回到大教堂', detail:'约 5 分钟' } }
-        ]
-      },
-      {
-        label:'终点 · 返回大教堂',
-        spots: [
+            nextStop:{ type:'walk', text:'🚶 回到大教堂', detail:'约 5 分钟' } },
           { icon:'⛪', name:'重返 Hallgrímskirkja 大教堂', tags:['地标','终点'], isShop:true,
             desc:'路线B的终点：入内参观教堂内部、拍摄教堂外观与雕像，为这段City Walk画下句点。',
             map:'Hallgrimskirkja Reykjavik',
