@@ -59,6 +59,21 @@
   </div>
 </div>
 
+<!-- 圖片放大燈箱：點擊景點照片（單張或瀑布流縮圖）皆可放大檢視；有多張照片時可左右切換 -->
+<div class="img-lightbox" id="imgLightbox" onclick="closeLightbox(event)">
+  <button class="img-lightbox-close" onclick="closeLightbox(event)" aria-label="关闭">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+  </button>
+  <button class="img-lightbox-nav img-lightbox-prev" id="lightboxPrev" onclick="lightboxPrev(event)" aria-label="上一张">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+  </button>
+  <img id="lightboxImg" src="" alt="" onclick="event.stopPropagation()" />
+  <button class="img-lightbox-nav img-lightbox-next" id="lightboxNext" onclick="lightboxNext(event)" aria-label="下一张">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+  </button>
+  <div class="img-lightbox-counter" id="lightboxCounter"></div>
+</div>
+
 <!-- 以下三個頁籤的完整內容，分別放在 data/travel-content.js、data/budget-content.js、data/other-content.js
      裡（各自是一段 HTML 模板字串），由 js/app.js 在載入時把內容填入這三個掛載點。
      要調整「旅遊 / 費用 / 其他」頁籤的文字或項目，直接編輯對應的 data/*.js 檔案即可，不需要動這裡。 -->
