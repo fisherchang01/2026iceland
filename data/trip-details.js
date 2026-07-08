@@ -50,7 +50,7 @@ const TRIP = {
         toilet:'游客中心 200 ISK。',
         map:'Thingvellir National Park Iceland',
         nextStop:{ type:'drive', text:'🚗 前往 Brúarfoss', detail:'约 50 km · 约 45 分钟' } },
-      { icon:'💎', name:'Brúarfoss 蓝钻石瀑布', images:['bruarfoss.jpg','bruarfoss-alt-1.jpg','bruarfoss-alt-2.jpg','bruarfoss-alt-3.jpg','bruarfoss-alt-4.jpg','bruarfoss-alt-5.jpg'], tags:['瀑布','秘境'],
+      { icon:'💎', name:'Brúarfoss 蓝钻石瀑布', images:['bruarfoss.jpg','bruarfoss-alt-2.jpg','bruarfoss-alt-3.jpg','bruarfoss-alt-4.jpg','bruarfoss-alt-5.jpg'], tags:['瀑布','秘境'],
         desc:'以水色闻名的瀑布，河水因玄武岩地质呈现梦幻蓝绿色，需徒步约 20–30 分钟抵达。',
         deepDesc:'Brúarfoss 被誉为「蓝钻石瀑布」，是冰岛黄金圈一带的隐藏版秘境。河流因流经玄武岩地质，折射出梦幻的蓝绿色调，在阳光下闪烁如碎钻般的光芒。虽然需要步行约20至30分钟才能抵达，但正是这段不长不短的徒步，过滤了大部分观光客，让你和旅伴能独享这片静谧的蓝色奇迹。对闺蜜好友来说，这里是谈心拍照的绝佳地点；对夫妻来说，水声潺潺的私密氛围，比任何高级餐厅都更适合说悄悄话。提醒：这里没有厕所，出发前记得在民宿或超市解决，并带上零食和热饮，在瀑布前来一场野餐。',
         tips:'步道路面不平整，建议穿防滑鞋，可视体力评估是否全程走完。',
