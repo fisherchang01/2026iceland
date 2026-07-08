@@ -394,16 +394,21 @@
     .spot-hero-title { font-size: var(--fs-lg); font-weight: 700; margin-top: var(--sp-1); font-family: var(--font-display);}
     .spot-hero-sub   { font-size: var(--fs-xs); opacity: 0.75; margin-top: var(--sp-1); }
     .spot-img-wrap {
-      width: 100%; height: 200px;
+      width: 100%;
       border-radius: var(--radius);
       overflow: hidden;
       margin-bottom: var(--sp-6);
       background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
-      display: flex; align-items: center; justify-content: center;
       position: relative;
     }
-    .spot-img-wrap img {
-      width: 100%; height: 100%; object-fit: cover; display: block;
+    /* 沒有照片、純插畫 fallback 時，維持固定高度置中顯示 */
+    .spot-img-wrap.fallback-only {
+      height: 200px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    /* 只有一張照片：高度依照片原始比例自適應，不裁切 */
+    .spot-img-wrap.single img {
+      width: 100%; height: auto; display: block; cursor: pointer;
     }
     .spot-img-wrap .img-fallback {
       display: flex; flex-direction: column;
@@ -416,6 +421,19 @@
     }
     .spot-img-wrap .img-fallback span.fallback-label {
       font-size: var(--fs-2xs); color: rgba(255,255,255,0.7); letter-spacing: 1px;
+    }
+    /* 兩張以上照片：CSS 多欄瀑布流（masonry），依每張照片原始比例排版，不裁切 */
+    .spot-img-gallery {
+      column-count: 2;
+      column-gap: var(--sp-4);
+      margin-bottom: var(--sp-6);
+    }
+    .spot-img-gallery img {
+      width: 100%; height: auto; display: block;
+      border-radius: var(--radius-sm);
+      margin-bottom: var(--sp-4);
+      break-inside: avoid;
+      cursor: pointer;
     }
     .tags { display: flex; flex-wrap: wrap; gap: var(--sp-2); margin-bottom: var(--sp-6); }
     .tag {
@@ -933,4 +951,48 @@
     }
     @media (max-width: 380px) {
       .spot-sheet-scroll { padding: 0 var(--sp-7) var(--sp-9); }
+    }
+
+    /* ===== 圖片放大燈箱（點擊景點照片可放大檢視，多張時可左右切換）===== */
+    .img-lightbox {
+      position: fixed; inset: 0;
+      background: rgba(10,14,16,0.92);
+      z-index: 400;
+      display: none;
+      align-items: center; justify-content: center;
+      flex-direction: column;
+    }
+    .img-lightbox.open { display: flex; }
+    .img-lightbox img {
+      max-width: 92vw; max-height: 78vh;
+      object-fit: contain;
+      border-radius: var(--radius-sm);
+    }
+    .img-lightbox-close {
+      position: absolute; top: var(--sp-8); right: var(--sp-8);
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.14);
+      border: none; color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+    }
+    .img-lightbox-close svg { width: 18px; height: 18px; }
+    .img-lightbox-nav {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.14);
+      border: none; color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+    }
+    .img-lightbox-nav svg { width: 20px; height: 20px; }
+    .img-lightbox-prev { left: var(--sp-6); }
+    .img-lightbox-next { right: var(--sp-6); }
+    .img-lightbox-counter {
+      margin-top: var(--sp-5);
+      color: rgba(255,255,255,0.75);
+      font-size: var(--fs-xs);
+      letter-spacing: 1px;
     }
