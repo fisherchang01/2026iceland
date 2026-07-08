@@ -179,20 +179,76 @@ function showDay(dayId) {
   setHeader(d.title, d.dateLabel || '');
 }
 
-// 景點圖片：如果這個景點有設定 img（見 data/trip-details.js 裡的 img 欄位），就顯示照片；
+// 景點圖片：可以用新版 images:['a.jpg','b.jpg'] 放多張（瀑布流呈現），
+// 也向下相容舊版單張 img:'x.jpg'（見 data/trip-details.js 開頭說明）。
 // 沒有設定，或是照片檔案找不到，都會自動顯示插圖 fallback，不會出現「圖片壞掉」的畫面。
+function getSpotImages(s) {
+  if (Array.isArray(s.images) && s.images.length) return s.images;
+  if (s.img) return [s.img];
+  return [];
+}
 function handleSpotImgError(imgEl, icon) {
-  imgEl.parentElement.innerHTML = '<div class="img-fallback"><span class="fallback-icon">' + getSpotIconHtml(icon) + '</span><span class="fallback-label">插画示意</span></div>';
+  var wrap = imgEl.parentElement;
+  wrap.className = 'spot-img-wrap fallback-only';
+  wrap.innerHTML = '<div class="img-fallback"><span class="fallback-icon">' + getSpotIconHtml(icon) + '</span><span class="fallback-label">插画示意</span></div>';
+}
+function handleGalleryImgError(imgEl) {
+  imgEl.style.display = 'none';
 }
 function buildSpotImageHtml(s) {
-  var fallback = '<div class="img-fallback"><span class="fallback-icon">' + getSpotIconHtml(s.icon) + '</span><span class="fallback-label">插画示意</span></div>';
-  if (s.img) {
-    return '<div class="spot-img-wrap">' +
-      '<img src="images/spots/' + s.img + '" alt="' + s.name + '" ' +
+  var imgs = getSpotImages(s);
+  currentGalleryImages = imgs;
+  currentGalleryIndex = 0;
+
+  if (imgs.length === 0) {
+    var fallback = '<div class="img-fallback"><span class="fallback-icon">' + getSpotIconHtml(s.icon) + '</span><span class="fallback-label">插画示意</span></div>';
+    return '<div class="spot-img-wrap fallback-only">' + fallback + '</div>';
+  }
+  if (imgs.length === 1) {
+    return '<div class="spot-img-wrap single">' +
+      '<img src="images/spots/' + imgs[0] + '" alt="' + s.name + '" onclick="openLightbox(0)" ' +
       "onerror=\"handleSpotImgError(this, '" + s.icon.replace(/'/g, "\\'") + "')\" />" +
       '</div>';
   }
-  return '<div class="spot-img-wrap">' + fallback + '</div>';
+  var galleryHtml = imgs.map(function(img, i) {
+    return '<img src="images/spots/' + img + '" alt="' + s.name + '" onclick="openLightbox(' + i + ')" onerror="handleGalleryImgError(this)" />';
+  }).join('');
+  return '<div class="spot-img-gallery">' + galleryHtml + '</div>';
+}
+
+// ===== 圖片放大燈箱：點擊景點照片（單張或瀑布流縮圖）可放大檢視，多張時可左右切換 =====
+function openLightbox(idx) {
+  if (!currentGalleryImages.length) return;
+  currentGalleryIndex = idx;
+  renderLightbox();
+  document.getElementById('imgLightbox').classList.add('open');
+}
+function renderLightbox() {
+  var imgs = currentGalleryImages;
+  if (!imgs.length) return;
+  document.getElementById('lightboxImg').src = 'images/spots/' + imgs[currentGalleryIndex];
+  var multi = imgs.length > 1;
+  document.getElementById('lightboxPrev').style.display = multi ? 'flex' : 'none';
+  document.getElementById('lightboxNext').style.display = multi ? 'flex' : 'none';
+  document.getElementById('lightboxCounter').textContent = multi ? (currentGalleryIndex + 1) + ' / ' + imgs.length : '';
+}
+function closeLightbox(e) {
+  if (e) e.stopPropagation();
+  document.getElementById('imgLightbox').classList.remove('open');
+}
+function lightboxPrev(e) {
+  e.stopPropagation();
+  var len = currentGalleryImages.length;
+  if (!len) return;
+  currentGalleryIndex = (currentGalleryIndex - 1 + len) % len;
+  renderLightbox();
+}
+function lightboxNext(e) {
+  e.stopPropagation();
+  var len = currentGalleryImages.length;
+  if (!len) return;
+  currentGalleryIndex = (currentGalleryIndex + 1) % len;
+  renderLightbox();
 }
 
 // 住宿改为「点击才显示导航」（第5项功能）：卡片本身跟景点一样可点击，点开后在同一个
