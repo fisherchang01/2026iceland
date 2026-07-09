@@ -23,7 +23,6 @@ function renderOverview() {
               '<div class="day-card-content">' +
                 '<div class="day-badge"><div class="month">' + d.month + '</div><div class="date">' + d.date + '</div></div>' +
                 '<div class="day-card-info"><h3>' + d.title + '</h3><p>' + d.summary + '</p></div>' +
-                '<div class="day-card-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></div>' +
               '</div>' +
             '</div>';
   });

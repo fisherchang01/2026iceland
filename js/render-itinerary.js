@@ -171,7 +171,8 @@ function showDay(dayId) {
   }
 
   showBackBtn(true);
-  setHeader(d.title, 'DAY ' + d.num + (d.dateLabel ? ' · ' + d.dateLabel : ''), 'images/banners/' + dayId + '-icon.jpg');
+  var dayMeta = TRIP_DAYS.find(function(x){ return x.id === dayId; });
+  setHeader(d.title, 'DAY ' + d.num + (d.dateLabel ? ' · ' + d.dateLabel : ''), 'images/banners/' + dayId + '-icon.jpg', dayMeta ? dayMeta.color : null);
 }
 
 // 景點圖片：可以用新版 images:['a.jpg','b.jpg'] 放多張（瀑布流呈現），
