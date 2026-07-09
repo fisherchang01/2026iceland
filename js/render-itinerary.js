@@ -67,11 +67,6 @@ function showDay(dayId) {
 
   showItineraryView('view-day');
 
-  document.getElementById('dayHero').innerHTML =
-    '<div class="day-hero-label">DAY ' + d.num + '</div>' +
-    '<div class="day-hero-title">' + d.title + '</div>' +
-    '<div class="day-hero-date">' + (d.dateLabel || '') + '</div>';
-
   var dayRouteBox = document.getElementById('dayRouteBox');
   if (dayRouteBox) dayRouteBox.innerHTML = buildDayRouteHtml(d);
 
@@ -176,7 +171,7 @@ function showDay(dayId) {
   }
 
   showBackBtn(true);
-  setHeader(d.title, d.dateLabel || '');
+  setHeader(d.title, 'DAY ' + d.num + (d.dateLabel ? ' · ' + d.dateLabel : ''), 'images/banners/' + dayId + '-icon.jpg');
 }
 
 // 景點圖片：可以用新版 images:['a.jpg','b.jpg'] 放多張（瀑布流呈現），

@@ -5,11 +5,21 @@ let currentPage = 'itinerary';
 let currentDay  = null;
 let currentSpot = null;
 let currentSpotArea = null;
+let currentGalleryImages = [];  // 目前彈層裡景點照片的檔名陣列，供圖片燈箱切換使用
+let currentGalleryIndex  = 0;
 
-function setHeader(title, sub) {
+function setHeader(title, sub, dayIconSrc) {
   document.getElementById('headerContent').innerHTML =
     '<div class="header-title">' + title + '</div>' +
     (sub ? '<div class="header-sub">' + sub + '</div>' : '');
+  var iconEl = document.getElementById('headerDayIcon');
+  if (dayIconSrc) {
+    iconEl.innerHTML = '<img src="' + dayIconSrc + '" alt="" onerror="this.parentElement.style.display=\'none\'" />';
+    iconEl.style.display = 'block';
+  } else {
+    iconEl.innerHTML = '';
+    iconEl.style.display = 'none';
+  }
 }
 function showBackBtn(show) {
   document.getElementById('backBtn').style.display = show ? 'flex' : 'none';
@@ -64,6 +74,7 @@ function closeSpotSheet() {
   document.getElementById('sheetBackdrop').classList.remove('open');
   document.body.style.overflow = '';
   currentSpot = null; currentSpotArea = null;
+  closeLightbox();
 }
 
 function toggleFlightCollapse(header) {

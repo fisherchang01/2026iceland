@@ -104,22 +104,33 @@
     .nav-tab {
       flex: 1;
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: var(--sp-1);
       cursor: pointer;
       border: none;
       background: none;
-      color: var(--sub);
-      font-size: var(--fs-2xs);
-      transition: color .2s;
-      padding-bottom: 4px;
+      padding: var(--sp-2) 2px;
     }
-    .nav-tab svg { width: 22px; height: 22px; }
-    .nav-tab.active { color: var(--primary); font-weight: 600; }
-    .nav-dot { width: 4px; height: 4px; background: var(--primary); border-radius: 50%; opacity: 0; margin-top: var(--sp-1); transition: opacity .2s; }
-    .nav-tab.active .nav-dot { opacity: 1; }
+    .nav-tab-pill {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      padding: 6px 16px;
+      border-radius: 16px;
+      color: var(--sub);
+      transition: background .2s, color .2s, transform .15s, box-shadow .2s;
+    }
+    .nav-tab-pill svg { width: 20px; height: 20px; }
+    .nav-tab-label { font-size: var(--fs-2xs); }
+    .nav-tab.active .nav-tab-pill {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+      color: #fff;
+      font-weight: 600;
+      transform: translateY(-3px);
+      box-shadow: 0 6px 14px rgba(44,95,110,0.35);
+    }
     .page { display: none; height: calc(100vh - var(--nav-h)); overflow-y: auto; }
     .page.active { display: block; animation: viewFadeIn .28s ease; }
     .page-inner { max-width: 640px; margin: 0 auto; padding: var(--sp-6) var(--sp-6) var(--sp-10); }
@@ -199,12 +210,24 @@
       margin-bottom: var(--sp-3);
       cursor: pointer;
       display: flex;
-      align-items: flex-start;
+      align-items: center;
       gap: var(--sp-5);
       transition: box-shadow .15s, transform .1s;
+      overflow: hidden;
     }
     .day-card:active { transform: scale(0.98); }
     .day-card:hover  { box-shadow: 0 4px 16px rgba(0,0,0,0.1); background: #eeeeea !important; }
+    .day-card-illus {
+      flex-shrink: 0;
+      width: 84px; height: 68px;
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      background: #eceae3;
+    }
+    .day-card-illus img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    @media (max-width: 380px) {
+      .day-card-illus { width: 68px; height: 56px; }
+    }
     .day-badge {
       border-radius: var(--radius-sm);
       padding: var(--sp-2) var(--sp-3);
@@ -229,16 +252,16 @@
     .day-card-summary { font-size: var(--fs-xs); color: #5a6a6f; margin-top: var(--sp-1); line-height: 1.6; font-style: italic; border-top: 1px solid var(--border-light); padding-top: 5px; }
     .day-card-arrow { color: var(--sub); flex-shrink: 0; opacity: 0.5; padding-top: 2px; }
     .day-card-arrow svg { width: 16px; height: 16px; }
-    .day-hero {
-      background: linear-gradient(135deg, #2c5f6e 0%, #1a3d4a 100%);
-      border-radius: var(--radius);
-      padding: var(--sp-7) var(--sp-7);
-      margin-bottom: var(--sp-6);
-      color: #fff;
+    /* 頂端固定橫列右側的當日小插畫裝飾（只有進入某一天的詳細行程時才會顯示） */
+    .header-day-icon {
+      display: none;
+      width: 44px; height: 34px;
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      flex-shrink: 0;
+      margin-left: auto;
     }
-    .day-hero-label { font-size: var(--fs-2xs); letter-spacing: 2px; opacity: 0.7; text-transform: uppercase; }
-    .day-hero-title { font-size: var(--fs-lg); font-weight: 700; margin-top: var(--sp-1); font-family: var(--font-display);}
-    .day-hero-date  { font-size: var(--fs-xs); opacity: 0.75; margin-top: var(--sp-1); }
+    .header-day-icon img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .spot-list-label {
       font-size: var(--fs-2xs); letter-spacing: 1.5px;
       color: var(--sub); text-transform: uppercase; margin-bottom: var(--sp-3);
