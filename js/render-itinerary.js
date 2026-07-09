@@ -4,6 +4,13 @@ var carIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke
 var walkIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="connector-icon connector-icon-walk"><circle cx="13" cy="4" r="1.6" fill="currentColor" stroke="none"/><path d="M15 8l-3 2-1 5-3 6M12 10l1 4 3 2 2 5M9 15l-3 1"/></svg>';
 var tramIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="connector-icon connector-icon-tram"><rect x="4" y="4" width="16" height="13" rx="2"/><path d="M4 12h16M8 17l-2 3M16 17l2 3"/><circle cx="8.5" cy="8.5" r="1" fill="currentColor" stroke="none"/><circle cx="15.5" cy="8.5" r="1" fill="currentColor" stroke="none"/></svg>';
 
+// 景點名稱常是「英文/拉丁拼音 + 中文」混排（例如 "Þórufoss 索鲁瀑布"）。
+// 這裡把中文（含常見全形標點）包一層 span 放大顯示，英文拼音部分維持原尺寸不變。
+function emphasizeCJK(text) {
+  if (!text) return text;
+  return text.replace(/[\u4e00-\u9fff\uff08\uff09\u3010\u3011]+/g, '<span class="cjk-lg">$&</span>');
+}
+
 function makeDriveConnector(dist, time) {
   return '<div class="drive-connector">' +
     '<div class="drive-line-wrap"><div class="drive-dot"></div><div class="drive-dashed"></div><div class="drive-dot"></div></div>' +
@@ -121,7 +128,7 @@ function showDay(dayId) {
         html += '<div class="spot-item' + (s.isShop ? ' no-click' : '') + '"' +
           (clickable ? ' onclick="showSpotHelsinki(\'' + dayId + '\',' + aIdx + ',' + sIdx + ')"' : '') + '>' +
           '<div class="spot-thumb-fallback">' + getSpotIconHtml(s.icon) + '</div>' +
-          '<div class="spot-item-info"><h4>' + s.name + '</h4>' +
+          '<div class="spot-item-info"><h4>' + emphasizeCJK(s.name) + '</h4>' +
           '<p>' + (s.tags ? s.tags.join(' · ') : '') + '</p></div>' +
           (clickable ? '<div class="spot-item-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></div>' : '<div style="width:32px;"></div>') +
           '</div>';
@@ -144,7 +151,7 @@ function showDay(dayId) {
       html += '<div class="spot-item' + (isShop ? ' no-click' : '') + '"' +
         (clickable ? ' onclick="showSpot(\'' + dayId + '\',' + i + ')"' : '') + '>' +
         '<div class="spot-thumb-fallback">' + getSpotIconHtml(s.icon) + '</div>' +
-        '<div class="spot-item-info"><h4>' + s.name + '</h4>' +
+        '<div class="spot-item-info"><h4>' + emphasizeCJK(s.name) + '</h4>' +
         '<p>' + (s.tags ? s.tags.join(' · ') : '') + '</p></div>' +
         (clickable ? '<div class="spot-item-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></div>' : '<div style="width:32px;"></div>') +
         '</div>';
@@ -322,7 +329,7 @@ function renderSpotDetail(s, d) {
   document.getElementById('spotDetail').innerHTML =
     '<div class="spot-hero">' +
       '<div class="spot-hero-label">' + d.title + '</div>' +
-      '<div class="spot-hero-title">' + s.name + '</div>' +
+      '<div class="spot-hero-title">' + emphasizeCJK(s.name) + '</div>' +
       '<div class="spot-hero-sub">' + (s.tags ? s.tags.join(' · ') : '') + '</div>' +
     '</div>' +
     buildSpotImageHtml(s) +

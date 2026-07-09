@@ -8,18 +8,12 @@ let currentSpotArea = null;
 let currentGalleryImages = [];  // 目前彈層裡景點照片的檔名陣列，供圖片燈箱切換使用
 let currentGalleryIndex  = 0;
 
-function setHeader(title, sub, dayIconSrc, colorClass) {
+function setHeader(title, sub, illusSrc, colorClass) {
   document.getElementById('headerContent').innerHTML =
     '<div class="header-title">' + title + '</div>' +
     (sub ? '<div class="header-sub">' + sub + '</div>' : '');
-  var iconEl = document.getElementById('headerDayIcon');
-  if (dayIconSrc) {
-    iconEl.innerHTML = '<img src="' + dayIconSrc + '" alt="" onerror="this.parentElement.style.display=\'none\'" />';
-    iconEl.style.display = 'block';
-  } else {
-    iconEl.innerHTML = '';
-    iconEl.style.display = 'none';
-  }
+  var illusImg = document.querySelector('#headerIllusBg img');
+  illusImg.src = illusSrc || 'images/banners/header-illus.jpg';
   var headerEl = document.getElementById('siteHeader');
   headerEl.className = colorClass ? 'day-mode ' + colorClass : '';
 }

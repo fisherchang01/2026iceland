@@ -24,15 +24,15 @@
 
       /* ===== 字級階梯（Type Scale）=====
          全站文字大小只從這 10 個尺寸挑選，不再新增其他數值 */
-      --fs-2xs: 0.65rem;
-      --fs-xs:  0.72rem;
-      --fs-sm:  0.8rem;
-      --fs-base:0.9rem;
-      --fs-md:  1.05rem;
-      --fs-lg:  1.2rem;
-      --fs-xl:  1.4rem;
-      --fs-2xl: 1.7rem;
-      --fs-3xl: 2rem;
+      --fs-2xs: 0.75rem;
+      --fs-xs:  0.83rem;
+      --fs-sm:  0.94rem;
+      --fs-base:1.03rem;
+      --fs-md:  1.18rem;
+      --fs-lg:  1.35rem;
+      --fs-xl:  1.55rem;
+      --fs-2xl: 1.85rem;
+      --fs-3xl: 2.2rem;
       --fs-4xl: 2.8rem;
 
       /* ===== 間距階梯（Spacing Scale，4px 為基本單位）=====
@@ -79,9 +79,13 @@
               mask-image: linear-gradient(to left, black 55%, transparent 100%);
     }
     .header-illus-bg img { width: 100%; height: 100%; object-fit: cover; object-position: right center; display: block; }
-    /* 進入某一天的詳細行程時，頂端橫列套用當天主題色（比照底稿的彩色橫幅風格），並隱藏羅盤/分隔線/插畫 */
-    header.day-mode { border-bottom: none; }
-    header.day-mode .header-illus-bg,
+    /* 進入某一天的詳細行程時，頂端橫列套用當天主題色（比照底稿的彩色橫幅風格），插畫改滿版鋪底、隱藏羅盤/分隔線 */
+    header.day-mode { border-bottom: none; padding-top: var(--sp-6); padding-bottom: var(--sp-6); }
+    header.day-mode .header-illus-bg {
+      width: 100%; max-width: none;
+      -webkit-mask-image: none; mask-image: none;
+      opacity: 0.4;
+    }
     header.day-mode .header-compass,
     header.day-mode .header-divider { display: none; }
     header.day-mode.c0 { background: #6a7a8a; }
@@ -93,8 +97,8 @@
     header.day-mode.c6 { background: #2a90ba; }
     header.day-mode.c7 { background: #c05a3a; }
     header.day-mode.c8 { background: #5a9a3a; }
-    header.day-mode .header-title { color: #fff; }
-    header.day-mode .header-sub   { color: rgba(255,255,255,0.85); }
+    header.day-mode .header-title { color: #fff; font-size: 1.5rem; text-shadow: 0 1px 6px rgba(0,0,0,0.3); }
+    header.day-mode .header-sub   { color: rgba(255,255,255,0.92); font-size: 0.95rem; font-weight: 600; text-shadow: 0 1px 4px rgba(0,0,0,0.3); }
     .header-inner {
       position: relative; z-index: 1;
       max-width: 640px;
@@ -268,17 +272,6 @@
     .day-card-info h3 { font-size: 1.35rem; font-weight: 700; color: #fff; text-shadow: 0 1px 5px rgba(0,0,0,0.55); }
     .day-card-info p  { font-size: 0.85rem; font-weight: 600; color: rgba(255,255,255,0.92); margin-top: var(--sp-1); line-height: 1.5; text-shadow: 0 1px 4px rgba(0,0,0,0.55); }
     .day-card-summary { font-size: var(--fs-xs); color: #5a6a6f; margin-top: var(--sp-1); line-height: 1.6; font-style: italic; border-top: 1px solid var(--border-light); padding-top: 5px; }
-    /* 頂端固定橫列右側的當日小插畫裝飾（只有進入某一天的詳細行程時才會顯示） */
-    .header-day-icon {
-      display: none;
-      width: 44px; height: 34px;
-      border-radius: var(--radius-sm);
-      overflow: hidden;
-      flex-shrink: 0;
-      margin-left: auto;
-      border: 1.5px solid rgba(255,255,255,0.7);
-    }
-    .header-day-icon img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .spot-list-label {
       font-size: var(--fs-2xs); letter-spacing: 1.5px;
       color: var(--sub); text-transform: uppercase; margin-bottom: var(--sp-3);
@@ -310,6 +303,8 @@
     .spot-img-wrap .img-fallback .fallback-icon .spot-icon-svg { width: 56px; height: 56px; color: rgba(255,255,255,0.92); }
     .spot-item-info { flex: 1; padding: var(--sp-4) var(--sp-5); }
     .spot-item-info h4 { font-size: var(--fs-base); font-weight: 600; }
+    /* 景點名稱裡的中文字放大約50%，英文/拼音部分維持原尺寸 */
+    .cjk-lg { font-size: 1.5em; font-weight: 700; }
     .spot-item-info p  { font-size: var(--fs-xs); color: var(--sub); margin-top: var(--sp-1); }
     .spot-item-arrow { padding-right: 12px; color: var(--sub); flex-shrink: 0; }
     .spot-item-arrow svg { width: 16px; height: 16px; }
@@ -494,7 +489,7 @@
       color: var(--sub); text-transform: uppercase;
       margin-bottom: var(--sp-3); font-weight: 600;
     }
-    .info-card p { font-size: var(--fs-sm); line-height: 1.8; color: #3a3a3a; }
+    .info-card p { font-size: var(--fs-base); line-height: 1.8; color: #3a3a3a; }
     .tips-card {
       background: var(--warn-bg);
       border: 1px solid var(--warn-brd);
@@ -507,7 +502,7 @@
       color: var(--warn-txt); text-transform: uppercase;
       margin-bottom: var(--sp-2); font-weight: 600;
     }
-    .tips-card p { font-size: var(--fs-sm); line-height: 1.8; color: var(--warn-txt); }
+    .tips-card p { font-size: var(--fs-base); line-height: 1.8; color: var(--warn-txt); }
     .parking-card {
       background: #f8f4e8;
       border: 1px solid #d8c878;

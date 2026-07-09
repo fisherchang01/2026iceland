@@ -387,7 +387,7 @@ const TRIP = {
       {
         label:'A区 · 白教堂周边',
         spots: [
-          { icon:'🚉', name:'中央车站', tags:['交通枢纽','建筑'], isShop:true,
+          { icon:'🚉', name:'中央车站', img:'helsinki-central-station.jpg', tags:['交通枢纽','建筑'], isShop:true,
             desc:'赫尔辛基中央车站，绿色新艺术风格钟楼，门口两座巨型石像守护，是城市漫游的出发点。',
             tips:'建议在车站附近购买一日电车票，方便后续各区移动。',
             map:'Helsinki Central Station',
