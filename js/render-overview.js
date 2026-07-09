@@ -3,15 +3,6 @@
 // ===== 由資料檔案渲染畫面（總覽卡片 / 其他頁籤內容）=====
 function renderOverview() {
   var html = '';
-  html += '<div class="trip-banner">' +
-            '<div class="trip-banner-left">' +
-              '<h1>' + TRIP_META.bannerTitleHtml + '</h1>' +
-              '<p>' + TRIP_META.bannerDateLine + '</p>' +
-            '</div>' +
-            '<div class="trip-banner-right">' +
-              TRIP_META.badges.map(function(b){ return '<div class="banner-badge">' + b + '</div>'; }).join('') +
-            '</div>' +
-          '</div>';
 
   TRIP_DAYS.forEach(function(d){
     if (d.sectionLabel) {

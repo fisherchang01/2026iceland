@@ -23,6 +23,11 @@ function setHeader(title, sub, dayIconSrc, colorClass) {
   var headerEl = document.getElementById('siteHeader');
   headerEl.className = colorClass ? 'day-mode ' + colorClass : '';
 }
+// 預設頂端橫列（羅盤 + 標題 + 日期），行程總覽/旅遊/费用/其他頁籤共用，避免各頁重複寫一次橫幅資訊
+var HEADER_CALENDAR_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" class="header-sub-icon"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>';
+function setHeaderDefaultBanner() {
+  setHeader(TRIP_META.bannerTitleHtml, HEADER_CALENDAR_ICON + TRIP_META.bannerDateLine);
+}
 function showBackBtn(show) {
   document.getElementById('backBtn').style.display = show ? 'flex' : 'none';
 }
@@ -42,7 +47,7 @@ function switchTab(tab) {
     showOverview();
   } else {
     showBackBtn(false);
-    setHeader(TRIP_META.headerTitle, TRIP_META.headerSub);
+    setHeaderDefaultBanner();
   }
 }
 
@@ -51,7 +56,7 @@ function showOverview() {
   currentDay = null; currentSpot = null; currentSpotArea = null;
   showItineraryView('view-overview');
   showBackBtn(false);
-  setHeader(TRIP_META.headerTitle, TRIP_META.headerSub);
+  setHeaderDefaultBanner();
 }
 
 function goBack() {

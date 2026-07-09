@@ -5,8 +5,8 @@
 const TRIP_META = {
   headerTitle: '🧊 冰岛 + 芬兰 慢活之旅',
   headerSub:   'October 3 – 11, 2026',
-  bannerTitleHtml: '🧊 冰岛 + 芬兰<br>慢活之旅 2026',
-  bannerDateLine:  'Oct 3 – 11 · 9天 · 2国',
+  bannerTitleHtml: '冰与火的国度<br>（冰岛 + 芬兰）',
+  bannerDateLine:  'Oct 3 – 11，9天',
   badges: ['🇮🇸 冰岛 5天', '🇫🇮 芬兰 2天', '✈️ 含5航班']
 };
 

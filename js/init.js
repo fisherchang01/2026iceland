@@ -4,7 +4,7 @@
 mountTabContent();
 renderDocs();
 renderOverview();
-setHeader(TRIP_META.headerTitle, TRIP_META.headerSub);
+setHeaderDefaultBanner();
 renderExpenses();
 renderSummary();
 // 注意：費用雲端同步的啟動（initCloudExpensesSync）改由 js/firebase-config.js
