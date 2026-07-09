@@ -18,10 +18,13 @@ function renderOverview() {
       html += '<div class="day-section-label">' + d.sectionLabel + '</div>';
     }
     html += '<div class="day-card ' + d.color + '" onclick="showDay(\'' + d.id + '\')">' +
-              '<div class="day-badge"><div class="month">' + d.month + '</div><div class="date">' + d.date + '</div></div>' +
-              '<div class="day-card-info"><h3>' + d.title + '</h3><p>' + d.summary + '</p></div>' +
-              '<div class="day-card-illus"><img src="images/banners/' + d.id + '-card.jpg" alt="" loading="lazy" onerror="this.parentElement.style.display=\'none\'" /></div>' +
-              '<div class="day-card-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></div>' +
+              '<div class="day-card-bg"><img src="images/banners/' + d.id + '-card.jpg" alt="" loading="lazy" onerror="this.style.display=\'none\'" /></div>' +
+              '<div class="day-card-scrim"></div>' +
+              '<div class="day-card-content">' +
+                '<div class="day-badge"><div class="month">' + d.month + '</div><div class="date">' + d.date + '</div></div>' +
+                '<div class="day-card-info"><h3>' + d.title + '</h3><p>' + d.summary + '</p></div>' +
+                '<div class="day-card-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></div>' +
+              '</div>' +
             '</div>';
   });
 
