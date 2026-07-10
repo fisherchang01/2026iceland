@@ -24,6 +24,7 @@ const TRIP = {
   },
   day1: {
     num:'1', dateLabel:'10月4日（周日）', title:'初探冰岛',
+    routeMapImg:'route-day1.png',
     driveSummary: { total:'约 215 km', time:'约 3小时10分钟（不含景点停留）' },
     hotel:{ name:'South Central Country Apartment 民宿', note:'黄金圈地区，舒适乡村民宿环境', map:'South Central Country Apartment Iceland' },
     spots: [
@@ -221,6 +222,7 @@ const TRIP = {
   },
   day5: {
     num:'5', dateLabel:'10月8日（周四）', title:'雷克雅未克 + 蓝湖',
+    routeMapImg:'route-day5.png',
     driveSummary: { total:'约 70 km', time:'约 65 分钟（不含景点停留，其余路段步行）' },
     hotel:{ name:'Garður Apartments 民宿', note:'Garður 地区公寓式民宿，邻近蓝湖与机场', map:'Gardur Apartments Iceland' },
     spots: [
@@ -276,6 +278,7 @@ const TRIP = {
   },
   day7: {
     num:'7', dateLabel:'10月10日（周六）', title:'芬兰人的一天',
+    routeMapImg:'route-day7.png',
     hotel:{ name:'飞机上', note:'当晚搭乘深夜航班返港（AY099，00:35起飞）' },
     isHelsinki: true,
     areas: [

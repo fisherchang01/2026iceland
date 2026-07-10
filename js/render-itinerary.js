@@ -4,20 +4,32 @@ var carIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke
 var walkIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="connector-icon connector-icon-walk"><circle cx="13" cy="4" r="1.6" fill="currentColor" stroke="none"/><path d="M15 8l-3 2-1 5-3 6M12 10l1 4 3 2 2 5M9 15l-3 1"/></svg>';
 var tramIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="connector-icon connector-icon-tram"><rect x="4" y="4" width="16" height="13" rx="2"/><path d="M4 12h16M8 17l-2 3M16 17l2 3"/><circle cx="8.5" cy="8.5" r="1" fill="currentColor" stroke="none"/><circle cx="15.5" cy="8.5" r="1" fill="currentColor" stroke="none"/></svg>';
 
-// ===== 景點方塊卡片配色（v4）：同一天內的景點卡片依序輪替 8 種顏色，讓每日行程看起來繽紛多彩 =====
+// ===== 景點方塊卡片配色（v5）：同一天的所有景點卡片統一使用「當天」的主題色，
+// 跟頂端固定橫列（header.day-mode）用的是同一組 c0~c8 配色，色彩不會在同一天內跳來跳去。=====
 // 有字母編號（label，如 A/B/C）的景點，方塊左上角徽章顯示字母；沒有編號的（機場/超市/租車等）顯示原本的 icon。
-var SPOT_COLOR_COUNT = 8;
-function spotColorClass(idx) { return 'spot-c' + (idx % SPOT_COLOR_COUNT); }
 function spotBadgeHtml(s) {
   if (s.label) return '<div class="spot-badge">' + s.label + '</div>';
   return '<div class="spot-badge icon-badge">' + (s.icon || '📍') + '</div>';
 }
 
-// 景點名稱常是「英文/拉丁拼音 + 中文」混排（例如 "Þórufoss 索鲁瀑布"）。
-// 這裡把中文（含常見全形標點）包一層 span 放大顯示，英文拼音部分維持原尺寸不變。
-function emphasizeCJK(text) {
-  if (!text) return text;
-  return text.replace(/[\u4e00-\u9fff\uff08\uff09\u3010\u3011]+/g, '<span class="cjk-lg">$&</span>');
+// 景點名稱資料是「英文/拉丁拼音 + 中文」混排（例如 "Þórufoss 索鲁瀑布"）。
+// 這裡自動拆出拉丁字母/冰島文特殊字母的片段當作「英文」，其餘（含中文字與標點）當作「中文」，
+// 顯示時改成「中文（放大）＋ 英文（縮小灰字）」的順序，不需要更動 data 里的原始資料。
+function splitSpotName(name) {
+  if (!name) return { zh: '', en: '' };
+  var enRegex = /[A-Za-zÀ-ÿ0-9][A-Za-zÀ-ÿ0-9 .'&\-]*/g;
+  var enMatches = name.match(enRegex) || [];
+  var en = enMatches.join(' ').replace(/\s+/g, ' ').trim();
+  if (!en) return { zh: name, en: '' };
+  var zh = name.replace(enRegex, '').replace(/[（(]\s*[）)]/g, '').replace(/\s+/g, ' ').trim();
+  if (!zh) return { zh: name, en: '' }; // 整段都是英文（如 Allas Sea Pool），就不拆了
+  return { zh: zh, en: en };
+}
+function spotTitleHtml(name) {
+  var parts = splitSpotName(name);
+  var html = '<span class="cjk-lg">' + parts.zh + '</span>';
+  if (parts.en) html += ' <span class="name-en">' + parts.en + '</span>';
+  return html;
 }
 
 function makeDriveConnector(dist, time) {
@@ -39,36 +51,19 @@ function makeTramConnector(text, detail) {
     '</div>';
 }
 
-// ===== 每日路线简图（第4项功能）：把当天的地点串成一个可一键打开的 Google 地图多站点路线连结 =====
-// 一般行程日（d.spots）：全部景点依序串连。
-// 分区行程日（d.isHelsinki + d.areas，目前只有 Day7）：因为分区日的地点数量偏多，
-// 全部串连容易超过 Google 地图路线规划的合理上限，所以改成「每区取第一个地点」当代表点，
-// 这样路线仍完整反映 A~E 分区的走向，又不会站点过多。
-// Day5 已在 v4 简化为一般的 spots 平铺阵列（不再分区折叠），走一般日的渲染分支。
-function buildDayRoutePoints(d) {
-  if (d.isHelsinki && d.areas) {
-    return d.areas.map(function(a){ return a.spots[0]; }).filter(Boolean);
-  }
-  return d.spots || [];
-}
-function buildDayRouteUrl(points) {
-  if (!points || points.length < 2) return null;
-  var q = points.map(function(s){ return encodeURIComponent(s.map || s.name); });
-  var origin = q[0];
-  var destination = q[q.length - 1];
-  var waypoints = q.slice(1, -1);
-  var url = 'https://www.google.com/maps/dir/?api=1&origin=' + origin + '&destination=' + destination;
-  if (waypoints.length) url += '&waypoints=' + waypoints.join('|');
-  return url;
-}
+// ===== 每日路线简图（v5）：改成静态路线地图图片（人工上传/绘制），而不是自动串连 Google 地图连结。
+// d.routeMapImg 有设定值时才显示；没有设定的天数（目前多数天）先留空，之后有图再补。
+// 图片放在 images/spots/ 底下，跟景点照片共用同一个文件夹与 lightbox 放大机制。
 function buildDayRouteHtml(d) {
-  if (d.transit) return ''; // 纯交通日（去程/转场/返程）没有当天景点路线可言
-  var url = buildDayRouteUrl(buildDayRoutePoints(d));
-  if (!url) return '';
-  return '<a class="day-route-btn" target="_blank" rel="noopener" href="' + url + '">' +
-    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>' +
-    '<span>一键查看今日路线（Google 地图）</span>' +
-    '</a>';
+  if (!d.routeMapImg) return '';
+  return '<div class="day-route-map" onclick="openDayRouteImg(\'' + d.routeMapImg + '\')">' +
+    '<img src="images/spots/' + d.routeMapImg + '" alt="今日路线简图" />' +
+    '</div>';
+}
+function openDayRouteImg(filename) {
+  currentGalleryImages = [filename];
+  currentGalleryIndex = 0;
+  openLightbox(0);
 }
 
 function showDay(dayId) {
@@ -81,6 +76,9 @@ function showDay(dayId) {
   document.querySelectorAll('.nav-tab').forEach(function(t){ t.classList.remove('active'); });
   document.getElementById('tab-itinerary').classList.add('active');
   currentPage = 'itinerary';
+
+  var dayMeta = TRIP_DAYS.find(function(x){ return x.id === dayId; });
+  var dayColorClass = dayMeta ? dayMeta.color : 'c0';
 
   showItineraryView('view-day');
 
@@ -120,7 +118,6 @@ function showDay(dayId) {
     // 分区折叠（第1项功能）：沿用「其他/旅游」页签既有的 travel-collapse 折叠元件，
     // 每一区预设收合，点击标题展开，跟其他页签的折叠行为一致（低风险：只是重新排版既有元件，非新增功能）。
     var html = '';
-    var colorIdx = 0;
     d.areas.forEach(function(area, aIdx) {
       html += '<div class="travel-collapse area-collapse">' +
         '<div class="travel-collapse-header" onclick="toggleTravelCollapse(this)">' +
@@ -136,10 +133,10 @@ function showDay(dayId) {
         '<div class="travel-collapse-body">';
       area.spots.forEach(function(s, sIdx) {
         var clickable = !s.isShop;
-        html += '<div class="spot-item ' + spotColorClass(colorIdx++) + (s.isShop ? ' no-click' : '') + '"' +
+        html += '<div class="spot-item ' + dayColorClass + (s.isShop ? ' no-click' : '') + '"' +
           (clickable ? ' onclick="showSpotHelsinki(\'' + dayId + '\',' + aIdx + ',' + sIdx + ')"' : '') + '>' +
           '<div class="spot-item-head">' + spotBadgeHtml(s) +
-          '<div class="spot-title"><h4>' + emphasizeCJK(s.name) + '</h4></div>' +
+          '<div class="spot-title"><h4>' + spotTitleHtml(s.name) + '</h4></div>' +
           (clickable ? '<div class="spot-item-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></div>' : '<div style="width:32px;"></div>') +
           '</div>' +
           '<div class="spot-item-info"><p>' + (s.tags ? s.tags.join(' · ') : '') + '</p></div>' +
@@ -160,10 +157,10 @@ function showDay(dayId) {
     d.spots.forEach(function(s, i) {
       var isShop = s.isShop || false;
       var clickable = !isShop;
-      html += '<div class="spot-item ' + spotColorClass(i) + (isShop ? ' no-click' : '') + '"' +
+      html += '<div class="spot-item ' + dayColorClass + (isShop ? ' no-click' : '') + '"' +
         (clickable ? ' onclick="showSpot(\'' + dayId + '\',' + i + ')"' : '') + '>' +
         '<div class="spot-item-head">' + spotBadgeHtml(s) +
-        '<div class="spot-title"><h4>' + emphasizeCJK(s.name) + '</h4></div>' +
+        '<div class="spot-title"><h4>' + spotTitleHtml(s.name) + '</h4></div>' +
         (clickable ? '<div class="spot-item-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></div>' : '<div style="width:32px;"></div>') +
         '</div>' +
         '<div class="spot-item-info"><p>' + (s.tags ? s.tags.join(' · ') : '') + '</p></div>' +
@@ -191,7 +188,6 @@ function showDay(dayId) {
   }
 
   showBackBtn(true);
-  var dayMeta = TRIP_DAYS.find(function(x){ return x.id === dayId; });
   setHeader(d.title, 'DAY ' + d.num + (d.dateLabel ? ' · ' + d.dateLabel : ''), 'images/banners/' + dayId + '-icon.jpg', dayMeta ? dayMeta.color : null);
 }
 
@@ -342,7 +338,7 @@ function renderSpotDetail(s, d) {
   document.getElementById('spotDetail').innerHTML =
     '<div class="spot-hero">' +
       '<div class="spot-hero-label">' + d.title + '</div>' +
-      '<div class="spot-hero-title">' + emphasizeCJK(s.name) + '</div>' +
+      '<div class="spot-hero-title">' + spotTitleHtml(s.name) + '</div>' +
       '<div class="spot-hero-sub">' + (s.tags ? s.tags.join(' · ') : '') + '</div>' +
     '</div>' +
     buildSpotImageHtml(s) +

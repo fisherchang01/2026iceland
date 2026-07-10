@@ -277,14 +277,17 @@
       color: var(--sub); text-transform: uppercase; margin-bottom: var(--sp-3);
     }
     /* ===== 景點方塊卡片配色（v4：每日景點多彩輪替）===== */
-    .spot-c0 { --spot-accent: #d4783a; --spot-tint: #fbeee3; }
-    .spot-c1 { --spot-accent: #4a6fcf; --spot-tint: #e8ecfa; }
-    .spot-c2 { --spot-accent: #3a9a78; --spot-tint: #e6f5ef; }
-    .spot-c3 { --spot-accent: #8a4abf; --spot-tint: #f1e8f8; }
-    .spot-c4 { --spot-accent: #2a90ba; --spot-tint: #e4f2f7; }
-    .spot-c5 { --spot-accent: #c0507a; --spot-tint: #f9e8ee; }
-    .spot-c6 { --spot-accent: #b89a20; --spot-tint: #f8f3e0; }
-    .spot-c7 { --spot-accent: #c05a3a; --spot-tint: #f9e9e3; }
+    /* ===== 景點方塊卡片配色（v5）：跟頂端固定橫列（header.day-mode）用同一組 c0~c8 配色，
+       同一天內所有景點卡片統一同色，不再逐格輪替。===== */
+    .spot-item.c0 { --spot-accent: #6a7a8a; --spot-tint: #eef0f2; }
+    .spot-item.c1 { --spot-accent: #3a9a78; --spot-tint: #e6f5ef; }
+    .spot-item.c2 { --spot-accent: #4a6fcf; --spot-tint: #e8ecfa; }
+    .spot-item.c3 { --spot-accent: #d4783a; --spot-tint: #fbeee3; }
+    .spot-item.c4 { --spot-accent: #8a4abf; --spot-tint: #f1e8f8; }
+    .spot-item.c5 { --spot-accent: #b89a20; --spot-tint: #f8f3e0; }
+    .spot-item.c6 { --spot-accent: #2a90ba; --spot-tint: #e4f2f7; }
+    .spot-item.c7 { --spot-accent: #c05a3a; --spot-tint: #f9e9e3; }
+    .spot-item.c8 { --spot-accent: #5a9a3a; --spot-tint: #eef7e8; }
     .spot-item {
       background: var(--card);
       border-radius: var(--radius);
@@ -323,6 +326,7 @@
     .spot-item-info h4 { font-size: var(--fs-base); font-weight: 600; }
     /* 景點名稱裡的中文字放大約50%，英文/拼音部分維持原尺寸 */
     .cjk-lg { font-size: 1.5em; font-weight: 700; }
+    .name-en { font-size: 0.7em; font-weight: 400; color: var(--sub); }
     .spot-item-info p  { font-size: var(--fs-xs); color: var(--sub); margin-top: var(--sp-1); }
     .spot-item-arrow { padding-right: 12px; color: var(--sub); flex-shrink: 0; }
     .spot-item-arrow svg { width: 16px; height: 16px; }
@@ -561,19 +565,12 @@
     }
     .map-btn:hover { background: #1a3d4a; }
     .map-btn svg { width: 18px; height: 18px; }
-    .day-route-btn {
-      display: flex; align-items: center; justify-content: center;
-      gap: var(--sp-3); width: 100%; padding: var(--sp-5);
-      background: linear-gradient(135deg, #e8f4f8, #d8eaf0);
-      color: #2a5a6a; border: 1px solid #a8ccd8;
-      border-radius: var(--radius);
-      font-size: var(--fs-sm); font-weight: 600;
-      cursor: pointer; text-decoration: none;
-      transition: background .2s; letter-spacing: 0.3px;
-      margin-bottom: var(--sp-6);
+    .day-route-map {
+      width: 100%; margin-bottom: var(--sp-6);
+      border-radius: var(--radius); overflow: hidden;
+      border: 1px solid var(--border); cursor: zoom-in; line-height: 0;
     }
-    .day-route-btn:hover { background: linear-gradient(135deg, #d8eaf0, #c8e0e8); }
-    .day-route-btn svg { width: 17px; height: 17px; flex-shrink: 0; }
+    .day-route-map img { width: 100%; height: auto; display: block; }
     .flight-segment {
       background: var(--card);
       border: 1px solid var(--border);
