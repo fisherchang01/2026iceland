@@ -4,6 +4,15 @@ var carIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke
 var walkIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="connector-icon connector-icon-walk"><circle cx="13" cy="4" r="1.6" fill="currentColor" stroke="none"/><path d="M15 8l-3 2-1 5-3 6M12 10l1 4 3 2 2 5M9 15l-3 1"/></svg>';
 var tramIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="connector-icon connector-icon-tram"><rect x="4" y="4" width="16" height="13" rx="2"/><path d="M4 12h16M8 17l-2 3M16 17l2 3"/><circle cx="8.5" cy="8.5" r="1" fill="currentColor" stroke="none"/><circle cx="15.5" cy="8.5" r="1" fill="currentColor" stroke="none"/></svg>';
 
+// ===== 景點方塊卡片配色（v4）：同一天內的景點卡片依序輪替 8 種顏色，讓每日行程看起來繽紛多彩 =====
+// 有字母編號（label，如 A/B/C）的景點，方塊左上角徽章顯示字母；沒有編號的（機場/超市/租車等）顯示原本的 icon。
+var SPOT_COLOR_COUNT = 8;
+function spotColorClass(idx) { return 'spot-c' + (idx % SPOT_COLOR_COUNT); }
+function spotBadgeHtml(s) {
+  if (s.label) return '<div class="spot-badge">' + s.label + '</div>';
+  return '<div class="spot-badge icon-badge">' + (s.icon || '📍') + '</div>';
+}
+
 // 景點名稱常是「英文/拉丁拼音 + 中文」混排（例如 "Þórufoss 索鲁瀑布"）。
 // 這裡把中文（含常見全形標點）包一層 span 放大顯示，英文拼音部分維持原尺寸不變。
 function emphasizeCJK(text) {
@@ -32,9 +41,10 @@ function makeTramConnector(text, detail) {
 
 // ===== 每日路线简图（第4项功能）：把当天的地点串成一个可一键打开的 Google 地图多站点路线连结 =====
 // 一般行程日（d.spots）：全部景点依序串连。
-// 分区行程日（d.isHelsinki + d.areas，如 Day5、Day7）：因为分区日的地点数量偏多（Day5 多达 28 个），
+// 分区行程日（d.isHelsinki + d.areas，目前只有 Day7）：因为分区日的地点数量偏多，
 // 全部串连容易超过 Google 地图路线规划的合理上限，所以改成「每区取第一个地点」当代表点，
-// 这样路线仍完整反映去程/回程或 A~E 分区的走向，又不会站点过多。
+// 这样路线仍完整反映 A~E 分区的走向，又不会站点过多。
+// Day5 已在 v4 简化为一般的 spots 平铺阵列（不再分区折叠），走一般日的渲染分支。
 function buildDayRoutePoints(d) {
   if (d.isHelsinki && d.areas) {
     return d.areas.map(function(a){ return a.spots[0]; }).filter(Boolean);
@@ -110,6 +120,7 @@ function showDay(dayId) {
     // 分区折叠（第1项功能）：沿用「其他/旅游」页签既有的 travel-collapse 折叠元件，
     // 每一区预设收合，点击标题展开，跟其他页签的折叠行为一致（低风险：只是重新排版既有元件，非新增功能）。
     var html = '';
+    var colorIdx = 0;
     d.areas.forEach(function(area, aIdx) {
       html += '<div class="travel-collapse area-collapse">' +
         '<div class="travel-collapse-header" onclick="toggleTravelCollapse(this)">' +
@@ -125,12 +136,13 @@ function showDay(dayId) {
         '<div class="travel-collapse-body">';
       area.spots.forEach(function(s, sIdx) {
         var clickable = !s.isShop;
-        html += '<div class="spot-item' + (s.isShop ? ' no-click' : '') + '"' +
+        html += '<div class="spot-item ' + spotColorClass(colorIdx++) + (s.isShop ? ' no-click' : '') + '"' +
           (clickable ? ' onclick="showSpotHelsinki(\'' + dayId + '\',' + aIdx + ',' + sIdx + ')"' : '') + '>' +
-          '<div class="spot-thumb-fallback">' + getSpotIconHtml(s.icon) + '</div>' +
-          '<div class="spot-item-info"><h4>' + emphasizeCJK(s.name) + '</h4>' +
-          '<p>' + (s.tags ? s.tags.join(' · ') : '') + '</p></div>' +
+          '<div class="spot-item-head">' + spotBadgeHtml(s) +
+          '<div class="spot-title"><h4>' + emphasizeCJK(s.name) + '</h4></div>' +
           (clickable ? '<div class="spot-item-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></div>' : '<div style="width:32px;"></div>') +
+          '</div>' +
+          '<div class="spot-item-info"><p>' + (s.tags ? s.tags.join(' · ') : '') + '</p></div>' +
           '</div>';
         if (s.nextStop) {
           var ns = s.nextStop;
@@ -148,12 +160,13 @@ function showDay(dayId) {
     d.spots.forEach(function(s, i) {
       var isShop = s.isShop || false;
       var clickable = !isShop;
-      html += '<div class="spot-item' + (isShop ? ' no-click' : '') + '"' +
+      html += '<div class="spot-item ' + spotColorClass(i) + (isShop ? ' no-click' : '') + '"' +
         (clickable ? ' onclick="showSpot(\'' + dayId + '\',' + i + ')"' : '') + '>' +
-        '<div class="spot-thumb-fallback">' + getSpotIconHtml(s.icon) + '</div>' +
-        '<div class="spot-item-info"><h4>' + emphasizeCJK(s.name) + '</h4>' +
-        '<p>' + (s.tags ? s.tags.join(' · ') : '') + '</p></div>' +
+        '<div class="spot-item-head">' + spotBadgeHtml(s) +
+        '<div class="spot-title"><h4>' + emphasizeCJK(s.name) + '</h4></div>' +
         (clickable ? '<div class="spot-item-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></div>' : '<div style="width:32px;"></div>') +
+        '</div>' +
+        '<div class="spot-item-info"><p>' + (s.tags ? s.tags.join(' · ') : '') + '</p></div>' +
         '</div>';
       if (d.drives && d.drives[i]) {
         var dr = d.drives[i];

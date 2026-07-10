@@ -276,31 +276,49 @@
       font-size: var(--fs-2xs); letter-spacing: 1.5px;
       color: var(--sub); text-transform: uppercase; margin-bottom: var(--sp-3);
     }
+    /* ===== 景點方塊卡片配色（v4：每日景點多彩輪替）===== */
+    .spot-c0 { --spot-accent: #d4783a; --spot-tint: #fbeee3; }
+    .spot-c1 { --spot-accent: #4a6fcf; --spot-tint: #e8ecfa; }
+    .spot-c2 { --spot-accent: #3a9a78; --spot-tint: #e6f5ef; }
+    .spot-c3 { --spot-accent: #8a4abf; --spot-tint: #f1e8f8; }
+    .spot-c4 { --spot-accent: #2a90ba; --spot-tint: #e4f2f7; }
+    .spot-c5 { --spot-accent: #c0507a; --spot-tint: #f9e8ee; }
+    .spot-c6 { --spot-accent: #b89a20; --spot-tint: #f8f3e0; }
+    .spot-c7 { --spot-accent: #c05a3a; --spot-tint: #f9e9e3; }
     .spot-item {
       background: var(--card);
       border-radius: var(--radius);
-      border: 1px solid var(--border);
-      margin-bottom: 0;
+      border: 2px solid var(--spot-accent, var(--border));
+      margin-bottom: var(--sp-5);
       cursor: pointer;
       display: flex;
-      align-items: center;
+      flex-direction: column;
       overflow: hidden;
       transition: box-shadow .15s, transform .1s;
     }
     .spot-item:active { transform: scale(0.98); }
     .spot-item:hover  { box-shadow: 0 4px 16px rgba(44,95,110,0.1); }
-    .spot-item.no-click { cursor: default; }
+    .spot-item.no-click { cursor: default; border-style: dashed; }
     .spot-item.no-click:active { transform: none; }
     .spot-item.no-click:hover { box-shadow: none; }
-    .spot-thumb-fallback {
-      width: 72px; height: 68px;
-      background: var(--bg2);
-      display: flex; align-items: center; justify-content: center;
-      font-size: var(--fs-2xl); flex-shrink: 0;
+    .spot-item-head {
+      display: flex; align-items: center;
+      background: var(--spot-tint, var(--bg2));
+      padding: var(--sp-3) var(--sp-4);
+      gap: var(--sp-3);
     }
+    .spot-badge {
+      width: 26px; height: 26px; border-radius: 8px; flex-shrink: 0;
+      background: var(--spot-accent, var(--primary));
+      color: #fff; font-weight: 700; font-size: 0.85rem;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .spot-badge.icon-badge { font-size: 1.05rem; }
     .spot-icon-svg { display: inline-flex; width: 30px; height: 30px; color: var(--primary); }
     .spot-icon-svg svg { width: 100%; height: 100%; }
     .spot-img-wrap .img-fallback .fallback-icon .spot-icon-svg { width: 56px; height: 56px; color: rgba(255,255,255,0.92); }
+    .spot-title { flex: 1; min-width: 0; }
+    .spot-title h4 { font-size: var(--fs-base); font-weight: 600; }
     .spot-item-info { flex: 1; padding: var(--sp-4) var(--sp-5); }
     .spot-item-info h4 { font-size: var(--fs-base); font-weight: 600; }
     /* 景點名稱裡的中文字放大約50%，英文/拼音部分維持原尺寸 */

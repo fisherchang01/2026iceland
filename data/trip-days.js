@@ -17,7 +17,7 @@ const TRIP_DAYS = [
   { id:'day2', color:'c2', month:'OCT', date:'5',  title:'深入黄金圈',      summary:'马场 · Geysir · Gullfoss · Faxi · Friðheimar · Kerið',          sectionLabel:null },
   { id:'day3', color:'c3', month:'OCT', date:'6',  title:'南岸经典',        summary:'Seljalandsfoss · Skógafoss · Dyrhólaey · Reynisfjara',          sectionLabel:null },
   { id:'day4', color:'c4', month:'OCT', date:'7',  title:'冰川徒步',        summary:'Blue Ice Cave · Jökulsárlón · Diamond Beach',                   sectionLabel:null },
-  { id:'day5', color:'c5', month:'OCT', date:'8',  title:'雷克雅未克 + 蓝湖', summary:'Hallgrímskirkja · 路线A/B City Walk · Harpa · Blue Lagoon',   sectionLabel:null },
+  { id:'day5', color:'c5', month:'OCT', date:'8',  title:'雷克雅未克 + 蓝湖', summary:'Hallgrímskirkja · 彩虹街+主街 · Harpa · 蓝湖温泉',   sectionLabel:null },
 
   { id:'day6', color:'c6', month:'OCT', date:'9',  title:'前往芬兰',        summary:'KEF → HEL · 移动日',                                            sectionLabel:'🇫🇮 芬兰' },
   { id:'day7', color:'c7', month:'OCT', date:'10', title:'芬兰人的一天',    summary:'白教堂 · 市集广场 · 红教堂 · 岩石教堂 · Allas Sea Pool',        sectionLabel:null },
