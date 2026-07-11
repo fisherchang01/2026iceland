@@ -12,22 +12,12 @@
 <body>
 
 <!-- ══ HEADER ══ -->
+<!-- v6.1：頂端標題列簡化為單行文字（不再顯示日期副標、右側插畫），
+     且不再需要「返回」按鈕——切換日期已改由下方常駐選單列的「行程概覽」負責 -->
 <header id="siteHeader">
-  <div class="header-illus-bg" id="headerIllusBg"><img src="images/banners/header-illus.jpg" alt="" /></div>
   <div class="header-inner">
-    <button class="back-btn" id="backBtn" onclick="goBack()">
-      <span class="back-btn-circle">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-          <path d="M15 18l-6-6 6-6"/>
-        </svg>
-      </span>
-      <span class="back-btn-label">返回</span>
-    </button>
-    <div class="header-compass" id="headerCompass"><img src="images/banners/header-compass.png" alt="" /></div>
-    <div class="header-divider" id="headerDivider"></div>
     <div id="headerContent">
-      <div class="header-title">🧊 冰岛 + 芬兰 慢活之旅</div>
-      <div class="header-sub">October 3 – 11, 2026</div>
+      <div class="header-title" id="headerTitle"></div>
     </div>
   </div>
 </header>
@@ -35,15 +25,26 @@
 <!-- ══ PAGE: 行程 ══ -->
 <!-- 此頁籤的內容（總覽橫幅 + 每日卡片）由 data/trip-days.js 動態產生，見 js/app.js 的 renderOverview() -->
 <div class="page active" id="page-itinerary">
-  <!-- ══ 頂端地圖 + 日期選單列（v6）══ -->
-  <div class="itin-map-bar">
-    <div class="itin-pill-wrap">
-      <button class="itin-pill itin-pill-overview" id="itinPillOverview" onclick="selectItin('overview')">行程概览</button>
-      <div class="itin-pill-scroll" id="itinPillScroll"></div>
-    </div>
-    <div class="itin-map" id="itinMap" onclick="openItinMapLightbox()">
-      <img id="itinMapImg" src="" alt="今日路线简图" style="display:none;" />
-      <div class="itin-map-placeholder" id="itinMapPlaceholder">🗺️ 路线地图</div>
+
+  <!-- 頂端地圖 + 日期選單列（v6）：固定顯示在行程總覽與每日行程之上，不隨頁面切換而消失。
+       地圖：沿用原本 data/trip-details.js 裡每一天的 routeMapImg 欄位（使用者自行把地圖圖片放到
+       images/spots/ 資料夾底下、檔名填進該天的 routeMapImg），選到哪一天就換哪一天的圖，
+       跟景點照片共用同一套 lightbox 放大機制。行程總覽狀態、以及沒有設定 routeMapImg 的天數，
+       都會顯示預留版位，維持版面尺寸一致，之後要補圖只需要在 trip-details.js 補上檔名即可。
+       日期選單列：「行程概覽」固定不動，右側 第1日～第9日 可左右滑動，選中狀態需明顯區分（見 CSS .itin-pill.active）。 -->
+  <div class="itin-top">
+    <div class="page-inner itin-top-inner">
+      <div class="itin-map" id="itinMap">
+        <img id="itinMapImg" src="" alt="今日路线地图" style="display:none" onclick="openItinMapLightbox()" />
+        <div class="itin-map-placeholder" id="itinMapPlaceholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 1118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span>地图准备中</span>
+        </div>
+      </div>
+      <div class="itin-day-selector">
+        <button class="itin-pill itin-pill-fixed active" id="itinPillOverview" onclick="selectItin('overview')">行程概览</button>
+        <div class="itin-pill-scroll" id="itinPillScroll"></div>
+      </div>
     </div>
   </div>
 
@@ -51,6 +52,8 @@
     <div class="page-inner" id="overviewContent"></div>
   </div>
 
+  <!-- 每日景点列表：日期標題（如「第1日．初探冰岛」）改放在這裡顯示，
+       原本頂端橫列的「彩色橫幅＋插畫」呈現方式已拿掉，改由上方的地圖+選單列取代其導覽功能。 -->
   <div class="view" id="view-day">
     <div class="page-inner">
       <div class="day-title-heading" id="dayTitleHeading"></div>
