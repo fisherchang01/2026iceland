@@ -51,20 +51,9 @@ function makeTramConnector(text, detail) {
     '</div>';
 }
 
-// ===== 每日路线简图（v5）：改成静态路线地图图片（人工上传/绘制），而不是自动串连 Google 地图连结。
-// d.routeMapImg 有设定值时才显示；没有设定的天数（目前多数天）先留空，之后有图再补。
-// 图片放在 images/spots/ 底下，跟景点照片共用同一个文件夹与 lightbox 放大机制。
-function buildDayRouteHtml(d) {
-  if (!d.routeMapImg) return '';
-  return '<div class="day-route-map" onclick="openDayRouteImg(\'' + d.routeMapImg + '\')">' +
-    '<img src="images/spots/' + d.routeMapImg + '" alt="今日路线简图" />' +
-    '</div>';
-}
-function openDayRouteImg(filename) {
-  currentGalleryImages = [filename];
-  currentGalleryIndex = 0;
-  openLightbox(0);
-}
+// ===== 每日路线简图（v6）：显示位置改到页面最顶端的常驻地图区块（见 index.html 的 .itin-map），
+// 不再嵌在每日景点列表里；相关渲染逻辑改放在 js/nav.js 的 updateItinMap()／openItinMapLightbox()。
+// d.routeMapImg 欄位本身用法不变（使用者自行把图片放到 images/spots/ 底下、档名填进这个欄位）。
 
 function showDay(dayId) {
   var d = TRIP[dayId];
@@ -82,8 +71,8 @@ function showDay(dayId) {
 
   showItineraryView('view-day');
 
-  var dayRouteBox = document.getElementById('dayRouteBox');
-  if (dayRouteBox) dayRouteBox.innerHTML = buildDayRouteHtml(d);
+  var headingEl = document.getElementById('dayTitleHeading');
+  if (headingEl) headingEl.textContent = '第' + (TRIP_DAYS.findIndex(function(x){ return x.id === dayId; }) + 1) + '日．' + d.title;
 
   var listEl = document.getElementById('spotList');
 
@@ -188,7 +177,8 @@ function showDay(dayId) {
   }
 
   showBackBtn(true);
-  setHeader(d.title, 'DAY ' + d.num + (d.dateLabel ? ' · ' + d.dateLabel : ''), 'images/banners/' + dayId + '-icon.jpg', dayMeta ? dayMeta.color : null);
+  setItinActive(dayId);
+  updateItinMap(dayId);
 }
 
 // 景點圖片：可以用新版 images:['a.jpg','b.jpg'] 放多張（瀑布流呈現），
