@@ -176,7 +176,6 @@ function showDay(dayId) {
     listEl.innerHTML = html;
   }
 
-  showBackBtn(true);
   setItinActive(dayId);
   updateItinMap(dayId);
 }
