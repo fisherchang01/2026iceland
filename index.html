@@ -35,16 +35,25 @@
 <!-- ══ PAGE: 行程 ══ -->
 <!-- 此頁籤的內容（總覽橫幅 + 每日卡片）由 data/trip-days.js 動態產生，見 js/app.js 的 renderOverview() -->
 <div class="page active" id="page-itinerary">
+  <!-- ══ 頂端地圖 + 日期選單列（v6）══ -->
+  <div class="itin-map-bar">
+    <div class="itin-pill-wrap">
+      <button class="itin-pill itin-pill-overview" id="itinPillOverview" onclick="selectItin('overview')">行程概览</button>
+      <div class="itin-pill-scroll" id="itinPillScroll"></div>
+    </div>
+    <div class="itin-map" id="itinMap" onclick="openItinMapLightbox()">
+      <img id="itinMapImg" src="" alt="今日路线简图" style="display:none;" />
+      <div class="itin-map-placeholder" id="itinMapPlaceholder">🗺️ 路线地图</div>
+    </div>
+  </div>
+
   <div class="view active" id="view-overview">
     <div class="page-inner" id="overviewContent"></div>
   </div>
 
-  <!-- 每日景点列表：原本這裡還有一個 dayHero 橫幅（DAY N/標題/日期），
-       跟固定頂端橫列顯示的內容完全重複，已拿掉，改把 DAY 編號與小插畫放進頂端橫列，
-       篇幅全部留給下面的景點列表 -->
   <div class="view" id="view-day">
     <div class="page-inner">
-      <div id="dayRouteBox"></div>
+      <div class="day-title-heading" id="dayTitleHeading"></div>
       <p class="spot-list-label">今日景点 &amp; 行程</p>
       <div id="spotList"></div>
     </div>
