@@ -51,6 +51,67 @@ function showOverview() {
   showItineraryView('view-overview');
   showBackBtn(false);
   setHeaderDefaultBanner();
+  setItinActive(null);
+  updateItinMap(null);
+}
+
+// ===== 頂端地圖 + 日期選單列（v6）=====
+// 依 TRIP_DAYS 順序產生「第1日～第9日」的可橫滑選單，「行程概覽」固定在最前面不參與橫滑。
+// 這裡的「第N日」只是使用者看到的顯示編號（依 TRIP_DAYS 陣列順序 1~9），
+// 跟 data 裡原本的 num 欄位（0~8，用於航班/駕駛小計等內部邏輯）是兩件事，互不影響。
+function renderItinSelector() {
+  var scrollEl = document.getElementById('itinPillScroll');
+  if (!scrollEl) return;
+  var html = '';
+  TRIP_DAYS.forEach(function(d, i) {
+    html += '<button class="itin-pill" data-day="' + d.id + '" onclick="selectItin(\'' + d.id + '\')">第' + (i + 1) + '日</button>';
+  });
+  scrollEl.innerHTML = html;
+}
+function selectItin(target) {
+  if (target === 'overview') showOverview();
+  else showDay(target);
+}
+function setItinActive(dayId) {
+  var overviewBtn = document.getElementById('itinPillOverview');
+  if (overviewBtn) overviewBtn.classList.toggle('active', !dayId);
+  document.querySelectorAll('#itinPillScroll .itin-pill').forEach(function(btn) {
+    btn.classList.toggle('active', btn.getAttribute('data-day') === dayId);
+  });
+  if (dayId) {
+    var activeBtn = document.querySelector('#itinPillScroll .itin-pill[data-day="' + dayId + '"]');
+    if (activeBtn && activeBtn.scrollIntoView) {
+      activeBtn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    }
+  } else {
+    var scrollEl = document.getElementById('itinPillScroll');
+    if (scrollEl) scrollEl.scrollLeft = 0;
+  }
+}
+// 有 d.routeMapImg 就顯示（使用者自行上傳，放在 images/spots/ 底下，跟景點照片同一個資料夾），
+// 沒有設定的天數／行程概覽狀態，顯示預留版位，維持整站地圖區塊尺寸一致。
+function updateItinMap(dayId) {
+  var img = document.getElementById('itinMapImg');
+  var placeholder = document.getElementById('itinMapPlaceholder');
+  if (!img || !placeholder) return;
+  var d = dayId ? TRIP[dayId] : null;
+  if (d && d.routeMapImg) {
+    img.src = 'images/spots/' + d.routeMapImg;
+    img.style.display = 'block';
+    placeholder.style.display = 'none';
+  } else {
+    img.style.display = 'none';
+    img.src = '';
+    placeholder.style.display = 'flex';
+  }
+}
+function openItinMapLightbox() {
+  var img = document.getElementById('itinMapImg');
+  if (!img || !img.src) return;
+  var filename = img.src.split('/images/spots/')[1] || img.src.split('/').pop();
+  currentGalleryImages = [filename];
+  currentGalleryIndex = 0;
+  openLightbox(0);
 }
 
 function goBack() {
