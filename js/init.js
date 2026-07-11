@@ -5,6 +5,9 @@ mountTabContent();
 renderDocs();
 renderOverview();
 setHeaderDefaultBanner();
+renderItinSelector();
+setItinActive(null);
+updateItinMap(null);
 renderExpenses();
 renderSummary();
 // 注意：費用雲端同步的啟動（initCloudExpensesSync）改由 js/firebase-config.js
