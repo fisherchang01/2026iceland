@@ -221,6 +221,30 @@
       font-size: var(--fs-2xs); letter-spacing: 1.5px;
       color: var(--sub); text-transform: uppercase; margin-bottom: var(--sp-3);
     }
+    /* ===== 時間軸（Phase 2，v2修正版）：一條線貫穿當天所有行程。圓點改成跟卡片「並排」在同一個
+       flex row 裡（.timeline-row > .timeline-node + 卡片本身），不再疊在卡片上面用負值定位——
+       卡片本身有 overflow:hidden（讓圓角裁切正常），疊上去的圓點會被一起裁掉，並排就不會有這問題。===== */
+    #spotList { position: relative; }
+    #spotList::before {
+      content: '';
+      position: absolute; left: 14px; top: 14px; bottom: 14px;
+      width: 2px;
+      background-image: linear-gradient(var(--accent-soft) 60%, transparent 0%);
+      background-position: left; background-size: 2px 9px; background-repeat: repeat-y;
+      z-index: 0;
+    }
+    .timeline-row { display: flex; align-items: flex-start; gap: var(--sp-3); position: relative; z-index: 1; }
+    .timeline-row.connector-row { align-items: center; }
+    .timeline-node { width: 30px; flex-shrink: 0; display: flex; justify-content: center; padding-top: 20px; }
+    .timeline-row.connector-row .timeline-node { padding-top: 0; }
+    .timeline-dot { width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--bg); flex-shrink: 0; }
+    .timeline-dot.type-spot    { background: var(--primary); }
+    .timeline-dot.type-general { background: #9a7a4a; }
+    .timeline-dot.hotel-dot    { background: #3a9a68; }
+    .timeline-dot.connector-dot-drive { width: 8px; height: 8px; background: var(--accent-soft); }
+    .timeline-dot.connector-dot-walk  { width: 8px; height: 8px; background: #8fc99a; }
+    .timeline-dot.connector-dot-tram  { width: 8px; height: 8px; background: #9a9ad0; }
+    .spot-item, .hotel-card { flex: 1; min-width: 0; }
     /* ===== 景點/一般卡片配色（v7，Phase 2）：全站固定兩色，不再依「當天」上色。
        type-spot＝有字母編號的真正景點；type-general＝機場/超市/取車等一般資訊卡。===== */
     .spot-item.type-spot    { --spot-accent: var(--primary); --spot-tint: #e8f2f5; }
@@ -236,6 +260,9 @@
       overflow: hidden;
       transition: box-shadow .15s, transform .1s;
     }
+    .timeline-row { margin-bottom: var(--sp-5); }
+    .timeline-row.connector-row { margin-bottom: 0; }
+    .timeline-row .spot-item, .timeline-row .hotel-card { margin-bottom: 0; }
     .spot-item:active { transform: scale(0.98); }
     .spot-item:hover  { box-shadow: 0 4px 16px rgba(44,95,110,0.1); }
     .spot-item.no-click { cursor: default; border-style: dashed; }
@@ -275,28 +302,16 @@
     }
     .spot-item-arrow { padding-right: 12px; color: var(--sub); flex-shrink: 0; padding-top: 2px; }
     .spot-item-arrow svg { width: 16px; height: 16px; }
-    .drive-connector {
+    .drive-connector, .walk-connector, .tram-connector {
       display: flex;
       align-items: center;
       gap: var(--sp-3);
-      padding: var(--sp-2) var(--sp-6);
+      padding: var(--sp-2) var(--sp-6) var(--sp-2) 0;
       margin: 0;
       background: transparent;
+      flex: 1;
+      min-width: 0;
     }
-    .drive-line-wrap {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0;
-      width: 72px;
-      flex-shrink: 0;
-    }
-    .drive-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent-soft); }
-    .drive-dashed { width: 2px; height: 20px; border-left: 2px dashed var(--accent-soft); }
-    .drive-dot.walk { background: #8fc99a; }
-    .drive-dashed.walk { border-left-color: #8fc99a; }
-    .drive-dot.tram { background: #9a9ad0; }
-    .drive-dashed.tram { border-left-color: #9a9ad0; }
     .drive-info {
       display: flex;
       align-items: center;
@@ -314,14 +329,6 @@
     .connector-icon-tram  { color: #5a5aa8; }
     .next-stop-icon .connector-icon { width: 20px; height: 20px; }
     .drive-info svg { width: 13px; height: 13px; flex-shrink: 0; color: var(--accent); }
-    .walk-connector {
-      display: flex;
-      align-items: center;
-      gap: var(--sp-3);
-      padding: var(--sp-2) var(--sp-6);
-      margin: 0;
-      background: transparent;
-    }
     .walk-info {
       display: flex;
       align-items: center;
@@ -333,14 +340,6 @@
       border-radius: var(--radius-lg);
       flex: 1;
       border: 1px solid #c8e8c8;
-    }
-    .tram-connector {
-      display: flex;
-      align-items: center;
-      gap: var(--sp-3);
-      padding: var(--sp-2) var(--sp-6);
-      margin: 0;
-      background: transparent;
     }
     .tram-info {
       display: flex;
@@ -354,6 +353,16 @@
       flex: 1;
       border: 1px solid #c8c8e8;
     }
+    /* 導航小圖示（Phase 2）：附掛在距離/時間文字後面，點了直接開對應地圖App導航去下一站 */
+    .nav-icon-links { display: flex; gap: 6px; margin-left: auto; flex-shrink: 0; }
+    .nav-icon-btn {
+      width: 20px; height: 20px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px; font-weight: 700; text-decoration: none;
+      color: #fff; flex-shrink: 0;
+    }
+    .nav-icon-google { background: #4285f4; }
+    .nav-icon-apple  { background: #333; font-size: 9px; }
     .drive-summary-card {
       margin-top: var(--sp-4);
       background: linear-gradient(135deg, #f0f4f8, #e8f0f4);
