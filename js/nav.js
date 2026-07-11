@@ -8,22 +8,10 @@ let currentSpotArea = null;
 let currentGalleryImages = [];  // 目前彈層裡景點照片的檔名陣列，供圖片燈箱切換使用
 let currentGalleryIndex  = 0;
 
-function setHeader(title, sub, illusSrc, colorClass) {
-  document.getElementById('headerContent').innerHTML =
-    '<div class="header-title">' + title + '</div>' +
-    (sub ? '<div class="header-sub">' + sub + '</div>' : '');
-  var illusImg = document.querySelector('#headerIllusBg img');
-  illusImg.src = illusSrc || 'images/banners/header-illus.jpg';
-  var headerEl = document.getElementById('siteHeader');
-  headerEl.className = colorClass ? 'day-mode ' + colorClass : '';
-}
-// 預設頂端橫列（羅盤 + 標題 + 日期），行程總覽/旅遊/费用/其他頁籤共用，避免各頁重複寫一次橫幅資訊
-var HEADER_CALENDAR_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" class="header-sub-icon"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>';
+// 頂端標題列（v6.1）：全站固定顯示同一行文字，不再依頁籤或日期切換內容，
+// 文字來源在 data/trip-days.js 的 TRIP_META.bannerTitleHtml，要改標題文字改那邊即可。
 function setHeaderDefaultBanner() {
-  setHeader(TRIP_META.bannerTitleHtml, HEADER_CALENDAR_ICON + TRIP_META.bannerDateLine);
-}
-function showBackBtn(show) {
-  document.getElementById('backBtn').style.display = show ? 'flex' : 'none';
+  document.getElementById('headerTitle').innerHTML = TRIP_META.bannerTitleHtml;
 }
 function showItineraryView(viewId) {
   document.querySelectorAll('#page-itinerary .view').forEach(function(v){ v.classList.remove('active'); });
@@ -39,9 +27,6 @@ function switchTab(tab) {
   currentPage = tab;
   if (tab === 'itinerary') {
     showOverview();
-  } else {
-    showBackBtn(false);
-    setHeaderDefaultBanner();
   }
 }
 
@@ -49,8 +34,6 @@ function showOverview() {
   closeSpotSheet();
   currentDay = null; currentSpot = null; currentSpotArea = null;
   showItineraryView('view-overview');
-  showBackBtn(false);
-  setHeaderDefaultBanner();
   setItinActive(null);
   updateItinMap(null);
 }
@@ -114,16 +97,7 @@ function openItinMapLightbox() {
   openLightbox(0);
 }
 
-function goBack() {
-  if (isSpotSheetOpen()) { closeSpotSheet(); return; }
-  if (currentPage !== 'itinerary') return;
-  showOverview();
-}
-
 // ===== 景點詳情 Sheet（由下往上彈出，取代整頁跳轉）=====
-function isSpotSheetOpen() {
-  return document.getElementById('spotSheet').classList.contains('open');
-}
 function openSpotSheet() {
   document.getElementById('spotSheet').classList.add('open');
   document.getElementById('sheetBackdrop').classList.add('open');
