@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<title>Static Maps 測試頁</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  body { font-family: "Noto Sans TC", sans-serif; background:#f4f6f7; margin:0; padding:20px; }
+  h1 { font-size:20px; color:#1b3a4b; }
+  .day { background:white; border-radius:8px; padding:16px; margin-bottom:24px; box-shadow:0 1px 6px rgba(0,0,0,0.1); }
+  .day h2 { font-size:16px; color:#1b3a4b; margin-top:0; }
+  .day img { width:100%; max-width:800px; border-radius:6px; display:block; }
+  .status { font-size:13px; color:#888; margin-top:6px; }
+</style>
+</head>
+<body>
+
+<h1>Static Maps API 測試（此頁僅供測試，確認可正常顯示後可刪除）</h1>
+
+<div class="day">
+  <h2>Day1 · 初探冰島</h2>
+  <img src="https://maps.googleapis.com/maps/api/staticmap?size=800x600&maptype=roadmap&markers=color:0xE07A5F|label:1|63.9814869,-22.6281862&markers=color:0x3D5A80|label:2|64.2607334,-21.3700709&markers=color:0x8D99AE|label:3|64.2821725,-21.0764491&markers=color:0x588157|label:4|64.2643026,-20.5157467&markers=color:0x6D597A|label:5|63.9381675,-20.9737758&path=color:0x1B3A4Bcc|weight:3|63.9814869,-22.6281862|64.2607334,-21.3700709|64.2821725,-21.0764491|64.2643026,-20.5157467|63.9381675,-20.9737758&key=AIzaSyDXcFsjWvF5-KkOP9JYsnNRKSVJxyY9OM8"
+       alt="Day1 map" onerror="this.insertAdjacentHTML('afterend', '<div class=status>⚠️ 載入失敗，可能是 referrer 限制或金鑰問題</div>')">
+</div>
+
+<div class="day">
+  <h2>Day2 · 深入黃金圈</h2>
+  <img src="https://maps.googleapis.com/maps/api/staticmap?size=800x600&maptype=roadmap&markers=color:0xE07A5F|label:1|64.0771998,-20.4411793&markers=color:0x3D5A80|label:2|64.3103719,-20.3023605&markers=color:0x8D99AE|label:3|64.3270716,-20.1199478&markers=color:0x588157|label:4|64.2250748,-20.3367458&markers=color:0x6D597A|label:5|64.177503,-20.4448858&markers=color:0xF4A261|label:6|64.0412785,-20.8851466&path=color:0x1B3A4Bcc|weight:3|64.0771998,-20.4411793|64.3103719,-20.3023605|64.3270716,-20.1199478|64.2250748,-20.3367458|64.177503,-20.4448858|64.0412785,-20.8851466&key=AIzaSyDXcFsjWvF5-KkOP9JYsnNRKSVJxyY9OM8"
+       alt="Day2 map" onerror="this.insertAdjacentHTML('afterend', '<div class=status>⚠️ 載入失敗，可能是 referrer 限制或金鑰問題</div>')">
+</div>
+
+<div class="day">
+  <h2>Day3 · 南岸經典</h2>
+  <img src="https://maps.googleapis.com/maps/api/staticmap?size=800x600&maptype=roadmap&markers=color:0xE07A5F|label:1|63.6156232,-19.9885688&markers=color:0x3D5A80|label:2|63.5320523,-19.5113706&markers=color:0x8D99AE|label:3|63.4174526,-18.9990158&markers=color:0x588157|label:4|63.4046799,-19.1185522&markers=color:0x6D597A|label:5|63.4057404,-19.0716192&path=color:0x1B3A4Bcc|weight:3|63.6156232,-19.9885688|63.5320523,-19.5113706|63.4174526,-18.9990158|63.4046799,-19.1185522|63.4057404,-19.0716192&key=AIzaSyDXcFsjWvF5-KkOP9JYsnNRKSVJxyY9OM8"
+       alt="Day3 map" onerror="this.insertAdjacentHTML('afterend', '<div class=status>⚠️ 載入失敗，可能是 referrer 限制或金鑰問題</div>')">
+</div>
+
+<div class="day">
+  <h2>Day4 · 冰川健行</h2>
+  <img src="https://maps.googleapis.com/maps/api/staticmap?size=800x600&maptype=roadmap&markers=color:0xE07A5F|label:1|63.9105624,-16.7280735&markers=color:0x3D5A80|label:2|64.0784458,-16.2305536&markers=color:0x8D99AE|label:3|64.0443339,-16.1776622&path=color:0x1B3A4Bcc|weight:3|63.9105624,-16.7280735|64.0784458,-16.2305536|64.0443339,-16.1776622&key=AIzaSyDXcFsjWvF5-KkOP9JYsnNRKSVJxyY9OM8"
+       alt="Day4 map" onerror="this.insertAdjacentHTML('afterend', '<div class=status>⚠️ 載入失敗，可能是 referrer 限制或金鑰問題</div>')">
+</div>
+
+<div class="day">
+  <h2>Day5 · 雷克雅未克 + 藍湖</h2>
+  <img src="https://maps.googleapis.com/maps/api/staticmap?size=800x600&maptype=roadmap&markers=color:0xE07A5F|label:1|64.1420229,-21.9265494&markers=color:0x3D5A80|label:2|64.1453465,-21.9278728&markers=color:0x8D99AE|label:3|64.1502464,-21.9322805&markers=color:0x588157|label:4|64.14362,-21.9420184&markers=color:0x6D597A|label:5|63.8807176,-22.4472963&path=color:0x1B3A4Bcc|weight:3|64.1420229,-21.9265494|64.1453465,-21.9278728|64.1502464,-21.9322805|64.14362,-21.9420184|63.8807176,-22.4472963&key=AIzaSyDXcFsjWvF5-KkOP9JYsnNRKSVJxyY9OM8"
+       alt="Day5 map" onerror="this.insertAdjacentHTML('afterend', '<div class=status>⚠️ 載入失敗，可能是 referrer 限制或金鑰問題</div>')">
+</div>
+
+<div class="day">
+  <h2>Day7 · 芬蘭人的一天（赫爾辛基）</h2>
+  <img src="https://maps.googleapis.com/maps/api/staticmap?size=800x600&maptype=roadmap&zoom=14&markers=color:0xE07A5F|label:1|60.1718729,24.9414217&markers=color:0x3D5A80|label:2|60.1703707,24.9521309&markers=color:0x8D99AE|label:3|60.1694794,24.9522867&markers=color:0x588157|label:4|60.1676653,24.9536778&markers=color:0x6D597A|label:5|60.1661637,24.9528193&markers=color:0xF4A261|label:6|60.1675911,24.9514036&markers=color:0x264653|label:7|60.1686023,24.9598971&markers=color:0x9B2226|label:8|60.1676057,24.9575921&markers=color:0xE9C46A|label:9|60.1730251,24.925235&markers=color:0x2A9D8F|label:A|60.1670996,24.9571624&key=AIzaSyDXcFsjWvF5-KkOP9JYsnNRKSVJxyY9OM8"
+       alt="Day7 map" onerror="this.insertAdjacentHTML('afterend', '<div class=status>⚠️ 載入失敗，可能是 referrer 限制或金鑰問題</div>')">
+</div>
+
+</body>
+</html>
