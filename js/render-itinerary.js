@@ -4,12 +4,17 @@ var carIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke
 var walkIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="connector-icon connector-icon-walk"><circle cx="13" cy="4" r="1.6" fill="currentColor" stroke="none"/><path d="M15 8l-3 2-1 5-3 6M12 10l1 4 3 2 2 5M9 15l-3 1"/></svg>';
 var tramIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="connector-icon connector-icon-tram"><rect x="4" y="4" width="16" height="13" rx="2"/><path d="M4 12h16M8 17l-2 3M16 17l2 3"/><circle cx="8.5" cy="8.5" r="1" fill="currentColor" stroke="none"/><circle cx="15.5" cy="8.5" r="1" fill="currentColor" stroke="none"/></svg>';
 
-// ===== 景點方塊卡片配色（v5）：同一天的所有景點卡片統一使用「當天」的主題色，
-// 跟頂端固定橫列（header.day-mode）用的是同一組 c0~c8 配色，色彩不會在同一天內跳來跳去。=====
-// 有字母編號（label，如 A/B/C）的景點，方塊左上角徽章顯示字母；沒有編號的（機場/超市/租車等）顯示原本的 icon。
-function spotBadgeHtml(s) {
-  if (s.label) return '<div class="spot-badge">' + s.label + '</div>';
-  return '<div class="spot-badge icon-badge">' + (s.icon || '📍') + '</div>';
+// ===== 景點/一般卡片配色（v7，Phase 2）=====
+// 不再依「當天」上色，全站固定兩色：有字母編號（A/B/C...）的是「景點」，沒有編號的
+// （機場/超市/租車/取車等）是「一般」，只看 s.label 有沒有值就能判斷，沿用既有資料、不需要新增欄位。
+function spotTypeClass(s) {
+  return s.label ? 'type-spot' : 'type-general';
+}
+// 標題前綴：景點顯示「A.」「B.」這類編號；一般則顯示原本的 icon 表情符號，不再用彩色方塊當徽章。
+function spotPrefixHtml(s) {
+  if (s.label) return '<span class="spot-num">' + s.label + '.</span> ';
+  if (s.icon)  return '<span class="spot-num-icon">' + s.icon + '</span> ';
+  return '';
 }
 
 // 景點名稱資料是「英文/拉丁拼音 + 中文」混排（例如 "Þórufoss 索鲁瀑布"）。
@@ -32,22 +37,59 @@ function spotTitleHtml(name) {
   return html;
 }
 
+// 距離/時間文字：資料裡原本寫「约 85 km · 约 70 分钟」，這裡在顯示前把「约」拿掉，
+// 呈現時不再標示估算字樣（資料本身不用改，只在畫面渲染這一層處理）。
+function stripEstimateWording(str) {
+  return (str || '').replace(/约\s*/g, '');
+}
+
 function makeDriveConnector(dist, time) {
   return '<div class="drive-connector">' +
     '<div class="drive-line-wrap"><div class="drive-dot"></div><div class="drive-dashed"></div><div class="drive-dot"></div></div>' +
-    '<div class="drive-info">' + carIcon + '<span>' + dist + (time ? ' &nbsp;·&nbsp; ' + time : '') + '</span></div>' +
+    '<div class="drive-info">' + carIcon + '<span>' + stripEstimateWording(dist) + (time ? ' &nbsp;·&nbsp; ' + stripEstimateWording(time) : '') + '</span></div>' +
     '</div>';
 }
 function makeWalkConnector(text, detail) {
   return '<div class="walk-connector">' +
     '<div class="drive-line-wrap"><div class="drive-dot walk"></div><div class="drive-dashed walk"></div><div class="drive-dot walk"></div></div>' +
-    '<div class="walk-info">' + walkIcon + '<span>' + (detail || text) + '</span></div>' +
+    '<div class="walk-info">' + walkIcon + '<span>' + stripEstimateWording(detail || text) + '</span></div>' +
     '</div>';
 }
 function makeTramConnector(text, detail) {
   return '<div class="tram-connector">' +
     '<div class="drive-line-wrap"><div class="drive-dot tram"></div><div class="drive-dashed tram"></div><div class="drive-dot tram"></div></div>' +
-    '<div class="tram-info">' + tramIcon + '<span>' + (detail || text) + '</span></div>' +
+    '<div class="tram-info">' + tramIcon + '<span>' + stripEstimateWording(detail || text) + '</span></div>' +
+    '</div>';
+}
+
+// 卡片縮圖：跟景點詳情頁的瀑布流（buildSpotImageHtml）不同，這裡是固定尺寸、可橫向滑動的縮圖列，
+// 用在「當日行程」列表卡片上，不裁切太複雜的排版，讓每張卡片高度可預期。
+function buildSpotThumbStripHtml(s) {
+  var imgs = getSpotImages(s);
+  if (!imgs.length) return '';
+  var thumbs = imgs.map(function(img) {
+    return '<img src="images/spots/' + img + '" alt="" loading="lazy" onerror="this.parentElement.removeChild(this)" />';
+  }).join('');
+  return '<div class="spot-thumb-strip">' + thumbs + '</div>';
+}
+
+// ===== 統一卡片元件（v7，Phase 2）：景點與一般（機場/超市/取車等）共用同一個排版，
+// 只差在配色（spotTypeClass）跟有沒有縮圖列。標題／標籤／摘要／縮圖／點擊行為都在這裡集中處理，
+// showDay() 裡三種情境（一般行程、赫尔辛基分区、住宿）都呼叫這個函式產生卡片，不用各自重寫一份。 =====
+function buildSpotCardHtml(s, onclickExpr) {
+  var isShop = s.isShop || false;
+  var clickable = !isShop && !!onclickExpr;
+  var tagsHtml = s.tags && s.tags.length ?
+    '<div class="spot-card-tags">' + s.tags.map(function(t){ return '<span class="tag">' + t + '</span>'; }).join('') + '</div>' : '';
+  var summaryHtml = s.desc ? '<p class="spot-card-summary">' + s.desc + '</p>' : '';
+  var thumbHtml = isShop ? '' : buildSpotThumbStripHtml(s);
+  return '<div class="spot-item ' + spotTypeClass(s) + (isShop ? ' no-click' : '') + '"' +
+    (clickable ? ' onclick="' + onclickExpr + '"' : '') + '>' +
+    '<div class="spot-card-top">' +
+      '<h4 class="spot-card-title">' + spotPrefixHtml(s) + spotTitleHtml(s.name) + '</h4>' +
+      (clickable ? '<div class="spot-item-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></div>' : '') +
+    '</div>' +
+    tagsHtml + summaryHtml + thumbHtml +
     '</div>';
 }
 
@@ -65,9 +107,6 @@ function showDay(dayId) {
   document.querySelectorAll('.nav-tab').forEach(function(t){ t.classList.remove('active'); });
   document.getElementById('tab-itinerary').classList.add('active');
   currentPage = 'itinerary';
-
-  var dayMeta = TRIP_DAYS.find(function(x){ return x.id === dayId; });
-  var dayColorClass = dayMeta ? dayMeta.color : 'c0';
 
   showItineraryView('view-day');
 
@@ -121,15 +160,8 @@ function showDay(dayId) {
         '</div>' +
         '<div class="travel-collapse-body">';
       area.spots.forEach(function(s, sIdx) {
-        var clickable = !s.isShop;
-        html += '<div class="spot-item ' + dayColorClass + (s.isShop ? ' no-click' : '') + '"' +
-          (clickable ? ' onclick="showSpotHelsinki(\'' + dayId + '\',' + aIdx + ',' + sIdx + ')"' : '') + '>' +
-          '<div class="spot-item-head">' + spotBadgeHtml(s) +
-          '<div class="spot-title"><h4>' + spotTitleHtml(s.name) + '</h4></div>' +
-          (clickable ? '<div class="spot-item-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></div>' : '<div style="width:32px;"></div>') +
-          '</div>' +
-          '<div class="spot-item-info"><p>' + (s.tags ? s.tags.join(' · ') : '') + '</p></div>' +
-          '</div>';
+        var onclickExpr = s.isShop ? null : "showSpotHelsinki('" + dayId + "'," + aIdx + ',' + sIdx + ')';
+        html += buildSpotCardHtml(s, onclickExpr);
         if (s.nextStop) {
           var ns = s.nextStop;
           if (ns.type === 'drive') html += makeDriveConnector(ns.detail, '');
@@ -144,16 +176,8 @@ function showDay(dayId) {
   } else {
     var html = '';
     d.spots.forEach(function(s, i) {
-      var isShop = s.isShop || false;
-      var clickable = !isShop;
-      html += '<div class="spot-item ' + dayColorClass + (isShop ? ' no-click' : '') + '"' +
-        (clickable ? ' onclick="showSpot(\'' + dayId + '\',' + i + ')"' : '') + '>' +
-        '<div class="spot-item-head">' + spotBadgeHtml(s) +
-        '<div class="spot-title"><h4>' + spotTitleHtml(s.name) + '</h4></div>' +
-        (clickable ? '<div class="spot-item-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></div>' : '<div style="width:32px;"></div>') +
-        '</div>' +
-        '<div class="spot-item-info"><p>' + (s.tags ? s.tags.join(' · ') : '') + '</p></div>' +
-        '</div>';
+      var onclickExpr = s.isShop ? null : "showSpot('" + dayId + "'," + i + ')';
+      html += buildSpotCardHtml(s, onclickExpr);
       if (d.drives && d.drives[i]) {
         var dr = d.drives[i];
         html += makeDriveConnector(dr.dist, dr.time);
@@ -170,7 +194,7 @@ function showDay(dayId) {
     if (d.driveSummary) {
       html += '<div class="drive-summary-card">' +
         '<div class="drive-summary-icon">🚗</div>' +
-        '<div class="drive-summary-info"><h4>今日自驾里程小计</h4><p>总里程：' + d.driveSummary.total + '　总驾驶时间：' + d.driveSummary.time + '</p></div>' +
+        '<div class="drive-summary-info"><h4>今日自驾里程小计</h4><p>总里程：' + stripEstimateWording(d.driveSummary.total) + '　总驾驶时间：' + stripEstimateWording(d.driveSummary.time) + '</p></div>' +
         '</div>';
     }
     listEl.innerHTML = html;
@@ -282,9 +306,21 @@ function renderHotelDetail(hotel, d) {
       '<div class="spot-hero-title">' + hotel.name + '</div>' +
     '</div>' +
     '<div class="info-card"><div class="card-label">住宿说明</div><p>' + hotel.note + '</p></div>' +
+    buildMapBtnRowHtml(mapQuery, '导航');
+}
+
+// 雙導航（Phase 2 新增）：同一個地點的查詢字串，分別組成 Google Maps 與 Apple Maps 的連結，
+// 兩個按鈕並排顯示，使用者用慣哪個地圖 App 就點哪個，不用只能二選一。
+function buildMapBtnRowHtml(mapQuery, actionLabel) {
+  var label = actionLabel || '查看';
+  return '<div class="map-btn-row">' +
     '<a class="map-btn" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=' + mapQuery + '">' +
-      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 1118 0z"/><circle cx="12" cy="10" r="3"/></svg> 在 Google 地图导航' +
-    '</a>';
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 1118 0z"/><circle cx="12" cy="10" r="3"/></svg> Google 地图' + label +
+    '</a>' +
+    '<a class="map-btn map-btn-apple" target="_blank" rel="noopener" href="https://maps.apple.com/?q=' + mapQuery + '">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 1118 0z"/><circle cx="12" cy="10" r="3"/></svg> Apple 地图' + label +
+    '</a>' +
+  '</div>';
 }
 
 function showSpot(dayId, idx) {
@@ -321,7 +357,7 @@ function renderSpotDetail(s, d) {
   if (s.nextStop) {
     var ns = s.nextStop;
     var nsIcon = ns.type === 'walk' ? walkIcon : (ns.type === 'tram' ? tramIcon : carIcon);
-    nextStopHtml = '<div class="next-stop-card"><div class="next-stop-icon">' + nsIcon + '</div><div class="next-stop-info"><strong>前往下一站：</strong>' + (ns.detail || ns.text) + '</div></div>';
+    nextStopHtml = '<div class="next-stop-card"><div class="next-stop-icon">' + nsIcon + '</div><div class="next-stop-info"><strong>前往下一站：</strong>' + stripEstimateWording(ns.detail || ns.text) + '</div></div>';
   }
 
   document.getElementById('spotDetail').innerHTML =
@@ -337,7 +373,5 @@ function renderSpotDetail(s, d) {
     (s.tips ? '<div class="tips-card"><div class="card-label">小提醒</div><p>' + s.tips + '</p></div>' : '') +
     parkingHtml +
     nextStopHtml +
-    '<a class="map-btn" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=' + mapQuery + '">' +
-      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 1118 0z"/><circle cx="12" cy="10" r="3"/></svg> 在 Google 地图查看' +
-    '</a>';
+    buildMapBtnRowHtml(mapQuery, '查看');
 }
