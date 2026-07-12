@@ -27,6 +27,8 @@ function switchTab(tab) {
   currentPage = tab;
   if (tab === 'itinerary') {
     showOverview();
+  } else if (tab === 'travel' || tab === 'other') {
+    selectCatalogCategory(tab, null);
   }
 }
 

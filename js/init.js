@@ -3,6 +3,7 @@
 // ===== 初始化 =====
 mountTabContent();
 renderDocs();
+initCatalogPages();
 renderOverview();
 setHeaderDefaultBanner();
 renderItinSelector();

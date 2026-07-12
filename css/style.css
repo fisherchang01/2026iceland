@@ -953,6 +953,143 @@
        不再是纯文字标题，规则已移除。 */
     .area-collapse { margin-bottom: var(--sp-3); }
 
+    /* ===== 體驗／工具：固定總覽與可橫滑分類列 ===== */
+    .catalog-page > .page-inner { padding-top: 0; }
+    .catalog-top {
+      position: sticky; top: 0; z-index: 90;
+      display: flex; align-items: center; gap: var(--sp-2);
+      background: var(--card); border-bottom: 1px solid var(--border);
+      margin: 0 calc(var(--sp-6) * -1) var(--sp-5);
+      padding: var(--sp-4) var(--sp-6);
+    }
+    .catalog-pill {
+      flex-shrink: 0; border: 1px solid var(--border); background: var(--card);
+      color: var(--text); border-radius: 999px; padding: 7px 13px;
+      font-size: var(--fs-xs); font-weight: 700; white-space: nowrap; cursor: pointer;
+    }
+    .catalog-pill.active { background: #1a1a1a; border-color: #1a1a1a; color: #fff; }
+    .catalog-pill-overview { position: relative; }
+    .catalog-pill-overview::after {
+      content: ''; position: absolute; right: -8px; top: 50%; transform: translateY(-50%);
+      width: 1px; height: 16px; background: var(--border);
+    }
+    .catalog-pill-scroll {
+      display: flex; gap: var(--sp-2); overflow-x: auto; padding: 2px 2px 3px;
+      scrollbar-width: none; scroll-behavior: smooth;
+    }
+    .catalog-pill-scroll::-webkit-scrollbar { display: none; }
+    .catalog-overview { margin-bottom: var(--sp-6); }
+    .catalog-overview-heading { margin-bottom: var(--sp-4); }
+    .catalog-overview-heading h2 { font-size: var(--fs-lg); font-weight: 800; color: var(--text); }
+    .catalog-overview-heading p { font-size: var(--fs-xs); color: var(--sub); margin-top: var(--sp-1); }
+    .catalog-overview-grid { display: grid; gap: var(--sp-3); }
+    .catalog-overview-card {
+      width: 100%; border: 1px solid var(--border); border-radius: var(--radius);
+      background: var(--card); padding: var(--sp-5); display: flex; align-items: center;
+      gap: var(--sp-4); text-align: left; cursor: pointer; box-shadow: 0 2px 10px rgba(30,50,60,.05);
+    }
+    .catalog-overview-card:active { transform: scale(.985); }
+    .catalog-overview-icon {
+      width: 48px; height: 48px; border-radius: var(--radius-sm); flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center; font-size: var(--fs-xl);
+      background: linear-gradient(135deg, var(--tag-bg), var(--bg2));
+    }
+    .catalog-overview-copy { min-width: 0; flex: 1; display: flex; flex-direction: column; }
+    .catalog-overview-copy strong { font-size: var(--fs-base); color: var(--text); }
+    .catalog-overview-copy small {
+      font-size: var(--fs-xs); color: var(--sub); margin-top: var(--sp-1);
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .catalog-overview-arrow { font-size: var(--fs-xl); color: var(--sub); }
+    .catalog-page .travel-collapse { border: 0; overflow: visible; }
+    .catalog-page .travel-collapse > .travel-collapse-header { display: none; }
+    .catalog-page .travel-collapse > .travel-collapse-body { padding: 0; background: transparent; }
+
+    /* 分類頁卡片：左圖、右標題與固定三行摘要；點擊後在詳情 Sheet 展開完整內容。 */
+    .catalog-list-card {
+      min-height: 118px; display: flex !important; flex-direction: row !important;
+      align-items: stretch !important; gap: 0 !important; overflow: hidden;
+      padding: 0 !important; margin-bottom: var(--sp-4) !important;
+      border: 1px solid var(--border) !important; border-radius: var(--radius) !important;
+      background: var(--card) !important; cursor: pointer; position: relative;
+      box-shadow: 0 2px 10px rgba(30,50,60,.06);
+    }
+    .catalog-list-card:active { transform: scale(.985); }
+    .catalog-list-card::after {
+      content: '›'; position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+      color: var(--sub); font-size: var(--fs-xl);
+    }
+    .catalog-list-card .souvenir-img-wrap,
+    .catalog-list-card .souvenir-img-wrap.small,
+    .catalog-card-media {
+      width: 112px !important; height: auto !important; min-height: 118px;
+      flex: 0 0 112px !important; border-radius: 0 !important;
+      background: linear-gradient(135deg, #e8f2f5, #f5efe4);
+      display: flex; align-items: center; justify-content: center; overflow: hidden;
+    }
+    .catalog-list-card .souvenir-img-wrap img,
+    .catalog-card-media img { width: 100%; height: 100%; object-fit: cover; }
+    .catalog-card-media.image-error::after { content: '✦'; font-size: var(--fs-3xl); color: var(--primary); }
+    .catalog-list-card .souvenir-img-wrap .img-fallback { font-size: var(--fs-2xl); }
+    .catalog-list-card .souvenir-info,
+    .catalog-list-card .souvenir-item-info,
+    .catalog-list-card .catalog-card-copy {
+      flex: 1; min-width: 0; padding: var(--sp-4) 34px var(--sp-4) var(--sp-5) !important;
+    }
+    .catalog-list-card h4,
+    .catalog-list-card .travel-sub-title,
+    .catalog-list-card .warn-title { font-size: var(--fs-base) !important; font-weight: 800; color: var(--text); }
+    .catalog-list-card p,
+    .catalog-list-card .souvenir-desc,
+    .catalog-list-card .souvenir-shop,
+    .catalog-list-card .souvenir-tip {
+      display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3;
+      overflow: hidden; font-size: var(--fs-xs) !important; line-height: 1.55 !important;
+      color: var(--sub) !important; margin-top: var(--sp-1); margin-bottom: 0;
+      background: transparent; padding: 0;
+    }
+    .catalog-list-card .souvenir-brand,
+    .catalog-list-card .market-tag,
+    .catalog-list-card .hours,
+    .catalog-list-card .travel-sub-arrow { display: none !important; }
+    .catalog-list-card .travel-sub-header { padding: 0; background: transparent; }
+    .catalog-list-card .travel-sub-body { display: block; padding: var(--sp-2) 0 0; flex: 1; }
+    .catalog-list-card .travel-sub-body > *:not(:first-child) { display: none; }
+    .catalog-page .market-grid { display: block; }
+
+    /* 體驗／工具共用詳情 Sheet */
+    .catalog-sheet-backdrop {
+      position: fixed; inset: 0; z-index: 390; background: rgba(20,25,28,.48);
+      opacity: 0; pointer-events: none; transition: opacity .25s;
+    }
+    .catalog-sheet-backdrop.open { opacity: 1; pointer-events: auto; }
+    .catalog-sheet {
+      position: fixed; left: 0; right: 0; bottom: 0; z-index: 400;
+      max-width: 640px; height: 86vh; margin: 0 auto; background: var(--card);
+      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+      transform: translateY(100%); transition: transform .3s cubic-bezier(.25,.8,.35,1);
+      box-shadow: 0 -8px 32px rgba(0,0,0,.22); display: flex; flex-direction: column;
+    }
+    .catalog-sheet.open { transform: translateY(0); }
+    .catalog-sheet-handle { width: 42px; height: 5px; border-radius: 5px; background: #c7c7c7; margin: 9px auto 5px; }
+    .catalog-sheet-close {
+      position: absolute; right: 15px; top: 12px; width: 34px; height: 34px;
+      border: 0; border-radius: 50%; background: rgba(0,0,0,.08); font-size: 24px; cursor: pointer;
+    }
+    .catalog-sheet-title {
+      padding: var(--sp-5) 58px var(--sp-5) var(--sp-7); font-size: var(--fs-lg);
+      font-weight: 800; color: #fff; background: linear-gradient(135deg, #2c5f6e, #1a3d4a);
+    }
+    .catalog-sheet-body { padding: var(--sp-6); overflow-y: auto; flex: 1; }
+    .catalog-sheet-body > * { display: block !important; margin: 0 !important; border: 0 !important; box-shadow: none !important; }
+    .catalog-sheet-body .souvenir-img-wrap,
+    .catalog-sheet-body .catalog-card-media { width: 100% !important; height: 210px !important; border-radius: var(--radius) !important; margin-bottom: var(--sp-5); }
+    .catalog-sheet-body .souvenir-info,
+    .catalog-sheet-body .souvenir-item-info,
+    .catalog-sheet-body .catalog-card-copy { padding: 0 !important; }
+    .catalog-sheet-body .travel-sub-body { display: block !important; padding: 0; }
+    .catalog-sheet-body .travel-sub-arrow { display: none; }
+
     /* ===== 景點詳情 Sheet（由下往上彈出）===== */
     .sheet-backdrop {
       position: fixed; inset: 0;
