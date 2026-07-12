@@ -4,6 +4,10 @@ var carIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke
 var walkIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="connector-icon connector-icon-walk"><circle cx="13" cy="4" r="1.6" fill="currentColor" stroke="none"/><path d="M15 8l-3 2-1 5-3 6M12 10l1 4 3 2 2 5M9 15l-3 1"/></svg>';
 var tramIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="connector-icon connector-icon-tram"><rect x="4" y="4" width="16" height="13" rx="2"/><path d="M4 12h16M8 17l-2 3M16 17l2 3"/><circle cx="8.5" cy="8.5" r="1" fill="currentColor" stroke="none"/><circle cx="15.5" cy="8.5" r="1" fill="currentColor" stroke="none"/></svg>';
 
+// 固定日期標題欄（Phase 3）用：中文數字（第幾日）、月份英文縮寫轉數字（組成 (10/4) 這種格式）
+var CN_DAY_NUM = ['一','二','三','四','五','六','七','八','九','十'];
+var MONTH_NUM = { JAN:1, FEB:2, MAR:3, APR:4, MAY:5, JUN:6, JUL:7, AUG:8, SEP:9, OCT:10, NOV:11, DEC:12 };
+
 // ===== 景點/一般卡片配色（v7，Phase 2）=====
 // 不再依「當天」上色，全站固定兩色：有字母編號（A/B/C...）的是「景點」，沒有編號的
 // （機場/超市/租車/取車等）是「一般」，只看 s.label 有沒有值就能判斷，沿用既有資料、不需要新增欄位。
@@ -49,8 +53,8 @@ function buildNavIconsHtml(destQuery, mode) {
   if (!destQuery) return '';
   var appleFlag = mode === 'w' ? 'w' : (mode === 'r' ? 'r' : 'd');
   return '<span class="nav-icon-links">' +
-    '<a class="nav-icon-btn nav-icon-google" href="https://www.google.com/maps/dir/?api=1&destination=' + destQuery + '" target="_blank" rel="noopener" onclick="event.stopPropagation()" aria-label="Google地图导航">G</a>' +
-    '<a class="nav-icon-btn nav-icon-apple" href="https://maps.apple.com/?daddr=' + destQuery + '&dirflg=' + appleFlag + '" target="_blank" rel="noopener" onclick="event.stopPropagation()" aria-label="Apple地图导航">苹</a>' +
+    '<a class="nav-icon-btn nav-icon-google" href="https://www.google.com/maps/dir/?api=1&destination=' + destQuery + '" target="_blank" rel="noopener" onclick="event.stopPropagation()" aria-label="Google地图导航">导航G</a>' +
+    '<a class="nav-icon-btn nav-icon-apple" href="https://maps.apple.com/?daddr=' + destQuery + '&dirflg=' + appleFlag + '" target="_blank" rel="noopener" onclick="event.stopPropagation()" aria-label="Apple地图导航">导航A</a>' +
   '</span>';
 }
 
@@ -132,8 +136,14 @@ function showDay(dayId) {
 
   showItineraryView('view-day');
 
-  var headingEl = document.getElementById('dayTitleHeading');
-  if (headingEl) headingEl.textContent = '第' + (TRIP_DAYS.findIndex(function(x){ return x.id === dayId; }) + 1) + '日．' + d.title;
+  var dayIdx = TRIP_DAYS.findIndex(function(x){ return x.id === dayId; });
+  var dayMeta2 = TRIP_DAYS[dayIdx];
+  var headingEl = document.getElementById('itinDayHeading');
+  if (headingEl && dayMeta2) {
+    var monthNum = MONTH_NUM[dayMeta2.month] || dayMeta2.month;
+    headingEl.textContent = '(' + monthNum + '/' + dayMeta2.date + ')\u3000第' + (CN_DAY_NUM[dayIdx] || (dayIdx + 1)) + '日\u3000' + d.title;
+    headingEl.style.display = 'block';
+  }
 
   var listEl = document.getElementById('spotList');
 
@@ -331,11 +341,12 @@ function showHotel(dayId) {
 
 function renderHotelDetail(hotel, d) {
   var mapQuery = encodeURIComponent(hotel.map || hotel.name);
-  document.getElementById('spotDetail').innerHTML =
+  document.getElementById('spotSheetHero').innerHTML =
     '<div class="spot-hero">' +
       '<div class="spot-hero-label">' + d.title + ' · 住宿</div>' +
       '<div class="spot-hero-title">' + hotel.name + '</div>' +
-    '</div>' +
+    '</div>';
+  document.getElementById('spotDetail').innerHTML =
     '<div class="info-card"><div class="card-label">住宿说明</div><p>' + hotel.note + '</p></div>' +
     buildMapBtnRowHtml(mapQuery, '导航');
 }
@@ -390,19 +401,23 @@ function renderSpotDetail(s, d) {
     nextStopHtml = '<div class="next-stop-card"><div class="next-stop-icon">' + nsIcon + '</div><div class="next-stop-info"><strong>前往下一站：</strong>' + stripEstimateWording(ns.detail || ns.text) + '</div></div>';
   }
 
-  document.getElementById('spotDetail').innerHTML =
+  // v8：標題框（hero）固定在彈層最上面不捲動，只放編號＋名稱，不再重複顯示標籤文字
+  // （標籤已經在下面用膠囊樣式顯示一次，不需要在標題框再顯示一次純文字版）。
+  document.getElementById('spotSheetHero').innerHTML =
     '<div class="spot-hero">' +
       '<div class="spot-hero-label">' + d.title + '</div>' +
       '<div class="spot-hero-title">' + spotTitleHtml(s.name) + '</div>' +
-      '<div class="spot-hero-sub">' + (s.tags ? s.tags.join(' · ') : '') + '</div>' +
-    '</div>' +
-    buildSpotImageHtml(s) +
+    '</div>';
+
+  // 其餘內容可捲動，順序：標籤 → 介紹 → 深度介紹 → 提醒 → 停車廁所 → 前往下一站 → 照片瀑布流（移到最下面）
+  document.getElementById('spotDetail').innerHTML =
     '<div class="tags">' + tagsHtml + '</div>' +
     '<div class="info-card"><div class="card-label">景点介绍</div><p>' + s.desc + '</p></div>' +
     (s.deepDesc ? '<div class="info-card"><div class="card-label">深度介绍</div><p>' + s.deepDesc + '</p></div>' : '') +
     (s.tips ? '<div class="tips-card"><div class="card-label">小提醒</div><p>' + s.tips + '</p></div>' : '') +
     parkingHtml +
-    nextStopHtml;
+    nextStopHtml +
+    buildSpotImageHtml(s);
   // 注意（Phase 2 調整）：景點詳情頁不再放導航按鈕，導航改附掛在列表卡片之間「距離/時間」那一行
   // （見 buildNavIconsHtml），這裡只留景點本身的介紹內容。住宿詳情頁的導航按鈕不受影響，維持原樣。
 }

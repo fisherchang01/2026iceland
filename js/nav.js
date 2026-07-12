@@ -36,6 +36,8 @@ function showOverview() {
   showItineraryView('view-overview');
   setItinActive(null);
   updateItinMap(null);
+  var headingEl = document.getElementById('itinDayHeading');
+  if (headingEl) headingEl.style.display = 'none';
 }
 
 // ===== 頂端地圖 + 日期選單列（v6）=====
