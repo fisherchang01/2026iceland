@@ -19,7 +19,7 @@ const CATALOG_IMAGE_MAP = [
   ['Krónan', 'images/catalog/kronan.jpg'],
   ['Omnom', 'images/catalog/omnom.jpg'],
   ['Nói Síríus', 'images/catalog/noi-sirius.jpg'],
-  ['Freyja', 'images/catalog/freyja.png'],
+  ['Freyja', 'images/catalog/freyja.jpg'],
   ['Hraun', 'images/catalog/hraun.jpg'],
   ['Lakkrís', 'https://www.google.com/s2/favicons?sz=256&domain_url=https://lakkris.is/'],
   ['Saltverk', 'images/catalog/saltverk.jpg'],
