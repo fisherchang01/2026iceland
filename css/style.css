@@ -178,8 +178,10 @@
       transition: transform .1s;
     }
     .day-card:active { transform: scale(0.98); }
-    .day-card-bg { position: absolute; inset: 0; z-index: 0; background: #333; }
-    .day-card-bg img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .day-card-bg { position: absolute; inset: 0; z-index: 0; background: #333; overflow: hidden; }
+    /* 卡片壓矮後（148px→118px），object-fit:cover 裁切變寬，會露出插畫左右兩側原本不會同時出現的場景，
+       用 transform 放大一點，讓可視範圍縮回原本（未壓矮前）差不多的取景比例 */
+    .day-card-bg img { width: 100%; height: 100%; object-fit: cover; display: block; transform: scale(1.25); }
     /* 漸層遮罩：調淡許多，只為文字保留一點點可讀性輔助，不再大面積壓暗插畫 */
     .day-card-scrim {
       position: absolute; inset: 0; z-index: 1;
@@ -282,7 +284,7 @@
     .spot-icon-svg svg { width: 100%; height: 100%; }
     .spot-img-wrap .img-fallback .fallback-icon .spot-icon-svg { width: 56px; height: 56px; color: rgba(255,255,255,0.92); }
     /* 景點名稱裡的中文字放大約50%，英文/拼音部分維持原尺寸 */
-    .cjk-lg { font-size: 1.5em; font-weight: 700; }
+    .cjk-lg { font-size: 1.2rem; font-weight: 800; }
     .name-en { font-size: 0.7em; font-weight: 400; color: var(--sub); }
     .spot-card-tags { display: flex; flex-wrap: wrap; gap: var(--sp-2); padding: var(--sp-4) var(--sp-5) 0; }
     .spot-card-tags .tag { font-size: var(--fs-2xs); padding: 2px var(--sp-3); }
@@ -353,16 +355,17 @@
       flex: 1;
       border: 1px solid #c8c8e8;
     }
-    /* 導航小圖示（Phase 2）：附掛在距離/時間文字後面，點了直接開對應地圖App導航去下一站 */
-    .nav-icon-links { display: flex; gap: 6px; margin-left: auto; flex-shrink: 0; }
+    /* 導航標籤（Phase 3）：附掛在距離/時間文字後面，改成「導航G」「導航A」的膠囊標籤，
+       比純圖示寬（約留2個字的點擊空間），視覺上跟旁邊文字有明顯區隔，比較不容易點錯 */
+    .nav-icon-links { display: flex; gap: var(--sp-2); margin-left: auto; flex-shrink: 0; }
     .nav-icon-btn {
-      width: 20px; height: 20px; border-radius: 50%;
+      min-width: 44px; padding: 5px 10px; border-radius: 999px;
       display: flex; align-items: center; justify-content: center;
       font-size: 10px; font-weight: 700; text-decoration: none;
-      color: #fff; flex-shrink: 0;
+      color: #fff; flex-shrink: 0; letter-spacing: 0.5px;
     }
     .nav-icon-google { background: #4285f4; }
-    .nav-icon-apple  { background: #333; font-size: 9px; }
+    .nav-icon-apple  { background: #333; }
     .drive-summary-card {
       margin-top: var(--sp-4);
       background: linear-gradient(135deg, #f0f4f8, #e8f0f4);
@@ -396,14 +399,14 @@
     .hotel-card .spot-item-arrow { color: #4a7a5a; }
     .spot-hero {
       background: linear-gradient(135deg, #2c5f6e 0%, #1a3d4a 100%);
-      border-radius: var(--radius);
-      padding: var(--sp-7) var(--sp-7);
-      margin-bottom: var(--sp-6);
+      padding: var(--sp-5) var(--sp-7);
       color: #fff;
     }
     .spot-hero-label { font-size: var(--fs-2xs); letter-spacing: 2px; opacity: 0.7; text-transform: uppercase; }
+    /* 標題框的中文景點名稱縮小二個級距（原本是spot-hero-title字級的1.5倍，約2rem），
+       標題框內容變少（拿掉了原本重複顯示的標籤文字），高度也跟著自然變矮，不需要太高 */
     .spot-hero-title { font-size: var(--fs-lg); font-weight: 700; margin-top: var(--sp-1); font-family: var(--font-display);}
-    .spot-hero-sub   { font-size: var(--fs-xs); opacity: 0.75; margin-top: var(--sp-1); }
+    .spot-hero-title .cjk-lg { font-size: 1.3rem; font-weight: 800; }
     .spot-img-wrap {
       width: 100%;
       border-radius: var(--radius);
@@ -551,27 +554,29 @@
     }
     .itin-map-placeholder svg { width: 30px; height: 30px; opacity: 0.6; }
     .itin-map-placeholder span { font-size: var(--fs-xs); }
-    .itin-day-selector { display: flex; align-items: center; gap: var(--sp-3); }
+    .itin-day-selector { display: flex; align-items: center; gap: var(--sp-2); }
     .itin-pill {
-      flex-shrink: 0; padding: 8px 18px; border-radius: 999px;
+      flex-shrink: 0; padding: 6px 12px; border-radius: 999px;
       border: 1px solid var(--border); background: var(--card);
-      font-size: var(--fs-sm); font-weight: 600; color: var(--text);
+      font-size: var(--fs-xs); font-weight: 600; color: var(--text);
       cursor: pointer; white-space: nowrap; transition: background .15s, color .15s, border-color .15s;
     }
     .itin-pill.active { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
     .itin-pill-fixed { position: relative; }
     .itin-pill-fixed::after {
-      content: ''; position: absolute; right: -10px; top: 50%; transform: translateY(-50%);
-      width: 1px; height: 20px; background: var(--border);
+      content: ''; position: absolute; right: -8px; top: 50%; transform: translateY(-50%);
+      width: 1px; height: 16px; background: var(--border);
     }
     .itin-pill-scroll {
-      display: flex; gap: var(--sp-3); overflow-x: auto; scroll-behavior: smooth;
+      display: flex; gap: var(--sp-2); overflow-x: auto; scroll-behavior: smooth;
       padding: 2px 2px 4px; scrollbar-width: none;
     }
     .itin-pill-scroll::-webkit-scrollbar { display: none; }
-    .day-title-heading {
-      font-family: var(--font-display); font-size: var(--fs-xl); font-weight: 700;
-      color: var(--text); line-height: 1.4; margin-bottom: var(--sp-6);
+    /* 固定日期標題（Phase 3）：跟著地圖/選單列一起固定在頂端，不隨景點列表捲動，
+       格式為「(10/4)　第二日　初探冰岛」，字體加粗 */
+    .itin-day-heading {
+      font-family: var(--font-display); font-size: var(--fs-md); font-weight: 800;
+      color: var(--text); line-height: 1.4; margin-top: var(--sp-4);
     }
 
     .flight-segment {
@@ -996,14 +1001,24 @@
       z-index: 2;
     }
     .spot-sheet-close svg { width: 16px; height: 16px; }
+    /* v8：標題框固定在彈層上方、不隨內容捲動，跟下面的捲動內容用陰影做出區隔 */
+    .spot-sheet-hero {
+      flex-shrink: 0;
+      margin: 0 var(--sp-8);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: 0 4px 10px -4px rgba(0,0,0,0.18);
+      position: relative; z-index: 1;
+    }
     .spot-sheet-scroll {
       flex: 1;
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
-      padding: 0 var(--sp-8) var(--sp-9);
+      padding: var(--sp-6) var(--sp-8) var(--sp-9);
     }
     @media (max-width: 380px) {
-      .spot-sheet-scroll { padding: 0 var(--sp-7) var(--sp-9); }
+      .spot-sheet-hero { margin: 0 var(--sp-7); }
+      .spot-sheet-scroll { padding: var(--sp-6) var(--sp-7) var(--sp-9); }
     }
 
     /* ===== 圖片放大燈箱（點擊景點照片可放大檢視，多張時可左右切換）===== */
