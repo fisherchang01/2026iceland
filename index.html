@@ -42,9 +42,10 @@
         </div>
       </div>
       <div class="itin-day-selector">
-        <button class="itin-pill itin-pill-fixed active" id="itinPillOverview" onclick="selectItin('overview')">行程概览</button>
+        <button class="itin-pill itin-pill-fixed active" id="itinPillOverview" onclick="selectItin('overview')">全部行程</button>
         <div class="itin-pill-scroll" id="itinPillScroll"></div>
       </div>
+      <div class="itin-day-heading" id="itinDayHeading" style="display:none"></div>
     </div>
   </div>
 
@@ -52,18 +53,18 @@
     <div class="page-inner" id="overviewContent"></div>
   </div>
 
-  <!-- 每日景点列表：日期標題（如「第1日．初探冰岛」）改放在這裡顯示，
-       原本頂端橫列的「彩色橫幅＋插畫」呈現方式已拿掉，改由上方的地圖+選單列取代其導覽功能。 -->
+  <!-- 每日景点列表：日期標題已經移到上面常駐的 .itin-top 裡（跟著地圖/選單列一起固定），
+       這裡只剩會捲動的景點列表本身。 -->
   <div class="view" id="view-day">
     <div class="page-inner">
-      <div class="day-title-heading" id="dayTitleHeading"></div>
       <p class="spot-list-label">今日景点 &amp; 行程</p>
       <div id="spotList"></div>
     </div>
   </div>
 </div>
 
-<!-- 景點詳情：改成由下往上彈出的 sheet，蓋在當天景點列表上方，不再是整頁跳轉 -->
+<!-- 景點詳情：改成由下往上彈出的 sheet，蓋在當天景點列表上方，不再是整頁跳轉。
+     v8：標題框（spotSheetHero）獨立在捲動區外面，固定不動；其餘內容（標籤/介紹/照片等）在下方捲動。 -->
 <div class="sheet-backdrop" id="sheetBackdrop" onclick="closeSpotSheet()"></div>
 <div class="spot-sheet" id="spotSheet">
   <div class="spot-sheet-handle-wrap" onclick="closeSpotSheet()">
@@ -72,6 +73,7 @@
   <button class="spot-sheet-close" onclick="closeSpotSheet()" aria-label="关闭">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
   </button>
+  <div class="spot-sheet-hero" id="spotSheetHero"></div>
   <div class="spot-sheet-scroll">
     <div id="spotDetail"></div>
   </div>
