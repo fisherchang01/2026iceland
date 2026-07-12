@@ -96,7 +96,7 @@
 
 <!-- 以下三個頁籤的完整內容，分別放在 data/travel-content.js、data/budget-content.js、data/other-content.js
      裡（各自是一段 HTML 模板字串），由 js/app.js 在載入時把內容填入這三個掛載點。
-     要調整「旅遊 / 費用 / 其他」頁籤的文字或項目，直接編輯對應的 data/*.js 檔案即可，不需要動這裡。 -->
+     要調整「體驗 / 工具 / 費用」頁籤的文字或項目，直接編輯對應的 data/*.js 檔案即可，不需要動這裡。 -->
 <div id="mount-travel"></div>
 <div id="mount-budget"></div>
 <div id="mount-other"></div>
@@ -112,19 +112,19 @@
   <button class="nav-tab" id="tab-travel" onclick="switchTab('travel')">
     <span class="nav-tab-pill">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/></svg>
-      <span class="nav-tab-label">旅游</span>
-    </span>
-  </button>
-  <button class="nav-tab" id="tab-budget" onclick="switchTab('budget')">
-    <span class="nav-tab-pill">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2" y="5" width="20" height="14" rx="3"/><path d="M2 10h20"/><circle cx="12" cy="15" r="1.8" fill="currentColor"/></svg>
-      <span class="nav-tab-label">费用</span>
+      <span class="nav-tab-label">體驗</span>
     </span>
   </button>
   <button class="nav-tab" id="tab-other" onclick="switchTab('other')">
     <span class="nav-tab-pill">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="4" fill="currentColor"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg>
-      <span class="nav-tab-label">其他</span>
+      <span class="nav-tab-label">工具</span>
+    </span>
+  </button>
+  <button class="nav-tab" id="tab-budget" onclick="switchTab('budget')">
+    <span class="nav-tab-pill">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2" y="5" width="20" height="14" rx="3"/><path d="M2 10h20"/><circle cx="12" cy="15" r="1.8" fill="currentColor"/></svg>
+      <span class="nav-tab-label">費用</span>
     </span>
   </button>
 </nav>
