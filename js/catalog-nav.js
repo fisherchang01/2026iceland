@@ -14,20 +14,20 @@ const CATALOG_PAGE_META = {
 
 // 優先使用品牌官方主圖；其餘品牌以高解析網站圖示作為辨識圖，載入失敗會保留原有 emoji。
 const CATALOG_IMAGE_MAP = [
-  ['Bónus', 'images/catalog/bonus.png'],
-  ['小猪超市', 'images/catalog/bonus.png'],
-  ['Krónan', 'images/catalog/kronan.jpg'],
-  ['Omnom', 'images/catalog/omnom.jpg'],
-  ['Nói Síríus', 'images/catalog/noi-sirius.jpg'],
-  ['Freyja', 'images/catalog/freyja.jpg'],
-  ['Hraun', 'images/catalog/hraun.jpg'],
+  ['Bónus', 'images/catalog/optimized/bonus.webp'],
+  ['小猪超市', 'images/catalog/optimized/bonus.webp'],
+  ['Krónan', 'images/catalog/optimized/kronan.webp'],
+  ['Omnom', 'images/catalog/optimized/omnom.webp'],
+  ['Nói Síríus', 'images/catalog/optimized/noi-sirius.webp'],
+  ['Freyja', 'images/catalog/optimized/freyja.webp'],
+  ['Hraun', 'images/catalog/optimized/hraun.webp'],
   ['Lakkrís', 'https://www.google.com/s2/favicons?sz=256&domain_url=https://lakkris.is/'],
-  ['Saltverk', 'images/catalog/saltverk.jpg'],
+  ['Saltverk', 'images/catalog/optimized/saltverk.webp'],
   ['Blue Lagoon', 'https://www.google.com/s2/favicons?sz=256&domain_url=https://www.bluelagoon.com/'],
   ['66°North', 'https://www.google.com/s2/favicons?sz=256&domain_url=https://www.66north.com/'],
   ['Fazer', 'https://www.google.com/s2/favicons?sz=256&domain_url=https://www.fazer.com/'],
   ['Paulig', 'https://www.google.com/s2/favicons?sz=256&domain_url=https://www.paulig.com/'],
-  ['Nordqvist', 'images/catalog/nordqvist.jpg'],
+  ['Nordqvist', 'images/catalog/optimized/nordqvist.webp'],
   ['Turun Sinappi', 'https://www.google.com/s2/favicons?sz=256&domain_url=https://www.turunsinappi.fi/'],
   ['Nettó', 'https://www.google.com/s2/favicons?sz=256&domain_url=https://netto.is/'],
   ['Hagkaup', 'https://www.google.com/s2/favicons?sz=256&domain_url=https://www.hagkaup.is/'],
@@ -158,12 +158,12 @@ function makeCatalogCard(card) {
     card.appendChild(copy);
   }
   if (imageUrl && existingImage && !existingImage.querySelector('img')) {
-    existingImage.innerHTML = '<img src="' + imageUrl + '" alt="' + title.replace(/"/g, '&quot;') + '" loading="lazy" onerror="this.remove()">';
+    existingImage.innerHTML = '<img src="' + imageUrl + '" alt="' + title.replace(/"/g, '&quot;') + '" loading="lazy" decoding="async" onerror="this.remove()">';
   } else if (!existingImage) {
     var media = document.createElement('div');
     var categoryEmoji = card.closest('.travel-collapse').querySelector('.travel-collapse-emoji');
     media.className = 'catalog-card-media' + (imageUrl ? '' : ' image-error');
-    media.innerHTML = imageUrl ? '<img src="' + imageUrl + '" alt="' + title.replace(/"/g, '&quot;') + '" loading="lazy" onerror="this.parentElement.classList.add(\'image-error\');this.remove()">' :
+    media.innerHTML = imageUrl ? '<img src="' + imageUrl + '" alt="' + title.replace(/"/g, '&quot;') + '" loading="lazy" decoding="async" onerror="this.parentElement.classList.add(\'image-error\');this.remove()">' :
       '<span>' + (categoryEmoji ? categoryEmoji.textContent.trim() : '✦') + '</span>';
     card.insertBefore(media, card.firstChild);
   }

@@ -8,6 +8,15 @@ var tramIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strok
 var CN_DAY_NUM = ['一','二','三','四','五','六','七','八','九','十'];
 var MONTH_NUM = { JAN:1, FEB:2, MAR:3, APR:4, MAY:5, JUN:6, JUL:7, AUG:8, SEP:9, OCT:10, NOV:11, DEC:12 };
 
+function optimizedSpotPath(filename, size) {
+  var stem = (filename || '').replace(/\.[^.]+$/, '');
+  return 'images/spots/optimized/' + size + '/' + stem + '.webp';
+}
+function spotImageSrcset(filename, firstSize, secondSize) {
+  return optimizedSpotPath(filename, firstSize) + ' 1x, ' + optimizedSpotPath(filename, secondSize) + ' 2x';
+}
+
+
 // ===== 景點/一般卡片配色（v7，Phase 2）=====
 // 不再依「當天」上色，全站固定兩色：有字母編號（A/B/C...）的是「景點」，沒有編號的
 // （機場/超市/租車/取車等）是「一般」，只看 s.label 有沒有值就能判斷，沿用既有資料、不需要新增欄位。
@@ -82,15 +91,18 @@ function makeTramConnector(text, detail, destQuery) {
 
 // 卡片縮圖：跟景點詳情頁的瀑布流（buildSpotImageHtml）不同，這裡是固定尺寸、可橫向滑動的縮圖列，
 // 用在「當日行程」列表卡片上，不裁切太複雜的排版，讓每張卡片高度可預期。
-// 這裡不加 loading="lazy"：縮圖數量少、檔案小，即時載入更穩定；若圖片全部載入失敗，
-// 整條縮圖列連同內距一起收起來，不會留下一大塊空白。
+// 卡片只載入第一張縮圖，並延遲載入；其餘照片等使用者開啟詳情後才載入。
+// 若縮圖載入失敗，整條縮圖列連同內距一起收起來，不會留下一大塊空白。
 function buildSpotThumbStripHtml(s) {
   var imgs = getSpotImages(s);
   if (!imgs.length) return '';
-  var thumbs = imgs.map(function(img) {
-    return '<img src="images/spots/' + img + '" alt="" onerror="var p=this.parentElement; this.remove(); if(p && !p.children.length) p.remove();" />';
-  }).join('');
-  return '<div class="spot-thumb-strip">' + thumbs + '</div>';
+  var img = imgs[0];
+  return '<div class="spot-thumb-strip">' +
+    '<img src="' + optimizedSpotPath(img, 'thumb') + '" ' +
+    'srcset="' + spotImageSrcset(img, 'thumb', 'medium') + '" ' +
+    'alt="" loading="lazy" decoding="async" ' +
+    'onerror="var p=this.parentElement; this.remove(); if(p && !p.children.length) p.remove();" />' +
+    '</div>';
 }
 
 // ===== 統一卡片元件（v7，Phase 2）：景點與一般（機場/超市/取車等）共用同一個排版，
@@ -268,12 +280,13 @@ function buildSpotImageHtml(s) {
   }
   if (imgs.length === 1) {
     return '<div class="spot-img-wrap single">' +
-      '<img src="images/spots/' + imgs[0] + '" alt="' + s.name + '" onclick="openLightbox(0)" ' +
+      '<img src="' + optimizedSpotPath(imgs[0], 'medium') + '" srcset="' + spotImageSrcset(imgs[0], 'medium', 'large') + '" ' +
+      'alt="' + s.name + '" loading="lazy" decoding="async" onclick="openLightbox(0)" ' +
       "onerror=\"handleSpotImgError(this, '" + s.icon.replace(/'/g, "\\'") + "')\" />" +
       '</div>';
   }
   var galleryHtml = imgs.map(function(img, i) {
-    return '<img src="images/spots/' + img + '" alt="' + s.name + '" onclick="openLightbox(' + i + ')" onerror="handleGalleryImgError(this)" />';
+    return '<img src="' + optimizedSpotPath(img, 'medium') + '" srcset="' + spotImageSrcset(img, 'medium', 'large') + '" alt="' + s.name + '" loading="lazy" decoding="async" onclick="openLightbox(' + i + ')" onerror="handleGalleryImgError(this)" />';
   }).join('');
   return '<div class="spot-img-gallery">' + galleryHtml + '</div>';
 }
@@ -288,7 +301,9 @@ function openLightbox(idx) {
 function renderLightbox() {
   var imgs = currentGalleryImages;
   if (!imgs.length) return;
-  document.getElementById('lightboxImg').src = 'images/spots/' + imgs[currentGalleryIndex];
+  var current = imgs[currentGalleryIndex];
+  document.getElementById('lightboxImg').src = typeof current === 'object' ? current.largeSrc : optimizedSpotPath(current, 'large');
+  document.getElementById('lightboxImg').decoding = 'async';
   var multi = imgs.length > 1;
   document.getElementById('lightboxPrev').style.display = multi ? 'flex' : 'none';
   document.getElementById('lightboxNext').style.display = multi ? 'flex' : 'none';
