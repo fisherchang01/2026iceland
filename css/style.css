@@ -299,7 +299,7 @@
     }
     .spot-thumb-strip::-webkit-scrollbar { display: none; }
     .spot-thumb-strip img {
-      width: 84px; height: 84px; flex-shrink: 0; object-fit: cover;
+      height: 84px; width: auto; flex-shrink: 0; object-fit: cover;
       border-radius: var(--radius-sm); cursor: pointer;
     }
     .spot-item-arrow { padding-right: 12px; color: var(--sub); flex-shrink: 0; padding-top: 2px; }
@@ -420,9 +420,9 @@
       height: 200px;
       display: flex; align-items: center; justify-content: center;
     }
-    /* 只有一張照片：高度依照片原始比例自適應，不裁切 */
+    /* 景點照片固定為橫式 4:3 或直式 3:4，預留尺寸以避免載入時跳動。 */
     .spot-img-wrap.single img {
-      width: 100%; height: auto; display: block; cursor: pointer;
+      width: 100%; height: auto; display: block; cursor: pointer; object-fit: cover;
     }
     .spot-img-wrap .img-fallback {
       display: flex; flex-direction: column;
@@ -436,17 +436,18 @@
     .spot-img-wrap .img-fallback span.fallback-label {
       font-size: var(--fs-2xs); color: rgba(255,255,255,0.7); letter-spacing: 1px;
     }
-    /* 兩張以上照片：CSS 多欄瀑布流（masonry），依每張照片原始比例排版，不裁切 */
+    .spot-photo.orientation-landscape { aspect-ratio: 4 / 3; }
+    .spot-photo.orientation-portrait { aspect-ratio: 3 / 4; }
+    /* 兩張以上改用固定雙欄網格，不再使用瀑布流。 */
     .spot-img-gallery {
-      column-count: 2;
-      column-gap: var(--sp-4);
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--sp-4);
       margin-bottom: var(--sp-6);
     }
     .spot-img-gallery img {
-      width: 100%; height: auto; display: block;
+      width: 100%; height: auto; display: block; object-fit: cover;
       border-radius: var(--radius-sm);
-      margin-bottom: var(--sp-4);
-      break-inside: avoid;
       cursor: pointer;
     }
     .tags { display: flex; flex-wrap: wrap; gap: var(--sp-2); margin-bottom: var(--sp-6); }
@@ -546,7 +547,7 @@
       background: var(--bg2); border: 1px solid var(--border);
       margin-bottom: var(--sp-5); cursor: zoom-in; position: relative;
     }
-    .itin-map img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .itin-map img { width: 100%; height: 100%; object-fit: contain; display: block; }
     .itin-map-placeholder {
       position: absolute; inset: 0;
       display: flex; flex-direction: column; align-items: center; justify-content: center;

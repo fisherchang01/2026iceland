@@ -5,7 +5,7 @@ let currentPage = 'itinerary';
 let currentDay  = null;
 let currentSpot = null;
 let currentSpotArea = null;
-let currentGalleryImages = [];  // 目前彈層裡景點照片的檔名陣列，供圖片燈箱切換使用
+let currentGalleryImages = [];  // 燈箱使用的大圖網址陣列
 let currentGalleryIndex  = 0;
 
 // 頂端標題列（v6.1）：全站固定顯示同一行文字，不再依頁籤或日期切換內容，
@@ -75,7 +75,7 @@ function setItinActive(dayId) {
     if (scrollEl) scrollEl.scrollLeft = 0;
   }
 }
-// 有 d.routeMapImg 就顯示（使用者自行上傳，放在 images/spots/ 底下，跟景點照片同一個資料夾），
+// 路線圖與景點照片分開管理：列表顯示版放 images/routes/，點擊後的大圖放 images/routes/large/。
 // 沒有設定的天數／行程概覽狀態，顯示預留版位，維持整站地圖區塊尺寸一致。
 function updateItinMap(dayId) {
   var img = document.getElementById('itinMapImg');
@@ -84,20 +84,22 @@ function updateItinMap(dayId) {
   var d = dayId ? TRIP[dayId] : null;
   if (d && d.routeMapImg) {
     img.decoding = 'async';
-    img.src = 'images/spots/' + d.routeMapImg;
+    img.fetchPriority = 'high';
+    img.src = 'images/routes/' + d.routeMapImg;
+    img.dataset.largeSrc = 'images/routes/large/' + d.routeMapImg;
     img.style.display = 'block';
     placeholder.style.display = 'none';
   } else {
     img.style.display = 'none';
     img.src = '';
+    delete img.dataset.largeSrc;
     placeholder.style.display = 'flex';
   }
 }
 function openItinMapLightbox() {
   var img = document.getElementById('itinMapImg');
   if (!img || !img.src) return;
-  var filename = img.src.split('/images/spots/')[1] || img.src.split('/').pop();
-  currentGalleryImages = [filename];
+  currentGalleryImages = [img.dataset.largeSrc || img.src];
   currentGalleryIndex = 0;
   openLightbox(0);
 }

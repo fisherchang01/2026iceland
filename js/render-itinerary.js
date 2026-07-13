@@ -80,16 +80,18 @@ function makeTramConnector(text, detail, destQuery) {
     '</div></div>';
 }
 
-// 卡片縮圖：跟景點詳情頁的瀑布流（buildSpotImageHtml）不同，這裡是固定尺寸、可橫向滑動的縮圖列，
-// 用在「當日行程」列表卡片上，不裁切太複雜的排版，讓每張卡片高度可預期。
-// 這裡不加 loading="lazy"：縮圖數量少、檔案小，即時載入更穩定；若圖片全部載入失敗，
+// 卡片縮圖：跟景點詳情頁的圖片網格（buildSpotImageHtml）不同，這裡只載入第一張小圖，
+// 用在「當日行程」列表卡片上，讓每張卡片高度與下載量都可預期。
+// 縮圖延遲載入；若圖片載入失敗，
 // 整條縮圖列連同內距一起收起來，不會留下一大塊空白。
 function buildSpotThumbStripHtml(s) {
   var imgs = getSpotImages(s);
   if (!imgs.length) return '';
   var img = imgs[0];
+  var meta = getSpotImageMeta(img);
   return '<div class="spot-thumb-strip">' +
-    '<img src="images/spots/' + img + '" alt="" width="84" height="84" loading="lazy" decoding="async" ' +
+    '<img class="spot-photo orientation-' + meta.orientation + '" src="' + spotImagePath(img, 'thumb') + '" alt="" ' +
+    'width="' + meta.width + '" height="' + meta.height + '" loading="lazy" decoding="async" ' +
     'onerror="var p=this.parentElement; this.remove(); if(p && !p.children.length) p.remove();" />' +
     '</div>';
 }
@@ -242,13 +244,28 @@ function showDay(dayId) {
   updateItinMap(dayId);
 }
 
-// 景點圖片：可以用新版 images:['a.jpg','b.jpg'] 放多張（瀑布流呈現），
-// 也向下相容舊版單張 img:'x.jpg'（見 data/trip-details.js 開頭說明）。
+// 景點圖片：可以用 images:['a.webp','b.webp'] 放多張，
+// 也支援單張 img:'x.webp'（見 data/trip-details.js 開頭說明）。
 // 沒有設定，或是照片檔案找不到，都會自動顯示插圖 fallback，不會出現「圖片壞掉」的畫面。
 function getSpotImages(s) {
   if (Array.isArray(s.images) && s.images.length) return s.images;
   if (s.img) return [s.img];
   return [];
+}
+function getSpotImageMeta(filename) {
+  return SPOT_IMAGE_META[filename] || { orientation: 'landscape', width: 1200, height: 900, srcset: [480, 960, 1200] };
+}
+function spotImagePath(filename, size) {
+  return 'images/spots/' + size + '/' + filename;
+}
+function spotImageAttrs(filename, sizes) {
+  var meta = getSpotImageMeta(filename);
+  return 'class="spot-photo orientation-' + meta.orientation + '" ' +
+    'src="' + spotImagePath(filename, 'medium') + '" ' +
+    'srcset="' + spotImagePath(filename, 'thumb') + ' ' + meta.srcset[0] + 'w, ' +
+      spotImagePath(filename, 'medium') + ' ' + meta.srcset[1] + 'w, ' +
+      spotImagePath(filename, 'large') + ' ' + meta.srcset[2] + 'w" ' +
+    'sizes="' + sizes + '" width="' + meta.width + '" height="' + meta.height + '"';
 }
 function handleSpotImgError(imgEl, icon) {
   var wrap = imgEl.parentElement;
@@ -260,7 +277,7 @@ function handleGalleryImgError(imgEl) {
 }
 function buildSpotImageHtml(s) {
   var imgs = getSpotImages(s);
-  currentGalleryImages = imgs;
+  currentGalleryImages = imgs.map(function(img) { return spotImagePath(img, 'large'); });
   currentGalleryIndex = 0;
 
   if (imgs.length === 0) {
@@ -269,17 +286,17 @@ function buildSpotImageHtml(s) {
   }
   if (imgs.length === 1) {
     return '<div class="spot-img-wrap single">' +
-      '<img src="images/spots/' + imgs[0] + '" alt="' + s.name + '" loading="lazy" decoding="async" onclick="openLightbox(0)" ' +
+      '<img ' + spotImageAttrs(imgs[0], '(max-width: 720px) calc(100vw - 48px), 680px') + ' alt="' + s.name + '" loading="lazy" decoding="async" onclick="openLightbox(0)" ' +
       "onerror=\"handleSpotImgError(this, '" + s.icon.replace(/'/g, "\\'") + "')\" />" +
       '</div>';
   }
   var galleryHtml = imgs.map(function(img, i) {
-    return '<img src="images/spots/' + img + '" alt="' + s.name + '" loading="lazy" decoding="async" onclick="openLightbox(' + i + ')" onerror="handleGalleryImgError(this)" />';
+    return '<img ' + spotImageAttrs(img, '(max-width: 720px) calc(50vw - 30px), 330px') + ' alt="' + s.name + '" loading="lazy" decoding="async" onclick="openLightbox(' + i + ')" onerror="handleGalleryImgError(this)" />';
   }).join('');
   return '<div class="spot-img-gallery">' + galleryHtml + '</div>';
 }
 
-// ===== 圖片放大燈箱：點擊景點照片（單張或瀑布流縮圖）可放大檢視，多張時可左右切換 =====
+// ===== 圖片放大燈箱：點擊景點照片（單張或網格縮圖）可放大檢視，多張時可左右切換 =====
 function openLightbox(idx) {
   if (!currentGalleryImages.length) return;
   currentGalleryIndex = idx;
@@ -289,7 +306,7 @@ function openLightbox(idx) {
 function renderLightbox() {
   var imgs = currentGalleryImages;
   if (!imgs.length) return;
-  document.getElementById('lightboxImg').src = 'images/spots/' + imgs[currentGalleryIndex];
+  document.getElementById('lightboxImg').src = imgs[currentGalleryIndex];
   var multi = imgs.length > 1;
   document.getElementById('lightboxPrev').style.display = multi ? 'flex' : 'none';
   document.getElementById('lightboxNext').style.display = multi ? 'flex' : 'none';
@@ -410,7 +427,7 @@ function renderSpotDetail(s, d) {
       '<div class="spot-hero-title">' + spotTitleHtml(s.name) + '</div>' +
     '</div>';
 
-  // 其餘內容可捲動，順序：標籤 → 介紹 → 深度介紹 → 提醒 → 停車廁所 → 前往下一站 → 照片瀑布流（移到最下面）
+  // 其餘內容可捲動，順序：標籤 → 介紹 → 深度介紹 → 提醒 → 停車廁所 → 前往下一站 → 照片網格（移到最下面）
   document.getElementById('spotDetail').innerHTML =
     '<div class="tags">' + tagsHtml + '</div>' +
     '<div class="info-card"><div class="card-label">景点介绍</div><p>' + s.desc + '</p></div>' +
