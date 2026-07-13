@@ -35,7 +35,7 @@
   <div class="itin-top">
     <div class="page-inner itin-top-inner">
       <div class="itin-map" id="itinMap">
-        <img id="itinMapImg" src="" alt="今日路线地图" style="display:none" onclick="openItinMapLightbox()" />
+        <img id="itinMapImg" src="" alt="今日路线地图" width="1400" height="630" decoding="async" fetchpriority="high" style="display:none" onclick="openItinMapLightbox()" />
         <div class="itin-map-placeholder" id="itinMapPlaceholder">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 1118 0z"/><circle cx="12" cy="10" r="3"/></svg>
           <span>地图准备中</span>
@@ -87,7 +87,7 @@
   <button class="img-lightbox-nav img-lightbox-prev" id="lightboxPrev" onclick="lightboxPrev(event)" aria-label="上一张">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
   </button>
-  <img id="lightboxImg" src="" alt="" onclick="event.stopPropagation()" />
+  <img id="lightboxImg" src="" alt="" decoding="async" onclick="event.stopPropagation()" />
   <button class="img-lightbox-nav img-lightbox-next" id="lightboxNext" onclick="lightboxNext(event)" aria-label="下一张">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
   </button>
