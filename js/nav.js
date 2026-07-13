@@ -83,24 +83,21 @@ function updateItinMap(dayId) {
   if (!img || !placeholder) return;
   var d = dayId ? TRIP[dayId] : null;
   if (d && d.routeMapImg) {
-    var routeStem = d.routeMapImg.replace(/\.[^.]+$/, '');
-    img.src = 'images/spots/optimized/medium/' + routeStem + '.webp';
-    img.dataset.largeSrc = 'images/spots/optimized/large/' + routeStem + '.webp';
-    img.alt = d.title ? d.title + ' 路线地图' : '今日路线地图';
+    img.decoding = 'async';
+    img.src = 'images/spots/' + d.routeMapImg;
     img.style.display = 'block';
     placeholder.style.display = 'none';
   } else {
     img.style.display = 'none';
     img.src = '';
-    img.dataset.largeSrc = '';
     placeholder.style.display = 'flex';
   }
 }
 function openItinMapLightbox() {
   var img = document.getElementById('itinMapImg');
   if (!img || !img.src) return;
-  var largeSrc = img.dataset.largeSrc || img.src;
-  currentGalleryImages = [{ largeSrc: largeSrc }];
+  var filename = img.src.split('/images/spots/')[1] || img.src.split('/').pop();
+  currentGalleryImages = [filename];
   currentGalleryIndex = 0;
   openLightbox(0);
 }

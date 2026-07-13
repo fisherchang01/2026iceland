@@ -4,12 +4,12 @@
 function renderOverview() {
   var html = '';
 
-  TRIP_DAYS.forEach(function(d, dayIndex){
+  TRIP_DAYS.forEach(function(d, index){
     if (d.sectionLabel) {
       html += '<div class="day-section-label">' + d.sectionLabel + '</div>';
     }
     html += '<div class="day-card ' + d.color + '" onclick="showDay(\'' + d.id + '\')">' +
-              '<div class="day-card-bg"><img src="images/banners/' + d.id + '-card.jpg" alt="" ' + (dayIndex === 0 ? 'fetchpriority="high"' : 'loading="lazy"') + ' decoding="async" width="640" height="166" onerror="this.style.display=\'none\'" /></div>' +
+              '<div class="day-card-bg"><img src="images/banners/' + d.id + '-card.jpg" alt="" width="640" height="166" ' + (index === 0 ? 'fetchpriority="high"' : 'loading="lazy"') + ' decoding="async" onerror="this.style.display=\'none\'" /></div>' +
               '<div class="day-card-scrim"></div>' +
               '<div class="day-card-content">' +
                 '<div class="day-badge"><div class="month">' + d.month + '</div><div class="date">' + d.date + '</div></div>' +
