@@ -21,8 +21,8 @@ function spotPrefixHtml(s) {
   return '';
 }
 
-// 景點名稱資料是「英文/拉丁拼音 + 中文」混排（例如 "Þórufoss 索鲁瀑布"）。
-// 這裡自動拆出拉丁字母/冰島文特殊字母的片段當作「英文」，其餘（含中文字與標點）當作「中文」，
+// 景點名稱資料可使用「拉丁字母 + 中文」混排。
+// 這裡自動拆出拉丁字母片段當作「外文」，其餘（含中文字與標點）當作「中文」，
 // 顯示時改成「中文（放大）＋ 英文（縮小灰字）」的順序，不需要更動 data 里的原始資料。
 function splitSpotName(name) {
   if (!name) return { zh: '', en: '' };
@@ -98,7 +98,7 @@ function buildSpotThumbStripHtml(s) {
 
 // ===== 統一卡片元件（v7，Phase 2）：景點與一般（機場/超市/取車等）共用同一個排版，
 // 只差在配色（spotTypeClass）跟有沒有縮圖列。標題／標籤／摘要／縮圖／點擊行為都在這裡集中處理，
-// showDay() 裡三種情境（一般行程、赫尔辛基分区、住宿）都呼叫這個函式產生卡片，不用各自重寫一份。
+// showDay() 裡三種情境（一般行程、分區行程、住宿）都呼叫這個函式產生卡片，不用各自重寫一份。
 // 卡片外面包一層 timeline-row（節點欄 + 卡片），節點欄裡的圓點才是真正對齊左側貫穿線的定位點，
 // 不能直接畫在卡片自己身上（卡片有 overflow:hidden 讓圓角裁切正常，圓點疊在上面會被連帶裁掉）。=====
 function buildSpotCardHtml(s, onclickExpr) {
@@ -107,6 +107,10 @@ function buildSpotCardHtml(s, onclickExpr) {
   var tagsHtml = s.tags && s.tags.length ?
     '<div class="spot-card-tags">' + s.tags.map(function(t){ return '<span class="tag">' + t + '</span>'; }).join('') + '</div>' : '';
   var summaryHtml = s.desc ? '<p class="spot-card-summary">' + s.desc + '</p>' : '';
+  var scheduleParts = [];
+  if (s.time) scheduleParts.push(s.time);
+  if (s.duration) scheduleParts.push('停留 ' + s.duration);
+  var scheduleHtml = scheduleParts.length ? '<div class="spot-card-meta">' + scheduleParts.join(' · ') + '</div>' : '';
   var thumbHtml = isShop ? '' : buildSpotThumbStripHtml(s);
   var cardHtml = '<div class="spot-item ' + spotTypeClass(s) + (isShop ? ' no-click' : '') + '"' +
     (clickable ? ' onclick="' + onclickExpr + '"' : '') + '>' +
@@ -114,7 +118,7 @@ function buildSpotCardHtml(s, onclickExpr) {
       '<h4 class="spot-card-title">' + spotPrefixHtml(s) + spotTitleHtml(s.name) + '</h4>' +
       (clickable ? '<div class="spot-item-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></div>' : '') +
     '</div>' +
-    tagsHtml + summaryHtml + thumbHtml +
+    scheduleHtml + tagsHtml + summaryHtml + thumbHtml +
     '</div>';
   return '<div class="timeline-row">' +
     '<div class="timeline-node"><span class="timeline-dot ' + spotTypeClass(s) + '"></span></div>' +
@@ -124,10 +128,10 @@ function buildSpotCardHtml(s, onclickExpr) {
 
 // ===== 每日路线简图（v6）：显示位置改到页面最顶端的常驻地图区块（见 index.html 的 .itin-map），
 // 不再嵌在每日景点列表里；相关渲染逻辑改放在 js/nav.js 的 updateItinMap()／openItinMapLightbox()。
-// d.routeMapImg 欄位本身用法不变（使用者自行把图片放到 images/spots/ 底下、档名填进这个欄位）。
+// d.routeMapImg 欄位本身用法不變（顯示版放 images/routes/，燈箱版放 images/routes/large/）。
 
 function showDay(dayId) {
-  var d = TRIP[dayId];
+  var d = TRIP_DATA.daysById[dayId];
   if (!d) return;
   currentDay = dayId; currentSpot = null; currentSpotArea = null;
 
@@ -139,12 +143,12 @@ function showDay(dayId) {
 
   showItineraryView('view-day');
 
-  var dayIdx = TRIP_DAYS.findIndex(function(x){ return x.id === dayId; });
-  var dayMeta2 = TRIP_DAYS[dayIdx];
+  var dayIdx = TRIP_DATA.days.findIndex(function(x){ return x.id === dayId; });
+  var dayMeta2 = TRIP_DATA.days[dayIdx];
   var headingEl = document.getElementById('itinDayHeading');
   if (headingEl && dayMeta2) {
     var monthNum = MONTH_NUM[dayMeta2.month] || dayMeta2.month;
-    headingEl.textContent = '(' + monthNum + '/' + dayMeta2.date + ')\u3000第' + (CN_DAY_NUM[dayIdx] || (dayIdx + 1)) + '日\u3000' + d.title;
+    headingEl.textContent = '(' + monthNum + '/' + dayMeta2.dayOfMonth + ')\u3000第' + (CN_DAY_NUM[dayIdx] || (dayIdx + 1)) + '日\u3000' + d.detailTitle;
     headingEl.style.display = 'block';
   }
 
@@ -174,11 +178,11 @@ function showDay(dayId) {
     }
     var hotelHtml = buildHotelHtml(d.hotel, dayId);
     listEl.innerHTML =
-      '<div class="info-card"><div class="card-label">航班资讯</div>' + flightHtml + '</div>' +
+      (flightHtml ? '<div class="info-card"><div class="card-label">航班资讯</div>' + flightHtml + '</div>' : '') +
       (d.note ? '<div class="tips-card"><div class="card-label">行程备注</div><p>' + d.note + '</p></div>' : '') +
       hotelHtml;
-  } else if (d.isHelsinki) {
-    // 分区折叠（第1项功能）：沿用「其他/旅游」页签既有的 travel-collapse 折叠元件，
+  } else if (d.areas && d.areas.length) {
+    // 分區折疊：任何旅程都可使用 areas，不依賴特定城市名稱。
     // 每一区预设收合，点击标题展开，跟其他页签的折叠行为一致（低风险：只是重新排版既有元件，非新增功能）。
     var html = '';
     d.areas.forEach(function(area, aIdx) {
@@ -195,7 +199,7 @@ function showDay(dayId) {
         '</div>' +
         '<div class="travel-collapse-body">';
       area.spots.forEach(function(s, sIdx) {
-        var onclickExpr = s.isShop ? null : "showSpotHelsinki('" + dayId + "'," + aIdx + ',' + sIdx + ')';
+        var onclickExpr = s.isShop ? null : "showAreaSpot('" + dayId + "'," + aIdx + ',' + sIdx + ')';
         html += buildSpotCardHtml(s, onclickExpr);
         if (s.nextStop) {
           var ns = s.nextStop;
@@ -212,10 +216,10 @@ function showDay(dayId) {
     listEl.innerHTML = html;
   } else {
     var html = '';
-    d.spots.forEach(function(s, i) {
+    (d.spots || []).forEach(function(s, i) {
       var onclickExpr = s.isShop ? null : "showSpot('" + dayId + "'," + i + ')';
       html += buildSpotCardHtml(s, onclickExpr);
-      var nextSpot = d.spots[i + 1];
+      var nextSpot = (d.spots || [])[i + 1];
       var destQuery = nextSpot ? encodeURIComponent(nextSpot.map || nextSpot.name) :
         (d.hotel && d.hotel.map ? encodeURIComponent(d.hotel.map) : null);
       if (d.drives && d.drives[i]) {
@@ -335,12 +339,12 @@ function lightboxNext(e) {
 // spotSheet 详情弹层里显示导航按钮，逻辑上就是复制一份景点的呈现模式。
 // 没有 map 栏位的住宿（例如 Day8「飞机上」）维持不可点击、纯资讯显示，不会呈现无用的导航按钮。
 function buildHotelHtml(hotel, dayId) {
-  if (!hotel) return '';
+  if (!hotel || !hotel.name) return '';
   var clickable = !!hotel.map;
   var cardHtml = '<div class="hotel-card' + (clickable ? ' clickable' : '') + '"' +
     (clickable ? ' onclick="showHotel(\'' + dayId + '\')"' : '') + '>' +
     '<div class="hotel-icon">🏨</div>' +
-    '<div class="hotel-info"><h4>' + hotel.name + '</h4><p>' + hotel.note + '</p></div>' +
+    '<div class="hotel-info"><h4>' + hotel.name + '</h4>' + (hotel.note ? '<p>' + hotel.note + '</p>' : '') + '</div>' +
     (clickable ? '<div class="spot-item-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></div>' : '') +
     '</div>';
   return '<div class="timeline-row">' +
@@ -350,7 +354,7 @@ function buildHotelHtml(hotel, dayId) {
 }
 
 function showHotel(dayId) {
-  var d = TRIP[dayId];
+  var d = TRIP_DATA.daysById[dayId];
   if (!d || !d.hotel) return;
   currentSpot = null; currentSpotArea = null;
   renderHotelDetail(d.hotel, d);
@@ -361,11 +365,14 @@ function renderHotelDetail(hotel, d) {
   var mapQuery = encodeURIComponent(hotel.map || hotel.name);
   document.getElementById('spotSheetHero').innerHTML =
     '<div class="spot-hero">' +
-      '<div class="spot-hero-label">' + d.title + ' · 住宿</div>' +
+      '<div class="spot-hero-label">' + d.detailTitle + ' · 住宿</div>' +
       '<div class="spot-hero-title">' + hotel.name + '</div>' +
     '</div>';
   document.getElementById('spotDetail').innerHTML =
-    '<div class="info-card"><div class="card-label">住宿说明</div><p>' + hotel.note + '</p></div>' +
+    (hotel.note ? '<div class="info-card"><div class="card-label">住宿说明</div><p>' + hotel.note + '</p></div>' : '') +
+    (hotel.address ? '<div class="info-card"><div class="card-label">住宿地址</div><p>' + hotel.address + '</p></div>' : '') +
+    (hotel.checkIn ? '<div class="info-card"><div class="card-label">入住资讯</div><p>' + hotel.checkIn + '</p></div>' : '') +
+    (hotel.contact ? '<div class="info-card"><div class="card-label">联络方式</div><p>' + hotel.contact + '</p></div>' : '') +
     buildMapBtnRowHtml(mapQuery, '导航');
 }
 
@@ -384,7 +391,7 @@ function buildMapBtnRowHtml(mapQuery, actionLabel) {
 }
 
 function showSpot(dayId, idx) {
-  var d = TRIP[dayId];
+  var d = TRIP_DATA.daysById[dayId];
   if (!d) return;
   var s = d.spots[idx];
   if (!s) return;
@@ -393,8 +400,8 @@ function showSpot(dayId, idx) {
   openSpotSheet();
 }
 
-function showSpotHelsinki(dayId, aIdx, sIdx) {
-  var d = TRIP[dayId];
+function showAreaSpot(dayId, aIdx, sIdx) {
+  var d = TRIP_DATA.daysById[dayId];
   if (!d || !d.areas) return;
   var s = d.areas[aIdx].spots[sIdx];
   if (!s) return;
@@ -405,6 +412,12 @@ function showSpotHelsinki(dayId, aIdx, sIdx) {
 
 function renderSpotDetail(s, d) {
   var tagsHtml = (s.tags || []).map(function(t){ return '<span class="tag">' + t + '</span>'; }).join('');
+  var facts = [];
+  if (s.time) facts.push('<div><strong>时间：</strong>' + s.time + '</div>');
+  if (s.duration) facts.push('<div><strong>停留：</strong>' + s.duration + '</div>');
+  if (s.price) facts.push('<div><strong>票价：</strong>' + s.price + '</div>');
+  if (s.booking) facts.push('<div><strong>预订：</strong>' + s.booking + '</div>');
+  var factsHtml = facts.length ? '<div class="info-card"><div class="card-label">参观资讯</div>' + facts.join('') + '</div>' : '';
 
   var parkingHtml = (s.parking || s.toilet) ?
     '<div class="parking-card"><div class="card-label">停车 &amp; 厕所</div><div class="parking-row">' +
@@ -423,14 +436,15 @@ function renderSpotDetail(s, d) {
   // （標籤已經在下面用膠囊樣式顯示一次，不需要在標題框再顯示一次純文字版）。
   document.getElementById('spotSheetHero').innerHTML =
     '<div class="spot-hero">' +
-      '<div class="spot-hero-label">' + d.title + '</div>' +
-      '<div class="spot-hero-title">' + spotTitleHtml(s.name) + '</div>' +
+      '<div class="spot-hero-label">' + d.detailTitle + '</div>' +
+      '<div class="spot-hero-title">' + spotTitleHtml(s.name) + (s.localName ? ' <span class="name-en">' + s.localName + '</span>' : '') + '</div>' +
     '</div>';
 
   // 其餘內容可捲動，順序：標籤 → 介紹 → 深度介紹 → 提醒 → 停車廁所 → 前往下一站 → 照片網格（移到最下面）
   document.getElementById('spotDetail').innerHTML =
-    '<div class="tags">' + tagsHtml + '</div>' +
-    '<div class="info-card"><div class="card-label">景点介绍</div><p>' + s.desc + '</p></div>' +
+    (tagsHtml ? '<div class="tags">' + tagsHtml + '</div>' : '') +
+    factsHtml +
+    (s.desc ? '<div class="info-card"><div class="card-label">景点介绍</div><p>' + s.desc + '</p></div>' : '') +
     (s.deepDesc ? '<div class="info-card"><div class="card-label">深度介绍</div><p>' + s.deepDesc + '</p></div>' : '') +
     (s.tips ? '<div class="tips-card"><div class="card-label">小提醒</div><p>' + s.tips + '</p></div>' : '') +
     parkingHtml +

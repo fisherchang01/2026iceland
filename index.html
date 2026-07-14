@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>冰岛 + 芬兰 慢活之旅 2026</title>
+  <title>旅行行程</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@600;700&display=swap" rel="stylesheet">
@@ -23,15 +23,15 @@
 </header>
 
 <!-- ══ PAGE: 行程 ══ -->
-<!-- 此頁籤的內容（總覽橫幅 + 每日卡片）由 data/trip-days.js 動態產生，見 js/app.js 的 renderOverview() -->
+<!-- 此頁籤的內容（總覽橫幅 + 每日卡片）由資料模型動態產生，見 js/render-overview.js -->
 <div class="page active" id="page-itinerary">
 
   <!-- 頂端地圖 + 日期選單列（v6）：固定顯示在行程總覽與每日行程之上，不隨頁面切換而消失。
        地圖：沿用原本 data/trip-details.js 裡每一天的 routeMapImg 欄位（使用者自行把地圖圖片放到
-       images/spots/ 資料夾底下、檔名填進該天的 routeMapImg），選到哪一天就換哪一天的圖，
+       images/routes/ 資料夾底下、檔名填進該天的 routeMapImg），選到哪一天就換哪一天的圖，
        跟景點照片共用同一套 lightbox 放大機制。行程總覽狀態、以及沒有設定 routeMapImg 的天數，
        都會顯示預留版位，維持版面尺寸一致，之後要補圖只需要在 trip-details.js 補上檔名即可。
-       日期選單列：「行程概覽」固定不動，右側 第1日～第9日 可左右滑動，選中狀態需明顯區分（見 CSS .itin-pill.active）。 -->
+       日期選單列：「行程概覽」固定不動，右側每日按鈕可左右滑動。 -->
   <div class="itin-top">
     <div class="page-inner itin-top-inner">
       <div class="itin-map" id="itinMap">
@@ -79,7 +79,7 @@
   </div>
 </div>
 
-<!-- 圖片放大燈箱：點擊景點照片（單張或瀑布流縮圖）皆可放大檢視；有多張照片時可左右切換 -->
+<!-- 圖片放大燈箱：點擊景點照片（單張或網格縮圖）皆可放大檢視；有多張照片時可左右切換 -->
 <div class="img-lightbox" id="imgLightbox" onclick="closeLightbox(event)">
   <button class="img-lightbox-close" onclick="closeLightbox(event)" aria-label="关闭">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
@@ -95,7 +95,7 @@
 </div>
 
 <!-- 以下三個頁籤的完整內容，分別放在 data/travel-content.js、data/budget-content.js、data/other-content.js
-     裡（各自是一段 HTML 模板字串），由 js/app.js 在載入時把內容填入這三個掛載點。
+     裡（各自是一段 HTML 模板字串），由 js/render-overview.js 把內容填入這三個掛載點。
      要調整「體驗 / 工具 / 費用」頁籤的文字或項目，直接編輯對應的 data/*.js 檔案即可，不需要動這裡。 -->
 <div id="mount-travel"></div>
 <div id="mount-budget"></div>
@@ -131,7 +131,11 @@
 
 <div class="toast" id="toast"></div>
 
-<!-- 資料檔案（必須排在下面的程式邏輯之前載入） -->
+<!-- 資料檔案（必須排在下面的程式邏輯之前載入）。建立新旅程只修改 data/ 與 images/。 -->
+<script src="data/trip-config.js"></script>
+<script src="data/budget-config.js"></script>
+<script src="data/firebase-settings.js"></script>
+<script src="data/catalog-config.js"></script>
 <script src="data/trip-days.js"></script>
 <script src="data/trip-details.js"></script>
 <script src="data/image-manifest.js"></script>
@@ -139,6 +143,7 @@
 <script src="data/budget-content.js"></script>
 <script src="data/other-content.js"></script>
 <script src="data/docs-content.js"></script>
+<script src="data/trip-schema.js"></script>
 
 <!-- 程式邏輯：依功能拆成幾個檔案，方便日後找東西改東西 -->
 <script src="js/nav.js"></script>              <!-- 導覽／頁籤切換 -->

@@ -9,9 +9,9 @@ let currentGalleryImages = [];  // 燈箱使用的大圖網址陣列
 let currentGalleryIndex  = 0;
 
 // 頂端標題列（v6.1）：全站固定顯示同一行文字，不再依頁籤或日期切換內容，
-// 文字來源在 data/trip-days.js 的 TRIP_META.bannerTitleHtml，要改標題文字改那邊即可。
+// 文字來源在 data/trip-config.js，不需要修改核心程式。
 function setHeaderDefaultBanner() {
-  document.getElementById('headerTitle').innerHTML = TRIP_META.bannerTitleHtml;
+  document.getElementById('headerTitle').innerHTML = TRIP_DATA.config.bannerTitleHtml || TRIP_DATA.config.tripName;
 }
 function showItineraryView(viewId) {
   document.querySelectorAll('#page-itinerary .view').forEach(function(v){ v.classList.remove('active'); });
@@ -43,14 +43,14 @@ function showOverview() {
 }
 
 // ===== 頂端地圖 + 日期選單列（v6）=====
-// 依 TRIP_DAYS 順序產生「第1日～第9日」的可橫滑選單，「行程概覽」固定在最前面不參與橫滑。
-// 這裡的「第N日」只是使用者看到的顯示編號（依 TRIP_DAYS 陣列順序 1~9），
+// 依統一資料模型的 days 順序產生「第1日～第N日」的可橫滑選單。
+// 這裡的「第N日」只是使用者看到的顯示編號，
 // 跟 data 裡原本的 num 欄位（0~8，用於航班/駕駛小計等內部邏輯）是兩件事，互不影響。
 function renderItinSelector() {
   var scrollEl = document.getElementById('itinPillScroll');
   if (!scrollEl) return;
   var html = '';
-  TRIP_DAYS.forEach(function(d, i) {
+  TRIP_DATA.days.forEach(function(d, i) {
     html += '<button class="itin-pill" data-day="' + d.id + '" onclick="selectItin(\'' + d.id + '\')">第' + (i + 1) + '日</button>';
   });
   scrollEl.innerHTML = html;
@@ -81,7 +81,7 @@ function updateItinMap(dayId) {
   var img = document.getElementById('itinMapImg');
   var placeholder = document.getElementById('itinMapPlaceholder');
   if (!img || !placeholder) return;
-  var d = dayId ? TRIP[dayId] : null;
+  var d = dayId ? TRIP_DATA.daysById[dayId] : null;
   if (d && d.routeMapImg) {
     img.decoding = 'async';
     img.fetchPriority = 'high';

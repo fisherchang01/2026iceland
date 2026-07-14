@@ -5,14 +5,15 @@ function renderDocs() {
   var container = document.getElementById('docsListContainer');
   if (!container) return;
 
-  if (typeof DOCS === 'undefined' || DOCS.length === 0) {
+  var documents = TRIP_DATA.documents || [];
+  if (documents.length === 0) {
     container.innerHTML = '<p style="font-size:var(--fs-sm);color:var(--sub);padding:var(--sp-5) 0;">尚未上传任何文件。可参考 docs/README.txt 说明新增机票、住宿、租车等 PDF。</p>';
     return;
   }
 
   var groups = {};
   var order = [];
-  DOCS.forEach(function(d) {
+  documents.forEach(function(d) {
     if (!groups[d.category]) { groups[d.category] = []; order.push(d.category); }
     groups[d.category].push(d);
   });

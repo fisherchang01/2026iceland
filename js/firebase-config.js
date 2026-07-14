@@ -2,8 +2,7 @@
 // 這個檔案讓「費用記帳」變成旅伴之間即時同步，而不是只存在自己手機裡。
 //
 // 這個檔案需要用 <script type="module"> 載入（已經在 index.html 設定好），
-// 如果之後要換成別的 Firebase 專案（例如換一趟新旅行），只需要改下面 firebaseConfig
-// 跟 EXPENSES_PATH 這兩個地方即可。
+// 新旅程的 Firebase 專案與資料路徑只需修改 data/firebase-settings.js。
 //
 // 設計上就算 Firebase 連不上（例如网路不稳定、专案设定错误），网站仍然会
 // 正常运作，只是费用记录会退回「只存在自己手机」，不会整个网站坏掉。
@@ -11,21 +10,14 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
 import { getDatabase, ref, push, set, remove, onValue } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-database.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyCiIaKptkg1rxfkIW9rBGWWdmIDcCDHlF0",
-  authDomain: "iceland-c65e1.firebaseapp.com",
-  databaseURL: "https://iceland-c65e1-default-rtdb.firebaseio.com",
-  projectId: "iceland-c65e1",
-  storageBucket: "iceland-c65e1.firebasestorage.app",
-  messagingSenderId: "181720786427",
-  appId: "1:181720786427:web:cae1feff6285befc7f175e"
-};
-
-// 這趟旅行的資料路徑。以後如果同一个 Firebase 专案要给不同旅行使用，
-// 换一个不同的路径名称（例如 'trips/japan2027/expenses'）即可互不干扰。
-const EXPENSES_PATH = 'trips/iceland2026/expenses';
+const settings = window.FIREBASE_SETTINGS || {};
+const firebaseConfig = settings.config || {};
+const EXPENSES_PATH = settings.expensesPath || '';
 
 try {
+  if (!settings.enabled || !EXPENSES_PATH || !firebaseConfig.databaseURL) {
+    throw new Error('Firebase 費用同步尚未設定');
+  }
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
   const expensesRef = ref(db, EXPENSES_PATH);

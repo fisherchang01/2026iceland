@@ -4,16 +4,17 @@
 function renderOverview() {
   var html = '';
 
-  TRIP_DAYS.forEach(function(d, index){
+  TRIP_DATA.days.forEach(function(d, index){
     if (d.sectionLabel) {
       html += '<div class="day-section-label">' + d.sectionLabel + '</div>';
     }
-    html += '<div class="day-card ' + d.color + '" onclick="showDay(\'' + d.id + '\')">' +
-              '<div class="day-card-bg"><img src="images/banners/' + d.id + '-card.jpg" alt="" width="640" height="166" ' + (index === 0 ? 'fetchpriority="high"' : 'loading="lazy"') + ' decoding="async" onerror="this.style.display=\'none\'" /></div>' +
+    var bannerHtml = d.bannerImage ? '<img src="' + d.bannerImage + '" alt="" width="640" height="166" ' + (index === 0 ? 'fetchpriority="high"' : 'loading="lazy"') + ' decoding="async" onerror="this.style.display=\'none\'" />' : '';
+    html += '<div class="day-card ' + (d.color || '') + '" onclick="showDay(\'' + d.id + '\')">' +
+              '<div class="day-card-bg">' + bannerHtml + '</div>' +
               '<div class="day-card-scrim"></div>' +
               '<div class="day-card-content">' +
-                '<div class="day-badge"><div class="month">' + d.month + '</div><div class="date">' + d.date + '</div></div>' +
-                '<div class="day-card-info"><h3>' + d.title + '</h3><p>' + d.summary + '</p></div>' +
+                '<div class="day-badge"><div class="month">' + d.month + '</div><div class="date">' + d.dayOfMonth + '</div></div>' +
+                '<div class="day-card-info"><h3>' + d.title + '</h3>' + (d.summary ? '<p>' + d.summary + '</p>' : '') + '</div>' +
               '</div>' +
             '</div>';
   });
