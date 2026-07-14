@@ -13,6 +13,7 @@ setItinActive(null);
 updateItinMap(null);
 renderExpenses();
 renderSummary();
+registerOfflineSupport();
 // 注意：費用雲端同步的啟動（initCloudExpensesSync）改由 js/firebase-config.js
 // 自己載入完成後主動呼叫，不放在這裡執行，避免跟 Firebase 腳本的載入順序互相依賴。
 
@@ -32,4 +33,18 @@ function applyTripConfig() {
     document.head.appendChild(themeMeta);
   }
   themeMeta.content = theme.primary || '#2c5f6e';
+}
+
+function registerOfflineSupport() {
+  if (!('serviceWorker' in navigator) || location.protocol.indexOf('http') !== 0) return;
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('sw.js').then(function() {
+      return navigator.serviceWorker.ready;
+    }).then(function(registration) {
+      var worker = registration.active || registration.waiting;
+      if (worker) worker.postMessage({ type:'CACHE_TRIP_DAY_ASSETS', assets:getOfflineDayAssetUrls() });
+    }).catch(function(error) {
+      console.warn('离线资料准备失败，网站仍可在线使用：', error);
+    });
+  });
 }

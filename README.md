@@ -2,7 +2,7 @@
 
 這是一套可直接部署到 GitHub Pages 的手機旅行網站模板，使用 HTML、CSS 與原生 JavaScript，不需要建置工具或後端伺服器。
 
-目前 Repository 同時保留「2026 冰島＋芬蘭」實際旅程資料。用 GitHub 的 **Use this template** 建立新 Repository 後，只需替換 `data/`、`images/` 與 `docs/` 的旅程內容，不需修改 `js/` 核心渲染程式。
+目前 Repository 同時保留「2026 冰島＋芬蘭」實際旅程資料。用 GitHub 的 **Use this template** 建立新 Repository 後，只需替換 `data/`、`images/`、`docs/` 與 `manifest.webmanifest` 的旅程內容，不需修改 `js/` 核心渲染程式。
 
 ## 模板結構
 
@@ -12,6 +12,7 @@
 - `js/`：共用顯示與互動邏輯，新旅程不需修改
 - `css/`：共用版型與主題樣式
 - `template/trip-data.example.js`：七大類資料的空白示範
+- `manifest.webmanifest`、`sw.js`：加到手機主畫面與有限離線使用
 
 ## 建立新旅程
 

@@ -15,6 +15,7 @@
 4. 修改 `data/budget-config.js`：同行者、幣別、匯率與本機儲存名稱。
 5. 修改 `data/docs-content.js`，並刪除 `docs/` 中不屬於新旅程的文件。
 6. 依需要替換 `data/travel-content.js`、`data/other-content.js` 與 `data/catalog-config.js`。
+7. 修改 `manifest.webmanifest` 的網站名稱、簡稱、說明與色彩；需要時替換 `images/app-icon-192.png`、`app-icon-512.png`。
 
 沒有內容的選填欄位直接刪除；不要建立空標題或空卡片。
 
@@ -58,6 +59,8 @@ Firebase 僅供費用同步：
 - 費用頁同行者、幣別與匯率正確
 - 文件連結可開啟
 - Firebase 關閉或斷線時仍可在本機記帳
+- 安裝到主畫面後名稱與圖示正確
+- 離線時可開啟網站並查看基本行程與住宿；照片大圖與 PDF 不要求離線
 
 ## F. GitHub Pages 部署
 

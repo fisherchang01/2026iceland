@@ -9,6 +9,7 @@
 - `spots/medium/`：景點詳情中圖
 - `spots/large/`：景點燈箱大圖
 - `catalog/`：體驗、商店、工具分類圖片
+- `app-icon-192.png`、`app-icon-512.png`：加到手機主畫面的 App 圖示
 
 ## 命名
 

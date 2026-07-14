@@ -104,21 +104,25 @@ function buildSpotThumbStripHtml(s) {
 function buildSpotCardHtml(s, onclickExpr) {
   var isShop = s.isShop || false;
   var clickable = !isShop && !!onclickExpr;
-  var tagsHtml = s.tags && s.tags.length ?
-    '<div class="spot-card-tags">' + s.tags.map(function(t){ return '<span class="tag">' + t + '</span>'; }).join('') + '</div>' : '';
-  var summaryHtml = s.desc ? '<p class="spot-card-summary">' + s.desc + '</p>' : '';
   var scheduleParts = [];
   if (s.time) scheduleParts.push(s.time);
   if (s.duration) scheduleParts.push('停留 ' + s.duration);
   var scheduleHtml = scheduleParts.length ? '<div class="spot-card-meta">' + scheduleParts.join(' · ') + '</div>' : '';
   var thumbHtml = isShop ? '' : buildSpotThumbStripHtml(s);
-  var cardHtml = '<div class="spot-item ' + spotTypeClass(s) + (isShop ? ' no-click' : '') + '"' +
-    (clickable ? ' onclick="' + onclickExpr + '"' : '') + '>' +
+  var tipsHtml = s.tips ? '<div class="spot-card-tip"><strong>注意：</strong><span>' + s.tips + '</span></div>' : '';
+  var actions = '';
+  if (s.map) {
+    actions += '<a class="spot-card-action secondary" href="https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(s.map) + '" target="_blank" rel="noopener">导航</a>';
+  }
+  if (clickable) {
+    actions += '<button class="spot-card-action primary" onclick="' + onclickExpr + '">查看详情</button>';
+  }
+  var actionsHtml = actions ? '<div class="spot-card-actions">' + actions + '</div>' : '';
+  var cardHtml = '<div class="spot-item ' + spotTypeClass(s) + (isShop ? ' no-click' : '') + '">' +
     '<div class="spot-card-top">' +
       '<h4 class="spot-card-title">' + spotPrefixHtml(s) + spotTitleHtml(s.name) + '</h4>' +
-      (clickable ? '<div class="spot-item-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></div>' : '') +
     '</div>' +
-    scheduleHtml + tagsHtml + summaryHtml + thumbHtml +
+    scheduleHtml + thumbHtml + tipsHtml + actionsHtml +
     '</div>';
   return '<div class="timeline-row">' +
     '<div class="timeline-node"><span class="timeline-dot ' + spotTypeClass(s) + '"></span></div>' +
