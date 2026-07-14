@@ -174,22 +174,23 @@
       margin-bottom: var(--sp-9);
       padding: var(--sp-8);
       border-radius: var(--radius-lg);
-      color: #fff;
-      background: linear-gradient(145deg, var(--primary), #183f4c);
-      box-shadow: 0 10px 28px rgba(30,76,90,0.18);
+      color: var(--text);
+      background: linear-gradient(145deg, #eef7f4, #e3f0ed);
+      border: 1px solid #c7ddd7;
+      box-shadow: 0 8px 22px rgba(44,95,110,0.1);
     }
-    .now-eyebrow { font-size: var(--fs-xs); font-weight: 700; letter-spacing: 0.08em; color: rgba(255,255,255,0.78); }
-    .now-dashboard h1 { margin-top: var(--sp-2); font-family: var(--font-display); font-size: var(--fs-xl); line-height: 1.3; }
-    .now-intro { margin-top: var(--sp-3); color: rgba(255,255,255,0.82); font-size: var(--fs-xs); line-height: 1.65; }
+    .now-eyebrow { font-size: var(--fs-xs); font-weight: 700; letter-spacing: 0.08em; color: var(--accent); }
+    .now-dashboard h1 { margin-top: var(--sp-2); color: var(--primary); font-family: var(--font-display); font-size: var(--fs-xl); line-height: 1.3; }
+    .now-intro { margin-top: var(--sp-3); color: var(--sub); font-size: var(--fs-xs); line-height: 1.65; }
     .now-info-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: var(--sp-3); margin-top: var(--sp-7); }
-    .now-info-card { display: flex; flex-direction: column; gap: var(--sp-2); min-width: 0; padding: var(--sp-5); border-radius: var(--radius-sm); background: rgba(255,255,255,0.12); }
+    .now-info-card { display: flex; flex-direction: column; gap: var(--sp-2); min-width: 0; padding: var(--sp-5); border: 1px solid #d7e6e1; border-radius: var(--radius-sm); background: rgba(255,255,255,0.82); }
     .now-info-card strong { font-size: var(--fs-sm); line-height: 1.45; overflow-wrap: anywhere; }
-    .now-info-label { display: block; font-size: var(--fs-2xs); font-weight: 700; color: rgba(255,255,255,0.68); }
-    .now-inline-link { align-self: flex-start; color: #fff; font-size: var(--fs-xs); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
-    .now-reminders { margin-top: var(--sp-5); padding: var(--sp-5); border-radius: var(--radius-sm); background: rgba(255,244,205,0.13); }
+    .now-info-label { display: block; font-size: var(--fs-2xs); font-weight: 700; color: var(--sub); }
+    .now-inline-link { align-self: flex-start; color: var(--primary); font-size: var(--fs-xs); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+    .now-reminders { margin-top: var(--sp-5); padding: var(--sp-5); border: 1px solid #ead9a8; border-radius: var(--radius-sm); background: #fff9e9; }
     .now-reminders ul { margin: var(--sp-2) 0 0 1.1em; }
-    .now-reminders li { margin-top: var(--sp-1); font-size: var(--fs-xs); line-height: 1.55; color: rgba(255,255,255,0.9); }
-    .now-primary-btn { width: 100%; margin-top: var(--sp-6); padding: var(--sp-5); border: 0; border-radius: var(--radius-sm); background: #fff; color: var(--primary); font: inherit; font-size: var(--fs-sm); font-weight: 800; cursor: pointer; }
+    .now-reminders li { margin-top: var(--sp-1); font-size: var(--fs-xs); line-height: 1.55; color: var(--warn-txt); }
+    .now-primary-btn { width: 100%; margin-top: var(--sp-6); padding: var(--sp-5); border: 1px solid var(--primary); border-radius: var(--radius-sm); background: #fff; color: var(--primary); font: inherit; font-size: var(--fs-sm); font-weight: 800; cursor: pointer; }
     .overview-section-title { margin: 0 0 var(--sp-5); }
     .overview-section-title h2 { font-size: var(--fs-lg); color: var(--primary); }
     .overview-section-title p { margin-top: var(--sp-1); font-size: var(--fs-xs); color: var(--sub); }
@@ -296,13 +297,22 @@
     .spot-item.no-click { cursor: default; border-style: dashed; }
     .spot-item.no-click:active { transform: none; }
     .spot-item.no-click:hover { box-shadow: none; }
-    .spot-card-top {
-      display: flex; align-items: flex-start; gap: var(--sp-3);
-      background: var(--spot-tint, var(--bg2));
-      padding: var(--sp-4) var(--sp-5);
+    .spot-card-row {
+      display: grid;
+      grid-template-columns: 96px minmax(0, 1fr) 38px;
+      min-height: 118px;
+      align-items: stretch;
     }
-    .spot-card-title { flex: 1; min-width: 0; font-size: var(--fs-base); font-weight: 600; line-height: 1.4; }
-    .spot-card-meta { padding: var(--sp-3) var(--sp-5) 0; }
+    .spot-item.no-click .spot-card-row { grid-template-columns: 96px minmax(0, 1fr); }
+    .spot-card-copy {
+      min-width: 0;
+      padding: var(--sp-4);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .spot-card-title { min-width: 0; font-size: var(--fs-base); font-weight: 600; line-height: 1.4; }
+    .spot-card-meta { margin-top: var(--sp-1); font-size: var(--fs-xs); color: var(--sub); }
     .spot-num, .spot-num-icon {
       color: var(--spot-accent, var(--primary)); font-weight: 700;
     }
@@ -313,34 +323,42 @@
     /* 景點名稱裡的中文字放大約50%，英文/拼音部分維持原尺寸 */
     .cjk-lg { font-size: 1.2rem; font-weight: 800; }
     .name-en { font-size: 0.7em; font-weight: 400; color: var(--sub); }
-    .spot-card-tags { display: flex; flex-wrap: wrap; gap: var(--sp-2); padding: var(--sp-4) var(--sp-5) 0; }
-    .spot-card-tags .tag { font-size: var(--fs-2xs); padding: 2px var(--sp-3); }
-    .spot-card-summary {
-      font-size: var(--fs-xs); color: var(--sub); line-height: 1.6;
-      padding: var(--sp-2) var(--sp-5) 0;
+    .spot-card-intro { min-width: 0; margin-top: var(--sp-2); }
+    .spot-card-intro > span { font-size: var(--fs-2xs); font-weight: 700; color: var(--spot-accent, var(--primary)); }
+    .spot-card-intro p {
+      margin-top: 2px;
+      font-size: var(--fs-xs); color: var(--sub); line-height: 1.45;
       display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
     }
     .spot-thumb-strip {
-      display: flex; gap: var(--sp-3); overflow-x: auto;
-      padding: var(--sp-4) var(--sp-5); scrollbar-width: none;
+      display: flex;
+      width: 96px;
+      min-height: 118px;
+      overflow: hidden;
+      background: var(--spot-tint, var(--bg2));
     }
-    .spot-thumb-strip::-webkit-scrollbar { display: none; }
     .spot-thumb-strip img {
-      height: 84px; width: auto; flex-shrink: 0; object-fit: cover;
-      border-radius: var(--radius-sm); cursor: default;
+      width: 100%; height: 100%; min-height: 118px; object-fit: cover;
+      cursor: default;
     }
-    .spot-card-tip { display: flex; gap: var(--sp-2); margin: 0 var(--sp-5) var(--sp-4); padding: var(--sp-3) var(--sp-4); border-radius: var(--radius-sm); background: var(--warn-bg); color: var(--warn-txt); font-size: var(--fs-xs); line-height: 1.5; }
-    .spot-card-tip strong { flex-shrink: 0; }
-    .spot-card-tip span { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-    .spot-card-actions { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: var(--sp-3); padding: 0 var(--sp-5) var(--sp-5); }
-    .spot-card-action { display: flex; align-items: center; justify-content: center; min-height: 38px; border-radius: var(--radius-sm); border: 1px solid var(--primary); font: inherit; font-size: var(--fs-xs); font-weight: 700; text-decoration: none; cursor: pointer; }
-    .spot-card-action.secondary { color: var(--primary); background: var(--card); }
-    .spot-card-action.primary { color: #fff; background: var(--primary); }
-    .spot-card-actions .spot-card-action:only-child { grid-column: 1 / -1; }
-    .spot-item-arrow { padding-right: 12px; color: var(--sub); flex-shrink: 0; padding-top: 2px; }
-    .spot-item-arrow svg { width: 16px; height: 16px; }
+    .spot-thumb-strip.fallback { align-items: center; justify-content: center; }
+    .spot-thumb-strip.fallback .spot-icon-svg { width: 46px; height: 46px; color: var(--spot-accent, var(--primary)); }
+    .spot-card-detail-arrow {
+      display: flex; align-items: center; justify-content: center;
+      width: 38px; padding: 0;
+      border: 0; border-left: 1px solid var(--border-light);
+      background: var(--card); color: var(--primary);
+      cursor: pointer;
+    }
+    .spot-card-detail-arrow svg { width: 18px; height: 18px; }
     @media (max-width: 420px) {
       .now-info-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 380px) {
+      .spot-card-row { grid-template-columns: 82px minmax(0, 1fr) 34px; }
+      .spot-item.no-click .spot-card-row { grid-template-columns: 82px minmax(0, 1fr); }
+      .spot-thumb-strip { width: 82px; }
+      .spot-card-detail-arrow { width: 34px; }
     }
     .drive-connector, .walk-connector, .tram-connector {
       display: flex;
@@ -393,17 +411,27 @@
       flex: 1;
       border: 1px solid #c8c8e8;
     }
-    /* 導航標籤（Phase 3）：附掛在距離/時間文字後面，改成「導航G」「導航A」的膠囊標籤，
-       比純圖示寬（約留2個字的點擊空間），視覺上跟旁邊文字有明顯區隔，比較不容易點錯 */
+    .drive-info > span:first-of-type, .walk-info > span:first-of-type, .tram-info > span:first-of-type {
+      flex: 1;
+      min-width: 0;
+    }
+    /* 導航放在兩景點間的距離／時間列最右側，外框內以圓形 G、A 區分地圖服務。 */
     .nav-icon-links { display: flex; gap: var(--sp-2); margin-left: auto; flex-shrink: 0; }
     .nav-icon-btn {
-      min-width: 44px; padding: 5px 10px; border-radius: 999px;
+      min-width: 46px; padding: 3px 6px; border: 1px solid currentColor; border-radius: 999px;
       display: flex; align-items: center; justify-content: center;
       font-size: 10px; font-weight: 700; text-decoration: none;
-      color: #fff; flex-shrink: 0; letter-spacing: 0.5px;
+      background: #fff; flex-shrink: 0; gap: 4px;
     }
-    .nav-icon-google { background: #4285f4; }
-    .nav-icon-apple  { background: #333; }
+    .nav-icon-google { color: #326fc2; }
+    .nav-icon-apple  { color: #333; }
+    .nav-provider-badge {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 16px; height: 16px; border-radius: 50%;
+      background: #4285f4; color: #fff;
+      font-size: 9px; line-height: 1;
+    }
+    .nav-icon-apple .nav-provider-badge { background: #333; }
     .drive-summary-card {
       margin-top: var(--sp-4);
       background: linear-gradient(135deg, #f0f4f8, #e8f0f4);
@@ -1177,13 +1205,14 @@
       z-index: 2;
     }
     .spot-sheet-close svg { width: 16px; height: 16px; }
-    /* v8：標題框固定在彈層上方、不隨內容捲動，跟下面的捲動內容用陰影做出區隔 */
+    /* 景點名稱固定在彈層上方；標題框保留上、左、右框線，下緣與內容相連。 */
     .spot-sheet-hero {
       flex-shrink: 0;
       margin: 0 var(--sp-8);
-      border-radius: var(--radius);
+      border: 1px solid var(--primary);
+      border-bottom: 0;
+      border-radius: var(--radius) var(--radius) 0 0;
       overflow: hidden;
-      box-shadow: 0 4px 10px -4px rgba(0,0,0,0.18);
       position: relative; z-index: 1;
     }
     .spot-sheet-scroll {

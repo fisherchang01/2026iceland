@@ -53,8 +53,8 @@ function buildNavIconsHtml(destQuery, mode) {
   if (!destQuery) return '';
   var appleFlag = mode === 'w' ? 'w' : (mode === 'r' ? 'r' : 'd');
   return '<span class="nav-icon-links">' +
-    '<a class="nav-icon-btn nav-icon-google" href="https://www.google.com/maps/dir/?api=1&destination=' + destQuery + '" target="_blank" rel="noopener" onclick="event.stopPropagation()" aria-label="Google地图导航">导航G</a>' +
-    '<a class="nav-icon-btn nav-icon-apple" href="https://maps.apple.com/?daddr=' + destQuery + '&dirflg=' + appleFlag + '" target="_blank" rel="noopener" onclick="event.stopPropagation()" aria-label="Apple地图导航">导航A</a>' +
+    '<a class="nav-icon-btn nav-icon-google" href="https://www.google.com/maps/dir/?api=1&destination=' + destQuery + '" target="_blank" rel="noopener" onclick="event.stopPropagation()" aria-label="Google地图导航"><span>导航</span><span class="nav-provider-badge">G</span></a>' +
+    '<a class="nav-icon-btn nav-icon-apple" href="https://maps.apple.com/?daddr=' + destQuery + '&dirflg=' + appleFlag + '" target="_blank" rel="noopener" onclick="event.stopPropagation()" aria-label="Apple地图导航"><span>导航</span><span class="nav-provider-badge">A</span></a>' +
   '</span>';
 }
 
@@ -86,11 +86,13 @@ function makeTramConnector(text, detail, destQuery) {
 // 整條縮圖列連同內距一起收起來，不會留下一大塊空白。
 function buildSpotThumbStripHtml(s) {
   var imgs = getSpotImages(s);
-  if (!imgs.length) return '';
+  if (!imgs.length) {
+    return '<div class="spot-thumb-strip fallback"><span>' + getSpotIconHtml(s.icon || '📍') + '</span></div>';
+  }
   var img = imgs[0];
   var meta = getSpotImageMeta(img);
   return '<div class="spot-thumb-strip">' +
-    '<img class="spot-photo orientation-' + meta.orientation + '" src="' + spotImagePath(img, 'thumb') + '" alt="" ' +
+    '<img class="spot-photo orientation-' + meta.orientation + '" src="' + spotImagePath(img, 'thumb') + '" alt="' + s.name + '" ' +
     'width="' + meta.width + '" height="' + meta.height + '" loading="lazy" decoding="async" ' +
     'onerror="var p=this.parentElement; this.remove(); if(p && !p.children.length) p.remove();" />' +
     '</div>';
@@ -108,21 +110,14 @@ function buildSpotCardHtml(s, onclickExpr) {
   if (s.time) scheduleParts.push(s.time);
   if (s.duration) scheduleParts.push('停留 ' + s.duration);
   var scheduleHtml = scheduleParts.length ? '<div class="spot-card-meta">' + scheduleParts.join(' · ') + '</div>' : '';
-  var thumbHtml = isShop ? '' : buildSpotThumbStripHtml(s);
-  var tipsHtml = s.tips ? '<div class="spot-card-tip"><strong>注意：</strong><span>' + s.tips + '</span></div>' : '';
-  var actions = '';
-  if (s.map) {
-    actions += '<a class="spot-card-action secondary" href="https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(s.map) + '" target="_blank" rel="noopener">导航</a>';
-  }
-  if (clickable) {
-    actions += '<button class="spot-card-action primary" onclick="' + onclickExpr + '">查看详情</button>';
-  }
-  var actionsHtml = actions ? '<div class="spot-card-actions">' + actions + '</div>' : '';
+  var thumbHtml = buildSpotThumbStripHtml(s);
+  var summaryHtml = s.desc ? '<div class="spot-card-intro"><span>景点介绍</span><p>' + s.desc + '</p></div>' : '';
+  var detailHtml = clickable ? '<button class="spot-card-detail-arrow" onclick="' + onclickExpr + '" aria-label="查看' + s.name + '详情"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>' : '';
   var cardHtml = '<div class="spot-item ' + spotTypeClass(s) + (isShop ? ' no-click' : '') + '">' +
-    '<div class="spot-card-top">' +
-      '<h4 class="spot-card-title">' + spotPrefixHtml(s) + spotTitleHtml(s.name) + '</h4>' +
+    '<div class="spot-card-row">' + thumbHtml +
+      '<div class="spot-card-copy"><h4 class="spot-card-title">' + spotPrefixHtml(s) + spotTitleHtml(s.name) + '</h4>' + scheduleHtml + summaryHtml + '</div>' +
+      detailHtml +
     '</div>' +
-    scheduleHtml + thumbHtml + tipsHtml + actionsHtml +
     '</div>';
   return '<div class="timeline-row">' +
     '<div class="timeline-node"><span class="timeline-dot ' + spotTypeClass(s) + '"></span></div>' +
