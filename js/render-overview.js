@@ -64,7 +64,7 @@ function getOfflineDayAssetUrls() {
   if (context.index + 1 < TRIP_DATA.days.length) selected.push(TRIP_DATA.days[context.index + 1]);
   var assets = [];
   selected.forEach(function(day) {
-    if (day.routeMapImg) assets.push('images/routes/' + day.routeMapImg);
+    normalizeImgList(day.routeMapImg).forEach(function(f){ assets.push('images/routes/' + f); });
     getDaySpots(day).filter(function(spot){ return getSpotImages(spot).length > 0; }).slice(0, 2).forEach(function(spot) {
       var images = getSpotImages(spot);
       if (images.length) assets.push(spotImagePath(images[0], 'thumb'));

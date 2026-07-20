@@ -31,21 +31,12 @@
 <!-- 此頁籤的內容（總覽橫幅 + 每日卡片）由資料模型動態產生，見 js/render-overview.js -->
 <div class="page active" id="page-itinerary">
 
-  <!-- 頂端地圖 + 日期選單列（v6）：固定顯示在行程總覽與每日行程之上，不隨頁面切換而消失。
-       地圖：沿用原本 data/trip-details.js 裡每一天的 routeMapImg 欄位（使用者自行把地圖圖片放到
-       images/routes/ 資料夾底下、檔名填進該天的 routeMapImg），選到哪一天就換哪一天的圖，
-       跟景點照片共用同一套 lightbox 放大機制。行程總覽狀態、以及沒有設定 routeMapImg 的天數，
-       都會顯示預留版位，維持版面尺寸一致，之後要補圖只需要在 trip-details.js 補上檔名即可。
+  <!-- 頂端日期選單列（v10）：固定顯示在行程總覽與每日行程之上，不隨頁面切換而消失。
+       地圖圖片改移到下面可捲動的內容區最上面（見 view-overview / view-day 裡的 .itin-map-scroll），
+       並改用跟景點/體驗/工具共用的相片輪播元件，支援多張圖左右滑動。
        日期選單列：「行程概覽」固定不動，右側每日按鈕可左右滑動。 -->
   <div class="itin-top">
     <div class="page-inner itin-top-inner">
-      <div class="itin-map" id="itinMap">
-        <img id="itinMapImg" src="" alt="今日路线地图" decoding="async" style="display:none" onclick="openItinMapLightbox()" />
-        <div class="itin-map-placeholder" id="itinMapPlaceholder">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 1118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-          <span>地图准备中</span>
-        </div>
-      </div>
       <div class="itin-day-selector">
         <button class="itin-pill itin-pill-fixed active" id="itinPillOverview" onclick="selectItin('overview')">全部行程</button>
         <div class="itin-pill-scroll" id="itinPillScroll"></div>
@@ -55,13 +46,17 @@
   </div>
 
   <div class="view active" id="view-overview">
-    <div class="page-inner" id="overviewContent"></div>
+    <div class="page-inner">
+      <div class="itin-map-scroll" id="itinMapScrollOverview"></div>
+      <div id="overviewContent"></div>
+    </div>
   </div>
 
-  <!-- 每日景点列表：日期標題已經移到上面常駐的 .itin-top 裡（跟著地圖/選單列一起固定），
-       這裡只剩會捲動的景點列表本身。 -->
+  <!-- 每日景点列表：日期標題已經移到上面常駐的 .itin-top 裡（跟著日期選單列一起固定），
+       地圖圖片跟景點列表都在這裡，一起可以捲動。 -->
   <div class="view" id="view-day">
     <div class="page-inner">
+      <div class="itin-map-scroll" id="itinMapScrollDay"></div>
       <p class="spot-list-label">今日景点 &amp; 行程</p>
       <div id="spotList"></div>
     </div>

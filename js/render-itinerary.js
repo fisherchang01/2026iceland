@@ -125,9 +125,10 @@ function buildSpotCardHtml(s, onclickExpr) {
     '</div>';
 }
 
-// ===== 每日路线简图（v6）：显示位置改到页面最顶端的常驻地图区块（见 index.html 的 .itin-map），
-// 不再嵌在每日景点列表里；相关渲染逻辑改放在 js/nav.js 的 updateItinMap()／openItinMapLightbox()。
-// d.routeMapImg 欄位本身用法不變（顯示版放 images/routes/，燈箱版放 images/routes/large/）。
+// ===== 每日路线简图（v10）：显示位置在 view-day 可捲動內容最上面（見 index.html 的 #itinMapScrollDay），
+// 不再嵌在每日景点列表里、也不再固定在頂端；相关渲染逻辑改放在 js/nav.js 的 updateItinMap()。
+// d.routeMapImg 欄位本身用法不變（顯示版放 images/routes/，燈箱版放 images/routes/large/），
+// 也支援填陣列放多張圖（例如 ['route-day1.webp','route-day1-alt.webp']），會自動變成可左右滑動的輪播。
 
 function showDay(dayId) {
   var d = TRIP_DATA.daysById[dayId];
@@ -284,20 +285,21 @@ function handleGalleryImgError(imgEl) {
 // 只有一張照片時就是單張全寬照片、不显示圆点；没有照片时维持原本的插画 fallback。
 // mode='spot'（预设）：images 是 data/trip-details.js 里的檔名，套用 images/spots/{size}/ 三尺寸 srcset。
 // mode='plain'：images 是已经组好的完整图片路径/网址（体验/工具项目用，见 js/catalog-nav.js），只用单一尺寸、不做 srcset。
-// 供景點詳情（本檔 renderSpotDetail）與體驗/工具卡片詳情（js/catalog-nav.js openCatalogDetail）共用，
-// 兩邊呼叫這同一個函式，才能維持「相片呈現方式全站一致」。
-function buildPhotoCarouselHtml(images, fallbackIconHtml, altText, mode) {
+// mode='plain' 且有提供 opts.largeImages 時：列表縮圖跟燈箱大圖走不同路徑（例如路線圖 images/routes/ vs images/routes/large/）。
+// opts.fallbackLabel：沒有照片時插畫下方要顯示的文字，預設「插画示意」（地圖用「地图准备中」）。
+function buildPhotoCarouselHtml(images, fallbackIconHtml, altText, mode, opts) {
   mode = mode || 'spot';
+  opts = opts || {};
   var safeAlt = (altText || '').replace(/"/g, '&quot;');
 
   if (!images || images.length === 0) {
     currentGalleryImages = [];
     currentGalleryIndex = 0;
-    var fallback = '<div class="img-fallback"><span class="fallback-icon">' + fallbackIconHtml + '</span><span class="fallback-label">插画示意</span></div>';
+    var fallback = '<div class="img-fallback"><span class="fallback-icon">' + fallbackIconHtml + '</span><span class="fallback-label">' + (opts.fallbackLabel || '插画示意') + '</span></div>';
     return '<div class="photo-carousel-wrap"><div class="photo-carousel fallback-only">' + fallback + '</div></div>';
   }
 
-  currentGalleryImages = images.map(function(img) {
+  currentGalleryImages = opts.largeImages || images.map(function(img) {
     return mode === 'spot' ? spotImagePath(img, 'large') : img;
   });
   currentGalleryIndex = 0;

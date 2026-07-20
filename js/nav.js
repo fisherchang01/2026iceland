@@ -76,32 +76,45 @@ function setItinActive(dayId) {
   }
 }
 // 路線圖與景點照片分開管理：列表顯示版放 images/routes/，點擊後的大圖放 images/routes/large/。
-// 沒有設定的天數／行程概覽狀態，顯示預留版位，維持整站地圖區塊尺寸一致。
-function updateItinMap(dayId) {
-  var img = document.getElementById('itinMapImg');
-  var placeholder = document.getElementById('itinMapPlaceholder');
-  if (!img || !placeholder) return;
-  var d = dayId ? TRIP_DATA.daysById[dayId] : null;
-  if (d && d.routeMapImg) {
-    img.decoding = 'async';
-    img.fetchPriority = 'high';
-    img.src = 'images/routes/' + d.routeMapImg;
-    img.dataset.largeSrc = 'images/routes/large/' + d.routeMapImg;
-    img.style.display = 'block';
-    placeholder.style.display = 'none';
-  } else {
-    img.style.display = 'none';
-    img.src = '';
-    delete img.dataset.largeSrc;
-    placeholder.style.display = 'flex';
-  }
+// v10 調整：地圖圖片不再固定在頂端，改成插入「行程總覽 / 每日行程」可捲動內容最上面，
+// 並改用共用的相片輪播元件（js/render-itinerary.js buildPhotoCarouselHtml），支援多張圖左右滑動。
+// 沒有設定圖片的天數／行程概覽狀態，顯示預留版位，維持版面尺寸一致，之後要補圖只需要在
+// data/trip-details.js 的 routeMapImg 補上檔名即可（單張填字串，多張改填陣列，如 ['a.webp','b.webp']）。
+function normalizeImgList(v) {
+  if (!v) return [];
+  return Array.isArray(v) ? v : [v];
 }
-function openItinMapLightbox() {
-  var img = document.getElementById('itinMapImg');
-  if (!img || !img.src) return;
-  currentGalleryImages = [img.dataset.largeSrc || img.src];
-  currentGalleryIndex = 0;
-  openLightbox(0);
+function mapPinIconHtml() {
+  return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:30px;height:30px;opacity:.6"><path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 1118 0z"/><circle cx="12" cy="10" r="3"/></svg>';
+}
+function updateItinMap(dayId) {
+  if (typeof buildPhotoCarouselHtml !== 'function') return; // js/render-itinerary.js 尚未載入時安全跳過
+
+  if (!dayId) {
+    var overviewMount = document.getElementById('itinMapScrollOverview');
+    if (!overviewMount) return;
+    var coverFiles = normalizeImgList(TRIP_DATA.config.coverImage);
+    overviewMount.innerHTML = buildPhotoCarouselHtml(
+      coverFiles, mapPinIconHtml(), TRIP_DATA.config.tripName || '行程总览', 'plain',
+      { fallbackLabel: '地图准备中' }
+    );
+    return;
+  }
+
+  var dayMount = document.getElementById('itinMapScrollDay');
+  if (!dayMount) return;
+  var d = TRIP_DATA.daysById[dayId];
+  var routeFiles = d ? normalizeImgList(d.routeMapImg) : [];
+  dayMount.innerHTML = buildPhotoCarouselHtml(
+    routeFiles.map(function(f){ return 'images/routes/' + f; }),
+    mapPinIconHtml(),
+    (d && (d.detailTitle || d.title)) || '路线图',
+    'plain',
+    {
+      fallbackLabel: '地图准备中',
+      largeImages: routeFiles.map(function(f){ return 'images/routes/large/' + f; })
+    }
+  );
 }
 
 // ===== 景點詳情 Sheet（由下往上彈出，取代整頁跳轉）=====

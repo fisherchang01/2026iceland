@@ -645,27 +645,17 @@
     }
     .day-route-map img { width: 100%; height: auto; display: block; }
 
-    /* ===== v6 改版：頂端常駐地圖 + 行程概覽/Day1-9 選單列 ===== */
+    /* ===== v10 改版：頂端只留常駐的行程概覽/Day1-9 選單列，地圖圖片改移到可捲動內容區 ===== */
     .itin-top {
       background: var(--card);
       border-bottom: 1px solid var(--border);
       position: sticky; top: 0; z-index: 90;
     }
     .itin-top-inner { padding: var(--sp-5) var(--sp-6) var(--sp-4); }
-    .itin-map {
-      width: 100%; aspect-ratio: 20 / 9;
-      border-radius: var(--radius); overflow: hidden;
-      background: var(--bg2); border: 1px solid var(--border);
-      margin-bottom: var(--sp-5); cursor: zoom-in; position: relative;
-    }
-    .itin-map img { width: 100%; height: 100%; object-fit: contain; display: block; }
-    .itin-map-placeholder {
-      position: absolute; inset: 0;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      gap: var(--sp-2); color: var(--sub); cursor: default;
-    }
-    .itin-map-placeholder svg { width: 30px; height: 30px; opacity: 0.6; }
-    .itin-map-placeholder span { font-size: var(--fs-xs); }
+    /* 地圖輪播容器（在 view-overview / view-day 可捲動內容最上面），
+       直接沿用共用的 .photo-carousel 元件，這裡只補一個固定比例避免版面跳動。 */
+    .itin-map-scroll .photo-carousel { aspect-ratio: 20 / 9; }
+    .itin-map-scroll .photo-carousel-slide img { aspect-ratio: 20 / 9 !important; object-fit: contain; }
     .itin-day-selector { display: flex; align-items: center; gap: var(--sp-2); }
     .itin-pill {
       flex-shrink: 0; padding: 6px 12px; border-radius: 999px;
