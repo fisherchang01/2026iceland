@@ -654,8 +654,18 @@
     .itin-top-inner { padding: var(--sp-5) var(--sp-6) var(--sp-4); }
     /* 地圖輪播容器（在 view-overview / view-day 可捲動內容最上面），
        直接沿用共用的 .photo-carousel 元件，這裡只補一個固定比例避免版面跳動。 */
-    .itin-map-scroll .photo-carousel { aspect-ratio: 20 / 9; }
-    .itin-map-scroll .photo-carousel-slide img { aspect-ratio: 20 / 9 !important; object-fit: contain; }
+    /* 地圖輪播（行程總覽/每日行程用）：不透過「百分比高度需要靠 aspect-ratio 撐出來」這種鏈式寫法
+       （在部分瀏覽器上這條鏈可能解析不到，導致整塊高度變 0、圖片完全不顯示），
+       改成明確用 position:absolute + inset:0 撐滿，確定不管哪個瀏覽器都看得到。 */
+    .itin-map-scroll .photo-carousel { position: relative; aspect-ratio: 20 / 9; height: auto; }
+    .itin-map-scroll .photo-carousel-track { position: absolute; inset: 0; height: 100%; }
+    .itin-map-scroll .photo-carousel-slide { position: relative; height: 100%; }
+    .itin-map-scroll .photo-carousel-slide img {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      aspect-ratio: auto !important;
+      object-fit: contain;
+    }
     .itin-day-selector { display: flex; align-items: center; gap: var(--sp-2); }
     .itin-pill {
       flex-shrink: 0; padding: 6px 12px; border-radius: 999px;
