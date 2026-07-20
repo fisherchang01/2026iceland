@@ -9,6 +9,22 @@ function catalogImageFor(text) {
   return '';
 }
 
+// v9 新增：這個項目詳情要用哪些照片。
+// 目前多數項目都還沒有真實照片，所以預設沿用 CATALOG_IMAGE_MAP 配對到的單張圖示/favicon。
+// 之後 Fisher 要補真實照片時，只要在 data/travel-content.js 或 data/other-content.js
+// 對應的卡片元素上加一個 data-images="file1.jpg,file2.jpg" 屬性（檔名放在 images/catalog/ 底下），
+// 這裡就會自動改成多張、可左右滑動；不需要動這支程式。
+function catalogImagesFor(card, fallbackText) {
+  var attr = card.getAttribute('data-images');
+  if (attr) {
+    return attr.split(',').map(function(s){ return s.trim(); }).filter(Boolean).map(function(f){
+      return /^https?:\/\//.test(f) || f.indexOf('/') === 0 ? f : 'images/catalog/' + f;
+    });
+  }
+  var mapped = catalogImageFor(fallbackText);
+  return mapped ? [mapped] : [];
+}
+
 function catalogDirectCategories(page) {
   var inner = page && page.querySelector(':scope > .page-inner');
   return inner ? Array.from(inner.children).filter(function(el){ return el.classList.contains('travel-collapse'); }) : [];
@@ -93,10 +109,10 @@ function prepareCatalogCards(category) {
   var body = category.querySelector(':scope > .travel-collapse-body');
   if (!body) return;
   var candidates = Array.from(body.children).filter(function(el){
-    return el.matches('.souvenir-card, .souvenir-item, .market-grid, .info-card, .travel-sub-collapse, .link-card, .alcohol-warn');
+    return el.matches('.souvenir-card, .souvenir-item, .market-grid, .station-grid, .info-card, .travel-sub-collapse, .link-card, .alcohol-warn');
   });
   candidates.forEach(function(el){
-    if (el.classList.contains('market-grid')) {
+    if (el.classList.contains('market-grid') || el.classList.contains('station-grid')) {
       Array.from(el.children).forEach(function(card){ makeCatalogCard(card); });
     } else {
       makeCatalogCard(el);
@@ -132,7 +148,9 @@ function makeCatalogCard(card) {
     card.insertBefore(media, card.firstChild);
   }
   card.addEventListener('click', function(event){
-    if (event.target.closest('a')) return;
+    var nearestLink = event.target.closest('a');
+    if (nearestLink && nearestLink !== card) return; // 卡片內部另外嵌的連結，維持原本直接跳轉
+    if (card.tagName === 'A') event.preventDefault(); // 卡片本身就是連結（如 link-card）：先開詳情層，不直接跳走
     openCatalogDetail(card, title);
   });
   card.addEventListener('keydown', function(event){
@@ -152,16 +170,43 @@ function ensureCatalogSheet() {
 
 function openCatalogDetail(card, title) {
   ensureCatalogSheet();
+  var categoryEl = card.closest('.travel-collapse');
+  var categoryTitleEl = categoryEl && categoryEl.querySelector('.travel-collapse-title');
+  var categoryEmojiEl = categoryEl && categoryEl.querySelector('.travel-collapse-emoji');
+  var categoryLabel = categoryTitleEl ? categoryTitleEl.textContent.trim() : '';
+  var fallbackIcon = categoryEmojiEl ? categoryEmojiEl.textContent.trim() : '✦';
+
   var clone = card.cloneNode(true);
   clone.classList.remove('catalog-list-card');
   clone.removeAttribute('role'); clone.removeAttribute('tabindex');
   clone.querySelectorAll('.travel-sub-body, .collapse-body').forEach(function(el){ el.classList.add('open'); });
   clone.querySelectorAll('[onclick]').forEach(function(el){ el.removeAttribute('onclick'); });
-  document.getElementById('catalogSheetTitle').textContent = title;
+  // 原本內嵌的圖片/favicon 區塊拿掉，改由下面統一的相片輪播呈現（跟景點詳情同一套元件）
+  clone.querySelectorAll('.souvenir-img-wrap, .catalog-card-media').forEach(function(el){ el.remove(); });
+  // 連結類卡片（link-card 本身是 <a>）：詳情層裡不能整塊還是可點擊連結，
+  // 改成跟住宿導航一樣「先看內容，底部另外放一個按鈕」的模式
+  var linkHref = clone.tagName === 'A' ? clone.getAttribute('href') : null;
+  if (linkHref) { clone.removeAttribute('href'); clone.removeAttribute('target'); }
+
+  // 固定標題（不捲動）：分類 + 項目名稱，比照景點詳情層的 spot-hero 呈現
+  document.getElementById('catalogSheetTitle').innerHTML =
+    (categoryLabel ? '<div class="spot-hero-label">' + categoryLabel + '</div>' : '') +
+    '<div class="spot-hero-title">' + title + '</div>';
+
+  // 可捲動內容：相片輪播 → 原有介紹文字 → （連結類項目）前往連結按鈕
   var body = document.getElementById('catalogSheetBody');
-  body.innerHTML = ''; body.appendChild(clone);
+  body.innerHTML = buildPhotoCarouselHtml(catalogImagesFor(card, card.textContent), fallbackIcon, title, 'plain');
+  body.appendChild(clone);
+  if (linkHref) {
+    var btnRow = document.createElement('div');
+    btnRow.className = 'map-btn-row';
+    btnRow.innerHTML = '<a class="map-btn" target="_blank" rel="noopener" href="' + linkHref + '">前往連結 ↗</a>';
+    body.appendChild(btnRow);
+  }
+
   document.getElementById('catalogSheet').classList.add('open');
   document.getElementById('catalogSheetBackdrop').classList.add('open');
+  document.getElementById('catalogSheetBody').scrollTop = 0;
   document.body.style.overflow = 'hidden';
 }
 

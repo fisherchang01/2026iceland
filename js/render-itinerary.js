@@ -278,25 +278,64 @@ function handleSpotImgError(imgEl, icon) {
 function handleGalleryImgError(imgEl) {
   imgEl.style.display = 'none';
 }
-function buildSpotImageHtml(s) {
-  var imgs = getSpotImages(s);
-  currentGalleryImages = imgs.map(function(img) { return spotImagePath(img, 'large'); });
+
+// ===== 共用相片輪播元件（v9 新增）=====
+// 多張照片時改成「同一個框，左右滑動切換」，取代原本的雙欄縮圖網格。
+// 只有一張照片時就是單張全寬照片、不显示圆点；没有照片时维持原本的插画 fallback。
+// mode='spot'（预设）：images 是 data/trip-details.js 里的檔名，套用 images/spots/{size}/ 三尺寸 srcset。
+// mode='plain'：images 是已经组好的完整图片路径/网址（体验/工具项目用，见 js/catalog-nav.js），只用单一尺寸、不做 srcset。
+// 供景點詳情（本檔 renderSpotDetail）與體驗/工具卡片詳情（js/catalog-nav.js openCatalogDetail）共用，
+// 兩邊呼叫這同一個函式，才能維持「相片呈現方式全站一致」。
+function buildPhotoCarouselHtml(images, fallbackIconHtml, altText, mode) {
+  mode = mode || 'spot';
+  var safeAlt = (altText || '').replace(/"/g, '&quot;');
+
+  if (!images || images.length === 0) {
+    currentGalleryImages = [];
+    currentGalleryIndex = 0;
+    var fallback = '<div class="img-fallback"><span class="fallback-icon">' + fallbackIconHtml + '</span><span class="fallback-label">插画示意</span></div>';
+    return '<div class="photo-carousel-wrap"><div class="photo-carousel fallback-only">' + fallback + '</div></div>';
+  }
+
+  currentGalleryImages = images.map(function(img) {
+    return mode === 'spot' ? spotImagePath(img, 'large') : img;
+  });
   currentGalleryIndex = 0;
 
-  if (imgs.length === 0) {
-    var fallback = '<div class="img-fallback"><span class="fallback-icon">' + getSpotIconHtml(s.icon) + '</span><span class="fallback-label">插画示意</span></div>';
-    return '<div class="spot-img-wrap fallback-only">' + fallback + '</div>';
-  }
-  if (imgs.length === 1) {
-    return '<div class="spot-img-wrap single">' +
-      '<img ' + spotImageAttrs(imgs[0], '(max-width: 720px) calc(100vw - 48px), 680px') + ' alt="' + s.name + '" loading="lazy" decoding="async" onclick="openLightbox(0)" ' +
-      "onerror=\"handleSpotImgError(this, '" + s.icon.replace(/'/g, "\\'") + "')\" />" +
-      '</div>';
-  }
-  var galleryHtml = imgs.map(function(img, i) {
-    return '<img ' + spotImageAttrs(img, '(max-width: 720px) calc(50vw - 30px), 330px') + ' alt="' + s.name + '" loading="lazy" decoding="async" onclick="openLightbox(' + i + ')" onerror="handleGalleryImgError(this)" />';
+  var slidesHtml = images.map(function(img, i) {
+    var attrs = mode === 'spot'
+      ? spotImageAttrs(img, '(max-width: 720px) calc(100vw - 48px), 680px')
+      : 'class="spot-photo orientation-landscape" src="' + img + '"';
+    var onerror = mode === 'spot'
+      ? " onerror=\"handleGalleryImgError(this)\""
+      : ' onerror="this.closest(\'.photo-carousel-slide\').classList.add(\'image-error\')"';
+    return '<div class="photo-carousel-slide"><img ' + attrs + ' alt="' + safeAlt + '" loading="lazy" decoding="async" onclick="openLightbox(' + i + ')"' + onerror + ' /></div>';
   }).join('');
-  return '<div class="spot-img-gallery">' + galleryHtml + '</div>';
+
+  var dotsHtml = images.length > 1
+    ? '<div class="photo-carousel-dots">' + images.map(function(_, i) {
+        return '<span class="carousel-dot' + (i === 0 ? ' active' : '') + '"></span>';
+      }).join('') + '</div>'
+    : '';
+
+  return '<div class="photo-carousel-wrap"><div class="photo-carousel' + (images.length > 1 ? ' multi' : '') + '">' +
+    '<div class="photo-carousel-track" onscroll="updateCarouselDots(this)">' + slidesHtml + '</div>' +
+    '</div>' + dotsHtml + '</div>';
+}
+
+// 相片框左右滑動時，同步更新下方圆点指示目前在第几张（用 scrollLeft 除以框寬估算最接近的張數）
+function updateCarouselDots(trackEl) {
+  var wrap = trackEl.closest('.photo-carousel');
+  var dotsWrap = wrap && wrap.nextElementSibling;
+  if (!dotsWrap || !dotsWrap.classList.contains('photo-carousel-dots')) return;
+  var idx = Math.round(trackEl.scrollLeft / trackEl.clientWidth);
+  var dots = dotsWrap.querySelectorAll('.carousel-dot');
+  dots.forEach(function(d, i) { d.classList.toggle('active', i === idx); });
+}
+
+function buildSpotImageHtml(s) {
+  var imgs = getSpotImages(s);
+  return buildPhotoCarouselHtml(imgs, getSpotIconHtml(s.icon), s.name, 'spot');
 }
 
 // ===== 圖片放大燈箱：點擊景點照片（單張或網格縮圖）可放大檢視，多張時可左右切換 =====
@@ -439,16 +478,17 @@ function renderSpotDetail(s, d) {
       '<div class="spot-hero-title">' + spotTitleHtml(s.name) + (s.localName ? ' <span class="name-en">' + s.localName + '</span>' : '') + '</div>' +
     '</div>';
 
-  // 其餘內容可捲動，順序：標籤 → 介紹 → 深度介紹 → 提醒 → 停車廁所 → 前往下一站 → 照片網格（移到最下面）
+  // 其餘內容可捲動，順序（v9 調整為「相片在最上面」）：
+  // 相片輪播 → 標籤 → 介紹 → 深度介紹 → 提醒 → 停車廁所 → 前往下一站
   document.getElementById('spotDetail').innerHTML =
+    buildSpotImageHtml(s) +
     (tagsHtml ? '<div class="tags">' + tagsHtml + '</div>' : '') +
     factsHtml +
     (s.desc ? '<div class="info-card"><div class="card-label">景点介绍</div><p>' + s.desc + '</p></div>' : '') +
     (s.deepDesc ? '<div class="info-card"><div class="card-label">深度介绍</div><p>' + s.deepDesc + '</p></div>' : '') +
     (s.tips ? '<div class="tips-card"><div class="card-label">小提醒</div><p>' + s.tips + '</p></div>' : '') +
     parkingHtml +
-    nextStopHtml +
-    buildSpotImageHtml(s);
+    nextStopHtml;
   // 注意（Phase 2 調整）：景點詳情頁不再放導航按鈕，導航改附掛在列表卡片之間「距離/時間」那一行
   // （見 buildNavIconsHtml），這裡只留景點本身的介紹內容。住宿詳情頁的導航按鈕不受影響，維持原樣。
 }
