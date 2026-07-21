@@ -113,13 +113,14 @@ function buildSpotCardHtml(s, onclickExpr) {
   if (s.duration) scheduleParts.push('停留 ' + s.duration);
   var scheduleHtml = scheduleParts.length ? '<div class="spot-card-meta">' + scheduleParts.join(' · ') + '</div>' : '';
   var thumbHtml = buildSpotThumbRowHtml(s, onclickExpr, clickable);
-  var summaryHtml = s.desc ? '<div class="spot-card-intro"><span>景点介绍</span><p>' + s.desc + '</p></div>' : '';
-  var detailHtml = clickable ? '<button class="spot-card-detail-arrow" onclick="' + onclickExpr + '" aria-label="查看' + s.name + '详情"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>' : '';
+  // v12：拿掉「景点介绍」這個標籤文字，只留內文本身；行數限制從兩行改成三行。
+  var summaryHtml = s.desc ? '<div class="spot-card-intro"><p>' + s.desc + '</p></div>' : '';
+  // v12：拿掉右側箭頭按鈕，改成點擊整個「標題＋內容」區域就直接開詳情層。
+  var copyClickAttr = clickable ? ' onclick="' + onclickExpr + '"' : '';
   var cardHtml = '<div class="spot-item ' + spotTypeClass(s) + (isShop ? ' no-click' : '') + '">' +
     thumbHtml +
     '<div class="spot-card-row">' +
-      '<div class="spot-card-copy"><h4 class="spot-card-title">' + spotPrefixHtml(s) + spotTitleHtml(s.name) + '</h4>' + scheduleHtml + summaryHtml + '</div>' +
-      detailHtml +
+      '<div class="spot-card-copy"' + copyClickAttr + '><h4 class="spot-card-title">' + spotPrefixHtml(s) + spotTitleHtml(s.name) + '</h4>' + scheduleHtml + summaryHtml + '</div>' +
     '</div>' +
     '</div>';
   return '<div class="timeline-row">' +
