@@ -33,20 +33,21 @@ Firebase 僅供費用同步：
 
 景點照片：
 
-- 橫式：thumb 480×360、medium 960×720、large 1200×900
-- 直式：thumb 360×480、medium 720×960、large 900×1200
+- 橫式：thumb 480×360、medium 960×720
+- 直式：thumb 360×480、medium 720×960
 - 格式：WebP
-- 建議品質：thumb 76、medium 82、large 85
-- 三個尺寸必須使用相同檔名，分別放入 `images/spots/thumb`、`medium`、`large`
+- 建議品質：thumb 76、medium 82
+- medium 同時也是點擊放大燈箱用的最大尺寸，不用再另外做一份 large
+- 兩個尺寸必須使用相同檔名，分別放入 `images/spots/thumb`、`medium`
+- 橫式還是直式不用另外登記，網站會在照片載入完成當下自動判斷（看實際尺寸）
 
 路線圖：
 
-- 顯示版放 `images/routes/`，建議寬度 1200–1400px、WebP 品質 80–88
-- 放大版放 `images/routes/large/`
-- 兩個資料夾使用相同檔名
+- 放 `images/routes/`，建議寬度 1200–1400px、WebP 品質 80–88
+- 顯示版跟點擊放大燈箱版共用同一張，不用分開放
 - 圖上文字需以手機人工檢查清晰度
 
-完成後同步更新 `data/image-manifest.js`。不要把原始 JPG／PNG 留在網站資料夾造成重複。
+不要把原始 JPG／PNG 留在網站資料夾造成重複。
 
 ## E. 本機驗收
 

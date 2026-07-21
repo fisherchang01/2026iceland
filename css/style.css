@@ -504,8 +504,10 @@
     .spot-img-wrap .img-fallback span.fallback-label {
       font-size: var(--fs-2xs); color: rgba(255,255,255,0.7); letter-spacing: 1px;
     }
-    .spot-photo.orientation-landscape { aspect-ratio: 4 / 3; }
-    .spot-photo.orientation-portrait { aspect-ratio: 3 / 4; }
+    /* v13：拿掉 image-manifest.js 後不再用 orientation-landscape/portrait class 預先標記，
+       統一先預設橫式 4:3；如果照片實際上是直式，js/render-itinerary.js 的 handleSpotPhotoLoad()
+       會在圖片載入完成當下，直接改這個元素的 inline style（aspect-ratio:3/4）蓋過這裡的預設值。 */
+    .spot-photo { aspect-ratio: 4 / 3; }
     /* 舊版雙欄縮圖網格，已被下方 .photo-carousel 取代，保留規則以防有頁面殘留引用。 */
     .spot-img-gallery {
       display: grid;
@@ -551,8 +553,8 @@
       width: 100%; height: 100%; display: block; object-fit: cover; cursor: pointer;
     }
     .photo-carousel-slide.image-error { display: none; }
-    /* 沒有指定尺寸資訊的照片（體驗/工具，尚未提供真實照片時的預留欄位）維持 4:3 比例 */
-    .photo-carousel-slide img:not(.orientation-portrait) { aspect-ratio: 4 / 3; }
+    /* 沒有指定尺寸資訊的照片（體驗/工具，尚未提供真實照片時的預留欄位）維持 4:3 比例，
+       這件事現在由上面的 .spot-photo { aspect-ratio: 4/3 } 統一處理，這裡不用再重複寫一次。 */
     .photo-carousel-dots {
       display: flex; justify-content: center; gap: var(--sp-2);
       margin-top: var(--sp-3);

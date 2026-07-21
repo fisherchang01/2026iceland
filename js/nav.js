@@ -75,7 +75,8 @@ function setItinActive(dayId) {
     if (scrollEl) scrollEl.scrollLeft = 0;
   }
 }
-// 路線圖與景點照片分開管理：列表顯示版放 images/routes/，點擊後的大圖放 images/routes/large/。
+// 路線圖跟景點照片一樣只保留 thumb+medium 兩層（v13 拿掉 large）：images/routes/ 底下直接放單一尺寸圖，
+// 顯示版跟點擊放大燈箱共用同一份檔案，不用再分開放。
 // v10 調整：地圖圖片不再固定在頂端，改成插入「行程總覽 / 每日行程」可捲動內容最上面，
 // 並改用共用的相片輪播元件（js/render-itinerary.js buildPhotoCarouselHtml），支援多張圖左右滑動。
 // 沒有設定圖片的天數／行程概覽狀態，顯示預留版位，維持版面尺寸一致，之後要補圖只需要在
@@ -110,10 +111,7 @@ function updateItinMap(dayId) {
     mapPinIconHtml(),
     (d && (d.detailTitle || d.title)) || '路线图',
     'plain',
-    {
-      fallbackLabel: '地图准备中',
-      largeImages: routeFiles.map(function(f){ return 'images/routes/large/' + f; })
-    }
+    { fallbackLabel: '地图准备中' }
   );
 }
 

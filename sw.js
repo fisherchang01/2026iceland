@@ -1,13 +1,13 @@
 const CACHE_PREFIX = 'trip-' + self.registration.scope.replace(/[^a-z0-9]+/gi, '-').toLowerCase();
-const SHELL_CACHE = CACHE_PREFIX + 'shell-2026-07-20-photos-v3';
-const DAY_CACHE = CACHE_PREFIX + 'current-days-2026-07-20-photos-v3';
+const SHELL_CACHE = CACHE_PREFIX + 'shell-2026-07-21-two-tier';
+const DAY_CACHE = CACHE_PREFIX + 'current-days-2026-07-21-two-tier';
 
 // 僅預先快取程式、資料與 App 圖示；不預載照片大圖、所有路線圖或 PDF。
 const SHELL_ASSETS = [
   './', './index.html', './manifest.webmanifest', './css/style.css',
   './images/app-icon-192.png', './images/app-icon-512.png',
   './data/trip-config.js', './data/budget-config.js', './data/firebase-settings.js', './data/catalog-config.js',
-  './data/trip-days.js', './data/trip-details.js', './data/image-manifest.js', './data/travel-content.js',
+  './data/trip-days.js', './data/trip-details.js', './data/travel-content.js',
   './data/budget-content.js', './data/other-content.js', './data/docs-content.js', './data/trip-schema.js',
   './js/nav.js', './js/catalog-nav.js', './js/spot-icons.js', './js/render-itinerary.js', './js/budget.js',
   './js/render-overview.js', './js/render-docs.js', './js/init.js', './js/firebase-config.js'

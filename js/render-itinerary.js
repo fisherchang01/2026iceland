@@ -80,24 +80,61 @@ function makeTramConnector(text, detail, destQuery) {
     '</div></div>';
 }
 
-// 卡片縮圖列（v11 改版）：從「只顯示第一張小圖、放在卡片左側」，
-// 改成「整列 4:3 橫式縮圖，放在卡片最上面，可左右滑動看更多張」，
+// 卡片縮圖列（v11 改版，v13 加上延遲載入）：整列 4:3 橫式縮圖放在卡片最上面，可左右滑動看更多張。
 // 跟景點詳情頁的大圖輪播（buildSpotImageHtml）是兩種不同的呈現：這裡是縮圖列表，那邊是單張大圖輪播。
 // 縮圖本身也做成可點擊，點下去直接開景點詳情（跟卡片右側箭頭的行為一致）。
 // 沒有照片的景點（isShop 或尚未補照片）維持顯示一格圖示佔位，不會整列消失。
+// v13：只有前 THUMB_EAGER_COUNT 張（一開始畫面上看得到的）馬上載入，其餘用 data-lazy-src 佔位、
+// 捲到才真正載入圖片（見下面 initThumbRowLazyLoad），避免像 Gullfoss 這種有十幾張照片的景點，
+// 一進到那一天就同時發十幾個圖片請求，在訊號不好的地方（例如冰島荒郊野外）容易卡頓。
+var THUMB_EAGER_COUNT = 3;
 function buildSpotThumbRowHtml(s, onclickExpr, clickable) {
   var imgs = getSpotImages(s);
   var clickAttr = (clickable && onclickExpr) ? ' onclick="' + onclickExpr + '" role="button" tabindex="0"' : '';
   if (!imgs.length) {
     return '<div class="spot-thumb-row"><div class="spot-thumb-cell fallback"' + clickAttr + '>' + getSpotIconHtml(s.icon || '📍') + '</div></div>';
   }
-  var cellsHtml = imgs.map(function(img) {
+  var cellsHtml = imgs.map(function(img, i) {
+    var eager = i < THUMB_EAGER_COUNT;
+    var srcAttr = eager
+      ? 'src="' + spotImagePath(img, 'thumb') + '" loading="lazy"'
+      : 'data-lazy-src="' + spotImagePath(img, 'thumb') + '"';
     return '<div class="spot-thumb-cell"' + clickAttr + '>' +
-      '<img src="' + spotImagePath(img, 'thumb') + '" alt="' + s.name + '" loading="lazy" decoding="async" ' +
+      '<img ' + srcAttr + ' alt="' + s.name + '" decoding="async" ' +
       'onerror="this.parentElement.remove()" />' +
       '</div>';
   }).join('');
   return '<div class="spot-thumb-row">' + cellsHtml + '</div>';
+}
+// 幫某個容器裡所有還沒載入的縮圖（data-lazy-src）掛上 IntersectionObserver，
+// 捲到看得見時才把 data-lazy-src 換成真正的 src。root 設成縮圖列本身，
+// 這樣判斷的是「有沒有橫向捲到看得見」，不是頁面直向捲動位置。
+// 每次 spotList/spotArea 的內容整批換新（showDay/showAreaSpot）之後都要呼叫一次。
+function initThumbRowLazyLoad(containerEl) {
+  var rows = containerEl.querySelectorAll('.spot-thumb-row');
+  if (!rows.length) return;
+  if (!('IntersectionObserver' in window)) {
+    // 不支援的舊瀏覽器：保底，直接全部載入
+    containerEl.querySelectorAll('img[data-lazy-src]').forEach(function(img){
+      img.src = img.getAttribute('data-lazy-src');
+      img.removeAttribute('data-lazy-src');
+    });
+    return;
+  }
+  rows.forEach(function(row) {
+    var lazyImgs = row.querySelectorAll('img[data-lazy-src]');
+    if (!lazyImgs.length) return;
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (!entry.isIntersecting) return;
+        var img = entry.target;
+        img.src = img.getAttribute('data-lazy-src');
+        img.removeAttribute('data-lazy-src');
+        observer.unobserve(img);
+      });
+    }, { root: row, rootMargin: '0px 200px', threshold: 0.01 });
+    lazyImgs.forEach(function(img){ observer.observe(img); });
+  });
 }
 
 // ===== 統一卡片元件（v7，Phase 2）：景點與一般（機場/超市/取車等）共用同一個排版，
@@ -131,7 +168,7 @@ function buildSpotCardHtml(s, onclickExpr) {
 
 // ===== 每日路线简图（v10）：显示位置在 view-day 可捲動內容最上面（見 index.html 的 #itinMapScrollDay），
 // 不再嵌在每日景点列表里、也不再固定在頂端；相关渲染逻辑改放在 js/nav.js 的 updateItinMap()。
-// d.routeMapImg 欄位本身用法不變（顯示版放 images/routes/，燈箱版放 images/routes/large/），
+// d.routeMapImg 欄位本身用法不變（顯示版跟燈箱版共用同一份 images/routes/ 檔案，v13 起不再分 large），
 // 也支援填陣列放多張圖（例如 ['route-day1.webp','route-day1-alt.webp']），會自動變成可左右滑動的輪播。
 
 function showDay(dayId) {
@@ -250,6 +287,7 @@ function showDay(dayId) {
 
   setItinActive(dayId);
   updateItinMap(dayId);
+  initThumbRowLazyLoad(listEl);
 }
 
 // 景點圖片：可以用 images:['a.webp','b.webp'] 放多張，
@@ -260,20 +298,22 @@ function getSpotImages(s) {
   if (s.img) return [s.img];
   return [];
 }
-function getSpotImageMeta(filename) {
-  return SPOT_IMAGE_META[filename] || { orientation: 'landscape', width: 1200, height: 900, srcset: [480, 960, 1200] };
-}
 function spotImagePath(filename, size) {
   return 'images/spots/' + size + '/' + filename;
 }
+// v13：拿掉 image-manifest.js 之後，照片是橫式還直式改成「載入完成當下」直接看實際尺寸判斷，
+// 不用再另外維護一份登記檔。副作用是照片載入完成那一瞬間，框的高度可能會有一次很小的調整
+// （預設先當作橫式 4:3，載入後如果偵測到是直式就改成 3:4），這是刻意接受的取捨。
+function handleSpotPhotoLoad(imgEl) {
+  if (imgEl.naturalWidth && imgEl.naturalHeight && imgEl.naturalHeight > imgEl.naturalWidth) {
+    imgEl.style.aspectRatio = '3 / 4';
+  }
+}
 function spotImageAttrs(filename, sizes) {
-  var meta = getSpotImageMeta(filename);
-  return 'class="spot-photo orientation-' + meta.orientation + '" ' +
+  return 'class="spot-photo" ' +
     'src="' + spotImagePath(filename, 'medium') + '" ' +
-    'srcset="' + spotImagePath(filename, 'thumb') + ' ' + meta.srcset[0] + 'w, ' +
-      spotImagePath(filename, 'medium') + ' ' + meta.srcset[1] + 'w, ' +
-      spotImagePath(filename, 'large') + ' ' + meta.srcset[2] + 'w" ' +
-    'sizes="' + sizes + '" width="' + meta.width + '" height="' + meta.height + '"';
+    'srcset="' + spotImagePath(filename, 'thumb') + ' 480w, ' + spotImagePath(filename, 'medium') + ' 960w" ' +
+    'sizes="' + sizes + '" onload="handleSpotPhotoLoad(this)"';
 }
 function handleSpotImgError(imgEl, icon) {
   var wrap = imgEl.parentElement;
@@ -288,8 +328,7 @@ function handleGalleryImgError(imgEl) {
 // 多張照片時改成「同一個框，左右滑動切換」，取代原本的雙欄縮圖網格。
 // 只有一張照片時就是單張全寬照片、不显示圆点；没有照片时维持原本的插画 fallback。
 // mode='spot'（预设）：images 是 data/trip-details.js 里的檔名，套用 images/spots/{size}/ 三尺寸 srcset。
-// mode='plain'：images 是已经组好的完整图片路径/网址（体验/工具项目用，见 js/catalog-nav.js），只用单一尺寸、不做 srcset。
-// mode='plain' 且有提供 opts.largeImages 時：列表縮圖跟燈箱大圖走不同路徑（例如路線圖 images/routes/ vs images/routes/large/）。
+// mode='plain'：images 是已经组好的完整图片路径/网址（体验/工具项目、地图用），只用单一尺寸、不做 srcset。
 // opts.fallbackLabel：沒有照片時插畫下方要顯示的文字，預設「插画示意」（地圖用「地图准备中」）。
 function buildPhotoCarouselHtml(images, fallbackIconHtml, altText, mode, opts) {
   mode = mode || 'spot';
@@ -303,15 +342,16 @@ function buildPhotoCarouselHtml(images, fallbackIconHtml, altText, mode, opts) {
     return '<div class="photo-carousel-wrap"><div class="photo-carousel fallback-only">' + fallback + '</div></div>';
   }
 
+  // 拿掉 large 尺寸之後，燈箱放大也是用 medium（目前站上最大的尺寸）
   currentGalleryImages = opts.largeImages || images.map(function(img) {
-    return mode === 'spot' ? spotImagePath(img, 'large') : img;
+    return mode === 'spot' ? spotImagePath(img, 'medium') : img;
   });
   currentGalleryIndex = 0;
 
   var slidesHtml = images.map(function(img, i) {
     var attrs = mode === 'spot'
       ? spotImageAttrs(img, '(max-width: 720px) calc(100vw - 48px), 680px')
-      : 'class="spot-photo orientation-landscape" src="' + img + '"';
+      : 'class="spot-photo" src="' + img + '"';
     var onerror = mode === 'spot'
       ? " onerror=\"handleGalleryImgError(this)\""
       : ' onerror="this.closest(\'.photo-carousel-slide\').classList.add(\'image-error\')"';
