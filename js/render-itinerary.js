@@ -80,22 +80,24 @@ function makeTramConnector(text, detail, destQuery) {
     '</div></div>';
 }
 
-// 卡片縮圖：跟景點詳情頁的圖片網格（buildSpotImageHtml）不同，這裡只載入第一張小圖，
-// 用在「當日行程」列表卡片上，讓每張卡片高度與下載量都可預期。
-// 縮圖延遲載入；若圖片載入失敗，
-// 整條縮圖列連同內距一起收起來，不會留下一大塊空白。
-function buildSpotThumbStripHtml(s) {
+// 卡片縮圖列（v11 改版）：從「只顯示第一張小圖、放在卡片左側」，
+// 改成「整列 4:3 橫式縮圖，放在卡片最上面，可左右滑動看更多張」，
+// 跟景點詳情頁的大圖輪播（buildSpotImageHtml）是兩種不同的呈現：這裡是縮圖列表，那邊是單張大圖輪播。
+// 縮圖本身也做成可點擊，點下去直接開景點詳情（跟卡片右側箭頭的行為一致）。
+// 沒有照片的景點（isShop 或尚未補照片）維持顯示一格圖示佔位，不會整列消失。
+function buildSpotThumbRowHtml(s, onclickExpr, clickable) {
   var imgs = getSpotImages(s);
+  var clickAttr = (clickable && onclickExpr) ? ' onclick="' + onclickExpr + '" role="button" tabindex="0"' : '';
   if (!imgs.length) {
-    return '<div class="spot-thumb-strip fallback"><span>' + getSpotIconHtml(s.icon || '📍') + '</span></div>';
+    return '<div class="spot-thumb-row"><div class="spot-thumb-cell fallback"' + clickAttr + '>' + getSpotIconHtml(s.icon || '📍') + '</div></div>';
   }
-  var img = imgs[0];
-  var meta = getSpotImageMeta(img);
-  return '<div class="spot-thumb-strip">' +
-    '<img class="spot-photo orientation-' + meta.orientation + '" src="' + spotImagePath(img, 'thumb') + '" alt="' + s.name + '" ' +
-    'width="' + meta.width + '" height="' + meta.height + '" loading="lazy" decoding="async" ' +
-    'onerror="var p=this.parentElement; this.remove(); if(p && !p.children.length) p.remove();" />' +
-    '</div>';
+  var cellsHtml = imgs.map(function(img) {
+    return '<div class="spot-thumb-cell"' + clickAttr + '>' +
+      '<img src="' + spotImagePath(img, 'thumb') + '" alt="' + s.name + '" loading="lazy" decoding="async" ' +
+      'onerror="this.parentElement.remove()" />' +
+      '</div>';
+  }).join('');
+  return '<div class="spot-thumb-row">' + cellsHtml + '</div>';
 }
 
 // ===== 統一卡片元件（v7，Phase 2）：景點與一般（機場/超市/取車等）共用同一個排版，
@@ -110,11 +112,12 @@ function buildSpotCardHtml(s, onclickExpr) {
   if (s.time) scheduleParts.push(s.time);
   if (s.duration) scheduleParts.push('停留 ' + s.duration);
   var scheduleHtml = scheduleParts.length ? '<div class="spot-card-meta">' + scheduleParts.join(' · ') + '</div>' : '';
-  var thumbHtml = buildSpotThumbStripHtml(s);
+  var thumbHtml = buildSpotThumbRowHtml(s, onclickExpr, clickable);
   var summaryHtml = s.desc ? '<div class="spot-card-intro"><span>景点介绍</span><p>' + s.desc + '</p></div>' : '';
   var detailHtml = clickable ? '<button class="spot-card-detail-arrow" onclick="' + onclickExpr + '" aria-label="查看' + s.name + '详情"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>' : '';
   var cardHtml = '<div class="spot-item ' + spotTypeClass(s) + (isShop ? ' no-click' : '') + '">' +
-    '<div class="spot-card-row">' + thumbHtml +
+    thumbHtml +
+    '<div class="spot-card-row">' +
       '<div class="spot-card-copy"><h4 class="spot-card-title">' + spotPrefixHtml(s) + spotTitleHtml(s.name) + '</h4>' + scheduleHtml + summaryHtml + '</div>' +
       detailHtml +
     '</div>' +
@@ -472,19 +475,19 @@ function renderSpotDetail(s, d) {
     nextStopHtml = '<div class="next-stop-card"><div class="next-stop-icon">' + nsIcon + '</div><div class="next-stop-info"><strong>前往下一站：</strong>' + stripEstimateWording(ns.detail || ns.text) + '</div></div>';
   }
 
-  // v8：標題框（hero）固定在彈層最上面不捲動，只放編號＋名稱，不再重複顯示標籤文字
-  // （標籤已經在下面用膠囊樣式顯示一次，不需要在標題框再顯示一次純文字版）。
+  // v11：標籤（tags）改移到上面固定不動的標題框（spot-hero）裡，放在景點標題下方，
+  // 跟著標題一起固定，不再放在下面可捲動的內容區。
   document.getElementById('spotSheetHero').innerHTML =
     '<div class="spot-hero">' +
       '<div class="spot-hero-label">' + d.detailTitle + '</div>' +
       '<div class="spot-hero-title">' + spotTitleHtml(s.name) + (s.localName ? ' <span class="name-en">' + s.localName + '</span>' : '') + '</div>' +
+      (tagsHtml ? '<div class="tags spot-hero-tags">' + tagsHtml + '</div>' : '') +
     '</div>';
 
   // 其餘內容可捲動，順序（v9 調整為「相片在最上面」）：
-  // 相片輪播 → 標籤 → 介紹 → 深度介紹 → 提醒 → 停車廁所 → 前往下一站
+  // 相片輪播 → 介紹 → 深度介紹 → 提醒 → 停車廁所 → 前往下一站
   document.getElementById('spotDetail').innerHTML =
     buildSpotImageHtml(s) +
-    (tagsHtml ? '<div class="tags">' + tagsHtml + '</div>' : '') +
     factsHtml +
     (s.desc ? '<div class="info-card"><div class="card-label">景点介绍</div><p>' + s.desc + '</p></div>' : '') +
     (s.deepDesc ? '<div class="info-card"><div class="card-label">深度介绍</div><p>' + s.deepDesc + '</p></div>' : '') +

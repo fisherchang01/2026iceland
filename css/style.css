@@ -299,11 +299,11 @@
     .spot-item.no-click:hover { box-shadow: none; }
     .spot-card-row {
       display: grid;
-      grid-template-columns: 96px minmax(0, 1fr) 38px;
-      min-height: 118px;
+      grid-template-columns: minmax(0, 1fr) 38px;
+      min-height: 64px;
       align-items: stretch;
     }
-    .spot-item.no-click .spot-card-row { grid-template-columns: 96px minmax(0, 1fr); }
+    .spot-item.no-click .spot-card-row { grid-template-columns: minmax(0, 1fr); }
     .spot-card-copy {
       min-width: 0;
       padding: var(--sp-4);
@@ -330,19 +330,32 @@
       font-size: var(--fs-xs); color: var(--sub); line-height: 1.45;
       display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
     }
-    .spot-thumb-strip {
+    /* ===== 卡片縮圖列（v11 改版）：整列 4:3 橫式縮圖放在卡片最上面，一次約看得到 3 張，
+       左右滑動看更多張。單張照片時會自動撐滿整列寬度，2 張時各半，3 張以上才會出現捲動。===== */
+    .spot-thumb-row {
       display: flex;
-      width: 96px;
-      min-height: 118px;
+      gap: var(--sp-2);
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scroll-snap-type: x proximity;
+      scrollbar-width: none;
+      padding: var(--sp-3) var(--sp-3) 0;
+      background: var(--card);
+    }
+    .spot-thumb-row::-webkit-scrollbar { display: none; }
+    .spot-thumb-cell {
+      flex: 1 0 30%;
+      aspect-ratio: 4 / 3;
+      border-radius: var(--radius-sm);
       overflow: hidden;
       background: var(--spot-tint, var(--bg2));
+      scroll-snap-align: start;
+      cursor: pointer;
     }
-    .spot-thumb-strip img {
-      width: 100%; height: 100%; min-height: 118px; object-fit: cover;
-      cursor: default;
-    }
-    .spot-thumb-strip.fallback { align-items: center; justify-content: center; }
-    .spot-thumb-strip.fallback .spot-icon-svg { width: 46px; height: 46px; color: var(--spot-accent, var(--primary)); }
+    .spot-item.no-click .spot-thumb-cell { cursor: default; }
+    .spot-thumb-cell img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .spot-thumb-cell.fallback { display: flex; align-items: center; justify-content: center; flex: 1 0 30%; }
+    .spot-thumb-cell.fallback .spot-icon-svg { width: 32px; height: 32px; color: var(--spot-accent, var(--primary)); }
     .spot-card-detail-arrow {
       display: flex; align-items: center; justify-content: center;
       width: 38px; padding: 0;
@@ -355,9 +368,8 @@
       .now-info-grid { grid-template-columns: 1fr; }
     }
     @media (max-width: 380px) {
-      .spot-card-row { grid-template-columns: 82px minmax(0, 1fr) 34px; }
-      .spot-item.no-click .spot-card-row { grid-template-columns: 82px minmax(0, 1fr); }
-      .spot-thumb-strip { width: 82px; }
+      .spot-card-row { grid-template-columns: minmax(0, 1fr) 34px; }
+      .spot-item.no-click .spot-card-row { grid-template-columns: minmax(0, 1fr); }
       .spot-card-detail-arrow { width: 34px; }
     }
     .drive-connector, .walk-connector, .tram-connector {
@@ -473,6 +485,9 @@
        標題框內容變少（拿掉了原本重複顯示的標籤文字），高度也跟著自然變矮，不需要太高 */
     .spot-hero-title { font-size: var(--fs-lg); font-weight: 700; margin-top: var(--sp-1); font-family: var(--font-display);}
     .spot-hero-title .cjk-lg { font-size: 1.3rem; font-weight: 800; }
+    /* 標籤放進固定的標題框後（v11），改用淺色半透明膠囊樣式，跟深色底才有足夠對比 */
+    .spot-hero-tags { margin-top: var(--sp-3); margin-bottom: 0; }
+    .spot-hero-tags .tag { background: rgba(255,255,255,0.16); color: #fff; border-color: rgba(255,255,255,0.32); }
     .spot-img-wrap {
       width: 100%;
       border-radius: var(--radius);
