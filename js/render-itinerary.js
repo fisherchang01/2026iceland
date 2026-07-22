@@ -213,16 +213,18 @@ function showDay(dayId) {
           (f.note ? '<div class="flight-note">' + f.note + '</div>' : '') +
           '</div>';
         if (i < d.flights.length - 1) {
-          flightHtml += '<div class="flight-transfer">🔄 转机等候</div>';
+          flightHtml += '<div class="flight-transfer">🔄 转机等候' + (f.layoverAfter ? '　' + f.layoverAfter : '') + '</div>';
         }
       });
     }
-    var hotelHtml = buildHotelHtml(d.hotel, dayId);
+    var hotelHtml = buildHotelHtml(d.hotel, dayId, true);
+    listEl.classList.add('no-timeline');
     listEl.innerHTML =
       (flightHtml ? '<div class="info-card"><div class="card-label">航班资讯</div>' + flightHtml + '</div>' : '') +
       (d.note ? '<div class="tips-card"><div class="card-label">行程备注</div><p>' + d.note + '</p></div>' : '') +
       hotelHtml;
   } else if (d.areas && d.areas.length) {
+    listEl.classList.remove('no-timeline');
     // 分區折疊：任何旅程都可使用 areas，不依賴特定城市名稱。
     // 每一区预设收合，点击标题展开，跟其他页签的折叠行为一致（低风险：只是重新排版既有元件，非新增功能）。
     var html = '';
@@ -256,6 +258,7 @@ function showDay(dayId) {
     html += buildHotelHtml(d.hotel, dayId);
     listEl.innerHTML = html;
   } else {
+    listEl.classList.remove('no-timeline');
     var html = '';
     (d.spots || []).forEach(function(s, i) {
       var onclickExpr = s.isShop ? null : "showSpot('" + dayId + "'," + i + ')';
@@ -422,7 +425,7 @@ function lightboxNext(e) {
 // 住宿改为「点击才显示导航」（第5项功能）：卡片本身跟景点一样可点击，点开后在同一个
 // spotSheet 详情弹层里显示导航按钮，逻辑上就是复制一份景点的呈现模式。
 // 没有 map 栏位的住宿（例如 Day8「飞机上」）维持不可点击、纯资讯显示，不会呈现无用的导航按钮。
-function buildHotelHtml(hotel, dayId) {
+function buildHotelHtml(hotel, dayId, noTimeline) {
   if (!hotel || !hotel.name) return '';
   var clickable = !!hotel.map;
   var cardHtml = '<div class="hotel-card' + (clickable ? ' clickable' : '') + '"' +
@@ -431,6 +434,7 @@ function buildHotelHtml(hotel, dayId) {
     '<div class="hotel-info"><h4>' + hotel.name + '</h4>' + (hotel.note ? '<p>' + hotel.note + '</p>' : '') + '</div>' +
     (clickable ? '<div class="spot-item-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></div>' : '') +
     '</div>';
+  if (noTimeline) return cardHtml;
   return '<div class="timeline-row">' +
     '<div class="timeline-node"><span class="timeline-dot hotel-dot"></span></div>' +
     cardHtml +

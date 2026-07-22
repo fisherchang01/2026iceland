@@ -14,16 +14,16 @@
 // ===== TRIP DATA =====
 const TRIP = {
   day0: {
-    num:'0', dateLabel:'10月3日（周六）→ 10月4日（周日）', title:'去程', transit:true,
+    num:'0', dateLabel:'10月3日（周六）→ 10月4日（周日）', title:'飞越北境·初抵冰岛', transit:true,
     flights:[
-      { airline:'国泰航空', flightNo:'CX635', from:'香港 HKG T1', to:'新加坡樟宜 SIN T4', dep:'15:05', arr:'19:05', duration:'约4小时', date:'10月3日' },
-      { airline:'芬兰航空', flightNo:'AY132', from:'新加坡樟宜 SIN T1', to:'赫尔辛基万塔 HEL', dep:'21:35', arr:'06:00+1', duration:'约12小时25分', date:'10月3日→10月4日', note:'当地10月4日抵达' },
+      { airline:'国泰航空', flightNo:'CX635', from:'香港 HKG T1', to:'新加坡樟宜 SIN T4', dep:'15:05', arr:'19:05', duration:'约4小时', date:'10月3日', layoverAfter:'约 2 小时 30 分钟' },
+      { airline:'芬兰航空', flightNo:'AY132', from:'新加坡樟宜 SIN T1', to:'赫尔辛基万塔 HEL', dep:'21:35', arr:'06:00+1', duration:'约12小时25分', date:'10月3日→10月4日', note:'当地10月4日抵达', layoverAfter:'约 1 小时 10 分钟（转机时间较紧凑）' },
       { airline:'芬兰航空', flightNo:'AY991', from:'赫尔辛基万塔 HEL', to:'凯夫拉维克 KEF', dep:'07:10', arr:'07:50', duration:'约3小时40分', date:'10月4日' }
     ],
     note:'10月3日从香港出发，经新加坡樟宜、赫尔辛基万塔转机，10月4日清晨抵达冰岛凯夫拉维克机场，展开黄金圈行程。'
   },
   day1: {
-    num:'1', dateLabel:'10月4日（周日）', title:'初探冰岛',
+    num:'1', dateLabel:'10月4日（周日）', title:'雷市初见·地热启程',
     routeMapImg:'route-day1.webp',
     driveSummary: { total:'约 215 km', time:'约 3小时10分钟（不含景点停留）' },
     hotel:{ name:'South Central Country Apartment 民宿', note:'黄金圈地区，舒适乡村民宿环境', map:'South Central Country Apartment Iceland' },
@@ -72,7 +72,7 @@ const TRIP = {
     ]
   },
   day2: {
-    num:'2', dateLabel:'10月5日（周一）', title:'深入黄金圈',
+    num:'2', dateLabel:'10月5日（周一）', title:'追泉逐瀑·黄金圈巡礼',
     routeMapImg:'route-day2.webp',
     driveSummary: { total:'约 107 km', time:'约 1小时40分钟（不含景点停留）' },
     hotel:{ name:'South Central Country Apartment 民宿', note:'连住，黄金圈地区', map:'South Central Country Apartment Iceland' },
@@ -129,7 +129,7 @@ const TRIP = {
     ]
   },
   day3: {
-    num:'3', dateLabel:'10月6日（周二）', title:'南岸经典',
+    num:'3', dateLabel:'10月6日（周二）', title:'瀑布之路·南岸奇境',
     routeMapImg:'route-day3.webp',
     driveSummary: { total:'约 100 km', time:'约 85 分钟（不含景点停留）' },
     hotel:{ name:'Lakeview Cabin 民宿', note:'南岸地区，湖景小屋，有机会观赏极光', map:'Lakeview Cabin Iceland' },
@@ -182,7 +182,7 @@ const TRIP = {
     ]
   },
   day4: {
-    num:'4', dateLabel:'10月7日（周三）', title:'冰川徒步',
+    num:'4', dateLabel:'10月7日（周三）', title:'走进蓝冰·闪耀钻石海岸',
     driveSummary: { total:'约 30 km', time:'约 30 分钟（不含景点停留）' },
     hotel:{ name:'Lakeview Cabin 民宿', note:'连住，南岸湖景小屋', map:'Lakeview Cabin Iceland' },
     spots: [
@@ -219,7 +219,7 @@ const TRIP = {
     ]
   },
   day5: {
-    num:'5', dateLabel:'10月8日（周四）', title:'雷克雅未克 + 蓝湖',
+    num:'5', dateLabel:'10月8日（周四）', title:'公路慢行·蓝湖疗愈',
     routeMapImg:'route-day5.webp',
     driveSummary: { total:'约 70 km', time:'约 65 分钟（不含景点停留，其余路段步行）' },
     hotel:{ name:'Garður Apartments 民宿', note:'Garður 地区公寓式民宿，邻近蓝湖与机场', map:'Gardur Apartments Iceland' },
@@ -268,14 +268,14 @@ const TRIP = {
     ]
   },
   day6: {
-    num:'6', dateLabel:'10月9日（周五）', title:'前往芬兰', transit:true,
+    num:'6', dateLabel:'10月9日（周五）', title:'告别冰岛·飞向芬兰', transit:true,
     flights:[
       { airline:'芬兰航空', flightNo:'AY992', from:'凯夫拉维克 KEF', to:'赫尔辛基万塔 HEL', dep:'08:35', arr:'15:00', duration:'约3小时25分', date:'10月9日' }
     ],
     hotel:{ name:'Hilton Helsinki Airport', note:'赫尔辛基机场希尔顿酒店，抵达后入住，交通便利', map:'Hilton Helsinki Airport' }
   },
   day7: {
-    num:'7', dateLabel:'10月10日（周六）', title:'芬兰人的一天',
+    num:'7', dateLabel:'10月10日（周六）', title:'赫尔辛基·北欧漫游日',
     routeMapImg:'route-day7.webp',
     hotel:{ name:'飞机上', note:'当晚搭乘深夜航班返港（AY099，00:35起飞）' },
     isHelsinki: true,
@@ -366,7 +366,7 @@ const TRIP = {
     ]
   },
   day8: {
-    num:'8', dateLabel:'10月10日（周六）深夜 → 10月11日（周日）', title:'返程', transit:true,
+    num:'8', dateLabel:'10月10日（周六）深夜 → 10月11日（周日）', title:'满载回忆·返回香港', transit:true,
     flights:[
       { airline:'芬兰航空', flightNo:'AY099', from:'赫尔辛基万塔 HEL', to:'香港 HKG', dep:'00:35', arr:'17:10', duration:'约9小时35分', date:'10月11日', note:'10月10日行程结束后深夜航班' }
     ],

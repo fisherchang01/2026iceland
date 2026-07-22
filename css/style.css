@@ -263,6 +263,9 @@
       background-position: left; background-size: 2px 9px; background-repeat: repeat-y;
       z-index: 0;
     }
+    /* v14：僅有航班資訊的天數（去程/回程/移動日），內容不是逐點的景點時間軸，
+       這條線沒有對應的圓點可以貫穿，直接拿掉，避免「有線沒點」的錯位感。 */
+    #spotList.no-timeline::before { display: none; }
     .timeline-row { display: flex; align-items: flex-start; gap: var(--sp-3); position: relative; z-index: 1; }
     .timeline-row.connector-row { align-items: center; }
     .timeline-node { width: 30px; flex-shrink: 0; display: flex; justify-content: center; padding-top: 20px; }
@@ -661,7 +664,8 @@
     /* 地圖輪播（行程總覽/每日行程用）：不透過「百分比高度需要靠 aspect-ratio 撐出來」這種鏈式寫法
        （在部分瀏覽器上這條鏈可能解析不到，導致整塊高度變 0、圖片完全不顯示），
        改成明確用 position:absolute + inset:0 撐滿，確定不管哪個瀏覽器都看得到。 */
-    .itin-map-scroll .photo-carousel { position: relative; aspect-ratio: 20 / 9; height: auto; }
+    /* v14：地圖框比例改成 4:3，配合新版手繪插畫地圖（原本 20:9 是配合舊版寬扁路線圖用的） */
+    .itin-map-scroll .photo-carousel { position: relative; aspect-ratio: 4 / 3; height: auto; }
     .itin-map-scroll .photo-carousel-track { position: absolute; inset: 0; height: 100%; }
     .itin-map-scroll .photo-carousel-slide { position: relative; height: 100%; }
     .itin-map-scroll .photo-carousel-slide img {
