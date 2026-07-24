@@ -101,8 +101,24 @@ function buildNowDashboard(context) {
   '</section>';
 }
 
+function buildTripHero() {
+  var cfg = TRIP_DATA.config;
+  var coverFiles = normalizeImgList(cfg.coverImage);
+  var bgImg = coverFiles.length ? '<img src="' + coverFiles[0] + '" alt="" decoding="async" onerror="this.style.display=\'none\'" />' : '';
+  var badgesHtml = (cfg.badges || []).map(function(b){ return '<span class="hero-badge">' + b + '</span>'; }).join('');
+  return '<section class="trip-hero">' +
+    '<div class="trip-hero-bg">' + bgImg + '</div><div class="trip-hero-scrim"></div>' +
+    '<div class="trip-hero-content">' +
+      '<div class="trip-hero-dates">' + (cfg.dateRange && cfg.dateRange.display ? cfg.dateRange.display : '') + '</div>' +
+      '<h1 class="trip-hero-title">' + (cfg.bannerTitleHtml || cfg.tripName) + '</h1>' +
+      (badgesHtml ? '<div class="trip-hero-badges">' + badgesHtml + '</div>' : '') +
+    '</div>' +
+  '</section>';
+}
+
 function renderOverview() {
-  var html = buildNowDashboard(getTripDayContext());
+  var html = buildTripHero();
+  html += buildNowDashboard(getTripDayContext());
   html += '<div class="overview-section-title"><h2>完整行程</h2><p>也可以直接选择任一天查看</p></div>';
 
   TRIP_DATA.days.forEach(function(d, index){

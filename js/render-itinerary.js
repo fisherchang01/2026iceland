@@ -154,10 +154,11 @@ function buildSpotCardHtml(s, onclickExpr) {
   var summaryHtml = s.desc ? '<div class="spot-card-intro"><p>' + s.desc + '</p></div>' : '';
   // v12：拿掉右側箭頭按鈕，改成點擊整個「標題＋內容」區域就直接開詳情層。
   var copyClickAttr = clickable ? ' onclick="' + onclickExpr + '"' : '';
-  var cardHtml = '<div class="spot-item ' + spotTypeClass(s) + (isShop ? ' no-click' : '') + '">' +
+  var optionalBadge = s.isOptional ? '<span class="spot-optional-badge">备选</span>' : '';
+  var cardHtml = '<div class="spot-item ' + spotTypeClass(s) + (isShop ? ' no-click' : '') + (s.isOptional ? ' spot-optional' : '') + '">' +
     thumbHtml +
     '<div class="spot-card-row">' +
-      '<div class="spot-card-copy"' + copyClickAttr + '><h4 class="spot-card-title">' + spotPrefixHtml(s) + spotTitleHtml(s.name) + '</h4>' + scheduleHtml + summaryHtml + '</div>' +
+      '<div class="spot-card-copy"' + copyClickAttr + '><h4 class="spot-card-title">' + spotPrefixHtml(s) + spotTitleHtml(s.name) + optionalBadge + '</h4>' + scheduleHtml + summaryHtml + '</div>' +
     '</div>' +
     '</div>';
   return '<div class="timeline-row">' +
@@ -269,6 +270,15 @@ function showDay(dayId) {
       if (d.drives && d.drives[i]) {
         var dr = d.drives[i];
         html += makeDriveConnector(dr.dist, dr.time, destQuery);
+      } else if (s.nextStops && s.nextStops.length) {
+        // 多段鏈式導航（例如 Kerið→超市→民宿，或 Reynisfjara→教堂→超市→民宿）：
+        // 依序把每一段都畫成一個 connector，各自導航到「這一段自己的地點」，不是統一導去下一個景點卡。
+        s.nextStops.forEach(function(leg) {
+          var legDest = encodeURIComponent(leg.address || leg.name);
+          var legText = (leg.distanceKm != null ? leg.distanceKm + ' km' : '') +
+            (leg.etaMin != null ? ' · 约 ' + leg.etaMin + ' 分钟' : '');
+          html += makeDriveConnector(leg.name + (legText ? '　' + legText : ''), '', legDest);
+        });
       } else if (s.nextStop) {
         var ns = s.nextStop;
         if (ns.type === 'walk') html += makeWalkConnector(ns.text, ns.detail, destQuery);
