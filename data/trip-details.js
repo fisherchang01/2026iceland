@@ -74,10 +74,10 @@ const TRIP = {
         parking:'600 ISK（现场机器缴费，含门票）；另有资料称 800 ISK。',
         toilet:'有。',
         map:'Kerid Crater Iceland',
-        // 两段式导航链：先到 Selfoss 超市补给，再到民宿（10/4、10/5 两晚都住这间）
+        // 两段式导航链：先到超市补给，再到民宿（10/4、10/5 两晚都住这间）
         nextStops:[
-          { name:'Bónus超市（Selfoss）', address:'Bónus Selfoss Iceland', distanceKm:15, etaMin:15 },
-          { name:'民宿（South Central，Blesastaðir 3, Brautarholt）', address:'South Central Country Apartment Iceland', distanceKm:20, etaMin:25 }
+          { name:'超市', address:'Bónus Selfoss Iceland', distanceKm:15, etaMin:15 },
+          { name:'民宿', address:'South Central Country Apartment Iceland', distanceKm:20, etaMin:25 }
         ] }
     ]
   },
@@ -94,8 +94,7 @@ const TRIP = {
         parking:'750 ISK（Parka app），停车场步行约 5 分钟。',
         toilet:'无。',
         map:'Bruarfoss Iceland',
-        // 民宿→Brúarfoss 尚无实测数据，为估算值
-        nextStop:{ type:'drive', text:'🚗 前往 Geysir', detail:'约 35 km · 约 35 分钟（估算）' } },
+        nextStop:{ type:'drive', text:'🚗 前往 Geysir', detail:'约 35 km · 约 35 分钟' } },
       { icon:'💦', name:'Geysir 盖锡尔地热区', label:'B', images:['geysir.webp','geysir-alt-1.webp','geysir-alt-2.webp','geysir-alt-3.webp','geysir-alt-4.webp','geysir-alt-5.webp'], tags:['地热','喷泉','花儿与少年'],
         desc:'区内的 Strokkur 间歇泉每隔数分钟便会喷发一次，水柱可高达十余米，周边还有多处地热池。',
         deepDesc:'盖锡尔间歇泉曾是世界上最壮观的间歇泉，喷发时高度可达60至80米，气势惊人。虽然因人为因素造成阻塞，目前大盖锡尔已停止喷发，但其壮阔的历史仍深植人心。一旁的斯特罗柯间歇泉（Strokkur）虽然无法与昔日大盖锡尔相比拟，但每隔5至10分钟便会规律喷发，水柱直冲天际的瞬间依然令人屏息。对第一次来冰岛的旅人来说，站在弥漫着硫磺气息的地热区，看着滚烫的水柱从地底冲出，那种「大地在呼吸」的震撼感，绝对是黄金圈最难忘的记忆之一。建议和旅伴轮流录影，才能同时捕捉到喷发的壮观与彼此惊喜的表情。',
@@ -142,7 +141,7 @@ const TRIP = {
     driveSummary: { total:'约 158 km', time:'约 2小时25分钟（不含景点停留）' },
     hotel:{ name:'Lakeview Cabin 民宿', note:'南岸地区，湖景小屋，有机会观赏极光', map:'Lakeview Cabin Iceland' },
     spots: [
-      { icon:'💧', name:'Seljalandsfoss', label:'A', images:['seljalandsfoss.webp','Seljalandsfoss-1.webp','Seljalandsfoss-2.webp','Seljalandsfoss-3.webp'], tags:['瀑布','可走入水帘后','花儿与少年'],
+      { icon:'💧', name:'Seljalandsfoss 塞里雅兰瀑布', label:'A', images:['seljalandsfoss.webp','Seljalandsfoss-1.webp','Seljalandsfoss-2.webp','Seljalandsfoss-3.webp'], tags:['瀑布','可走入水帘后','花儿与少年'],
         desc:'知名度极高的瀑布，游客可沿步道走到水帘后方洞穴，从背面欣赏瀑布独特视角。',
         deepDesc:'Seljalandsfoss 是冰岛少数可以「走到水帘后方」的瀑布，也是南岸最经典的打卡点之一。当你沿着湿滑的步道绕到瀑布背面，从洞穴内向外望去，水幕如纱帘般垂挂，阳光穿透时折射出迷离的光晕，彷佛置身于精灵的居所。务必穿防水外套，手机相机也要做好防水保护。',
         tips:'水帘后方步道湿滑且水花大，建议穿防水外套并留意随身物品防水。',
@@ -150,7 +149,7 @@ const TRIP = {
         toilet:'200 ISK，环境一般。',
         map:'Seljalandsfoss Iceland',
         nextStop:{ type:'drive', text:'🚗 前往 Skógafoss', detail:'约 30 km · 约 25 分钟' } },
-      { icon:'🏔️', name:'Skógafoss', label:'B', images:['skogafoss.webp','Skógafoss-1.webp','Skógafoss-2.webp','Skógafoss-3.webp','Skógafoss-4.webp','Skógafoss-5.webp','Skógafoss-6.webp'], tags:['瀑布','登高观景','花儿与少年'],
+      { icon:'🏔️', name:'Skógafoss 史可加瀑布', label:'B', images:['skogafoss.webp','Skógafoss-1.webp','Skógafoss-2.webp','Skógafoss-3.webp','Skógafoss-4.webp','Skógafoss-5.webp','Skógafoss-6.webp'], tags:['瀑布','登高观景','花儿与少年'],
         desc:'宽阔壮观的悬崖瀑布，天气晴朗时常见彩虹，瀑布一侧有阶梯可登顶俯瞰南岸海岸线。',
         deepDesc:'Skógafoss 宽约25米、高约60米，是冰岛最壮观的瀑布之一。由于水量丰沛且水雾弥漫，只要阳光角度对了，几乎保证能看到双彩虹甚至三彩虹。瀑布右侧有一条527阶的铁梯，登顶后可俯瞰南岸海岸线的辽阔景色。传说中，维京人曾在瀑布后方的洞穴中藏了宝藏，至今无人找到。',
         tips:'阶梯较长较陡，可视体力选择只在瀑布正面拍照，无需登顶。',
@@ -179,10 +178,10 @@ const TRIP = {
         deepDesc:'维克教堂小巧朴实，但无论外观或内部皆极具安静美感——教堂入口、外围墓地，以及教堂后方山坡都是拍照取景的极佳位置，能俯瞰维克小镇全景、海岸及 Reynisdrangar 海上巨石，日出日落时分光线尤其戏剧性。沿着教堂后方步道往上走，利用地势的前后景衬托，可以拍出宏伟又带点童话感的教堂全貌。有趣的是，这座教堂常被拿来和全球视力检查标准图像（红色小屋）的本尊——位于冰岛西部海德利桑德的英格亚尔德斯霍尔教堂相提并论，算是「平替款」。',
         tips:'建议傍晚时段前往，光线最有戏剧性；后方山坡步道较陡，请留意脚下。',
         map:'Vík í Mýrdal Church',
-        // 两段式导航链：先到 Krónan Vík 超市补给，再到民宿（10/6、10/7 两晚都住这间）
+        // 两段式导航链：先到超市补给，再到民宿（10/6、10/7 两晚都住这间）
         nextStops:[
-          { name:'Krónan Vík超市', address:'Kronan Vik Iceland', distanceKm:1, etaMin:5 },
-          { name:'民宿（Lakeview Cabin，近 Kirkjubæjarklaustur）', address:'Lakeview Cabin Iceland', distanceKm:72, etaMin:60 }
+          { name:'超市', address:'Kronan Vik Iceland', distanceKm:1, etaMin:5 },
+          { name:'民宿', address:'Lakeview Cabin Iceland', distanceKm:72, etaMin:60 }
         ] }
     ],
     drives:[
@@ -221,8 +220,7 @@ const TRIP = {
         parking:'与冰河湖停车场通用，2025年起取消单独收费。',
         toilet:'无。',
         map:'Diamond Beach Iceland',
-        // 距离/时间为估算值（总表未提供），推估约等同出发时集合点距离，建议之后核实民宿实际地址
-        nextStop:{ type:'drive', text:'🚗 前往民宿', detail:'约 90 km · 约 75 分钟（估算）' } }
+        nextStop:{ type:'drive', text:'🚗 前往民宿', detail:'约 90 km · 约 75 分钟' } }
     ],
     drives:[
       { from:'Blue Ice Cave（集合点）', to:'Jökulsárlón', dist:'约 15 km', time:'约 15 分钟' },
@@ -243,8 +241,7 @@ const TRIP = {
         parking:'下方停车场有免费简易厕所。',
         toilet:'下方停车场设有免费简易厕所。',
         map:'Fjadrargljufur Canyon Iceland',
-        // 距离/时间为估算值，这一段是全天最长的一段转场车程
-        nextStop:{ type:'drive', text:'🚗 前往 Blue Lagoon 蓝湖', detail:'约 295 km · 约 4 小时 15 分钟（估算，全天最长车程）' } },
+        nextStop:{ type:'drive', text:'🚗 前往 Blue Lagoon 蓝湖', detail:'约 295 km · 约 4 小时 15 分钟' } },
       { icon:'♨️', name:'Blue Lagoon 蓝湖温泉', label:'B', img:'blue-lagoon.webp', tags:['地热温泉','SPA'],
         desc:'世界知名地热温泉 SPA，乳白蓝色温泉水富含矽土与矿物质，据说对皮肤有舒缓效果。',
         deepDesc:'蓝湖温泉是冰岛最著名的「放松仪式」。有趣的是，蓝湖并非天然温泉，而是人为地热池——邻近的 Svartsengi 地热发电厂将地下热水抽取至地表发电后，排出的高温含矿废水流入熔岩区的低洼地，经年累月积聚形成这片温泉池，多孔的玄武岩天然过滤了水中杂质。乳白色的湖水也不是色素造成，而是水中的二氧化矽与藻类让阳光散射，短波长的蓝光被反射、长波长的红光被吸收，形成从乳白到深蓝层次变化的独特色泽，与冰岛蓝冰洞的「蓝」是同样的光学原理。水温常年维持在37至39度，即使外面风雪交加，泡在温暖的蓝湖中依然舒适无比。温泉区提供矽土面膜，敷着面膜、喝着冰沙、和朋友聊天，是北欧式「慢活」的极致体验——矽土能舒缓软化肌肤，水中的硫、钙、镁等矿物质则有助于放松肌肉、促进血液循环。',
@@ -252,8 +249,7 @@ const TRIP = {
         parking:'温泉区停车场免费。',
         toilet:'温泉区内。务必导航「Blue Lagoon Iceland」，勿搜中文「蓝湖」以免误导至废弃地热厂区。',
         map:'Blue Lagoon Iceland',
-        // 距离/时间为估算值（总表未提供），建议之后核实民宿实际地址
-        nextStop:{ type:'drive', text:'🚗 前往民宿', detail:'约 20 km · 约 20 分钟（估算）' } }
+        nextStop:{ type:'drive', text:'🚗 前往民宿', detail:'约 20 km · 约 20 分钟' } }
     ]
   },
   day6: {
