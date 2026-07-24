@@ -356,10 +356,19 @@
     }
     .spot-item.no-click .spot-card-copy { cursor: default; }
     .spot-card-title { min-width: 0; font-size: var(--fs-base); font-weight: 600; line-height: 1.4; }
-    /* 備選景點：卡片文字整體刷淡灰處理，跟正式行程做出區別，但仍可點擊查看內容 */
-    .spot-item.spot-optional .spot-card-title { color: var(--sub); font-weight: 500; }
-    .spot-item.spot-optional .spot-card-intro { color: var(--sub); opacity: 0.75; }
-    .spot-item.spot-optional .spot-card-meta { color: var(--sub); opacity: 0.75; }
+    /* 備選景點：底色改用中性灰調（跟正式景點的白底 + 主題色邊框做出區隔），
+       文字整體再刷淡一階，縮圖也做出「褪色」處理，卡片尺寸完全不變。 */
+    .spot-item.spot-optional {
+      background: #f2f1ee;
+      border-color: #d8d5cd;
+    }
+    .spot-item.spot-optional .spot-card-title { color: var(--sub); opacity: 0.6; font-weight: 500; }
+    .spot-item.spot-optional .spot-card-intro { color: var(--sub); opacity: 0.55; }
+    .spot-item.spot-optional .spot-card-meta { color: var(--sub); opacity: 0.55; }
+    .spot-item.spot-optional .spot-thumb-cell img {
+      filter: grayscale(55%) opacity(0.6);
+    }
+    .spot-item.spot-optional .spot-thumb-cell.fallback { opacity: 0.5; }
     .spot-optional-badge {
       display: inline-block; margin-left: var(--sp-3); font-size: var(--fs-2xs); font-weight: 700;
       padding: 1px 8px; border-radius: 999px; color: var(--sub);
