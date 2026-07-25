@@ -127,13 +127,14 @@ function buildTripHero() {
   '</section>';
 }
 
-// 章節卡（v15）：國家分隔從一行小字升級成「Chapter N」章節卡，營造翻頁進入下一段旅程的感覺。
+// 章節卡（v20）：改為單列橫排——「Chapter N」小字在左、國名在右，整卡高度壓縮，
+// 視覺上像書籤分隔帶，不再是佔兩行高的大卡片。
 // 章節編號依 sectionLabel 出現順序自動累加，未來新旅程的資料不需要額外設定。
 function buildChapterCardHtml(chapterIdx, label) {
   return '<div class="ov-tl-row ov-tl-chapter ov-ch-' + chapterIdx + '">' +
     '<div class="ov-tl-node"><span class="ov-tl-diamond"></span></div>' +
-    '<div class="chapter-card"><div class="chapter-eyebrow">Chapter ' + chapterIdx + '</div>' +
-    '<div class="chapter-title">' + label + '</div></div></div>';
+    '<div class="chapter-card"><span class="chapter-eyebrow">Chapter ' + chapterIdx + '</span>' +
+    '<span class="chapter-title">' + label + '</span></div></div>';
 }
 
 // 總覽「完整行程」時間軸（v15）：9 天卡片從獨立堆疊改成一條垂直時間軸串起來。
@@ -165,8 +166,9 @@ function renderOverview() {
       '<div class="ov-tl-node"><span class="ov-tl-dot"></span></div>' +
       '<div class="day-card ' + (d.color || '') + '" onclick="showDay(\'' + d.id + '\')">' +
       '<div class="day-card-bg">' + bannerHtml + '</div><div class="day-card-scrim"></div>' +
-      '<div class="day-card-content"><div class="day-badge"><div class="month">' + d.month + '</div><div class="date">' + d.dayOfMonth + '</div></div>' +
-      '<div class="day-card-info"><h3>' + d.title + '</h3>' + (d.summary ? '<p>' + d.summary + '</p>' : '') + '</div></div></div></div>';
+      '<div class="day-card-content">' +
+      '<div class="day-card-info"><h3>' + d.title + '</h3>' + (d.summary ? '<p>' + d.summary + '</p>' : '') + '</div></div></div>' +
+      '<div class="day-badge ' + (d.color || '') + '"><div class="month">' + d.month + '</div><div class="date">' + d.dayOfMonth + '</div></div></div>';
   });
   html += '</div>';
   var timelineEl = document.getElementById('overviewTimeline');

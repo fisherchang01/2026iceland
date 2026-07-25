@@ -262,21 +262,25 @@
       padding: var(--sp-5) var(--sp-6);
     }
     .day-badge {
+      /* v20：從卡片內左下角改成「突出卡片上緣的標籤」——徽章是 .ov-tl-row 的直接子層，
+         絕對定位在卡片上方、微微探出卡片頂邊，像行李吊牌。 */
+      position: absolute; top: -12px; left: 40px; z-index: 4;
       border-radius: var(--radius-sm);
-      padding: 8px 11px;
+      padding: 6px 10px;
       text-align: center;
-      min-width: 62px;
+      min-width: 56px;
       flex-shrink: 0;
+      box-shadow: 0 3px 8px rgba(20,30,35,0.35);
     }
-    .day-card.c0 .day-badge { background: #6a7a8a; color:#fff; }
-    .day-card.c1 .day-badge { background: #3a9a78; color:#fff; }
-    .day-card.c2 .day-badge { background: #4a6fcf; color:#fff; }
-    .day-card.c3 .day-badge { background: #d4783a; color:#fff; }
-    .day-card.c4 .day-badge { background: #8a4abf; color:#fff; }
-    .day-card.c5 .day-badge { background: #b89a20; color:#fff; }
-    .day-card.c6 .day-badge { background: #2a90ba; color:#fff; }
-    .day-card.c7 .day-badge { background: #c05a3a; color:#fff; }
-    .day-card.c8 .day-badge { background: #5a9a3a; color:#fff; }
+    .day-badge.c0 { background: #6a7a8a; color:#fff; }
+    .day-badge.c1 { background: #3a9a78; color:#fff; }
+    .day-badge.c2 { background: #4a6fcf; color:#fff; }
+    .day-badge.c3 { background: #d4783a; color:#fff; }
+    .day-badge.c4 { background: #8a4abf; color:#fff; }
+    .day-badge.c5 { background: #b89a20; color:#fff; }
+    .day-badge.c6 { background: #2a90ba; color:#fff; }
+    .day-badge.c7 { background: #c05a3a; color:#fff; }
+    .day-badge.c8 { background: #5a9a3a; color:#fff; }
     .day-badge .month { font-size: 0.85rem; opacity: 0.85; letter-spacing: 1px; }
     .day-badge .date  { font-size: 1.56rem; font-weight: 700; line-height: 1.1; }
     .day-card-info { flex: 1; min-width: 0; }
@@ -1477,10 +1481,12 @@
     .chapter-card {
       flex: 1; min-width: 0;
       margin: var(--sp-5) 0;
-      padding: var(--sp-6) var(--sp-8);
+      padding: var(--sp-4) var(--sp-6);
       border-radius: var(--radius);
       border: 1px solid #c3d8de;
       background: linear-gradient(135deg, #e8f2f5 0%, var(--bg) 100%);
+      /* v20：橫排書籤式——「Chapter N」小字與國名同一列，高度壓縮 */
+      display: flex; align-items: center; gap: var(--sp-4);
     }
     .ov-tl-row.ov-ch-2 .chapter-card {
       border-color: #e0cdb0;
@@ -1493,7 +1499,7 @@
     }
     .ov-tl-row.ov-ch-2 .chapter-eyebrow { color: var(--accent-warm); }
     .chapter-title {
-      margin-top: var(--sp-1);
+      margin-top: 0;
       font-family: var(--font-display);
       font-size: var(--fs-lg); font-weight: 700;
       color: var(--primary);
@@ -1553,11 +1559,13 @@
              地圖輪播搬到今日卡之後、壓成 21:9 橫幅，角色分開。
        ══════════════════════════════════════════════════════════════ */
 
-    /* Hero 左右全出血、上緣貼齊日期選單列；底部圓角跟今日卡銜接 */
+    /* Hero 左右全出血、上緣貼齊日期選單列；底部圓角跟今日卡銜接。
+       v20：高度縮小約 20%（64vh→51vh、520px→416px），封面不佔滿首屏，
+       今日卡與「完整行程」標題在首屏就能完整露出，不再被底部導覽列遮住。 */
     .trip-hero {
       margin: calc(-1 * var(--sp-6)) calc(-1 * var(--sp-6)) 0;
       border-radius: 0 0 var(--radius-lg) var(--radius-lg);
-      height: min(64vh, 520px);
+      height: min(51vh, 416px);
     }
     /* 緩慢推進鏡頭（Ken Burns），靜態封面也有呼吸感 */
     .trip-hero-bg img { animation: heroDrift 22s ease-in-out infinite alternate; }
