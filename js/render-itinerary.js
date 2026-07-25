@@ -288,6 +288,7 @@ function showDay(dayId) {
     });
 
     html += buildHotelHtml(d.hotel, dayId);
+    html += buildAuroraWidget(d.aurora);
 
     if (d.driveSummary) {
       html += '<div class="drive-summary-card">' +
@@ -435,6 +436,28 @@ function lightboxNext(e) {
 // 住宿改为「点击才显示导航」（第5项功能）：卡片本身跟景点一样可点击，点开后在同一个
 // spotSheet 详情弹层里显示导航按钮，逻辑上就是复制一份景点的呈现模式。
 // 没有 map 栏位的住宿（例如 Day8「飞机上」）维持不可点击、纯资讯显示，不会呈现无用的导航按钮。
+// 极光指标卡：以当晚住宿地点为准，气象网站风格呈现（背景依机率换色、图示化四项数值、底部机率总结）。
+// 只有 d.aurora 存在时才会渲染（芬兰段的日子没有这个栏位，天然就不会显示）。
+function buildAuroraWidget(aurora) {
+  if (!aurora) return '';
+  var probLabel = { high:'高', medium:'中等', low:'偏低' }[aurora.probability] || aurora.probability;
+  return '<div class="aurora-card aurora-prob-' + aurora.probability + '">' +
+    '<div class="aurora-card-head">' +
+      '<span class="aurora-card-title">🌌 今晚极光观测指标</span>' +
+      '<span class="aurora-prob-badge">机率：' + probLabel + '</span>' +
+    '</div>' +
+    '<div class="aurora-location">📍 ' + aurora.location.name + '</div>' +
+    '<div class="aurora-stats">' +
+      '<div class="aurora-stat"><span class="aurora-stat-icon">🌅</span><span class="aurora-stat-label">日出</span><span class="aurora-stat-value">' + aurora.sunrise + '</span></div>' +
+      '<div class="aurora-stat"><span class="aurora-stat-icon">🌇</span><span class="aurora-stat-label">日落</span><span class="aurora-stat-value">' + aurora.sunset + '</span></div>' +
+      '<div class="aurora-stat"><span class="aurora-stat-icon">🧭</span><span class="aurora-stat-label">KP指数</span><span class="aurora-stat-value">' + aurora.kpIndex + '</span></div>' +
+      '<div class="aurora-stat"><span class="aurora-stat-icon">☁️</span><span class="aurora-stat-label">云量</span><span class="aurora-stat-value">' + aurora.cloudCover + '%</span></div>' +
+    '</div>' +
+    '<div class="aurora-summary">' + aurora.summary + '</div>' +
+    (aurora.updatedAt ? '<div class="aurora-updated">⚠️ ' + aurora.updatedAt + '</div>' : '') +
+  '</div>';
+}
+
 function buildHotelHtml(hotel, dayId, noTimeline) {
   if (!hotel || !hotel.name) return '';
   var clickable = !!hotel.map;

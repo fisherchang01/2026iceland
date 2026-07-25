@@ -27,6 +27,9 @@ const TRIP = {
     routeMapImg:'route-day1.webp',
     driveSummary: { total:'约 165 km', time:'约 2小时45分钟（不含景点停留，市区路段为步行）' },
     hotel:{ name:'South Central Country Apartment 民宿', note:'黄金圈地区，舒适乡村民宿环境', map:'South Central Country Apartment Iceland' },
+    aurora:{ location:{ name:'南部民宿（Selfoss 一带）', lat:63.93, lon:-20.85 },
+      sunrise:'07:57', sunset:'18:52', kpIndex:3, cloudCover:30, probability:'medium',
+      summary:'云量偏低、KP指数中等，示例情境下观测机会中等', updatedAt:'示例数值，出发前请再核实预报' },
     spots: [
       // TODO(图片)：目前没有 img/images，之后有照片时记得补上
       { icon:'🛬', name:'KEF 机场抵达 · 取车', tags:['机场','免税店','租车'],
@@ -86,6 +89,9 @@ const TRIP = {
     routeMapImg:'route-day2.webp',
     driveSummary: { total:'约 102 km', time:'约 1小时45分钟（不含景点停留，不含备选景点绕行）' },
     hotel:{ name:'South Central Country Apartment 民宿', note:'连住，黄金圈地区', map:'South Central Country Apartment Iceland' },
+    aurora:{ location:{ name:'南部民宿（Selfoss 一带）', lat:63.93, lon:-20.85 },
+      sunrise:'08:00', sunset:'18:49', kpIndex:2, cloudCover:55, probability:'low',
+      summary:'云量偏高，示例情境下观测机会偏低', updatedAt:'示例数值，出发前请再核实预报' },
     spots: [
       { icon:'💎', name:'Brúarfoss 蓝色秘境瀑布', label:'A', images:['bruarfoss.webp','bruarfoss-alt-2.webp','bruarfoss-alt-3.webp','bruarfoss-alt-4.webp','bruarfoss-alt-5.webp','Bruarfoss-1.webp','Bruarfoss-2.webp','Bruarfoss-3.webp','Bruarfoss-4.webp','Bruarfoss-5.webp'], tags:['瀑布','秘境'],
         desc:'以水色闻名的瀑布，河水因玄武岩地质呈现梦幻蓝绿色，需徒步约 20–30 分钟抵达。',
@@ -140,6 +146,9 @@ const TRIP = {
     routeMapImg:'route-day3.webp',
     driveSummary: { total:'约 158 km', time:'约 2小时25分钟（不含景点停留）' },
     hotel:{ name:'Lakeview Cabin 民宿', note:'南岸地区，湖景小屋，有机会观赏极光', map:'Lakeview Cabin Iceland' },
+    aurora:{ location:{ name:'Lakeview Cabin（近 Kirkjubæjarklaustur）', lat:63.79, lon:-18.06 },
+      sunrise:'08:03', sunset:'18:45', kpIndex:4, cloudCover:20, probability:'high',
+      summary:'云量低、KP指数偏高，示例情境下是这趟旅程观测机会最好的一晚', updatedAt:'示例数值，出发前请再核实预报' },
     spots: [
       { icon:'💧', name:'Seljalandsfoss 塞里雅兰瀑布', label:'A', images:['seljalandsfoss.webp','Seljalandsfoss-1.webp','Seljalandsfoss-2.webp','Seljalandsfoss-3.webp'], tags:['瀑布','可走入水帘后','花儿与少年'],
         desc:'知名度极高的瀑布，游客可沿步道走到水帘后方洞穴，从背面欣赏瀑布独特视角。',
@@ -196,6 +205,9 @@ const TRIP = {
     num:'4', dateLabel:'10月7日（周三）', title:'走进蓝冰·闪耀钻石海岸',
     driveSummary: { total:'约 30 km', time:'约 30 分钟（不含景点停留）' },
     hotel:{ name:'Lakeview Cabin 民宿', note:'连住，南岸湖景小屋', map:'Lakeview Cabin Iceland' },
+    aurora:{ location:{ name:'Lakeview Cabin（近 Kirkjubæjarklaustur）', lat:63.79, lon:-18.06 },
+      sunrise:'08:06', sunset:'18:41', kpIndex:3, cloudCover:45, probability:'medium',
+      summary:'云量中等，示例情境下观测机会中等', updatedAt:'示例数值，出发前请再核实预报' },
     spots: [
       { icon:'🧊', name:'Blue Ice Cave 蓝冰洞', label:'A', img:'blue-ice-cave.webp', tags:['冰洞','需向导'],
         desc:'需由专业向导带领进入的冰川冰洞，洞壁呈现罕见蓝色冰晶纹理，是冰岛独有体验之一。',
@@ -233,6 +245,9 @@ const TRIP = {
     routeMapImg:'route-day5.webp',
     driveSummary: { total:'约 325 km', time:'约 4小时50分钟（不含景点停留，这天是长途转场日）' },
     hotel:{ name:'Garður Apartments 民宿', note:'Garður 地区公寓式民宿，邻近蓝湖与机场', map:'Gardur Apartments Iceland' },
+    aurora:{ location:{ name:'Garður（近蓝湖与机场）', lat:64.07, lon:-22.70 },
+      sunrise:'08:09', sunset:'18:38', kpIndex:2, cloudCover:65, probability:'low',
+      summary:'云量偏高、又邻近机场光害，示例情境下观测机会偏低', updatedAt:'示例数值，出发前请再核实预报' },
     spots: [
       { icon:'🏞️', name:'Fjaðrárgljúfur 羽毛峡谷', label:'A', tags:['峡谷','世界最美峡谷'],
         desc:'冰岛南部最壮丽的自然奇观之一，狭长河谷全长约2公里、深约100米，从高空俯瞰形似一根羽毛。',

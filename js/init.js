@@ -32,7 +32,7 @@ function applyTripConfig() {
     themeMeta.name = 'theme-color';
     document.head.appendChild(themeMeta);
   }
-  themeMeta.content = theme.primary || '#2c5f6e';
+  themeMeta.content = theme.primary || '#3f6e7a';
 }
 
 function registerOfflineSupport() {

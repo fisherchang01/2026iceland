@@ -12,9 +12,9 @@ const TRIP_CONFIG = window.TRIP_CONFIG = {
   primaryCurrency: 'ISK',
   currencies: ['ISK', 'EUR', 'HKD', 'CNY', 'USD', 'TWD'],
   theme: {
-    primary: '#2c5f6e',
+    primary: '#3f6e7a',
     accent: '#4a8fa3',
-    background: '#f5f5f0',
+    background: '#f2ede4',
     header: '#faf3ea'
   },
   coverImage: 'images/banners/day0-card.jpg',
