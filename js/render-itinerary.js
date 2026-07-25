@@ -529,6 +529,10 @@ function buildAuroraWidget(aurora) {
   var C = 465;
   var offset = Math.round(C * (1 - ringFill));
 
+  // v22：KP 指數／雲量兩張小卡改成可點擊連結，直接跳到冰島氣象局極光預報頁面看當天實際數據。
+  // 沒有另外新增資料欄位——若某天想指定不同來源，可在該天的 aurora 物件加 forecastUrl 覆蓋。
+  var auroraSourceUrl = aurora.forecastUrl || 'https://en.vedur.is/weather/forecasts/aurora/';
+
   return '<div class="aurora-card aurora2 aurora-prob-' + aurora.probability + '">' +
     '<div class="aurora2-hero">' +
       aurora2SkySvg() +
@@ -546,8 +550,8 @@ function buildAuroraWidget(aurora) {
       '<div class="aurora2-ring-num">' + probLabel + '<span>观测机率</span></div>' +
     '</div>' +
     '<div class="aurora2-metrics">' +
-      '<div class="aurora2-metric"><div class="aurora2-m-icon">🌌</div><div class="aurora2-m-name">KP指数</div><div class="aurora2-m-val">KP ' + aurora.kpIndex + '</div><div class="aurora2-m-sub">' + kpSub + '</div></div>' +
-      '<div class="aurora2-metric"><div class="aurora2-m-icon">☁️</div><div class="aurora2-m-name">天空云量</div><div class="aurora2-m-val">' + aurora.cloudCover + '%</div><div class="aurora2-m-sub">' + ccSub + '</div></div>' +
+      '<a class="aurora2-metric aurora2-metric-link" href="' + auroraSourceUrl + '" target="_blank" rel="noopener" onclick="event.stopPropagation()" aria-label="查看 KP 指数即时预报（外部网站）"><div class="aurora2-m-icon">🌌</div><div class="aurora2-m-name">KP指数</div><div class="aurora2-m-val">KP ' + aurora.kpIndex + '</div><div class="aurora2-m-sub">' + kpSub + '</div></a>' +
+      '<a class="aurora2-metric aurora2-metric-link" href="' + auroraSourceUrl + '" target="_blank" rel="noopener" onclick="event.stopPropagation()" aria-label="查看云量即时预报（外部网站）"><div class="aurora2-m-icon">☁️</div><div class="aurora2-m-name">天空云量</div><div class="aurora2-m-val">' + aurora.cloudCover + '%</div><div class="aurora2-m-sub">' + ccSub + '</div></a>' +
       '<div class="aurora2-metric"><div class="aurora2-m-icon">🌇</div><div class="aurora2-m-name">日落</div><div class="aurora2-m-val">' + aurora.sunset + '</div><div class="aurora2-m-sub">日出 ' + aurora.sunrise + '</div></div>' +
     '</div>' +
     '<div class="aurora2-advice"><h4>📖 今晚行动建议</h4><p>' + aurora.summary + '</p></div>' +

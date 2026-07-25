@@ -232,7 +232,9 @@
     .now-reminders ul { margin: var(--sp-2) 0 0 1.1em; }
     .now-reminders li { margin-top: var(--sp-1); font-size: var(--fs-xs); line-height: 1.55; color: var(--warn-txt); }
     .now-primary-btn { width: 100%; margin-top: var(--sp-6); padding: var(--sp-5); border: 1px solid var(--primary); border-radius: var(--radius-sm); background: #fff; color: var(--primary); font: inherit; font-size: var(--fs-sm); font-weight: 800; cursor: pointer; }
-    .overview-section-title { margin: 0 0 var(--sp-5); }
+    /* v22：從 sp-5(12px) 加大到 sp-9(24px)——day0 卡片的日期徽章會探出卡片上緣 12px，
+       原本 12px 的間距讓徽章幾乎貼到「完整行程」標題文字，比照 v21 日卡間距的解法加大呼吸空間 */
+    .overview-section-title { margin: 0 0 var(--sp-9); }
     .overview-section-title h2 { font-size: var(--fs-lg); color: var(--primary); }
     .overview-section-title p { margin-top: var(--sp-1); font-size: var(--fs-xs); color: var(--sub); }
     .day-card {
@@ -1486,7 +1488,9 @@
     .ov-tl-row.ov-ch-2 .ov-tl-diamond { background: #dcc3a0; }
     .chapter-card {
       flex: 1; min-width: 0;
-      margin: var(--sp-5) 0;
+      /* v22：底部間距從 sp-5(12px) 加大到 sp-9(24px)——道理跟 overview-section-title 一樣，
+         章節卡後面第一張日卡（10/4、10/9）的徽章會探出卡片上緣 12px，原本間距不夠留白 */
+      margin: var(--sp-5) 0 var(--sp-9);
       padding: var(--sp-4) var(--sp-6);
       border-radius: var(--radius);
       border: 1px solid #c3d8de;
@@ -1705,6 +1709,19 @@
       border-radius: var(--radius);
       padding: var(--sp-5) var(--sp-2);
       text-align: center;
+    }
+    /* v22：KP 指数／雲量卡改用 <a> 包裹，重置連結預設樣式並加上小小的外連箭頭，
+       讓使用者知道點下去會跳到冰島氣象局頁面看即時數據，不是純展示用的卡片 */
+    .aurora2-metric-link {
+      display: block; text-decoration: none; color: inherit;
+      position: relative;
+      -webkit-tap-highlight-color: transparent;
+      transition: background .15s;
+    }
+    .aurora2-metric-link:active { background: rgba(255,255,255,0.14); }
+    .aurora2-metric-link::after {
+      content: '↗'; position: absolute; top: 6px; right: 8px;
+      font-size: 10px; color: rgba(255,255,255,0.55);
     }
     .aurora2-m-icon { font-size: 1.8rem; }
     .aurora2-m-name { margin-top: var(--sp-2); font-size: var(--fs-sm); color: rgba(255,255,255,0.72); }

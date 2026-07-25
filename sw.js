@@ -1,6 +1,6 @@
 const CACHE_PREFIX = 'trip-' + self.registration.scope.replace(/[^a-z0-9]+/gi, '-').toLowerCase();
-const SHELL_CACHE = CACHE_PREFIX + 'shell-2026-07-25-spacing-v4';
-const DAY_CACHE = CACHE_PREFIX + 'current-days-2026-07-25-spacing-v4';
+const SHELL_CACHE = CACHE_PREFIX + 'shell-2026-07-26-aurora-link-v5';
+const DAY_CACHE = CACHE_PREFIX + 'current-days-2026-07-26-aurora-link-v5';
 
 // 僅預先快取程式、資料與 App 圖示；不預載照片大圖、所有路線圖或 PDF。
 const SHELL_ASSETS = [
