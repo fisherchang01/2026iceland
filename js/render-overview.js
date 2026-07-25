@@ -129,11 +129,13 @@ function buildChapterCardHtml(chapterIdx, label) {
 // 每張日卡左邊多一根節點欄（圓點 + 貫穿線），線與點的顏色跟著章節走（冰島段藍、芬蘭段暖金），
 // 今天當天的圓點放大發光、已過去的日子淡化——狀態沿用 getTripDayContext() 的 today，不需新欄位。
 function renderOverview() {
-  var html = buildTripHero();
+  // v16：首屏拆成兩個掛載點——hero + 今日卡放 #overviewContent（頁面最頂），
+  // 地圖橫幅由 updateItinMap 填在中間，時間軸放 #overviewTimeline。
   var context = getTripDayContext();
-  html += buildNowDashboard(context);
-  html += '<div class="overview-section-title"><h2>完整行程</h2><p>也可以直接选择任一天查看</p></div>';
+  var topEl = document.getElementById('overviewContent');
+  topEl.innerHTML = buildTripHero() + buildNowDashboard(context);
 
+  var html = '<div class="overview-section-title"><h2>完整行程</h2><p>也可以直接选择任一天查看</p></div>';
   var todayKey = context ? context.today : '';
   var chapterIdx = 0;
   html += '<div class="ov-timeline">';
@@ -156,9 +158,12 @@ function renderOverview() {
       '<div class="day-card-info"><h3>' + d.title + '</h3>' + (d.summary ? '<p>' + d.summary + '</p>' : '') + '</div></div></div></div>';
   });
   html += '</div>';
-  var overviewEl = document.getElementById('overviewContent');
-  overviewEl.innerHTML = html;
-  if (typeof initScrollReveal === 'function') initScrollReveal(overviewEl);
+  var timelineEl = document.getElementById('overviewTimeline');
+  timelineEl.innerHTML = html;
+  if (typeof initScrollReveal === 'function') {
+    initScrollReveal(topEl);
+    initScrollReveal(timelineEl);
+  }
 }
 
 function mountTabContent() {

@@ -47,8 +47,11 @@
 
   <div class="view active" id="view-overview">
     <div class="page-inner">
-      <div class="itin-map-scroll" id="itinMapScrollOverview"></div>
+      <!-- v16：首屏改成「雜誌封面」動線——全出血 hero（在 overviewContent 裡）→ 今日卡 → 地圖橫幅 → 時間軸。
+           地圖輪播從 hero 上方搬到今日卡之後，並壓成 21:9 橫幅，不再跟 hero 擠成兩個相似圖框。 -->
       <div id="overviewContent"></div>
+      <div class="itin-map-scroll" id="itinMapScrollOverview"></div>
+      <div id="overviewTimeline"></div>
     </div>
   </div>
 

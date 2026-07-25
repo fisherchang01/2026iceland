@@ -1544,3 +1544,48 @@
       .travel-collapse-body.open,
       .flight-collapse-body.open { animation: none; }
     }
+
+    /* ══════════════════════════════════════════════════════════════
+       v16 首屏「雜誌封面」改造（2026-07-25）
+       問題：hero 上方還有一個顯示「同一張封面圖」的地圖輪播，
+             兩個相似圖框疊在一起，第一眼沒有重點。
+       做法：hero 全出血放大 + 緩慢推進鏡頭；今日卡上疊 hero 下緣；
+             地圖輪播搬到今日卡之後、壓成 21:9 橫幅，角色分開。
+       ══════════════════════════════════════════════════════════════ */
+
+    /* Hero 左右全出血、上緣貼齊日期選單列；底部圓角跟今日卡銜接 */
+    .trip-hero {
+      margin: calc(-1 * var(--sp-6)) calc(-1 * var(--sp-6)) 0;
+      border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+      height: min(64vh, 520px);
+    }
+    /* 緩慢推進鏡頭（Ken Burns），靜態封面也有呼吸感 */
+    .trip-hero-bg img { animation: heroDrift 22s ease-in-out infinite alternate; }
+    @keyframes heroDrift {
+      from { transform: scale(1) translateY(0); }
+      to   { transform: scale(1.08) translateY(-2%); }
+    }
+    /* 標題再放大一級，封面感 */
+    .trip-hero-title { font-size: var(--fs-4xl); letter-spacing: 0.02em; }
+    .trip-hero-dates { font-size: var(--fs-sm); }
+
+    /* 今日卡向上疊住 hero 下緣，做出前後層次；hero 文字往下讓位 */
+    .trip-hero-content { padding-bottom: 64px; }
+    .now-dashboard {
+      position: relative; z-index: 3;
+      margin: -44px var(--sp-2) var(--sp-9);
+    }
+
+    /* 地圖輪播（已搬到今日卡之後）：壓成 21:9 橫幅 + 卡片框，
+       視覺上變成「路線橫幅」，不再是第二個 hero */
+    #itinMapScrollOverview {
+      margin: 0 0 var(--sp-8);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: 0 4px 14px rgba(44,95,110,0.12);
+    }
+    #itinMapScrollOverview .photo-carousel { aspect-ratio: 21 / 9; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .trip-hero-bg img { animation: none; }
+    }
