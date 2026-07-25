@@ -17,7 +17,7 @@ const TRIP_CONFIG = window.TRIP_CONFIG = {
     background: '#f2ede4',
     header: '#faf3ea'
   },
-  coverImage: 'images/banners/day0-card.jpg',
+  coverImage: 'images/banners/cover-hero.webp',
   bannerTitleHtml: '🧊 冰与火的国度（冰岛 + 芬兰）',
   badges: ['🇮🇸 冰岛 5天', '🇫🇮 芬兰 2天', '✈️ 含5航班']
 };
