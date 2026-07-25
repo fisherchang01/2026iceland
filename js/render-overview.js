@@ -73,6 +73,28 @@ function getOfflineDayAssetUrls() {
   return assets.filter(function(asset, index){ return assets.indexOf(asset) === index; });
 }
 
+// 旅程進度環（v17）：小小的圓環顯示「旅程已進行 n/9 天」，
+// 進度依 getTripDayContext 的狀態推算（出發前 0、旅程中第 n 天、結束滿格），不需新資料欄位。
+function buildTripProgressRing(context) {
+  var total = TRIP_DATA.days.length;
+  var elapsed = 0;
+  if (context) {
+    if (context.state === 'complete') elapsed = total;
+    else if (context.state === 'today' || context.state === 'between') elapsed = context.index;
+  }
+  var R = 18;
+  var C = Math.round(2 * Math.PI * R * 10) / 10; // 圓周 113.1
+  var pct = total ? elapsed / total : 0;
+  var offset = Math.round(C * (1 - pct) * 10) / 10;
+  return '<div class="now-progress" role="img" aria-label="旅程进度 ' + elapsed + '/' + total + ' 天">' +
+    '<svg viewBox="0 0 44 44"><circle class="np-track" cx="22" cy="22" r="' + R + '"/>' +
+    '<circle class="np-fill" cx="22" cy="22" r="' + R + '" style="stroke-dasharray:' + C + ';stroke-dashoffset:' + offset + '"/></svg>' +
+    '<span class="np-num">' + elapsed + '/' + total + '</span></div>';
+}
+
+// 今日卡（v17）：從「儀表板」改成輕盈的明信片——
+// 上層白卡只留 狀態 + 標題 + 一行摘要 + 進度環 + 主按鈕（疊在 hero 下緣，是第一視覺焦點）；
+// 下一站 / 今日住宿 / 今日提醒移到卡片下方獨立資訊區，不再全塞進卡裡。
 function buildNowDashboard(context) {
   if (!context) return '';
   var day = context.day;
@@ -90,15 +112,20 @@ function buildNowDashboard(context) {
       (day.hotel.map ? '<a class="now-inline-link" href="https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(day.hotel.map) + '" target="_blank" rel="noopener">住宿导航</a>' : '') + '</div>' : '';
   var remindersHtml = reminders.length ? '<div class="now-reminders"><span class="now-info-label">今日提醒</span><ul>' +
     reminders.map(function(item){ return '<li>' + item + '</li>'; }).join('') + '</ul></div>' : '';
+  var detailsHtml = (stopHtml || lodgingHtml || remindersHtml) ?
+    '<section class="now-details">' +
+      ((stopHtml || lodgingHtml) ? '<div class="now-info-grid">' + stopHtml + lodgingHtml + '</div>' : '') +
+      remindersHtml +
+    '</section>' : '';
 
   return '<section class="now-dashboard">' +
-    '<div class="now-eyebrow">' + stateLabel + ' · 第' + (context.index + 1) + '日</div>' +
-    '<h1>' + day.detailTitle + '</h1>' +
-    '<p class="now-intro">' + intro + (day.summary ? '｜' + day.summary : '') + '</p>' +
-    '<div class="now-info-grid">' + stopHtml + lodgingHtml + '</div>' +
-    remindersHtml +
+    '<div class="now-top"><div class="now-top-text">' +
+      '<div class="now-eyebrow">' + stateLabel + ' · 第' + (context.index + 1) + '日</div>' +
+      '<h1>' + day.detailTitle + '</h1>' +
+      '<p class="now-intro">' + intro + (day.summary ? '｜' + day.summary : '') + '</p>' +
+    '</div>' + buildTripProgressRing(context) + '</div>' +
     '<button class="now-primary-btn" onclick="showDay(\'' + day.id + '\')">查看' + (context.state === 'today' ? '今日' : '這日') + '完整行程</button>' +
-  '</section>';
+  '</section>' + detailsHtml;
 }
 
 function buildTripHero() {

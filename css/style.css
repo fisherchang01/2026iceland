@@ -1589,3 +1589,47 @@
     @media (prefers-reduced-motion: reduce) {
       .trip-hero-bg img { animation: none; }
     }
+
+    /* ══════════════════════════════════════════════════════════════
+       v17 今日卡「明信片化」（2026-07-25）
+       從綠色漸層儀表板改成白卡：狀態 + 標題 + 兩行摘要 + 進度環 + 實心主按鈕；
+       下一站/住宿/提醒移到卡片下方獨立資訊區（.now-details）。
+       ══════════════════════════════════════════════════════════════ */
+    .now-dashboard {
+      background: var(--card);
+      border: 1px solid var(--border-light);
+      box-shadow: 0 10px 26px rgba(44,95,110,0.14);
+      padding: var(--sp-7) var(--sp-7) var(--sp-6);
+    }
+    .now-top { display: flex; gap: var(--sp-5); align-items: flex-start; }
+    .now-top-text { flex: 1; min-width: 0; }
+    /* 摘要最多兩行，卡片保持輕盈；完整摘要在每日詳情裡都有 */
+    .now-intro {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    /* 旅程進度環 */
+    .now-progress { position: relative; width: 52px; height: 52px; flex-shrink: 0; }
+    .now-progress svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+    .np-track { fill: none; stroke: #dce9e5; stroke-width: 4; }
+    .np-fill  { fill: none; stroke: var(--accent); stroke-width: 4; stroke-linecap: round; }
+    .np-num {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: var(--fs-2xs); font-weight: 800; color: var(--primary);
+    }
+    /* 主按鈕改實心，成為首屏第一行動焦點 */
+    .now-primary-btn {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      box-shadow: 0 4px 12px rgba(63,110,122,0.3);
+    }
+    .now-primary-btn:active { transform: scale(0.98); }
+
+    /* 卡片下方獨立資訊區：下一站/住宿/提醒 */
+    .now-details { margin: 0 var(--sp-2) var(--sp-9); }
+    .now-details .now-info-grid { margin-top: 0; }
+    .now-details .now-reminders { margin-top: var(--sp-3); }
