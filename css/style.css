@@ -1633,3 +1633,86 @@
     .now-details { margin: 0 var(--sp-2) var(--sp-9); }
     .now-details .now-info-grid { margin-top: 0; }
     .now-details .now-reminders { margin-top: var(--sp-3); }
+
+    /* ══════════════════════════════════════════════════════════════
+       v19 極光觀測卡放大版（2026-07-25）
+       依設計稿改版並全面放大：夜空插圖 hero、180px 機率圓環、
+       三指標大卡（圖示 1.8rem／數值 fs-xl／小字不小於 fs-xs）。
+       ══════════════════════════════════════════════════════════════ */
+    .aurora-card.aurora2 { padding: 0; overflow: hidden; }
+
+    /* 夜空插圖 hero */
+    .aurora2-hero { position: relative; height: 170px; }
+    .aurora2-sky { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+    .aurora2-hero-text { position: absolute; left: var(--sp-7); right: var(--sp-7); bottom: var(--sp-5); }
+    .aurora2-badge {
+      display: inline-block;
+      font-size: var(--fs-sm); font-weight: 700;
+      padding: 4px 12px; border-radius: 999px;
+      background: rgba(168,230,207,0.16);
+      border: 1px solid rgba(168,230,207,0.45);
+      color: #a8e6cf;
+    }
+    .aurora-prob-medium .aurora2-badge { background: rgba(255,210,138,0.14); border-color: rgba(255,210,138,0.45); color: #ffd28a; }
+    .aurora-prob-low .aurora2-badge { background: rgba(154,184,216,0.14); border-color: rgba(154,184,216,0.4); color: #b8cfe4; }
+    .aurora2-title {
+      margin-top: var(--sp-3);
+      font-family: var(--font-display);
+      font-size: var(--fs-xl); font-weight: 700;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    }
+    .aurora2-location { margin-top: var(--sp-1); font-size: var(--fs-sm); color: rgba(255,255,255,0.85); }
+
+    /* 大型機率圓環 */
+    .aurora2-ring-wrap { position: relative; width: 180px; height: 180px; margin: var(--sp-7) auto var(--sp-5); }
+    .aurora2-ring-wrap svg { display: block; transform: rotate(-90deg); }
+    .aurora2-ring-fill { stroke: #a8e6cf; }
+    .aurora-prob-medium .aurora2-ring-fill { stroke: #ffd28a; }
+    .aurora-prob-low .aurora2-ring-fill { stroke: #9ab8d8; }
+    .aurora2-ring-num {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      font-family: var(--font-display);
+      font-size: var(--fs-3xl); font-weight: 700; line-height: 1.15;
+    }
+    .aurora2-ring-num span {
+      font-family: var(--font-body);
+      font-size: var(--fs-sm); font-weight: 500;
+      color: rgba(255,255,255,0.7);
+      letter-spacing: 2px; margin-top: var(--sp-1);
+    }
+
+    /* 三指標大卡 */
+    .aurora2-metrics { display: flex; gap: var(--sp-3); padding: 0 var(--sp-6); }
+    .aurora2-metric {
+      flex: 1; min-width: 0;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: var(--radius);
+      padding: var(--sp-5) var(--sp-2);
+      text-align: center;
+    }
+    .aurora2-m-icon { font-size: 1.8rem; }
+    .aurora2-m-name { margin-top: var(--sp-2); font-size: var(--fs-sm); color: rgba(255,255,255,0.72); }
+    .aurora2-m-val {
+      margin-top: 2px;
+      font-family: var(--font-display);
+      font-size: var(--fs-xl); font-weight: 700;
+    }
+    .aurora2-m-sub { margin-top: var(--sp-1); font-size: var(--fs-xs); color: rgba(255,255,255,0.62); line-height: 1.4; }
+
+    /* 行動建議 */
+    .aurora2-advice {
+      margin: var(--sp-6) var(--sp-6) 0;
+      background: rgba(168,230,207,0.09);
+      border: 1px solid rgba(168,230,207,0.25);
+      border-radius: var(--radius);
+      padding: var(--sp-5) var(--sp-6);
+    }
+    .aurora-prob-medium .aurora2-advice { background: rgba(255,210,138,0.09); border-color: rgba(255,210,138,0.28); }
+    .aurora2-advice h4 { font-family: var(--font-display); font-size: var(--fs-base); color: #a8e6cf; }
+    .aurora-prob-medium .aurora2-advice h4 { color: #ffd28a; }
+    .aurora2-advice p { margin-top: var(--sp-2); font-size: var(--fs-sm); line-height: 1.7; color: rgba(255,255,255,0.92); }
+
+    /* 核實提醒也放大到 fs-xs */
+    .aurora2 .aurora-updated { padding: var(--sp-3) var(--sp-6) var(--sp-5); margin-top: 0; font-size: var(--fs-xs); color: rgba(255,255,255,0.6); }
