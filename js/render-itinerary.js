@@ -167,6 +167,50 @@ function buildSpotCardHtml(s, onclickExpr) {
     '</div>';
 }
 
+// 飛行路線條（v15）：把「經過哪些機場」畫成一條橫向航點線，放在航班資訊卡最上面，
+// 一眼看完 HKG→SIN→HEL→KEF 這種多段轉機；下面原有的各段詳細卡片維持不變。
+// 機場代碼從 from/to 文字裡抓三碼英文（例如 '香港 HKG T1' → 'HKG'），資料不需新增欄位。
+function buildFlightStripHtml(flights) {
+  if (!flights || !flights.length) return '';
+  var airportCode = function(str) {
+    var m = (str || '').match(/[A-Z]{3}/);
+    return m ? m[0] : (str || '');
+  };
+  var html = '<div class="flight-strip">';
+  flights.forEach(function(f, i) {
+    if (i === 0) {
+      html += '<div class="fs-point"><div class="fs-code">' + airportCode(f.from) + '</div><div class="fs-time">' + f.dep + '</div></div>';
+    }
+    html += '<div class="fs-leg"><div class="fs-leg-mid"><span class="fs-plane">✈️</span></div>' +
+      '<div class="fs-dur">' + stripEstimateWording(f.duration || '') + '</div></div>';
+    html += '<div class="fs-point"><div class="fs-code">' + airportCode(f.to) + '</div><div class="fs-time">' + f.arr + '</div></div>';
+  });
+  html += '</div>';
+  return html;
+}
+
+// ===== 滾動進場動畫（v15）：卡片進入視窗時輕輕向上滑入 + 淡入。
+// 總覽的時間軸列（.ov-tl-row）與每日行程的卡片列（.timeline-row、資訊卡）都適用。
+// 不支援 IntersectionObserver 或使用者系統設定「減少動態效果」時，直接顯示、不播動畫。
+function initScrollReveal(containerEl) {
+  if (!containerEl) return;
+  var items = containerEl.querySelectorAll('.ov-tl-row, .timeline-row, .info-card, .tips-card');
+  if (!items.length) return;
+  var reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!('IntersectionObserver' in window) || reducedMotion) return;
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (!entry.isIntersecting) return;
+      entry.target.classList.add('reveal-in');
+      observer.unobserve(entry.target);
+    });
+  }, { rootMargin: '0px 0px -6% 0px', threshold: 0.05 });
+  items.forEach(function(el) {
+    el.classList.add('reveal');
+    observer.observe(el);
+  });
+}
+
 // ===== 每日路线简图（v10）：显示位置在 view-day 可捲動內容最上面（見 index.html 的 #itinMapScrollDay），
 // 不再嵌在每日景点列表里、也不再固定在頂端；相关渲染逻辑改放在 js/nav.js 的 updateItinMap()。
 // d.routeMapImg 欄位本身用法不變（顯示版跟燈箱版共用同一份 images/routes/ 檔案，v13 起不再分 large），
@@ -221,7 +265,7 @@ function showDay(dayId) {
     var hotelHtml = buildHotelHtml(d.hotel, dayId, true);
     listEl.classList.add('no-timeline');
     listEl.innerHTML =
-      (flightHtml ? '<div class="info-card"><div class="card-label">航班资讯</div>' + flightHtml + '</div>' : '') +
+      (flightHtml ? '<div class="info-card"><div class="card-label">航班资讯</div>' + buildFlightStripHtml(d.flights) + flightHtml + '</div>' : '') +
       (d.note ? '<div class="tips-card"><div class="card-label">行程备注</div>' + formatOutlineText(d.note) + '</div>' : '') +
       hotelHtml;
   } else if (d.areas && d.areas.length) {
@@ -302,6 +346,7 @@ function showDay(dayId) {
   setItinActive(dayId);
   updateItinMap(dayId);
   initThumbRowLazyLoad(listEl);
+  initScrollReveal(listEl);
 }
 
 // 景點圖片：可以用 images:['a.webp','b.webp'] 放多張，

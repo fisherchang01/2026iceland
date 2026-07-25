@@ -1416,3 +1416,131 @@
       font-size: var(--fs-xs);
       letter-spacing: 1px;
     }
+
+    /* ══════════════════════════════════════════════════════════════
+       v15「北歐旅行誌」改造（2026-07-25）
+       1. 總覽「完整行程」改垂直時間軸（含章節配色、今日發光、過期淡化）
+       2. 國家分隔升級為 Chapter 章節卡
+       3. 航班資訊卡加「飛行路線條」
+       4. 滾動進場動畫 + 折疊展開過渡
+       資料檔完全不動，只改呈現層。
+       ══════════════════════════════════════════════════════════════ */
+
+    /* ── 1. 總覽時間軸：每一列自己畫屬於自己的那一段線，
+           章節交界（冰島藍 → 芬蘭暖金）的顏色轉換才對得齊 ── */
+    .ov-timeline { position: relative; }
+    .ov-tl-row { display: flex; align-items: stretch; position: relative; }
+    .ov-tl-row::before {
+      content: '';
+      position: absolute; left: 14px; top: 0; bottom: 0;
+      width: 2px;
+      background: var(--accent-soft);
+    }
+    .ov-tl-row.ov-ch-2::before { background: #dcc3a0; }
+    .ov-tl-row:first-child::before { top: 50%; }
+    .ov-tl-row:last-child::before { bottom: 50%; }
+
+    .ov-tl-node {
+      width: 30px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      position: relative; z-index: 1;
+    }
+    .ov-tl-dot {
+      width: 12px; height: 12px; border-radius: 50%;
+      background: var(--accent);
+      border: 2px solid var(--bg);
+      box-shadow: 0 1px 4px rgba(44,95,110,0.25);
+    }
+    .ov-tl-row.ov-ch-0 .ov-tl-dot { background: #8a9aa3; }
+    .ov-tl-row.ov-ch-2 .ov-tl-dot { background: var(--accent-warm); }
+    .ov-tl-row .day-card { flex: 1; min-width: 0; }
+
+    /* 今天：圓點放大 + 柔光圈，卡片微微浮起 */
+    .ov-tl-row.is-today .ov-tl-dot {
+      width: 16px; height: 16px;
+      box-shadow: 0 0 0 5px rgba(74,143,163,0.22), 0 1px 6px rgba(44,95,110,0.35);
+    }
+    .ov-tl-row.is-today .day-card { box-shadow: 0 6px 18px rgba(44,95,110,0.22); }
+    /* 已過去的日子：整列淡化，圓點變空心 */
+    .ov-tl-row.is-past { opacity: 0.55; }
+    .ov-tl-row.is-past .ov-tl-dot { background: var(--bg); border-color: var(--accent-soft); }
+    .ov-tl-row.is-past.ov-ch-2 .ov-tl-dot { border-color: #dcc3a0; }
+
+    /* ── 2. 章節卡：菱形節點 + 漸層卡片，章節色跟著國家走 ── */
+    .ov-tl-diamond {
+      width: 11px; height: 11px; border-radius: 2px;
+      transform: rotate(45deg);
+      background: var(--accent-soft);
+      border: 2px solid var(--bg);
+    }
+    .ov-tl-row.ov-ch-2 .ov-tl-diamond { background: #dcc3a0; }
+    .chapter-card {
+      flex: 1; min-width: 0;
+      margin: var(--sp-5) 0;
+      padding: var(--sp-6) var(--sp-8);
+      border-radius: var(--radius);
+      border: 1px solid #c3d8de;
+      background: linear-gradient(135deg, #e8f2f5 0%, var(--bg) 100%);
+    }
+    .ov-tl-row.ov-ch-2 .chapter-card {
+      border-color: #e0cdb0;
+      background: linear-gradient(135deg, #f5ead9 0%, var(--bg) 100%);
+    }
+    .chapter-eyebrow {
+      font-size: var(--fs-2xs); font-weight: 700;
+      letter-spacing: 2.5px; text-transform: uppercase;
+      color: var(--accent);
+    }
+    .ov-tl-row.ov-ch-2 .chapter-eyebrow { color: var(--accent-warm); }
+    .chapter-title {
+      margin-top: var(--sp-1);
+      font-family: var(--font-display);
+      font-size: var(--fs-lg); font-weight: 700;
+      color: var(--primary);
+    }
+
+    /* ── 3. 飛行路線條：航點 ─✈─ 航點，時間標在代碼下方 ── */
+    .flight-strip {
+      display: flex; align-items: center;
+      margin: var(--sp-2) 0 var(--sp-7);
+      padding: 0 var(--sp-1);
+    }
+    .fs-point { flex-shrink: 0; width: 54px; text-align: center; }
+    .fs-code { font-size: var(--fs-sm); font-weight: 800; letter-spacing: 1.5px; color: var(--primary); }
+    .fs-time { margin-top: 2px; font-size: var(--fs-2xs); color: var(--sub); }
+    .fs-leg { flex: 1; min-width: 34px; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+    .fs-leg-mid {
+      position: relative; width: 100%; height: 18px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .fs-leg-mid::before {
+      content: '';
+      position: absolute; left: 0; right: 0; top: 50%; height: 2px; margin-top: -1px;
+      background-image: linear-gradient(90deg, var(--accent-soft) 55%, transparent 0);
+      background-size: 9px 2px; background-repeat: repeat-x;
+    }
+    .fs-plane { position: relative; z-index: 1; padding: 0 5px; background: var(--card); font-size: 13px; }
+    .fs-dur { font-size: var(--fs-2xs); color: var(--sub); white-space: nowrap; }
+
+    /* ── 4a. 滾動進場動畫：向上滑入 + 淡入 ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.45s ease, transform 0.45s ease;
+    }
+    .reveal.reveal-in { opacity: 1; transform: none; }
+
+    /* ── 4b. 折疊展開過渡：展開時輕輕落下，取代直接跳開 ── */
+    .travel-collapse-body.open,
+    .flight-collapse-body.open { animation: collapseReveal 0.28s ease; }
+    @keyframes collapseReveal {
+      from { opacity: 0; transform: translateY(-8px); }
+      to   { opacity: 1; transform: none; }
+    }
+
+    /* 系統設定「減少動態效果」時，所有進場/展開動畫直接關閉 */
+    @media (prefers-reduced-motion: reduce) {
+      .reveal { opacity: 1 !important; transform: none !important; transition: none; }
+      .travel-collapse-body.open,
+      .flight-collapse-body.open { animation: none; }
+    }

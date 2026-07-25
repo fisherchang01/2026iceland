@@ -116,20 +116,49 @@ function buildTripHero() {
   '</section>';
 }
 
+// 章節卡（v15）：國家分隔從一行小字升級成「Chapter N」章節卡，營造翻頁進入下一段旅程的感覺。
+// 章節編號依 sectionLabel 出現順序自動累加，未來新旅程的資料不需要額外設定。
+function buildChapterCardHtml(chapterIdx, label) {
+  return '<div class="ov-tl-row ov-tl-chapter ov-ch-' + chapterIdx + '">' +
+    '<div class="ov-tl-node"><span class="ov-tl-diamond"></span></div>' +
+    '<div class="chapter-card"><div class="chapter-eyebrow">Chapter ' + chapterIdx + '</div>' +
+    '<div class="chapter-title">' + label + '</div></div></div>';
+}
+
+// 總覽「完整行程」時間軸（v15）：9 天卡片從獨立堆疊改成一條垂直時間軸串起來。
+// 每張日卡左邊多一根節點欄（圓點 + 貫穿線），線與點的顏色跟著章節走（冰島段藍、芬蘭段暖金），
+// 今天當天的圓點放大發光、已過去的日子淡化——狀態沿用 getTripDayContext() 的 today，不需新欄位。
 function renderOverview() {
   var html = buildTripHero();
-  html += buildNowDashboard(getTripDayContext());
+  var context = getTripDayContext();
+  html += buildNowDashboard(context);
   html += '<div class="overview-section-title"><h2>完整行程</h2><p>也可以直接选择任一天查看</p></div>';
 
+  var todayKey = context ? context.today : '';
+  var chapterIdx = 0;
+  html += '<div class="ov-timeline">';
   TRIP_DATA.days.forEach(function(d, index){
-    if (d.sectionLabel) html += '<div class="day-section-label">' + d.sectionLabel + '</div>';
+    if (d.sectionLabel) {
+      chapterIdx += 1;
+      html += buildChapterCardHtml(chapterIdx, d.sectionLabel);
+    }
+    var stateClass = '';
+    if (todayKey && d.date) {
+      if (d.date === todayKey) stateClass = ' is-today';
+      else if (d.date < todayKey) stateClass = ' is-past';
+    }
     var bannerHtml = d.bannerImage ? '<img src="' + d.bannerImage + '" alt="" width="640" height="166" ' + (index === 0 ? 'fetchpriority="high"' : 'loading="lazy"') + ' decoding="async" onerror="this.style.display=\'none\'" />' : '';
-    html += '<div class="day-card ' + (d.color || '') + '" onclick="showDay(\'' + d.id + '\')">' +
+    html += '<div class="ov-tl-row ov-ch-' + chapterIdx + stateClass + '">' +
+      '<div class="ov-tl-node"><span class="ov-tl-dot"></span></div>' +
+      '<div class="day-card ' + (d.color || '') + '" onclick="showDay(\'' + d.id + '\')">' +
       '<div class="day-card-bg">' + bannerHtml + '</div><div class="day-card-scrim"></div>' +
       '<div class="day-card-content"><div class="day-badge"><div class="month">' + d.month + '</div><div class="date">' + d.dayOfMonth + '</div></div>' +
-      '<div class="day-card-info"><h3>' + d.title + '</h3>' + (d.summary ? '<p>' + d.summary + '</p>' : '') + '</div></div></div>';
+      '<div class="day-card-info"><h3>' + d.title + '</h3>' + (d.summary ? '<p>' + d.summary + '</p>' : '') + '</div></div></div></div>';
   });
-  document.getElementById('overviewContent').innerHTML = html;
+  html += '</div>';
+  var overviewEl = document.getElementById('overviewContent');
+  overviewEl.innerHTML = html;
+  if (typeof initScrollReveal === 'function') initScrollReveal(overviewEl);
 }
 
 function mountTabContent() {
