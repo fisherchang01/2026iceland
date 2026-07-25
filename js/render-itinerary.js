@@ -332,13 +332,20 @@ function showDay(dayId) {
     });
 
     html += buildHotelHtml(d.hotel, dayId);
-    html += buildAuroraWidget(d.aurora);
 
+    // v21：順序調整為「住宿 → 自駕里程小計 → 極光觀測卡」（原本極光卡在里程小計之上）。
+    // 兩張卡都跟住宿卡一樣包進 timeline-row 內縮——原本直接滿版放在 #spotList 裡，
+    // 左邊貫穿整天行程的虛線時間軸會從卡片底下穿過（壓線），加上節點欄後線只從圓點旁經過。
     if (d.driveSummary) {
-      html += '<div class="drive-summary-card">' +
+      html += '<div class="timeline-row"><div class="timeline-node"><span class="timeline-dot connector-dot-drive"></span></div>' +
+        '<div class="drive-summary-card">' +
         '<div class="drive-summary-icon">🚗</div>' +
         '<div class="drive-summary-info"><h4>今日自驾里程小计</h4><p>总里程：' + stripEstimateWording(d.driveSummary.total) + '　总驾驶时间：' + stripEstimateWording(d.driveSummary.time) + '</p></div>' +
-        '</div>';
+        '</div></div>';
+    }
+    if (d.aurora) {
+      html += '<div class="timeline-row"><div class="timeline-node"><span class="timeline-dot aurora-dot"></span></div>' +
+        buildAuroraWidget(d.aurora) + '</div>';
     }
     listEl.innerHTML = html;
   }

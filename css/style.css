@@ -238,7 +238,9 @@
     .day-card {
       position: relative;
       border-radius: var(--radius);
-      margin-bottom: var(--sp-4);
+      /* v21：間距從 10px 加大到 24px——日期徽章改成「探出卡片上緣 12px」的標籤後，
+         10px 間距幾乎讓徽章貼到上一張卡，拉大間距讓標籤有呼吸空間、日與日不再擠在一起 */
+      margin-bottom: var(--sp-9);
       cursor: pointer;
       overflow: hidden;
       height: 168px;
@@ -340,6 +342,10 @@
     .timeline-row { margin-bottom: var(--sp-5); }
     .timeline-row.connector-row { margin-bottom: 0; }
     .timeline-row .spot-item, .timeline-row .hotel-card { margin-bottom: 0; }
+    /* v21：里程小計卡與極光卡也包進 timeline-row 內縮（比照住宿卡），
+       時間軸虛線不再從卡片底下穿過；極光圓點用深夜空藍呼應卡片配色 */
+    .timeline-row .drive-summary-card, .timeline-row .aurora-card { flex: 1; min-width: 0; }
+    .timeline-dot.aurora-dot { background: #1c3a6e; }
     .spot-item:hover  { box-shadow: 0 4px 16px rgba(44,95,110,0.1); }
     .spot-item.no-click { cursor: default; border-style: dashed; }
     .spot-item.no-click:active { transform: none; }
