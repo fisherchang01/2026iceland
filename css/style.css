@@ -691,6 +691,9 @@
       margin-bottom: var(--sp-2); font-weight: 600;
     }
     .tips-card p { font-size: var(--fs-base); line-height: 1.8; color: var(--warn-txt); }
+    /* 條列式段落間距：每段（一、二、三 或 (1)(2)(3)）之間留半行高的呼吸空間，最後一段不留多餘間距 */
+    .outline-p { margin-bottom: 0.9em; }
+    .outline-p:last-child { margin-bottom: 0; }
     .parking-card {
       background: #f8f4e8;
       border: 1px solid #d8c878;

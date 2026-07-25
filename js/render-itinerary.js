@@ -222,7 +222,7 @@ function showDay(dayId) {
     listEl.classList.add('no-timeline');
     listEl.innerHTML =
       (flightHtml ? '<div class="info-card"><div class="card-label">航班资讯</div>' + flightHtml + '</div>' : '') +
-      (d.note ? '<div class="tips-card"><div class="card-label">行程备注</div><p>' + d.note + '</p></div>' : '') +
+      (d.note ? '<div class="tips-card"><div class="card-label">行程备注</div>' + formatOutlineText(d.note) + '</div>' : '') +
       hotelHtml;
   } else if (d.areas && d.areas.length) {
     listEl.classList.remove('no-timeline');
@@ -458,6 +458,16 @@ function buildAuroraWidget(aurora) {
   '</div>';
 }
 
+// 條列式段落格式化：deepDesc/tips 內容用「\n」分段，一級用「一、二、三」，二級用「(1)(2)(3)」，
+// 每行各自包成一個 <p class="outline-p">，靠 CSS 的 margin 做出「段落間 0.5 行距」的視覺效果。
+// 單純一句話（沒有換行）的內容會直接退化成一個 <p>，不會多包版面。
+function formatOutlineText(str) {
+  if (!str) return '';
+  return str.split('\n').filter(function(line){ return line.trim().length; })
+    .map(function(line){ return '<p class="outline-p">' + line + '</p>'; })
+    .join('');
+}
+
 function buildHotelHtml(hotel, dayId, noTimeline) {
   if (!hotel || !hotel.name) return '';
   var clickable = !!hotel.map;
@@ -568,8 +578,8 @@ function renderSpotDetail(s, d) {
     buildSpotImageHtml(s) +
     factsHtml +
     (s.desc ? '<div class="info-card"><div class="card-label">景点介绍</div><p>' + s.desc + '</p></div>' : '') +
-    (s.deepDesc ? '<div class="info-card"><div class="card-label">深度介绍</div><p>' + s.deepDesc + '</p></div>' : '') +
-    (s.tips ? '<div class="tips-card"><div class="card-label">小提醒</div><p>' + s.tips + '</p></div>' : '') +
+    (s.deepDesc ? '<div class="info-card"><div class="card-label">深度介绍</div>' + formatOutlineText(s.deepDesc) + '</div>' : '') +
+    (s.tips ? '<div class="tips-card"><div class="card-label">小提醒</div>' + formatOutlineText(s.tips) + '</div>' : '') +
     parkingHtml +
     nextStopHtml;
   // 注意（Phase 2 調整）：景點詳情頁不再放導航按鈕，導航改附掛在列表卡片之間「距離/時間」那一行
