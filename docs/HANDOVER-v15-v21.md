@@ -4,6 +4,8 @@
 > 網站：https://fisherchang01.github.io/2026iceland/
 > 撰寫日期：2026-07-25
 
+> ⚠️ **給之後讀這份文件的人／AI**：這是一份歷史交接紀錄，描述「首頁時間軸／極光觀測卡」這部分的改版過程，**跟體驗頁／工具頁（`data/travel-content.js`、`data/other-content.js`）的內容改版是兩件不相關的事**，不要混在一起理解。另外文中第三節提到的 `test-v16.js`、`test-v19.js`、`test-v21.js` 三個本機預覽 harness 檔案，是撰寫當下的本機暫存檔，**並未提交到這個 repository**，目前 repo 裡找不到這幾個檔案是正常的，不是遺失。
+
 ---
 
 ## 一、Commit 總覽（依時間順序）
