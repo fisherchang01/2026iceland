@@ -1,16 +1,485 @@
-// 「旅遊」頁籤的完整 HTML 內容，可直接編輯下方 HTML 標籤來調整文字、新增或刪除項目
+// 「體驗」頁第一階段：採用已確認的北歐旅行手札視覺。
+// 伴手禮（商店）已換回正式既有內容並改為「購物路線優先、商品輔助」。
+// 其餘分類暫保留設計示範，待逐項確認後再替換正式文字與照片。
 const TRAVEL_HTML = `
+<style id="travel-editorial-style">
+  #page-travel {
+    --paper: #fbf8f1;
+    --paper-deep: #eee7da;
+    --paper-line: #d8cdbd;
+    --forest: #3f6542;
+    --forest-deep: #294a31;
+    --ink: #27312d;
+    --muted-ink: #68736d;
+    background:
+      radial-gradient(circle at 18% 8%, rgba(255,255,255,.84) 0 18%, transparent 42%),
+      radial-gradient(circle at 86% 22%, rgba(218,204,181,.26) 0 9%, transparent 33%),
+      linear-gradient(180deg, #f7f2e9 0%, #eee7db 100%);
+  }
+  #page-travel > .page-inner { padding-top: 0; }
+
+  #page-travel .catalog-top {
+    top: 0;
+    margin: 0 calc(var(--sp-6) * -1) var(--sp-5);
+    padding: 10px 14px 0;
+    gap: 0;
+    align-items: flex-end;
+    background: rgba(247,242,233,.94);
+    border-bottom: 1px solid var(--paper-line);
+    box-shadow: 0 5px 14px rgba(78,63,44,.08);
+    backdrop-filter: blur(14px);
+  }
+  #page-travel .catalog-pill-scroll { gap: 0; padding: 0; }
+  #page-travel .catalog-pill {
+    min-height: 48px;
+    padding: 10px 15px 11px;
+    border: 1px solid #d7ccbc;
+    border-bottom-color: #cfc2af;
+    border-radius: 17px 17px 5px 5px;
+    background: linear-gradient(180deg, #f4eee4, #e8dece);
+    color: #4b504c;
+    font-family: var(--font-display);
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    box-shadow: inset 0 1px rgba(255,255,255,.8), 0 -2px 8px rgba(80,64,44,.05);
+  }
+  #page-travel .catalog-pill + .catalog-pill { margin-left: -1px; }
+  #page-travel .catalog-pill.active {
+    position: relative;
+    z-index: 2;
+    background: var(--paper);
+    color: var(--forest);
+    border-color: #d3c7b7;
+    box-shadow: 0 -4px 12px rgba(75,62,43,.08);
+  }
+  #page-travel .catalog-pill.active::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: 4px;
+    width: 32px;
+    height: 4px;
+    transform: translateX(-50%);
+    border-radius: 99px;
+    background: var(--forest);
+  }
+  #page-travel .catalog-pill-overview::after { display: none; }
+
+  #page-travel .travel-banner.editorial-hero {
+    --editorial-hero-image: url('images/banners/cover-hero.webp');
+    position: relative;
+    min-height: 330px;
+    display: block !important;
+    overflow: hidden;
+    padding: 0;
+    margin: 0 0 16px;
+    border: 1px solid rgba(255,255,255,.62);
+    border-radius: 24px;
+    color: #fff;
+    background-image:
+      linear-gradient(180deg, rgba(18,26,27,.14) 0%, rgba(18,25,25,.23) 42%, rgba(16,23,22,.82) 100%),
+      var(--editorial-hero-image);
+    background-size: cover;
+    background-position: center;
+    box-shadow: 0 13px 28px rgba(49,42,31,.18), inset 0 0 0 1px rgba(255,255,255,.16);
+  }
+  .editorial-hero-copy {
+    position: absolute;
+    left: 24px;
+    right: 24px;
+    bottom: 78px;
+    z-index: 2;
+  }
+  .editorial-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    margin-bottom: 10px;
+    font-size: var(--fs-2xs);
+    font-weight: 700;
+    letter-spacing: .13em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,.82);
+  }
+  .editorial-kicker::before {
+    content: '';
+    width: 24px;
+    height: 1px;
+    background: rgba(255,255,255,.72);
+  }
+  .editorial-hero h2 {
+    max-width: 540px;
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 8vw, 3rem);
+    line-height: 1.12;
+    font-weight: 700;
+    text-shadow: 0 3px 14px rgba(0,0,0,.38);
+  }
+  .editorial-hero p {
+    max-width: 520px;
+    margin-top: 10px;
+    font-size: var(--fs-sm);
+    line-height: 1.7;
+    color: rgba(255,255,255,.9);
+  }
+  .editorial-hero-actions,
+  .editorial-action-row {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0,1fr));
+    align-items: stretch;
+  }
+  .editorial-hero-actions {
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    z-index: 3;
+    min-height: 54px;
+    border: 1px solid rgba(255,255,255,.34);
+    border-radius: 16px;
+    overflow: hidden;
+    background: rgba(15,23,22,.68);
+    box-shadow: 0 5px 18px rgba(0,0,0,.24);
+    backdrop-filter: blur(12px);
+  }
+  .editorial-hero-actions button {
+    border: 0;
+    border-right: 1px solid rgba(255,255,255,.24);
+    background: transparent;
+    color: #fff;
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .editorial-hero-actions button:last-child { border-right: 0; }
+  .editorial-hero-actions button span {
+    display: block;
+    font-size: var(--fs-md);
+    margin-bottom: 2px;
+  }
+
+  #page-travel.catalog-show-overview .catalog-overview-heading { display: none; }
+  #page-travel .catalog-overview { margin-bottom: 10px; }
+  #page-travel .catalog-overview-grid {
+    grid-template-columns: repeat(2, minmax(0,1fr));
+    gap: 12px;
+  }
+  #page-travel .catalog-overview-card {
+    min-height: 136px;
+    padding: 17px;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-between;
+    border: 1px solid #d9cfbf;
+    border-radius: 20px;
+    background: linear-gradient(145deg, rgba(255,255,255,.95), rgba(247,241,231,.94));
+    box-shadow: 0 7px 17px rgba(83,68,47,.09), inset 0 1px rgba(255,255,255,.9);
+  }
+  #page-travel .catalog-overview-card:first-child {
+    grid-column: 1 / -1;
+    min-height: 174px;
+    padding: 22px;
+    background:
+      radial-gradient(circle at 88% 25%, rgba(110,139,101,.22) 0 16%, transparent 38%),
+      linear-gradient(135deg, #fdfaf3, #e8eee1);
+    border-color: #c6d1bd;
+  }
+  #page-travel .catalog-overview-card:nth-child(4) {
+    grid-column: 1 / -1;
+    min-height: 100px;
+    flex-direction: row;
+    align-items: center;
+  }
+  #page-travel .catalog-overview-icon {
+    width: 46px;
+    height: 46px;
+    border: 1px solid #d9d1c4;
+    border-radius: 15px;
+    background: rgba(255,255,255,.72);
+    box-shadow: 0 4px 10px rgba(71,60,45,.08);
+  }
+  #page-travel .catalog-overview-card:first-child .catalog-overview-icon {
+    width: 58px;
+    height: 58px;
+    margin-bottom: 13px;
+  }
+  #page-travel .catalog-overview-copy strong {
+    font-family: var(--font-display);
+    font-size: var(--fs-base);
+    line-height: 1.35;
+    color: var(--ink);
+  }
+  #page-travel .catalog-overview-card:first-child .catalog-overview-copy strong {
+    font-size: var(--fs-xl);
+  }
+  #page-travel .catalog-overview-copy small {
+    margin-top: 5px;
+    white-space: normal;
+    line-height: 1.45;
+    color: var(--muted-ink);
+  }
+  #page-travel .catalog-overview-arrow {
+    align-self: flex-end;
+    color: var(--forest);
+  }
+
+  #page-travel .catalog-category-intro {
+    min-height: 112px;
+    align-items: center;
+    gap: 14px;
+    padding: 18px 18px 18px 54px;
+    margin: 4px 0 16px;
+    border: 1px solid #ddd2c2;
+    border-radius: 18px;
+    background:
+      radial-gradient(circle at 92% 18%, rgba(96,126,91,.08) 0 16%, transparent 34%),
+      var(--paper);
+    box-shadow: 0 7px 16px rgba(82,67,46,.08), inset 0 1px rgba(255,255,255,.9);
+  }
+  #page-travel .catalog-category-intro::before {
+    left: 16px;
+    top: 16px;
+    bottom: 16px;
+    width: 16px;
+    background-image: radial-gradient(circle, #d3c7b6 0 3px, rgba(255,255,255,.9) 3.2px 5px, transparent 5.2px);
+    background-size: 16px 24px;
+  }
+  #page-travel .catalog-category-intro-icon {
+    width: 48px;
+    height: 48px;
+    border: 1px solid #d8cfbf;
+    border-radius: 15px;
+    background: linear-gradient(145deg, #fff, #e8eee2);
+  }
+  #page-travel .catalog-category-intro-copy strong {
+    font-size: var(--fs-xl);
+    line-height: 1.3;
+    color: var(--ink);
+  }
+  #page-travel .catalog-category-intro-copy small {
+    margin-top: 5px;
+    line-height: 1.5;
+  }
+
+  #page-travel .catalog-list-card.catalog-layout-hero {
+    overflow: hidden;
+    border: 1px solid #d6ccbc;
+    border-radius: 22px;
+    background: var(--paper);
+    box-shadow: 0 10px 22px rgba(74,62,45,.12);
+  }
+  #page-travel .editorial-feature-card .souvenir-img-wrap { height: 224px; }
+  #page-travel .editorial-feature-card .souvenir-info { padding: 19px 20px 17px; }
+  #page-travel .catalog-list-card.catalog-layout-hero .souvenir-info h4 {
+    margin-bottom: 7px;
+    font-size: var(--fs-xl);
+    line-height: 1.35;
+    color: var(--ink);
+  }
+  #page-travel .souvenir-shop { color: var(--forest); }
+  #page-travel .souvenir-tip {
+    margin-top: 10px;
+    background: #edf1e7;
+    color: #4d634a;
+  }
+  .editorial-action-row {
+    min-height: 54px;
+    margin: 0 12px 12px;
+    border: 1px solid #d7cdbd;
+    border-radius: 15px;
+    overflow: hidden;
+    background: rgba(255,253,248,.92);
+    box-shadow: 0 5px 12px rgba(69,57,42,.07);
+  }
+  .editorial-action-row span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 6px;
+    border-right: 1px solid #ddd3c5;
+    font-size: var(--fs-xs);
+    font-weight: 700;
+    color: var(--forest);
+    text-align: center;
+  }
+  .editorial-action-row span:last-child { border-right: 0; }
+
+  #page-travel .catalog-list-card.catalog-layout-split {
+    min-height: 122px;
+    border-color: #d9cebe !important;
+    border-radius: 19px !important;
+    background: var(--paper) !important;
+    box-shadow: 0 7px 16px rgba(79,65,46,.09);
+  }
+  #page-travel .catalog-list-card.catalog-layout-split .souvenir-img-wrap,
+  #page-travel .catalog-list-card.catalog-layout-split .souvenir-img-wrap.small,
+  #page-travel .catalog-list-card.catalog-layout-split .catalog-card-media {
+    width: 108px !important;
+    flex-basis: 108px !important;
+    min-height: 122px;
+    background: linear-gradient(145deg, #e4eadf, #f5efe4);
+  }
+  #page-travel .catalog-list-card.catalog-layout-split h4 {
+    font-family: var(--font-display);
+    color: var(--ink);
+  }
+
+  #page-travel .market-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0,1fr));
+    gap: 11px;
+    margin-bottom: 14px;
+  }
+  #page-travel .market-card {
+    min-height: 154px;
+    padding: 18px 14px;
+    border: 1px solid #d9cebe;
+    border-radius: 18px;
+    background: linear-gradient(145deg, #fffdf7, #eee9df);
+    box-shadow: 0 6px 14px rgba(77,64,47,.08);
+  }
+  #page-travel .market-card h4 {
+    margin-top: 8px;
+    font-family: var(--font-display);
+    font-size: var(--fs-base);
+    color: var(--ink);
+  }
+  #page-travel .market-tag {
+    background: #e7eee1;
+    color: var(--forest);
+  }
+
+  #page-travel .info-card,
+  #page-travel .alcohol-warn {
+    position: relative;
+    overflow: hidden;
+    padding: 20px 20px 20px 54px;
+    border: 1px solid #dacfbf;
+    border-radius: 19px;
+    background: linear-gradient(180deg, rgba(255,255,255,.55), transparent 30%), var(--paper);
+    box-shadow: 0 7px 17px rgba(81,66,47,.09);
+  }
+  #page-travel .info-card::before,
+  #page-travel .alcohol-warn::before {
+    content: '';
+    position: absolute;
+    left: 14px;
+    top: 14px;
+    bottom: 14px;
+    width: 16px;
+    background-image: radial-gradient(circle, #d2c6b4 0 3px, #fff 3.2px 5px, transparent 5.2px);
+    background-size: 16px 24px;
+  }
+  .editorial-note h4 {
+    margin-bottom: 10px;
+    font-family: var(--font-display);
+    font-size: var(--fs-xl);
+    line-height: 1.35;
+    color: var(--ink);
+  }
+  .editorial-note p {
+    font-size: var(--fs-sm);
+    line-height: 1.7;
+    color: var(--muted-ink);
+  }
+  .editorial-steps {
+    list-style: none;
+    counter-reset: editorial-step;
+    display: grid;
+    gap: 10px;
+    margin-top: 12px;
+  }
+  .editorial-steps li {
+    counter-increment: editorial-step;
+    position: relative;
+    padding-left: 34px;
+    font-size: var(--fs-sm);
+    line-height: 1.55;
+    color: var(--ink);
+  }
+  .editorial-steps li::before {
+    content: counter(editorial-step);
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 23px;
+    height: 23px;
+    display: grid;
+    place-items: center;
+    border: 1px solid #91a087;
+    border-radius: 50%;
+    color: var(--forest);
+    font-size: var(--fs-xs);
+    font-weight: 800;
+    background: #f7faf4;
+  }
+  .editorial-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-top: 12px;
+  }
+  .editorial-chips span {
+    padding: 6px 10px;
+    border: 1px solid #cbd5c4;
+    border-radius: 999px;
+    background: #edf2e9;
+    color: var(--forest);
+    font-size: var(--fs-xs);
+    font-weight: 700;
+  }
+  .editorial-illustration {
+    background:
+      radial-gradient(circle at 30% 28%, rgba(255,255,255,.9), transparent 30%),
+      linear-gradient(145deg, #dfe8da, #f4eadc) !important;
+  }
+  .editorial-illustration .img-fallback {
+    color: var(--forest-deep);
+    text-shadow: 0 3px 12px rgba(49,75,46,.15);
+  }
+  .catalog-sheet-body .editorial-action-row { display: none !important; }
+
+  @media (max-width: 420px) {
+    #page-travel .travel-banner.editorial-hero {
+      min-height: 305px;
+      border-radius: 20px;
+    }
+    .editorial-hero-copy {
+      left: 20px;
+      right: 20px;
+      bottom: 75px;
+    }
+    .editorial-hero h2 { font-size: 2rem; }
+    #page-travel .catalog-overview-card {
+      min-height: 126px;
+      padding: 15px;
+    }
+    #page-travel .catalog-list-card.catalog-layout-split .souvenir-img-wrap,
+    #page-travel .catalog-list-card.catalog-layout-split .souvenir-img-wrap.small,
+    #page-travel .catalog-list-card.catalog-layout-split .catalog-card-media {
+      width: 98px !important;
+      flex-basis: 98px !important;
+    }
+  }
+</style>
+
 <div class="page" id="page-travel">
   <div class="page-inner">
-    <div class="travel-banner">
-      <div class="travel-banner-icon">🛍️</div>
-      <div class="travel-banner-text">
-        <h2>旅游贴士 &amp; 伴手礼</h2>
-        <p>冰岛 &amp; 芬兰购物指南</p>
+    <section class="travel-banner editorial-hero">
+      <div class="editorial-hero-copy">
+        <div class="editorial-kicker">Iceland &amp; Finland · Editorial Guide</div>
+        <h2>旅行中的好物与体验</h2>
+        <p>以路线、购买时机与实际使用场景组织资讯，让旅途中可以快速找到真正需要的内容。</p>
       </div>
-    </div>
+      <div class="editorial-hero-actions">
+        <button type="button" onclick="selectCatalogCategory('travel',0)"><span>⌁</span>购物路线</button>
+        <button type="button" onclick="selectCatalogCategory('travel',2)"><span>⌂</span>超市补给</button>
+        <button type="button" onclick="selectCatalogCategory('travel',5)"><span>♨</span>在地体验</button>
+      </div>
+    </section>
 
-    <!-- 1. 冰岛伴手礼 — 一般商店 -->
+    <!-- 1. 冰岛伴手礼 — 一般商店：正式内容 -->
     <div class="travel-collapse">
       <div class="travel-collapse-header" onclick="toggleTravelCollapse(this)">
         <div class="travel-collapse-left">
@@ -23,93 +492,107 @@ const TRAVEL_HTML = `
         <div class="travel-collapse-arrow">▼</div>
       </div>
       <div class="travel-collapse-body">
-        <div class="souvenir-card">
-          <div class="souvenir-img-wrap"><div class="img-fallback">🧥</div></div>
+
+        <div class="souvenir-card editorial-feature-card" data-images="omnom.jpg">
+          <div class="souvenir-img-wrap">
+            <img src="images/banners/cover-hero.webp" alt="雷市伴手礼购物路线" loading="lazy" decoding="async">
+          </div>
           <div class="souvenir-info">
+            <h4>雷市伴手礼漫游｜先选路线，再找商品</h4>
+            <div class="souvenir-shop">📍 Hallgrímskirkja · 彩虹街 · Laugavegur · Grandi · Harpa</div>
+            <div class="souvenir-desc">本页先安排两条雷市购物路线，再依商品类型整理可购买地点。旅途中可先决定从大教堂或音乐厅出发，再查看沿途适合购买的伴手礼。</div>
+            <div class="souvenir-tip">路线 A 全程下坡较轻松；路线 B 从海滨上坡，最后以大教堂登塔作为压轴。</div>
+          </div>
+          <div class="editorial-action-row">
+            <span>⌁ 先看路线</span>
+            <span>⌖ 找购买点</span>
+            <span>☆ 建立清单</span>
+          </div>
+        </div>
+
+        <div class="info-card editorial-note">
+          <h4>雷市漫游路线 A（大教堂→音乐厅）</h4>
+          <p>全程下坡，轻松省力。大教堂出发 → 彩虹街（Handknitting、Geysir）→ 主街（Omnom、66°North、Puffin、Saltverk）→ Grandi旧港区（Omnom工厂店、Farmers Market、蓝湖保养品）→ Harpa</p>
+          <ol class="editorial-steps">
+            <li>Hallgrímskirkja 大教堂（起点）</li>
+            <li>Skólavörðustígur 彩虹街 — Handknitting、Geysir</li>
+            <li>Laugavegur 主街 — Omnom、66°North、Puffin、Saltverk</li>
+            <li>Grandi 旧港区 — Omnom工厂店、Farmers Market、蓝湖保养品</li>
+            <li>Harpa 音乐厅（终点）</li>
+          </ol>
+        </div>
+
+        <div class="info-card editorial-note">
+          <h4>雷市漫游路线 B（音乐厅→大教堂）</h4>
+          <p>从海滨出发，上坡走向市区制高点。最后登塔俯瞰全市作为压轴。</p>
+          <ol class="editorial-steps">
+            <li>Harpa 音乐厅（起点）</li>
+            <li>Grandi 旧港区 — Omnom工厂店、Farmers Market、蓝湖保养品</li>
+            <li>Laugavegur 主街 — Omnom、66°North、Puffin、Saltverk</li>
+            <li>Skólavörðustígur 彩虹街 — Handknitting、Geysir</li>
+            <li>Hallgrímskirkja 大教堂（终点，可登塔）</li>
+          </ol>
+        </div>
+
+        <div class="souvenir-item">
+          <div class="souvenir-img-wrap small editorial-illustration"><div class="img-fallback">🧥</div></div>
+          <div class="souvenir-item-info">
             <h4>Lopapeysa 冰岛羊毛毛衣</h4>
-            <div class="souvenir-shop">📍 Handknitting Association of Iceland</div>
-            <div class="souvenir-desc">传统圆肩花纹手工毛衣，防水保暖。总店位于 Skólavörðustígur 19（大教堂正对彩虹街），分店在 Laugavegur 53b。每件毛衣挂有编织者亲笔签名，约 23,000–44,000 ISK。</div>
-            <div class="souvenir-tip">💡 建议周末顺路逛 Kolaportið 跳蚤市场，二手毛衣约 800–1,300 RMB 可议价</div>
+            <p>传统圆肩花纹手工毛衣，防水保暖。总店位于 Skólavörðustígur 19（大教堂正对彩虹街），分店在 Laugavegur 53b。每件毛衣挂有编织者亲笔签名，约 23,000–44,000 ISK。</p>
+            <span class="souvenir-brand">📍 Handknitting Association of Iceland</span>
           </div>
         </div>
-        <div class="souvenir-card">
-          <div class="souvenir-img-wrap"><div class="img-fallback">🍫</div></div>
-          <div class="souvenir-info">
+        <div class="tips-box"><p>💡 建议周末顺路逛 Kolaportið 跳蚤市场，二手毛衣约 800–1,300 RMB 可议价</p></div>
+
+        <div class="souvenir-item">
+          <div class="souvenir-img-wrap small"><img src="images/catalog/omnom.jpg" alt="Omnom 巧克力" loading="lazy" decoding="async"></div>
+          <div class="souvenir-item-info">
             <h4>Omnom 巧克力</h4>
-            <div class="souvenir-shop">📍 雷市 Grandi 港口区工厂店</div>
-            <div class="souvenir-desc">冰岛精品巧克力品牌，创意口味（海盐、甘草、焦糖）与精美包装，工厂店可试吃。Laugavegur 大街亦有专卖店。</div>
+            <p>冰岛精品巧克力品牌，创意口味（海盐、甘草、焦糖）与精美包装，工厂店可试吃。Laugavegur 大街亦有专卖店。</p>
+            <span class="souvenir-brand">📍 雷市 Grandi 港口区工厂店</span>
           </div>
         </div>
-        <div class="souvenir-card">
-          <div class="souvenir-img-wrap"><div class="img-fallback">🧤</div></div>
-          <div class="souvenir-info">
+
+        <div class="souvenir-item">
+          <div class="souvenir-img-wrap small editorial-illustration"><div class="img-fallback">🧤</div></div>
+          <div class="souvenir-item-info">
             <h4>冰岛羊毛制品（帽/手套/围巾）</h4>
-            <div class="souvenir-shop">📍 66°North / Farmers Market / Geysir</div>
-            <div class="souvenir-desc">比毛衣平价，同样保暖实用。Farmers Market 位于 Grandi 旧港区（Hólmaslóð 2）及 Laugavegur 37；66°North 为户外机能品牌；Geysir 在 Skólavörðustíg 7&amp;16 有时尚设计款。</div>
-            <div class="souvenir-tip">💡 帽子手套约 230–560 RMB，Rainbow Street 沿线多间可逛</div>
+            <p>比毛衣平价，同样保暖实用。Farmers Market 位于 Grandi 旧港区（Hólmaslóð 2）及 Laugavegur 37；66°North 为户外机能品牌；Geysir 在 Skólavörðustíg 7&amp;16 有时尚设计款。</p>
+            <span class="souvenir-brand">📍 66°North / Farmers Market / Geysir</span>
           </div>
         </div>
-        <div class="souvenir-card">
-          <div class="souvenir-img-wrap"><div class="img-fallback">🧂</div></div>
-          <div class="souvenir-info">
+        <div class="tips-box"><p>💡 帽子手套约 230–560 RMB，Rainbow Street 沿线多间可逛</p></div>
+
+        <div class="souvenir-item">
+          <div class="souvenir-img-wrap small"><img src="images/catalog/saltverk.jpg" alt="Saltverk 冰岛海盐" loading="lazy" decoding="async"></div>
+          <div class="souvenir-item-info">
             <h4>火山岩／熔岩盐（Saltverk）</h4>
-            <div class="souvenir-shop">📍 设计店、纪念品店、机场</div>
-            <div class="souvenir-desc">以火山地热蒸发制成的冰岛海盐，有黑火山盐、烟熏盐等。适合料理爱好者，包装具北欧设计感。</div>
+            <p>以火山地热蒸发制成的冰岛海盐，有黑火山盐、烟熏盐等。适合料理爱好者，包装具北欧设计感。</p>
+            <span class="souvenir-brand">📍 设计店、纪念品店、机场</span>
           </div>
         </div>
-        <div class="souvenir-card">
-          <div class="souvenir-img-wrap"><div class="img-fallback">🧴</div></div>
-          <div class="souvenir-info">
+
+        <div class="souvenir-item">
+          <div class="souvenir-img-wrap small editorial-illustration"><div class="img-fallback">🧴</div></div>
+          <div class="souvenir-item-info">
             <h4>蓝湖保养品（Blue Lagoon Skincare）</h4>
-            <div class="souvenir-shop">📍 蓝湖温泉店 / 机场免税店</div>
-            <div class="souvenir-desc">硅土面膜、身体乳等，富含地热矿物质。机场价格与市区相近，可最后补买。</div>
+            <p>硅土面膜、身体乳等，富含地热矿物质。机场价格与市区相近，可最后补买。</p>
+            <span class="souvenir-brand">📍 蓝湖温泉店 / 机场免税店</span>
           </div>
         </div>
-        <div class="souvenir-card">
-          <div class="souvenir-img-wrap"><div class="img-fallback">🐦</div></div>
-          <div class="souvenir-info">
+
+        <div class="souvenir-item">
+          <div class="souvenir-img-wrap small editorial-illustration"><div class="img-fallback">🐦</div></div>
+          <div class="souvenir-item-info">
             <h4>Puffin 海鸚周边</h4>
-            <div class="souvenir-shop">📍 纪念品店普遍有售</div>
-            <div class="souvenir-desc">冰岛国鸟玩偶、磁铁、明信片等，雷市 Laugavegur 大街纪念品店常见，适合送孩童。</div>
-          </div>
-        </div>
-        <!-- 购物路线二级折叠 -->
-        <div class="travel-sub-collapse">
-          <div class="travel-sub-header" onclick="toggleSubCollapse(this)">
-            <span class="travel-sub-title">🗺️ 雷市漫游路线 A（大教堂→音乐厅）</span>
-            <span class="travel-sub-arrow">▼</span>
-          </div>
-          <div class="travel-sub-body">
-            <p style="font-size:0.8rem;color:var(--sub);line-height:1.7;margin-bottom:8px;">全程下坡，轻松省力。大教堂出发 → 彩虹街（Handknitting、Geysir）→ 主街（Omnom、66°North、Puffin、Saltverk）→ Grandi旧港区（Omnom工厂店、Farmers Market、蓝湖保养品）→ Harpa</p>
-            <div style="font-size:0.78rem;color:var(--text);line-height:1.8;">
-              <div style="padding:4px 0;border-bottom:1px solid var(--border-light);">① Hallgrímskirkja 大教堂（起点）</div>
-              <div style="padding:4px 0;border-bottom:1px solid var(--border-light);">② Skólavörðustígur 彩虹街 — Handknitting、Geysir</div>
-              <div style="padding:4px 0;border-bottom:1px solid var(--border-light);">③ Laugavegur 主街 — Omnom、66°North、Puffin、Saltverk</div>
-              <div style="padding:4px 0;border-bottom:1px solid var(--border-light);">④ Grandi 旧港区 — Omnom工厂店、Farmers Market、蓝湖保养品</div>
-              <div style="padding:4px 0;">⑤ Harpa 音乐厅（终点）</div>
-            </div>
-          </div>
-        </div>
-        <div class="travel-sub-collapse">
-          <div class="travel-sub-header" onclick="toggleSubCollapse(this)">
-            <span class="travel-sub-title">🗺️ 雷市漫游路线 B（音乐厅→大教堂）</span>
-            <span class="travel-sub-arrow">▼</span>
-          </div>
-          <div class="travel-sub-body">
-            <p style="font-size:0.8rem;color:var(--sub);line-height:1.7;margin-bottom:8px;">从海滨出发，上坡走向市区制高点。最后登塔俯瞰全市作为压轴。</p>
-            <div style="font-size:0.78rem;color:var(--text);line-height:1.8;">
-              <div style="padding:4px 0;border-bottom:1px solid var(--border-light);">① Harpa 音乐厅（起点）</div>
-              <div style="padding:4px 0;border-bottom:1px solid var(--border-light);">② Grandi 旧港区 — Omnom工厂店、Farmers Market、蓝湖保养品</div>
-              <div style="padding:4px 0;border-bottom:1px solid var(--border-light);">③ Laugavegur 主街 — Omnom、66°North、Puffin、Saltverk</div>
-              <div style="padding:4px 0;border-bottom:1px solid var(--border-light);">④ Skólavörðustígur 彩虹街 — Handknitting、Geysir</div>
-              <div style="padding:4px 0;">⑤ Hallgrímskirkja 大教堂（终点，可登塔）</div>
-            </div>
+            <p>冰岛国鸟玩偶、磁铁、明信片等，雷市 Laugavegur 大街纪念品店常见，适合送孩童。</p>
+            <span class="souvenir-brand">📍 纪念品店普遍有售</span>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- 2. 冰岛伴手礼 — 超市 -->
+    <!-- 2. 冰岛伴手礼 — 超市：设计示范 -->
     <div class="travel-collapse">
       <div class="travel-collapse-header" onclick="toggleTravelCollapse(this)">
         <div class="travel-collapse-left">
@@ -122,50 +605,32 @@ const TRAVEL_HTML = `
         <div class="travel-collapse-arrow">▼</div>
       </div>
       <div class="travel-collapse-body">
-        <div class="souvenir-item">
-          <div class="souvenir-img-wrap small"><div class="img-fallback">🍫</div></div>
-          <div class="souvenir-item-info">
-            <h4>Nói Síríus 巧克力</h4>
-            <p>冰岛本土老牌，价格亲民，口味多元，超市架位明显。</p>
-            <span class="souvenir-brand">红白配色 + 红色蜡封徽章</span>
+        <div class="souvenir-card editorial-feature-card" data-images="noi-sirius.jpg">
+          <div class="souvenir-img-wrap"><img src="images/catalog/noi-sirius.jpg" alt="超市伴手礼包装示范" loading="lazy" decoding="async"></div>
+          <div class="souvenir-info">
+            <h4>超市伴手礼｜一眼认出包装</h4>
+            <div class="souvenir-shop">购物逻辑：品牌识别 → 价格带 → 携带方式</div>
+            <div class="souvenir-desc">此分类暂为设计示范，下一阶段再逐项换回正式品牌、包装特征与购买建议。</div>
           </div>
+          <div class="editorial-action-row"><span>▤ 品牌清单</span><span>◉ 包装辨识</span><span>＋ 加入采购</span></div>
         </div>
         <div class="souvenir-item">
-          <div class="souvenir-img-wrap small"><div class="img-fallback">🍫</div></div>
-          <div class="souvenir-item-info">
-            <h4>Freyja 巧克力</h4>
-            <p>极光主题包装，Since 1910 老牌，适合送礼。</p>
-            <span class="souvenir-brand">金色「FREYJA」字样 + 极光背景</span>
-          </div>
+          <div class="souvenir-img-wrap small"><img src="images/catalog/omnom.jpg" alt="精品巧克力示范" loading="lazy" decoding="async"></div>
+          <div class="souvenir-item-info"><h4>精品巧克力</h4><p>适合送礼、包装醒目；以一行说明购买理由。</p><span class="souvenir-brand">礼物型</span></div>
         </div>
         <div class="souvenir-item">
-          <div class="souvenir-img-wrap small"><div class="img-fallback">🍫</div></div>
-          <div class="souvenir-item-info">
-            <h4>Hraun 巧克力脆片</h4>
-            <p>以冰岛熔岩为名，不规则巧克力脆饼，黄色盒装易携带。</p>
-            <span class="souvenir-brand">黄色放射状背景 + 棕色「Hraun」字样</span>
-          </div>
+          <div class="souvenir-img-wrap small"><img src="images/catalog/noi-sirius.jpg" alt="分享装示范" loading="lazy" decoding="async"></div>
+          <div class="souvenir-item-info"><h4>平价分享装</h4><p>适合办公室分送，重点显示份量、包装与价格层级。</p><span class="souvenir-brand">大量分送</span></div>
         </div>
-        <div class="souvenir-item">
-          <div class="souvenir-img-wrap small"><div class="img-fallback">🍬</div></div>
-          <div class="souvenir-item-info">
-            <h4>甘草糖（Lakkrís）</h4>
-            <p>冰岛人国民零食，巧克力包甘草（Þrista Stubbar）最适合初次尝试。</p>
-            <span class="souvenir-brand">LAKKRÍS by Sambo Iceland / 黑白菱形格</span>
-          </div>
-        </div>
-        <div class="souvenir-item">
-          <div class="souvenir-img-wrap small"><div class="img-fallback">🧂</div></div>
-          <div class="souvenir-item-info">
-            <h4>冰岛海盐（小包装）</h4>
-            <p>超市自有品牌或 Saltverk 小包装，价格远低于设计店，适合大量分送同事。</p>
-            <span class="souvenir-brand">SALTVERK 黑色极简包装</span>
-          </div>
+        <div class="info-card editorial-note">
+          <h4>超市选购逻辑</h4>
+          <p>正式内容可依「自用、送礼、办公室分送」重新分组。</p>
+          <div class="editorial-chips"><span>容易携带</span><span>常温保存</span><span>包装醒目</span><span>价格清楚</span></div>
         </div>
       </div>
     </div>
 
-    <!-- 3. 主要超市 -->
+    <!-- 3. 主要超市：设计示范 -->
     <div class="travel-collapse">
       <div class="travel-collapse-header" onclick="toggleTravelCollapse(this)">
         <div class="travel-collapse-left">
@@ -178,54 +643,21 @@ const TRAVEL_HTML = `
         <div class="travel-collapse-arrow">▼</div>
       </div>
       <div class="travel-collapse-body">
-        <a class="link-card" href="https://www.icelandplanner.com/supermarkets" target="_blank" rel="noopener" style="margin-bottom:10px;">
-          <div class="link-icon">🗺️</div>
-          <div class="link-info">
-            <h4>Iceland Planner Supermarket Finder</h4>
-            <p>依路线搜寻沿途超市，可筛选品牌</p>
-          </div>
-        </a>
         <div class="market-grid">
-          <div class="market-card">
-            <span class="market-icon">🐷</span>
-            <h4>Bónus（小猪超市）</h4>
-            <span class="market-tag">最便宜</span>
-            <p>雷市18间，Selfoss等南部城镇亦有</p>
-            <p class="hours">10:00–19:00</p>
-          </div>
-          <div class="market-card">
-            <span class="market-icon">🟡</span>
-            <h4>Krónan</h4>
-            <span class="market-tag">平价品项齐</span>
-            <p>26间分店，营业时间较长</p>
-            <p class="hours">有机/素食选项多</p>
-          </div>
-          <div class="market-card">
-            <span class="market-icon">🔵</span>
-            <h4>Nettó</h4>
-            <span class="market-tag">中等价位</span>
-            <p>购物中心常见，包装零食选择多</p>
-          </div>
-          <div class="market-card">
-            <span class="market-icon">🏬</span>
-            <h4>Hagkaup</h4>
-            <span class="market-tag">品项最广</span>
-            <p>雷市6间，24小时营业</p>
-          </div>
-          <div class="market-card">
-            <span class="market-icon">🏪</span>
-            <h4>Costco</h4>
-            <span class="market-tag">大量采买最划算</span>
-            <p>仅1间（雷市郊区），需会员卡</p>
-          </div>
+          <div class="market-card"><span class="market-icon">🐷</span><h4>Bónus</h4><span class="market-tag">预算优先</span><p>适合基本补给与大量采购</p></div>
+          <div class="market-card"><span class="market-icon">🟡</span><h4>Krónan</h4><span class="market-tag">品项平衡</span><p>生鲜、轻食与特殊饮食较完整</p></div>
+          <div class="market-card"><span class="market-icon">🔵</span><h4>Nettó</h4><span class="market-tag">营业弹性</span><p>适合沿途临时补货</p></div>
+          <div class="market-card"><span class="market-icon">🏬</span><h4>Hagkaup</h4><span class="market-tag">一次购齐</span><p>用品、食品与生活杂货较齐全</p></div>
         </div>
-        <div class="tips-box">
-          <p>📌 离开雷市前在 Bónus 或 Krónan 补齐粮食｜鱼罐头、乳制品最划算｜酒类仅在 Vínbúðin 販售</p>
+        <div class="info-card editorial-note">
+          <h4>离开雷市前的补给纸条</h4>
+          <p>此分类暂为设计示范，后续换回正式营业时间、分店数量与路线建议。</p>
+          <div class="editorial-chips"><span>早餐</span><span>车上零食</span><span>热饮</span><span>应急用品</span></div>
         </div>
       </div>
     </div>
 
-    <!-- 4. 冰岛酒类 -->
+    <!-- 4. 冰岛酒类：设计示范 -->
     <div class="travel-collapse">
       <div class="travel-collapse-header" onclick="toggleTravelCollapse(this)">
         <div class="travel-collapse-left">
@@ -238,22 +670,22 @@ const TRAVEL_HTML = `
         <div class="travel-collapse-arrow">▼</div>
       </div>
       <div class="travel-collapse-body">
-        <div class="alcohol-warn">
-          <div class="warn-title">⚠️ 重要提醒</div>
-          <p>冰岛一般超市（Bónus、Krónan、Nettó、Hagkaup、Costco）<strong>均不販售酒類</strong>。<br>酒类仅能在持有执照的专卖店购买：<strong>Vínbúðin（国营酒类专卖店）</strong>。</p>
+        <div class="alcohol-warn editorial-note">
+          <h4>先看购买限制，再看推荐品项</h4>
+          <p>警示卡适合放法规、营业限制或容易踩雷的资讯；正式内容将在下一阶段换回。</p>
         </div>
-        <div class="souvenir-card">
-          <div class="souvenir-img-wrap"><div class="img-fallback">✈️</div></div>
-          <div class="souvenir-info">
-            <h4>💰 最便宜购买点：KEF 机场免税店</h4>
-            <div class="souvenir-desc">入境冰岛时经过的免税店，价格远低于市区 Vínbúðin 及回国后购买。建议抵达时先采买，或离境时在机场免税店补货。</div>
-            <div class="souvenir-tip">📍 Vínbúðin 市区分店查询：vinbudin.is</div>
-          </div>
+        <div class="souvenir-item">
+          <div class="souvenir-img-wrap small editorial-illustration"><div class="img-fallback">🛬</div></div>
+          <div class="souvenir-item-info"><h4>机场免税优先</h4><p>用购买时机取代冗长说明，旅途中更容易快速判断。</p><span class="souvenir-brand">抵达／离境</span></div>
+        </div>
+        <div class="info-card editorial-note">
+          <h4>购买顺序</h4>
+          <ol class="editorial-steps"><li>抵达时先确认需求与额度</li><li>市区只补买当地限定或遗漏品项</li><li>离境前再做最后检查</li></ol>
         </div>
       </div>
     </div>
 
-    <!-- 5. 芬兰伴手礼 — 超市 -->
+    <!-- 5. 芬兰伴手礼：设计示范 -->
     <div class="travel-collapse">
       <div class="travel-collapse-header" onclick="toggleTravelCollapse(this)">
         <div class="travel-collapse-left">
@@ -266,58 +698,26 @@ const TRAVEL_HTML = `
         <div class="travel-collapse-arrow">▼</div>
       </div>
       <div class="travel-collapse-body">
-        <div class="souvenir-item">
-          <div class="souvenir-img-wrap small"><div class="img-fallback">🍫</div></div>
-          <div class="souvenir-item-info">
-            <h4>Fazer 蓝色经典巧克力</h4>
-            <p>芬兰国民巧克力，牛奶巧克力口感滑顺，超市价格最实惠，必买伴手礼。</p>
-            <span class="souvenir-brand">深蓝色包装 + 金色 Karl Fazer 字样</span>
+        <div class="souvenir-card editorial-feature-card" data-images="nordqvist.jpg">
+          <div class="souvenir-img-wrap"><img src="images/catalog/nordqvist.jpg" alt="芬兰伴手礼设计示范" loading="lazy" decoding="async"></div>
+          <div class="souvenir-info">
+            <h4>芬兰包装设计｜轻巧、明亮、适合送礼</h4>
+            <div class="souvenir-shop">📍 超市与市中心百货</div>
+            <div class="souvenir-desc">此分类暂为设计示范，正式内容将再换回巧克力、咖啡、花草茶与酱料。</div>
           </div>
         </div>
         <div class="souvenir-item">
-          <div class="souvenir-img-wrap small"><div class="img-fallback">☕</div></div>
-          <div class="souvenir-item-info">
-            <h4>Paulig / Juhla Mokka 咖啡</h4>
-            <p>芬兰人均咖啡消耗量全球第一，Paulig 为本土老牌（Since 1876），总统系列与节庆限定款适合送长辈。</p>
-            <span class="souvenir-brand">黑色六边形框 + 白色「Paulig」手写体</span>
-          </div>
+          <div class="souvenir-img-wrap small editorial-illustration"><div class="img-fallback">🍫</div></div>
+          <div class="souvenir-item-info"><h4>巧克力与糖果</h4><p>国民品牌、限定包装与口味强度。</p><span class="souvenir-brand">送礼首选</span></div>
         </div>
         <div class="souvenir-item">
-          <div class="souvenir-img-wrap small"><div class="img-fallback">🍵</div></div>
-          <div class="souvenir-item-info">
-            <h4>Nordqvist 花草茶</h4>
-            <p>以芬兰莓果与花卉调味的有机茶，包装清新具北欧插画风格，适合送女性友人。</p>
-            <span class="souvenir-brand">绿色椭圆标 + 蓝白北欧插画包装</span>
-          </div>
-        </div>
-        <div class="souvenir-item">
-          <div class="souvenir-img-wrap small"><div class="img-fallback">🍯</div></div>
-          <div class="souvenir-item-info">
-            <h4>云莓果酱（Lakka / Hilla）</h4>
-            <p>北欧森林珍稀云莓制成，金黄色泽独特。配松饼或优格皆宜，小罐装易携带。</p>
-            <span class="souvenir-brand">金色果酱 + 云莓图案标签</span>
-          </div>
-        </div>
-        <div class="souvenir-item">
-          <div class="souvenir-img-wrap small"><div class="img-fallback">🟡</div></div>
-          <div class="souvenir-item-info">
-            <h4>Turun Sinappi 芥末酱</h4>
-            <p>图尔库百年芥末品牌（Since 1840），有温和至辛辣多款。包装具北欧设计感。</p>
-            <span class="souvenir-brand">黄色瓶身 + 棕色「KOTI sinappi」字样</span>
-          </div>
-        </div>
-        <div class="souvenir-item">
-          <div class="souvenir-img-wrap small"><div class="img-fallback">🍬</div></div>
-          <div class="souvenir-item-info">
-            <h4>Salmiakki 咸甘草糖</h4>
-            <p>芬兰人国民零食，口味强烈（咸+甘草）。建议买 Fazer 巧克力包覆款或「温和版」给初次尝试者。</p>
-            <span class="souvenir-brand">Fazer 蓝色圆标 + 红白「Super Salmiakki」包装</span>
-          </div>
+          <div class="souvenir-img-wrap small editorial-illustration"><div class="img-fallback">☕</div></div>
+          <div class="souvenir-item-info"><h4>咖啡与花草茶</h4><p>以包装色系、冲泡方式与适合对象说明。</p><span class="souvenir-brand">长辈／同事</span></div>
         </div>
       </div>
     </div>
 
-    <!-- 6. 芬兰浴与其他洗浴文化 -->
+    <!-- 6. 芬兰浴：设计示范 -->
     <div class="travel-collapse">
       <div class="travel-collapse-header" onclick="toggleTravelCollapse(this)">
         <div class="travel-collapse-left">
@@ -330,38 +730,26 @@ const TRAVEL_HTML = `
         <div class="travel-collapse-arrow">▼</div>
       </div>
       <div class="travel-collapse-body">
-        <div class="info-card">
-          <div class="card-label">核心儀式：冷熱交替</div>
-          <table class="sauna-table">
-            <thead><tr><th>步骤</th><th>说明</th></tr></thead>
-            <tbody>
-              <tr><td>🔥 蒸桑拿</td><td>在 80–100°C 的木造桑拿房内蒸 10–15 分钟，满身大汗</td></tr>
-              <tr><td>❄️ 跳冷水</td><td>直接冲进冰冷海水池或波罗的海中，瞬间收缩血管</td></tr>
-              <tr><td>🔄 重复循环</td><td>来回 2–3 次，促进血液循环、加速新陈代谢</td></tr>
-            </tbody>
-          </table>
-          <p style="font-size:0.78rem;color:var(--sub);line-height:1.7;">芬兰人相信：这种「冰火两重天」的冲击能锻炼心血管、释放压力、提升免疫力，是维持身心健康的秘密。</p>
+        <div class="souvenir-card editorial-feature-card">
+          <div class="souvenir-img-wrap editorial-illustration"><div class="img-fallback">♨</div></div>
+          <div class="souvenir-info">
+            <h4>一页看懂芬兰浴体验</h4>
+            <div class="souvenir-shop">体验型内容：气氛图＋流程＋现场提醒</div>
+            <div class="souvenir-desc">体验类采用大图开场，再接步骤纸条与比较卡；正式内容将在后续换回。</div>
+          </div>
+          <div class="editorial-action-row"><span>▤ 体验流程</span><span>◌ 注意事项</span><span>☆ 收藏</span></div>
         </div>
-        <div class="travel-sub-collapse">
-          <div class="travel-sub-header" onclick="toggleSubCollapse(this)">
-            <span class="travel-sub-title">🌍 世界洗浴文化比较</span>
-            <span class="travel-sub-arrow">▼</span>
-          </div>
-          <div class="travel-sub-body">
-            <table class="sauna-table">
-              <thead><tr><th>文化</th><th>核心体验</th></tr></thead>
-              <tbody>
-                <tr><td>🇫🇮 芬兰浴</td><td>热到窒息 → 跳进冰湖 → 心脏爆炸的快感</td></tr>
-                <tr><td>🇯🇵 日本温泉</td><td>静静地泡，看山看雪，什么都不想</td></tr>
-                <tr><td>🇹🇷 土耳其浴</td><td>躺着被人搓洗泡泡，像皇室一样被服务</td></tr>
-                <tr><td>🇰🇷 韩国汗蒸幕</td><td>全家穿制服躺地板吃东西聊天，社交大于泡澡</td></tr>
-              </tbody>
-            </table>
-          </div>
+        <div class="info-card editorial-note">
+          <h4>冷热交替 4 步骤</h4>
+          <ol class="editorial-steps"><li>淋浴并确认现场规则</li><li>进入桑拿房，让身体逐渐升温</li><li>短暂冷水或户外降温</li><li>休息补水，再视状况重复</li></ol>
+        </div>
+        <div class="info-card editorial-note">
+          <h4>不同洗浴文化的阅读方式</h4>
+          <p>比较内容不塞进传统表格，改用短句与标签，让手机画面更像旅行杂志的知识页。</p>
+          <div class="editorial-chips"><span>芬兰浴</span><span>冰岛温泉</span><span>日本温泉</span><span>土耳其浴</span></div>
         </div>
       </div>
     </div>
-
   </div>
 </div>
 `;
