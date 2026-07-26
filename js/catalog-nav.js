@@ -120,33 +120,50 @@ function prepareCatalogCards(category) {
   });
 }
 
+// v22 新增：卡片依原本的內容型態分成三種呈現模組，而不是全部套用同一種縮圖橫列。
+// hero（souvenir-card）：滿版圖文卡，圖片在上、文字在下，用於精選 / 必玩這類主打內容。
+// split（souvenir-item、link-card）：圖文各半的橫列，用於一般資訊型項目。
+// tile（market-card、station-card）／note（info-card、alcohol-warn、travel-sub-collapse）：
+//   保留原生排版（置中圖示磚卡、提醒框、步驟折疊），只加上可點擊的回饋，不強制塞圖。
+function catalogLayoutFor(card) {
+  if (card.classList.contains('souvenir-card')) return 'hero';
+  if (card.classList.contains('souvenir-item') || card.classList.contains('link-card')) return 'split';
+  if (card.classList.contains('market-card') || card.classList.contains('station-card')) return 'tile';
+  return 'note';
+}
+
 function makeCatalogCard(card) {
   if (!card || card.dataset.catalogCard === '1') return;
   card.dataset.catalogCard = '1';
-  card.classList.add('catalog-list-card');
+  var layout = catalogLayoutFor(card);
+  card.classList.add('catalog-list-card', 'catalog-layout-' + layout);
   card.setAttribute('role', 'button');
   card.setAttribute('tabindex', '0');
   var titleEl = card.querySelector('h4, .travel-sub-title, .warn-title, strong');
   var title = titleEl ? titleEl.textContent.trim() : '詳細內容';
-  var imageUrl = catalogImageFor(card.textContent);
-  var existingImage = card.querySelector('.souvenir-img-wrap');
-  var hasStandardCopy = !!card.querySelector(':scope > .souvenir-info, :scope > .souvenir-item-info');
-  if (!hasStandardCopy) {
-    var copy = document.createElement('div');
-    copy.className = 'catalog-card-copy';
-    while (card.firstChild) copy.appendChild(card.firstChild);
-    card.appendChild(copy);
+
+  if (layout === 'hero' || layout === 'split') {
+    var imageUrl = catalogImageFor(card.textContent);
+    var existingImage = card.querySelector('.souvenir-img-wrap');
+    var hasStandardCopy = !!card.querySelector(':scope > .souvenir-info, :scope > .souvenir-item-info');
+    if (!hasStandardCopy) {
+      var copy = document.createElement('div');
+      copy.className = 'catalog-card-copy';
+      while (card.firstChild) copy.appendChild(card.firstChild);
+      card.appendChild(copy);
+    }
+    if (imageUrl && existingImage && !existingImage.querySelector('img')) {
+      existingImage.innerHTML = '<img src="' + imageUrl + '" alt="' + title.replace(/"/g, '&quot;') + '" loading="lazy" decoding="async" onerror="this.remove()">';
+    } else if (!existingImage) {
+      var media = document.createElement('div');
+      var categoryEmoji = card.closest('.travel-collapse').querySelector('.travel-collapse-emoji');
+      media.className = 'catalog-card-media' + (imageUrl ? '' : ' image-error');
+      media.innerHTML = imageUrl ? '<img src="' + imageUrl + '" alt="' + title.replace(/"/g, '&quot;') + '" loading="lazy" decoding="async" onerror="this.parentElement.classList.add(\'image-error\');this.remove()">' :
+        '<span>' + (categoryEmoji ? categoryEmoji.textContent.trim() : '✦') + '</span>';
+      card.insertBefore(media, card.firstChild);
+    }
   }
-  if (imageUrl && existingImage && !existingImage.querySelector('img')) {
-    existingImage.innerHTML = '<img src="' + imageUrl + '" alt="' + title.replace(/"/g, '&quot;') + '" loading="lazy" decoding="async" onerror="this.remove()">';
-  } else if (!existingImage) {
-    var media = document.createElement('div');
-    var categoryEmoji = card.closest('.travel-collapse').querySelector('.travel-collapse-emoji');
-    media.className = 'catalog-card-media' + (imageUrl ? '' : ' image-error');
-    media.innerHTML = imageUrl ? '<img src="' + imageUrl + '" alt="' + title.replace(/"/g, '&quot;') + '" loading="lazy" decoding="async" onerror="this.parentElement.classList.add(\'image-error\');this.remove()">' :
-      '<span>' + (categoryEmoji ? categoryEmoji.textContent.trim() : '✦') + '</span>';
-    card.insertBefore(media, card.firstChild);
-  }
+
   card.addEventListener('click', function(event){
     var nearestLink = event.target.closest('a');
     if (nearestLink && nearestLink !== card) return; // 卡片內部另外嵌的連結，維持原本直接跳轉
