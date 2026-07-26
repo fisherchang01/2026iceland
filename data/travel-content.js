@@ -1,5 +1,5 @@
-// 「體驗」頁完整正式版：六個分類全部套用已確認的北歐旅行手札視覺。
-// 保留分類標籤，內容依旅途中實際查找順序重新編排。
+// 「体验」页完整正式版：六个分类全部套用已确认的北欧旅行手札视觉。
+// 保留分类标签，内容依旅途中实际查找顺序重新编排。
 const TRAVEL_HTML = `
 <style id="travel-editorial-style">
   :is(#page-travel,#page-other) {
@@ -82,14 +82,14 @@ const TRAVEL_HTML = `
     background-position: center;
     box-shadow: 0 13px 28px rgba(49,42,31,.18), inset 0 0 0 1px rgba(255,255,255,.16);
   }
-  .editorial-hero-copy {
+  :is(#page-travel,#page-other) .editorial-hero-copy {
     position: absolute;
     left: 24px;
     right: 24px;
     bottom: 78px;
     z-index: 2;
   }
-  .editorial-kicker {
+  :is(#page-travel,#page-other) .editorial-kicker {
     display: inline-flex;
     align-items: center;
     gap: 7px;
@@ -100,13 +100,13 @@ const TRAVEL_HTML = `
     text-transform: uppercase;
     color: rgba(255,255,255,.82);
   }
-  .editorial-kicker::before {
+  :is(#page-travel,#page-other) .editorial-kicker::before {
     content: '';
     width: 24px;
     height: 1px;
     background: rgba(255,255,255,.72);
   }
-  .editorial-hero h2 {
+  :is(#page-travel,#page-other) .editorial-hero h2 {
     max-width: 540px;
     font-family: var(--font-display);
     font-size: clamp(2rem, 8vw, 3rem);
@@ -114,7 +114,7 @@ const TRAVEL_HTML = `
     font-weight: 700;
     text-shadow: 0 3px 14px rgba(0,0,0,.38);
   }
-  .editorial-hero p {
+  :is(#page-travel,#page-other) .editorial-hero p {
     max-width: 520px;
     margin-top: 10px;
     font-size: var(--fs-sm);
@@ -122,12 +122,12 @@ const TRAVEL_HTML = `
     color: rgba(255,255,255,.9);
   }
   .editorial-hero-actions,
-  .editorial-action-row {
+  :is(#page-travel,#page-other) .editorial-action-row {
     display: grid;
     grid-template-columns: repeat(3, minmax(0,1fr));
     align-items: stretch;
   }
-  .editorial-hero-actions {
+  :is(#page-travel,#page-other) .editorial-hero-actions {
     position: absolute;
     left: 12px;
     right: 12px;
@@ -141,7 +141,7 @@ const TRAVEL_HTML = `
     box-shadow: 0 5px 18px rgba(0,0,0,.24);
     backdrop-filter: blur(12px);
   }
-  .editorial-hero-actions button {
+  :is(#page-travel,#page-other) .editorial-hero-actions button {
     border: 0;
     border-right: 1px solid rgba(255,255,255,.24);
     background: transparent;
@@ -150,8 +150,8 @@ const TRAVEL_HTML = `
     font-weight: 600;
     cursor: pointer;
   }
-  .editorial-hero-actions button:last-child { border-right: 0; }
-  .editorial-hero-actions button span {
+  :is(#page-travel,#page-other) .editorial-hero-actions button:last-child { border-right: 0; }
+  :is(#page-travel,#page-other) .editorial-hero-actions button span {
     display: block;
     font-size: var(--fs-md);
     margin-bottom: 2px;
@@ -281,7 +281,7 @@ const TRAVEL_HTML = `
     background: #edf1e7;
     color: #4d634a;
   }
-  .editorial-action-row {
+  :is(#page-travel,#page-other) .editorial-action-row {
     min-height: 54px;
     margin: 0 12px 12px;
     border: 1px solid #d7cdbd;
@@ -290,7 +290,7 @@ const TRAVEL_HTML = `
     background: rgba(255,253,248,.92);
     box-shadow: 0 5px 12px rgba(69,57,42,.07);
   }
-  .editorial-action-row span {
+  :is(#page-travel,#page-other) .editorial-action-row span {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -302,7 +302,7 @@ const TRAVEL_HTML = `
     color: var(--forest);
     text-align: center;
   }
-  .editorial-action-row span:last-child { border-right: 0; }
+  :is(#page-travel,#page-other) .editorial-action-row span:last-child { border-right: 0; }
 
   :is(#page-travel,#page-other) .catalog-list-card.catalog-layout-split {
     min-height: 122px;
@@ -370,26 +370,26 @@ const TRAVEL_HTML = `
     background-image: radial-gradient(circle, #d2c6b4 0 3px, #fff 3.2px 5px, transparent 5.2px);
     background-size: 16px 24px;
   }
-  .editorial-note h4 {
+  :is(#page-travel,#page-other) .editorial-note h4 {
     margin-bottom: 10px;
     font-family: var(--font-display);
     font-size: var(--fs-xl);
     line-height: 1.35;
     color: var(--ink);
   }
-  .editorial-note p {
+  :is(#page-travel,#page-other) .editorial-note p {
     font-size: var(--fs-sm);
     line-height: 1.7;
     color: var(--muted-ink);
   }
-  .editorial-steps {
+  :is(#page-travel,#page-other) .editorial-steps {
     list-style: none;
     counter-reset: editorial-step;
     display: grid;
     gap: 10px;
     margin-top: 12px;
   }
-  .editorial-steps li {
+  :is(#page-travel,#page-other) .editorial-steps li {
     counter-increment: editorial-step;
     position: relative;
     padding-left: 34px;
@@ -397,7 +397,7 @@ const TRAVEL_HTML = `
     line-height: 1.55;
     color: var(--ink);
   }
-  .editorial-steps li::before {
+  :is(#page-travel,#page-other) .editorial-steps li::before {
     content: counter(editorial-step);
     position: absolute;
     left: 0;
@@ -413,13 +413,13 @@ const TRAVEL_HTML = `
     font-weight: 800;
     background: #f7faf4;
   }
-  .editorial-chips {
+  :is(#page-travel,#page-other) .editorial-chips {
     display: flex;
     flex-wrap: wrap;
     gap: 7px;
     margin-top: 12px;
   }
-  .editorial-chips span {
+  :is(#page-travel,#page-other) .editorial-chips span {
     padding: 6px 10px;
     border: 1px solid #cbd5c4;
     border-radius: 999px;
@@ -428,28 +428,28 @@ const TRAVEL_HTML = `
     font-size: var(--fs-xs);
     font-weight: 700;
   }
-  .editorial-illustration {
+  :is(#page-travel,#page-other) .editorial-illustration {
     background:
       radial-gradient(circle at 30% 28%, rgba(255,255,255,.9), transparent 30%),
       linear-gradient(145deg, #dfe8da, #f4eadc) !important;
   }
-  .editorial-illustration .img-fallback {
+  :is(#page-travel,#page-other) .editorial-illustration .img-fallback {
     color: var(--forest-deep);
     text-shadow: 0 3px 12px rgba(49,75,46,.15);
   }
-  .catalog-sheet-body .editorial-action-row { display: none !important; }
+  :is(#page-travel,#page-other) .catalog-sheet-body .editorial-action-row { display: none !important; }
 
   @media (max-width: 420px) {
     :is(#page-travel,#page-other) .travel-banner.editorial-hero {
       min-height: 305px;
       border-radius: 20px;
     }
-    .editorial-hero-copy {
+    :is(#page-travel,#page-other) .editorial-hero-copy {
       left: 20px;
       right: 20px;
       bottom: 75px;
     }
-    .editorial-hero h2 { font-size: 2rem; }
+    :is(#page-travel,#page-other) .editorial-hero h2 { font-size: 2rem; }
     :is(#page-travel,#page-other) .catalog-overview-card {
       min-height: 126px;
       padding: 15px;
@@ -583,7 +583,7 @@ const TRAVEL_HTML = `
         <div class="souvenir-item">
           <div class="souvenir-img-wrap small editorial-illustration"><div class="img-fallback">🐦</div></div>
           <div class="souvenir-item-info">
-            <h4>Puffin 海鸚周边</h4>
+            <h4>Puffin 海鹦周边</h4>
             <p>冰岛国鸟玩偶、磁铁、明信片等，雷市 Laugavegur 大街纪念品店常见，适合送孩童。</p>
             <span class="souvenir-brand">📍 纪念品店普遍有售</span>
           </div>

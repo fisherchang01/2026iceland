@@ -1,4 +1,4 @@
-// 「工具」頁完整正式版：六個分類全部套用北歐旅行手札視覺。
+// 「工具」页完整正式版：六个分类全部套用北欧旅行手札视觉。
 // 外部网站与现场规定可能变动，出发前及使用当下应再核对最新资讯。
 const OTHER_HTML = `
 <style id="other-editorial-style">
@@ -21,7 +21,7 @@ const OTHER_HTML = `
       linear-gradient(135deg, #fdfaf3, #e3edef);
     border-color: #bdd0d3;
   }
-  .tool-open-btn {
+  :is(#page-travel,#page-other) .tool-open-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -36,33 +36,33 @@ const OTHER_HTML = `
     font-weight: 800;
     cursor: pointer;
   }
-  .tool-status-grid {
+  :is(#page-travel,#page-other) .tool-status-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0,1fr));
     gap: 8px;
     margin-top: 12px;
   }
-  .tool-status {
+  :is(#page-travel,#page-other) .tool-status {
     padding: 10px 7px;
     border: 1px solid #c8d7d9;
     border-radius: 13px;
     background: #edf4f3;
     text-align: center;
   }
-  .tool-status strong {
+  :is(#page-travel,#page-other) .tool-status strong {
     display: block;
     font-family: var(--font-display);
     font-size: var(--fs-lg);
     color: #315f67;
   }
-  .tool-status small {
+  :is(#page-travel,#page-other) .tool-status small {
     display: block;
     margin-top: 3px;
     color: var(--muted-ink);
     font-size: var(--fs-2xs);
     line-height: 1.35;
   }
-  .tool-callout {
+  :is(#page-travel,#page-other) .tool-callout {
     margin-top: 12px;
     padding: 11px 13px;
     border-left: 4px solid #4b7c84;
@@ -72,13 +72,13 @@ const OTHER_HTML = `
     font-size: var(--fs-xs);
     line-height: 1.6;
   }
-  .tool-mini-grid {
+  :is(#page-travel,#page-other) .tool-mini-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0,1fr));
     gap: 10px;
     margin: 12px 0;
   }
-  .tool-mini-card {
+  :is(#page-travel,#page-other) .tool-mini-card {
     min-height: 118px;
     padding: 15px;
     border: 1px solid #cad7d8;
@@ -86,32 +86,32 @@ const OTHER_HTML = `
     background: linear-gradient(145deg, #fffdf8, #e8f0ef);
     box-shadow: 0 6px 14px rgba(51,75,78,.08);
   }
-  .tool-mini-card strong {
+  :is(#page-travel,#page-other) .tool-mini-card strong {
     display: block;
     margin: 7px 0 5px;
     font-family: var(--font-display);
     font-size: var(--fs-base);
     color: var(--ink);
   }
-  .tool-mini-card p {
+  :is(#page-travel,#page-other) .tool-mini-card p {
     margin: 0;
     color: var(--muted-ink);
     font-size: var(--fs-xs);
     line-height: 1.5;
   }
-  .tool-big-icon {
+  :is(#page-travel,#page-other) .tool-big-icon {
     font-size: 1.65rem;
   }
-  .tool-documents-live {
+  :is(#page-travel,#page-other) .tool-documents-live {
     min-height: 0;
     margin-top: 12px;
   }
-  .tool-safety {
+  :is(#page-travel,#page-other) .tool-safety {
     border-color: #d9c4ad !important;
     background: linear-gradient(180deg, rgba(255,255,255,.65), transparent 32%), #fbf1e3 !important;
   }
   @media (max-width: 380px) {
-    .tool-status-grid { grid-template-columns: 1fr; }
+    :is(#page-travel,#page-other) .tool-status-grid { grid-template-columns: 1fr; }
   }
 </style>
 
@@ -503,7 +503,7 @@ const OTHER_HTML = `
         </div>
 
         <!-- 保留旅行文件渲染挂载点，现有 docs-content.js / render-docs.js 可继续使用 -->
-        <div class="tool-documents-live" id="docsList"></div>
+        <div class="tool-documents-live" id="docsListContainer"></div>
 
       </div>
     </div>

@@ -1,12 +1,12 @@
-// 「體驗／工具」的分類名稱與辨識圖片屬於旅程內容，不放在核心互動程式中。
+// 「体验／工具」的分类名称与辨识图片属于旅程内容，不放在核心互动程式中。
 const CATALOG_PAGE_META = window.CATALOG_PAGE_META = {
   travel: {
-    overview: '體驗總覽', pageId: 'page-travel',
-    labels: ['伴手禮（商店）', '伴手禮（超市）', '主要超市', '冰島酒類', '芬蘭伴手禮', '芬蘭浴']
+    overview: '体验总览', pageId: 'page-travel',
+    labels: ['伴手礼（商店）', '伴手礼（超市）', '主要超市', '冰岛酒类', '芬兰伴手礼', '芬兰浴']
   },
   other: {
-    overview: '工具總覽', pageId: 'page-other',
-    labels: ['極光查詢', '尋找極光', '極光攝影', '加油工具', '廁所資訊', '旅行文件']
+    overview: '工具总览', pageId: 'page-other',
+    labels: ['极光查询', '寻找极光', '极光摄影', '加油工具', '厕所资讯', '旅行文件']
   }
 };
 
