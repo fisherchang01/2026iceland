@@ -48,6 +48,7 @@ function initCatalogPage(key) {
   categories.forEach(function(cat, index){
     cat.dataset.catalogIndex = String(index);
     prepareCatalogCards(cat);
+    addCatalogCategoryIntro(cat);
   });
 
   var top = document.createElement('div');
@@ -103,6 +104,20 @@ function selectCatalogCategory(key, index) {
     if (activePill && activePill.scrollIntoView) activePill.scrollIntoView({ behavior:'smooth', inline:'center', block:'nearest' });
   }
   window.scrollTo({ top:0, behavior:'smooth' });
+}
+
+function addCatalogCategoryIntro(cat) {
+  var body = cat.querySelector(':scope > .travel-collapse-body');
+  var titleEl = cat.querySelector('.travel-collapse-title');
+  if (!body || !titleEl || body.querySelector(':scope > .catalog-category-intro')) return;
+  var subEl = cat.querySelector('.travel-collapse-sub');
+  var emojiEl = cat.querySelector('.travel-collapse-emoji');
+  var intro = document.createElement('div');
+  intro.className = 'catalog-category-intro';
+  intro.innerHTML = '<span class="catalog-category-intro-icon">' + (emojiEl ? emojiEl.textContent.trim() : '✦') + '</span>' +
+    '<span class="catalog-category-intro-copy"><strong>' + titleEl.textContent.trim() + '</strong>' +
+    (subEl ? '<small>' + subEl.textContent.trim() + '</small>' : '') + '</span>';
+  body.insertBefore(intro, body.firstChild);
 }
 
 function prepareCatalogCards(category) {

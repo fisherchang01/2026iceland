@@ -1299,7 +1299,51 @@
     .catalog-list-card.catalog-layout-note.travel-sub-collapse { position: relative; }
     .catalog-list-card.catalog-layout-note .travel-sub-arrow { display: none !important; }
 
-    /* 體驗／工具共用詳情 Sheet */
+    /* 手札感結構：分類內容最上方的引言區塊——裝訂孔暗示 + 襯線標題 + 虛線分隔，取代原本被隱藏的折疊標題 */
+    .catalog-category-intro {
+      display: flex; align-items: flex-start; gap: var(--sp-4);
+      padding: var(--sp-2) 0 var(--sp-5) var(--sp-4);
+      margin-bottom: var(--sp-5);
+      border-bottom: 1px dashed var(--border);
+      position: relative;
+    }
+    .catalog-category-intro::before {
+      content: ''; position: absolute; left: 0; top: 2px; bottom: 16px; width: 2px;
+      background-image: radial-gradient(circle, var(--border) 1.6px, transparent 1.7px);
+      background-size: 100% 12px; background-repeat: repeat-y;
+    }
+    .catalog-category-intro-icon {
+      width: 42px; height: 42px; border-radius: var(--radius-sm); flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center; font-size: var(--fs-xl);
+      background: linear-gradient(135deg, var(--tag-bg), var(--bg2));
+    }
+    .catalog-category-intro-copy { display: flex; flex-direction: column; gap: 2px; }
+    .catalog-category-intro-copy strong { font-family: var(--font-display); font-size: var(--fs-lg); font-weight: 700; color: var(--text); }
+    .catalog-category-intro-copy small { font-size: var(--fs-xs); color: var(--sub); }
+
+    /* 滿版圖文卡標題改用襯線字，跟分類引言字體語言一致，強化手札的閱讀質感 */
+    .catalog-list-card.catalog-layout-hero .souvenir-info h4 { font-family: var(--font-display); font-size: var(--fs-md); }
+
+    /* 總覽層級示範：內容最豐富的第一個分類（體驗頁＝伴手禮商店）用精選磚卡呈現，其餘維持簡潔列表，
+       示範「每一層都混搭」而不是總覽頁全部長一樣 */
+    #page-travel .catalog-overview-grid .catalog-overview-card:first-child {
+      grid-column: 1 / -1; flex-direction: column; align-items: flex-start; text-align: left;
+      padding: var(--sp-6) var(--sp-7);
+      background: linear-gradient(135deg, var(--tag-bg), var(--card));
+      border-color: var(--accent-soft);
+    }
+    #page-travel .catalog-overview-grid .catalog-overview-card:first-child .catalog-overview-icon {
+      width: 56px; height: 56px; font-size: var(--fs-2xl); margin-bottom: var(--sp-3);
+    }
+    #page-travel .catalog-overview-grid .catalog-overview-card:first-child .catalog-overview-copy strong {
+      font-family: var(--font-display); font-size: var(--fs-md);
+    }
+    #page-travel .catalog-overview-grid .catalog-overview-card:first-child .catalog-overview-copy small {
+      white-space: normal; overflow: visible; margin-top: 2px;
+    }
+    #page-travel .catalog-overview-grid .catalog-overview-card:first-child .catalog-overview-arrow {
+      align-self: flex-end; margin-top: var(--sp-2);
+    }
     .catalog-sheet-backdrop {
       position: fixed; inset: 0; z-index: 390; background: rgba(20,25,28,.48);
       opacity: 0; pointer-events: none; transition: opacity .25s;
