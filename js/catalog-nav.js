@@ -78,8 +78,19 @@ function initCatalogPage(key) {
 
   var overview = document.createElement('div');
   overview.className = 'catalog-overview';
+  // v23：總覽排版順序——2x4 優先、其次 1x4、最後把所有 2x2 集中排在一起（穩定排序，同一尺寸內維持原始分類順序）。
+  // 這樣 2x2 一定會從上面開始每列排 2 個，如果數量是奇數，落單的那一個只會出現在整個總覽的最下方，
+  // 不會因為中間穿插 1x4／2x4 而被拆散、出現「單獨一個 2x2 卡片卡在中間」的狀況。
+  var sizeRank = { '2x4': 0, '1x4': 1, '2x2': 2 };
+  var order = categories.map(function(_, i){ return i; });
+  order.sort(function(a, b){
+    var ra = sizeRank[(meta.sizes && meta.sizes[a]) || '2x2'];
+    var rb = sizeRank[(meta.sizes && meta.sizes[b]) || '2x2'];
+    return ra - rb;
+  });
   overview.innerHTML = '<div class="catalog-overview-heading"><h2>' + meta.overview + '</h2><p>選擇分類查看完整內容</p></div><div class="catalog-overview-grid">' +
-    categories.map(function(cat, index){
+    order.map(function(index){
+      var cat = categories[index];
       var emoji = cat.querySelector('.travel-collapse-emoji');
       var title = cat.querySelector('.travel-collapse-title');
       var sub = cat.querySelector('.travel-collapse-sub');
@@ -87,7 +98,7 @@ function initCatalogPage(key) {
       var label = meta.labels[index] || (title ? title.textContent.trim() : '分類');
       var subText = sub ? sub.textContent.trim() : '點選查看內容';
       var emojiText = emoji ? emoji.textContent.trim() : '•';
-      // 2x4（2.2:1 橫式）／2x2（1:1 小縮圖）都需要封面圖，1x4 維持純 emoji + 文字，不需要圖片
+      // 2x4（2.2:1 橫式）／2x2（1:1 大縮圖）都需要封面圖，1x4 維持純 emoji + 文字，不需要圖片
       var needsImage = size === '2x4' || size === '2x2';
       var coverUrl = needsImage ? catalogCoverFor(cat, label) : '';
       var mediaHtml = needsImage
