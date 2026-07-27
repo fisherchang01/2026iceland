@@ -869,19 +869,9 @@
       margin-top: var(--sp-4);
     }
     .tips-box p { font-size: var(--fs-sm); color: var(--warn-txt); line-height: 1.6; }
-    .station-grid, .market-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--sp-3); }
-    .station-card, .market-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: var(--sp-5);
-      text-align: center;
-    }
-    .station-icon, .market-icon { font-size: var(--fs-2xl); display: block; margin-bottom: var(--sp-2); }
-    .station-card h4, .market-card h4 { font-size: var(--fs-sm); font-weight: 700; color: var(--text); }
-    .station-card p, .market-card p { font-size: var(--fs-xs); color: var(--sub); margin-top: var(--sp-1); line-height: 1.5; }
+    /* v23：station-grid/market-grid/market-card/market-tag 已改用 catalog-compare-list（純文字比較清單）取代，
+       全站已無任何內容使用這組舊 class，故移除。 */
     .price { color: var(--success) !important; font-weight: 700; font-size: var(--fs-sm) !important; }
-    .market-tag { display: inline-block; background: var(--tag-bg); color: var(--tag-txt); border-radius: var(--radius-sm); padding: var(--sp-1) var(--sp-3); font-size: var(--fs-2xs); font-weight: 600; margin-top: var(--sp-1); }
     .hours { font-size: var(--fs-2xs) !important; color: var(--sub); opacity: 0.8; }
     .budget-section-header {
       font-size: var(--fs-md); font-weight: 700; color: var(--primary);
@@ -1121,36 +1111,11 @@
     .travel-sub-header.open .travel-sub-arrow { transform: rotate(180deg); }
     .travel-sub-body { display: none; padding: var(--sp-4); background: var(--card); }
     .travel-sub-body.open { display: block; }
-    .souvenir-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      overflow: hidden;
-      margin-bottom: var(--sp-4);
-    }
-    .souvenir-img-wrap { width: 100%; height: 160px; overflow: hidden; background: var(--bg2); display: flex; align-items: center; justify-content: center; }
-    .souvenir-img-wrap img { width: 100%; height: 100%; object-fit: cover; }
-    .souvenir-img-wrap .img-fallback { font-size: var(--fs-4xl); display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; }
-    .souvenir-info { padding: var(--sp-5) var(--sp-6); }
-    .souvenir-info h4 { font-size: var(--fs-base); font-weight: 700; color: var(--text); margin-bottom: var(--sp-1); }
+    /* v23：souvenir-card／souvenir-img-wrap／souvenir-item／souvenir-item-info 已被
+       catalog-square／catalog-wide 取代並移除，下面只保留仍在使用的文字類 class。 */
     .souvenir-shop { font-size: var(--fs-xs); color: var(--primary); font-weight: 600; margin-bottom: var(--sp-1); }
     .souvenir-desc { font-size: var(--fs-sm); color: var(--text); line-height: 1.7; margin-bottom: var(--sp-2); }
     .souvenir-tip { font-size: var(--fs-xs); color: var(--sub); background: var(--tag-bg); padding: var(--sp-2) var(--sp-4); border-radius: var(--radius-sm); line-height: 1.5; }
-    .souvenir-item {
-      display: flex; align-items: flex-start; gap: var(--sp-4);
-      background: var(--bg);
-      border: 1px solid var(--border-light);
-      border-radius: var(--radius-sm);
-      padding: var(--sp-4);
-      margin-bottom: var(--sp-3);
-    }
-    .souvenir-item:last-child { margin-bottom: 0; }
-    .souvenir-img-wrap.small { width: 64px; height: 64px; flex-shrink: 0; border-radius: var(--radius-sm); overflow: hidden; }
-    .souvenir-img-wrap.small img { width: 100%; height: 100%; object-fit: cover; }
-    .souvenir-img-wrap.small .img-fallback { font-size: var(--fs-2xl); width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: var(--bg2); }
-    .souvenir-item-info { flex: 1; }
-    .souvenir-item-info h4 { font-size: var(--fs-sm); font-weight: 700; color: var(--text); margin-bottom: var(--sp-1); }
-    .souvenir-item-info p { font-size: var(--fs-xs); color: var(--sub); line-height: 1.5; margin-bottom: var(--sp-1); }
     .souvenir-brand { font-size: var(--fs-2xs) !important; color: var(--primary) !important; font-weight: 600; background: var(--tag-bg); padding: var(--sp-1) var(--sp-2); border-radius: var(--radius-sm); display: inline-block; }
     .alcohol-warn {
       background: #fff3f3;
@@ -1214,6 +1179,15 @@
       gap: var(--sp-4); text-align: left; cursor: pointer; box-shadow: 0 2px 10px rgba(30,50,60,.05);
     }
     .catalog-overview-card:active { transform: scale(.985); }
+    /* v23：总览卡片尺寸系統。每個分類指定 2x4／2x2／1x4 其中一種（見 catalog-config.js 的 sizes），
+       系統只負責照指定尺寸排版，不決定哪個分類該用哪種尺寸。 */
+    .catalog-overview-card.ov-2x4 {
+      grid-column: 1 / -1; flex-direction: column; align-items: stretch; padding: 0; overflow: hidden;
+    }
+    .catalog-overview-media { width: 100%; aspect-ratio: 1 / 1; background: var(--bg2); overflow: hidden; }
+    .catalog-overview-media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .catalog-overview-media.image-error { display: flex; align-items: center; justify-content: center; font-size: 2.4rem; }
+    .catalog-overview-card.ov-1x4 { grid-column: 1 / -1; flex-direction: row; align-items: center; }
     .catalog-overview-icon {
       width: 48px; height: 48px; border-radius: var(--radius-sm); flex-shrink: 0;
       display: flex; align-items: center; justify-content: center; font-size: var(--fs-xl);
@@ -1230,74 +1204,57 @@
     .catalog-page .travel-collapse > .travel-collapse-header { display: none; }
     .catalog-page .travel-collapse > .travel-collapse-body { padding: 0; background: transparent; }
 
-    /* 分類頁卡片：依內容型態分成三種模組，不再全部套用同一種縮圖橫列。 */
-    .catalog-list-card { cursor: pointer; position: relative; }
-    .catalog-list-card:active { transform: scale(.985); }
+    /* v23：分類詳情頁卡片改成三種版型——正方形圖文框／橫式圖文框／純文字框，取代舊的 hero/split/tile 系統。 */
+    .catalog-list-card { position: relative; }
+    .catalog-list-card.catalog-layout-square,
+    .catalog-list-card.catalog-layout-wide { cursor: pointer; }
+    .catalog-list-card.catalog-layout-square:active,
+    .catalog-list-card.catalog-layout-wide:active { transform: scale(.985); }
 
-    /* 模組一・滿版圖文卡（souvenir-card）：精選 / 必玩這類主打內容，圖片維持在上方、大氣呈現 */
-    .catalog-list-card.catalog-layout-hero { margin-bottom: var(--sp-4); }
-    .catalog-list-card.catalog-layout-hero::after {
+    /* 模組一・正方形圖文框（catalog-square）：上方 4:3 封面圖＋標題＋最多三行文字介紹，點開詳情圖片直式堆疊 */
+    .catalog-list-card.catalog-layout-square { margin-bottom: var(--sp-4); }
+    .catalog-list-card.catalog-layout-square::after {
       content: '›'; position: absolute; right: 12px; top: 12px;
       width: 26px; height: 26px; border-radius: 50%;
       background: rgba(255,255,255,.85); color: var(--text);
       font-size: var(--fs-lg); display: flex; align-items: center; justify-content: center;
     }
+    .catalog-square-media { width: 100%; aspect-ratio: 4 / 3; background: var(--bg2); overflow: hidden; }
+    .catalog-square-media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .catalog-square-media.image-error { display: flex; align-items: center; justify-content: center; font-size: 2.4rem; }
 
-    /* 模組二・圖文各半（souvenir-item、link-card）：一般資訊型項目，左縮圖右文字 */
-    .catalog-list-card.catalog-layout-split {
-      min-height: 100px; display: flex !important; flex-direction: row !important;
-      align-items: stretch !important; gap: 0 !important; overflow: hidden;
-      padding: 0 !important; margin-bottom: var(--sp-4) !important;
-      border: 1px solid var(--border) !important; border-radius: var(--radius) !important;
-      background: var(--card) !important;
+    /* 模組二・橫式圖文框（catalog-wide）：左側 1:1 縮圖＋右側文字＋右緣箭頭，點開詳情圖片可左右滑動輪播 */
+    .catalog-list-card.catalog-layout-wide {
+      display: flex; align-items: flex-start; gap: var(--sp-4);
+      margin-bottom: var(--sp-3); overflow: hidden;
+      border: 1px solid var(--border); border-radius: var(--radius); background: var(--card);
       box-shadow: 0 2px 10px rgba(30,50,60,.06);
+      padding: var(--sp-4) 30px var(--sp-4) var(--sp-4);
     }
-    .catalog-list-card.catalog-layout-split::after {
+    .catalog-list-card.catalog-layout-wide::after {
       content: '›'; position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
       color: var(--sub); font-size: var(--fs-xl);
     }
-    .catalog-list-card.catalog-layout-split .souvenir-img-wrap,
-    .catalog-list-card.catalog-layout-split .souvenir-img-wrap.small,
-    .catalog-list-card.catalog-layout-split .catalog-card-media {
-      width: 92px !important; height: auto !important; min-height: 100px;
-      flex: 0 0 92px !important; border-radius: 0 !important;
-      background: linear-gradient(135deg, #e8f2f5, #f5efe4);
-      display: flex; align-items: center; justify-content: center; overflow: hidden;
+    .catalog-wide-media {
+      width: 72px; height: 72px; flex-shrink: 0; border-radius: var(--radius-sm);
+      overflow: hidden; background: var(--bg2);
     }
-    .catalog-list-card.catalog-layout-split .souvenir-img-wrap img,
-    .catalog-list-card.catalog-layout-split .catalog-card-media img { width: 100%; height: 100%; object-fit: cover; }
-    .catalog-list-card.catalog-layout-split .souvenir-img-wrap .img-fallback { font-size: var(--fs-2xl); }
-    .catalog-list-card.catalog-layout-split .catalog-card-media.image-error::after { content: '✦'; font-size: var(--fs-2xl); color: var(--primary); }
-    .catalog-list-card.catalog-layout-split .souvenir-info,
-    .catalog-list-card.catalog-layout-split .souvenir-item-info,
-    .catalog-list-card.catalog-layout-split .link-info {
-      flex: 1; min-width: 0; padding: var(--sp-4) 34px var(--sp-4) var(--sp-5) !important;
+    .catalog-wide-media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .catalog-wide-media.image-error {
+      display: flex; align-items: center; justify-content: center; font-size: var(--fs-2xl);
     }
-    .catalog-list-card.catalog-layout-split h4,
-    .catalog-list-card.catalog-layout-split .link-info h4 {
-      font-size: var(--fs-base) !important; font-weight: 800; color: var(--text);
-    }
-    .catalog-list-card.catalog-layout-split p,
-    .catalog-list-card.catalog-layout-split .souvenir-desc,
-    .catalog-list-card.catalog-layout-split .link-info p {
+    .catalog-wide-info { flex: 1; min-width: 0; }
+    .catalog-wide-info h4 { font-size: var(--fs-base); font-weight: 800; color: var(--text); }
+    .catalog-wide-info p {
       display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2;
-      overflow: hidden; font-size: var(--fs-xs) !important; line-height: 1.55 !important;
-      color: var(--sub) !important; margin-top: var(--sp-1); margin-bottom: 0;
-      background: transparent; padding: 0;
+      overflow: hidden; font-size: var(--fs-xs); line-height: 1.55; color: var(--sub);
+      margin-top: var(--sp-1); margin-bottom: 0;
     }
-    .catalog-list-card.catalog-layout-split .souvenir-brand,
-    .catalog-list-card.catalog-layout-split .link-icon,
-    .catalog-list-card.catalog-layout-split .link-badge { display: none !important; }
+    /* souvenir-brand（品牌／分類小標籤）只在詳情頁顯示，清單卡片先隱藏，避免跟兩行說明擠在一起 */
+    .catalog-list-card.catalog-layout-wide .souvenir-brand,
+    .catalog-list-card.catalog-layout-square .souvenir-brand { display: none; }
 
-    /* 模組三・文字為主（market-card、station-card 磚卡；info-card、alcohol-warn、travel-sub-collapse 步驟／提醒）：
-       完全沿用原生排版（置中圖示磚卡維持 2 欄網格、提醒框與步驟折疊維持原樣），只加上輕量的可點擊提示 */
-    .catalog-list-card.catalog-layout-tile::after,
-    .catalog-list-card.catalog-layout-note::after {
-      content: '›'; position: absolute; right: 10px; bottom: 8px;
-      color: var(--sub); font-size: var(--fs-base);
-    }
-    .catalog-list-card.catalog-layout-note.travel-sub-collapse { position: relative; }
-    .catalog-list-card.catalog-layout-note .travel-sub-arrow { display: none !important; }
+    /* 模組三・純文字框（info-card、alcohol-warn）：不需要圖片、不能點擊展開，內容本身已經是完整資訊 */
 
     /* 手札感結構：分類內容最上方的引言區塊——裝訂孔暗示 + 襯線標題 + 虛線分隔，取代原本被隱藏的折疊標題 */
     .catalog-category-intro {
@@ -1321,29 +1278,6 @@
     .catalog-category-intro-copy strong { font-family: var(--font-display); font-size: var(--fs-lg); font-weight: 700; color: var(--text); }
     .catalog-category-intro-copy small { font-size: var(--fs-xs); color: var(--sub); }
 
-    /* 滿版圖文卡標題改用襯線字，跟分類引言字體語言一致，強化手札的閱讀質感 */
-    .catalog-list-card.catalog-layout-hero .souvenir-info h4 { font-family: var(--font-display); font-size: var(--fs-md); }
-
-    /* 總覽層級示範：內容最豐富的第一個分類（體驗頁＝伴手禮商店）用精選磚卡呈現，其餘維持簡潔列表，
-       示範「每一層都混搭」而不是總覽頁全部長一樣 */
-    #page-travel .catalog-overview-grid .catalog-overview-card:first-child {
-      grid-column: 1 / -1; flex-direction: column; align-items: flex-start; text-align: left;
-      padding: var(--sp-6) var(--sp-7);
-      background: linear-gradient(135deg, var(--tag-bg), var(--card));
-      border-color: var(--accent-soft);
-    }
-    #page-travel .catalog-overview-grid .catalog-overview-card:first-child .catalog-overview-icon {
-      width: 56px; height: 56px; font-size: var(--fs-2xl); margin-bottom: var(--sp-3);
-    }
-    #page-travel .catalog-overview-grid .catalog-overview-card:first-child .catalog-overview-copy strong {
-      font-family: var(--font-display); font-size: var(--fs-md);
-    }
-    #page-travel .catalog-overview-grid .catalog-overview-card:first-child .catalog-overview-copy small {
-      white-space: normal; overflow: visible; margin-top: 2px;
-    }
-    #page-travel .catalog-overview-grid .catalog-overview-card:first-child .catalog-overview-arrow {
-      align-self: flex-end; margin-top: var(--sp-2);
-    }
     .catalog-sheet-backdrop {
       position: fixed; inset: 0; z-index: 390; background: rgba(20,25,28,.48);
       opacity: 0; pointer-events: none; transition: opacity .25s;
@@ -1368,13 +1302,30 @@
     }
     .catalog-sheet-body { padding: var(--sp-6); overflow-y: auto; flex: 1; }
     .catalog-sheet-body > * { display: block !important; margin: 0 !important; border: 0 !important; box-shadow: none !important; }
-    .catalog-sheet-body .souvenir-img-wrap,
-    .catalog-sheet-body .catalog-card-media { width: 100% !important; height: 210px !important; border-radius: var(--radius) !important; margin-bottom: var(--sp-5); }
-    .catalog-sheet-body .souvenir-info,
-    .catalog-sheet-body .souvenir-item-info,
-    .catalog-sheet-body .catalog-card-copy { padding: 0 !important; }
+    .catalog-sheet-body .souvenir-brand { display: inline-block !important; }
+    .catalog-sheet-body .catalog-square-info,
+    .catalog-sheet-body .catalog-wide-info { padding: 0 !important; }
     .catalog-sheet-body .travel-sub-body { display: block !important; padding: 0; }
     .catalog-sheet-body .travel-sub-arrow { display: none; }
+
+    /* v23：正方形圖文框詳情——圖片由上而下直式堆疊（3:5），不是左右滑動；
+       橫式圖文框詳情——沿用左右滑動輪播（4:3）。兩者都做成貼齊螢幕左右兩側的全出血呈現，
+       手法跟首頁 .trip-hero 的全出血一致：width:100% 配上左右負邊距抵銷 .catalog-sheet-body 的內距。 */
+    .catalog-stacked-photos {
+      display: grid; gap: 10px; width: 100%;
+      margin: calc(-1 * var(--sp-6)) calc(-1 * var(--sp-6)) var(--sp-5);
+    }
+    .catalog-stacked-photo { width: 100%; aspect-ratio: 3 / 5; overflow: hidden; background: var(--bg2); }
+    .catalog-stacked-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .catalog-stacked-fallback {
+      width: 100%; aspect-ratio: 3 / 5; display: flex; align-items: center; justify-content: center;
+      font-size: 3rem; background: var(--bg2);
+      margin: calc(-1 * var(--sp-6)) calc(-1 * var(--sp-6)) var(--sp-5);
+    }
+    .catalog-sheet-body .photo-carousel {
+      aspect-ratio: 4 / 3; height: auto; border-radius: 0;
+      margin: calc(-1 * var(--sp-6)) calc(-1 * var(--sp-6)) var(--sp-5);
+    }
 
     /* ===== 景點詳情 Sheet（由下往上彈出）===== */
     .sheet-backdrop {

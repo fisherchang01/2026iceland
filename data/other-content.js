@@ -6,16 +6,7 @@ const OTHER_HTML = `
     --forest: #315f67;
     --forest-deep: #21484f;
   }
-  #page-other .travel-banner.tool-hero {
-    --editorial-hero-image: url('images/banners/cover-hero.webp');
-    background-image:
-      radial-gradient(circle at 76% 16%, rgba(120,220,194,.24) 0 4%, transparent 22%),
-      radial-gradient(circle at 30% 6%, rgba(148,181,255,.22) 0 5%, transparent 27%),
-      linear-gradient(180deg, rgba(8,24,34,.16) 0%, rgba(13,37,48,.40) 45%, rgba(10,25,32,.88) 100%),
-      var(--editorial-hero-image);
-    background-position: center;
-  }
-  #page-other .catalog-overview-card:first-child {
+  #page-other .catalog-overview-card.ov-2x4 {
     background:
       radial-gradient(circle at 87% 20%, rgba(74,132,143,.22) 0 16%, transparent 38%),
       linear-gradient(135deg, #fdfaf3, #e3edef);
@@ -118,19 +109,6 @@ const OTHER_HTML = `
 <div class="page" id="page-other">
   <div class="page-inner">
 
-    <section class="travel-banner editorial-hero tool-hero">
-      <div class="editorial-hero-copy">
-        <div class="editorial-kicker">Field Tools · Iceland</div>
-        <h2>把复杂留给工具</h2>
-        <p>极光、加油、厕所与旅行文件，全部改成现场可快速判断的步骤与入口。</p>
-      </div>
-      <div class="editorial-hero-actions">
-        <button type="button" onclick="selectCatalogCategory('other',0)"><span>✦</span>今晚极光</button>
-        <button type="button" onclick="selectCatalogCategory('other',3)"><span>⛽</span>沿途加油</button>
-        <button type="button" onclick="selectCatalogCategory('other',5)"><span>▤</span>旅行文件</button>
-      </div>
-    </section>
-
     <!-- 1. 极光查询 -->
     <div class="travel-collapse">
       <div class="travel-collapse-header" onclick="toggleTravelCollapse(this)">
@@ -145,9 +123,8 @@ const OTHER_HTML = `
       </div>
       <div class="travel-collapse-body">
 
-        <div class="souvenir-card editorial-feature-card">
-          <div class="souvenir-img-wrap editorial-illustration"><div class="img-fallback">🌌</div></div>
-          <div class="souvenir-info">
+        <div class="catalog-square">
+          <div class="catalog-square-info">
             <h4>今晚有没有机会看到极光？</h4>
             <div class="souvenir-shop">判断顺序：云层空隙 → 天色够暗 → 极光活动</div>
             <div class="souvenir-desc">不要只看 KP 数字。即使极光活动不错，厚云也会完全挡住天空；先找无云或少云区域，再判断是否值得外出等待。</div>
@@ -157,12 +134,10 @@ const OTHER_HTML = `
               <div class="tool-status"><strong>③</strong><small>再看活动</small></div>
             </div>
           </div>
-          <div class="editorial-action-row"><span>☁ 云量</span><span>✦ 极光活动</span><span>⌁ 地点比较</span></div>
         </div>
 
-        <div class="souvenir-item">
-          <div class="souvenir-img-wrap small editorial-illustration"><div class="img-fallback">☁</div></div>
-          <div class="souvenir-item-info">
+        <div class="catalog-wide">
+          <div class="catalog-wide-info">
             <h4>Icelandic Met Office</h4>
             <p>把极光活动与云量图放在同一页面查看，适合作为今晚是否出发的第一站。</p>
             <span class="souvenir-brand">重点：低云／中云／高云与无云空隙</span>
@@ -170,9 +145,8 @@ const OTHER_HTML = `
           </div>
         </div>
 
-        <div class="souvenir-item">
-          <div class="souvenir-img-wrap small editorial-illustration"><div class="img-fallback">☀</div></div>
-          <div class="souvenir-item-info">
+        <div class="catalog-wide">
+          <div class="catalog-wide-info">
             <h4>SpaceWeatherLive</h4>
             <p>适合进一步观察太阳风、Bz 与极光活动变化；不熟悉数据时仍以云量和现场天空为主。</p>
             <span class="souvenir-brand">进阶参考：太阳风与磁场方向</span>
@@ -180,9 +154,8 @@ const OTHER_HTML = `
           </div>
         </div>
 
-        <div class="souvenir-item">
-          <div class="souvenir-img-wrap small editorial-illustration"><div class="img-fallback">🌬</div></div>
-          <div class="souvenir-item-info">
+        <div class="catalog-wide">
+          <div class="catalog-wide-info">
             <h4>Windy 云层变化</h4>
             <p>用时间轴观察住宿附近及周边区域的云层移动，判断继续等待或换地点是否合理。</p>
             <span class="souvenir-brand">重点：未来一至三小时云层移动</span>
@@ -218,20 +191,17 @@ const OTHER_HTML = `
       </div>
       <div class="travel-collapse-body">
 
-        <div class="souvenir-card editorial-feature-card">
-          <div class="souvenir-img-wrap editorial-illustration"><div class="img-fallback">🧭</div></div>
-          <div class="souvenir-info">
+        <div class="catalog-square">
+          <div class="catalog-square-info">
             <h4>从住宿出发的找光流程</h4>
             <div class="souvenir-shop">不用追得远，先找最近的黑暗与云层空隙</div>
             <div class="souvenir-desc">先在住宿外确认天空，再决定是否移动。很多时候换到附近较暗、视野较开的地点，就比长距离追逐更有效率。</div>
             <div class="souvenir-tip">夜间路况、强风、结冰与安全停车点比极光强度更重要。</div>
           </div>
-          <div class="editorial-action-row"><span>◐ 光害</span><span>☁ 云缝</span><span>Ⓟ 安全停车</span></div>
         </div>
 
-        <div class="souvenir-item">
-          <div class="souvenir-img-wrap small editorial-illustration"><div class="img-fallback">◐</div></div>
-          <div class="souvenir-item-info">
+        <div class="catalog-wide">
+          <div class="catalog-wide-info">
             <h4>Light Pollution Map</h4>
             <p>查看城市与道路周边光害，选择面向较暗区域、视野开阔的方向。</p>
             <span class="souvenir-brand">用途：比较住宿附近的黑暗程度</span>
@@ -239,9 +209,8 @@ const OTHER_HTML = `
           </div>
         </div>
 
-        <div class="souvenir-item">
-          <div class="souvenir-img-wrap small editorial-illustration"><div class="img-fallback">✦</div></div>
-          <div class="souvenir-item-info">
+        <div class="catalog-wide">
+          <div class="catalog-wide-info">
             <h4>Hello Aurora</h4>
             <p>可作为现场目击与社群回报的补充参考，但仍需核对回报时间、距离与当地云况。</p>
             <span class="souvenir-brand">用途：观察附近是否有人目击</span>
@@ -249,9 +218,8 @@ const OTHER_HTML = `
           </div>
         </div>
 
-        <div class="souvenir-item">
-          <div class="souvenir-img-wrap small editorial-illustration"><div class="img-fallback">🛡</div></div>
-          <div class="souvenir-item-info">
+        <div class="catalog-wide">
+          <div class="catalog-wide-info">
             <h4>SafeTravel Iceland</h4>
             <p>移动前先查看天气、道路与旅行安全提醒。看到极光也不代表适合继续开往更远地点。</p>
             <span class="souvenir-brand">用途：确认是否适合夜间移动</span>
@@ -287,15 +255,13 @@ const OTHER_HTML = `
       </div>
       <div class="travel-collapse-body">
 
-        <div class="souvenir-card editorial-feature-card">
-          <div class="souvenir-img-wrap editorial-illustration"><div class="img-fallback">📱</div></div>
-          <div class="souvenir-info">
+        <div class="catalog-square">
+          <div class="catalog-square-info">
             <h4>iPhone 13 Pro Max 极光拍摄</h4>
             <div class="souvenir-shop">稳定手机 · 开启夜间模式 · 降低曝光亮度</div>
             <div class="souvenir-desc">最重要的是稳定。先把手机靠在固定物或脚架上，让夜间模式获得更长曝光，再用前景增加画面层次。</div>
             <div class="souvenir-tip">肉眼只看到淡淡灰白时，手机夜间模式仍可能拍出绿色；先试拍再判断。</div>
           </div>
-          <div class="editorial-action-row"><span>▣ 稳定</span><span>☾ 夜间模式</span><span>⌁ 前景构图</span></div>
         </div>
 
         <div class="tool-mini-grid">
@@ -343,46 +309,55 @@ const OTHER_HTML = `
       </div>
       <div class="travel-collapse-body">
 
-        <div class="souvenir-card editorial-feature-card">
-          <div class="souvenir-img-wrap editorial-illustration"><div class="img-fallback">⛽</div></div>
-          <div class="souvenir-info">
+        <div class="catalog-square">
+          <div class="catalog-square-info">
             <h4>自驾加油｜把油量、地点与付款一起看</h4>
             <div class="souvenir-shop">先确认租车油号，再选择顺路油站</div>
             <div class="souvenir-desc">不要等到油量过低才找油站。进入较偏远路段前，看到顺路且方便进出的油站即可提早补充。</div>
             <div class="souvenir-tip">部分自助设备可能需要信用卡 PIN，并可能先进行额度圈存；保留一张可用的实体卡。</div>
           </div>
-          <div class="editorial-action-row"><span>⌖ 找油站</span><span>▤ 看油号</span><span>💳 付款</span></div>
         </div>
 
-        <div class="market-grid">
-          <div class="market-card">
-            <span class="market-icon">N1</span>
-            <h4>N1</h4>
-            <span class="market-tag">沿途搜寻</span>
-            <p>用地图查看路线附近分站与进出方向。</p>
-            <button class="tool-open-btn" type="button" onclick="event.stopPropagation();window.open('https://www.google.com/maps/search/?api=1&query=N1+Iceland','_blank')">地图搜寻 ↗</button>
-          </div>
-          <div class="market-card">
-            <span class="market-icon">O</span>
-            <h4>Orkan</h4>
-            <span class="market-tag">自助油站</span>
-            <p>适合顺路补油，现场先确认油枪与付款步骤。</p>
-            <button class="tool-open-btn" type="button" onclick="event.stopPropagation();window.open('https://www.google.com/maps/search/?api=1&query=Orkan+Iceland','_blank')">地图搜寻 ↗</button>
-          </div>
-          <div class="market-card">
-            <span class="market-icon">OB</span>
-            <h4>ÓB</h4>
-            <span class="market-tag">快速补油</span>
-            <p>以地图选择顺路地点，不为特定品牌绕远。</p>
-            <button class="tool-open-btn" type="button" onclick="event.stopPropagation();window.open('https://www.google.com/maps/search/?api=1&query=OB+gas+station+Iceland','_blank')">地图搜寻 ↗</button>
-          </div>
-          <div class="market-card">
-            <span class="market-icon">A</span>
-            <h4>Atlantsolía</h4>
-            <span class="market-tag">路线比较</span>
-            <p>与其他油站一起比较距离、方向与进出便利性。</p>
-            <button class="tool-open-btn" type="button" onclick="event.stopPropagation();window.open('https://www.google.com/maps/search/?api=1&query=Atlantsolia+Iceland','_blank')">地图搜寻 ↗</button>
-          </div>
+        <div class="info-card editorial-note">
+          <h4>常见油站比一比</h4>
+          <ul class="catalog-compare-list">
+            <li class="catalog-compare-item">
+              <span class="catalog-compare-icon">N1</span>
+              <div class="catalog-compare-copy">
+                <strong>N1</strong>
+                <span class="catalog-compare-tag">沿途搜寻</span>
+                <p>用地图查看路线附近分站与进出方向。</p>
+                <button class="tool-open-btn" type="button" onclick="event.stopPropagation();window.open('https://www.google.com/maps/search/?api=1&query=N1+Iceland','_blank')">地图搜寻 ↗</button>
+              </div>
+            </li>
+            <li class="catalog-compare-item">
+              <span class="catalog-compare-icon">O</span>
+              <div class="catalog-compare-copy">
+                <strong>Orkan</strong>
+                <span class="catalog-compare-tag">自助油站</span>
+                <p>适合顺路补油，现场先确认油枪与付款步骤。</p>
+                <button class="tool-open-btn" type="button" onclick="event.stopPropagation();window.open('https://www.google.com/maps/search/?api=1&query=Orkan+Iceland','_blank')">地图搜寻 ↗</button>
+              </div>
+            </li>
+            <li class="catalog-compare-item">
+              <span class="catalog-compare-icon">OB</span>
+              <div class="catalog-compare-copy">
+                <strong>ÓB</strong>
+                <span class="catalog-compare-tag">快速补油</span>
+                <p>以地图选择顺路地点，不为特定品牌绕远。</p>
+                <button class="tool-open-btn" type="button" onclick="event.stopPropagation();window.open('https://www.google.com/maps/search/?api=1&query=OB+gas+station+Iceland','_blank')">地图搜寻 ↗</button>
+              </div>
+            </li>
+            <li class="catalog-compare-item">
+              <span class="catalog-compare-icon">A</span>
+              <div class="catalog-compare-copy">
+                <strong>Atlantsolía</strong>
+                <span class="catalog-compare-tag">路线比较</span>
+                <p>与其他油站一起比较距离、方向与进出便利性。</p>
+                <button class="tool-open-btn" type="button" onclick="event.stopPropagation();window.open('https://www.google.com/maps/search/?api=1&query=Atlantsolia+Iceland','_blank')">地图搜寻 ↗</button>
+              </div>
+            </li>
+          </ul>
         </div>
 
         <div class="info-card editorial-note">
@@ -415,15 +390,13 @@ const OTHER_HTML = `
       </div>
       <div class="travel-collapse-body">
 
-        <div class="souvenir-card editorial-feature-card">
-          <div class="souvenir-img-wrap editorial-illustration"><div class="img-fallback">🚻</div></div>
-          <div class="souvenir-info">
+        <div class="catalog-square">
+          <div class="catalog-square-info">
             <h4>在冰岛找厕所｜记住最可靠的地点类型</h4>
             <div class="souvenir-shop">加油站 · 超市商场 · 咖啡厅 · 游客中心 · 主要景区</div>
             <div class="souvenir-desc">看到合适地点就使用，不要等到非常紧急才开始寻找。部分设施可能收费、需要消费或只在营业时间开放。</div>
             <div class="souvenir-tip">长途移动前、离开城镇前与进入偏远路段前，固定安排一次厕所与补水。</div>
           </div>
-          <div class="editorial-action-row"><span>⌖ 附近搜寻</span><span>⛽ 加油站</span><span>ⓘ 游客中心</span></div>
         </div>
 
         <div class="tool-mini-grid">
@@ -433,9 +406,8 @@ const OTHER_HTML = `
           <div class="tool-mini-card"><span class="tool-big-icon">ⓘ</span><strong>游客中心／景区</strong><p>主要景点较容易找到，但偏远停车点不一定有设施。</p></div>
         </div>
 
-        <div class="souvenir-item">
-          <div class="souvenir-img-wrap small editorial-illustration"><div class="img-fallback">⌖</div></div>
-          <div class="souvenir-item-info">
+        <div class="catalog-wide">
+          <div class="catalog-wide-info">
             <h4>Google Maps：附近公共厕所</h4>
             <p>搜寻结果可能包含营业时间错误或非公共设施，抵达前仍要查看近期评论与现场标示。</p>
             <span class="souvenir-brand">搜寻词：public toilet / restroom / WC</span>
@@ -471,15 +443,13 @@ const OTHER_HTML = `
       </div>
       <div class="travel-collapse-body">
 
-        <div class="souvenir-card editorial-feature-card">
-          <div class="souvenir-img-wrap editorial-illustration"><div class="img-fallback">📁</div></div>
-          <div class="souvenir-info">
+        <div class="catalog-square">
+          <div class="catalog-square-info">
             <h4>旅行文件｜现场只需要找到正确版本</h4>
             <div class="souvenir-shop">离线可看 · 分类清楚 · 关键号码可复制</div>
             <div class="souvenir-desc">文件页不追求资料越多越好，而是让机场、租车柜台、住宿入住与紧急状况下，可以在最短时间找到正确文件。</div>
             <div class="souvenir-tip">重要文件同时保留手机离线版、云端版与一份同行者可取得的备份。</div>
           </div>
-          <div class="editorial-action-row"><span>✈ 航班</span><span>🚗 租车</span><span>⌂ 住宿</span></div>
         </div>
 
         <div class="tool-mini-grid">

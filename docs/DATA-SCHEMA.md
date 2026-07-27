@@ -82,38 +82,56 @@
 ## 8. 體驗／工具目錄（catalog）
 
 > ⚠️ 這一節描述的系統**不屬於**上面 1–7 節的 `TRIP_DATA` 統一模型，是完全獨立的內容機制，維護與除錯方式都不一樣，請勿套用上面「填欄位」的邏輯來理解這部分。
+>
+> **v23 改版**：原本的 hero／split／tile／note 四種版型，已改成 square／wide／text 三種；總覽頁新增 2x4／2x2／1x4 尺寸系統；「滿版大卡 Hero」（`travel-banner.editorial-hero`）已整段移除。下面內容已同步這一版，若看到別處文件還提到 hero/split/tile 或 Hero 大圖，那是舊版說明，以這裡為準。
 
 「體驗」「工具」兩個底部頁籤的內容，**不是**由 `trip-schema.js` 整理出來的資料物件驅動，而是各自一整段**寫死的 HTML 模板字串**：
 
 - `data/travel-content.js`：定義全域常數 `TRAVEL_HTML`（體驗頁）
 - `data/other-content.js`：定義全域常數 `OTHER_HTML`（工具頁）
-- `data/catalog-config.js`：定義 `CATALOG_PAGE_META`（兩頁籤各自的分類標籤陣列）與 `CATALOG_IMAGE_MAP`（品牌名稱關鍵字 → 圖示路徑的對照表）
+- `data/catalog-config.js`：定義 `CATALOG_PAGE_META`（兩頁籤各自的分類標籤、總覽卡片尺寸）與 `CATALOG_IMAGE_MAP`（品牌名稱關鍵字 → 圖示路徑的對照表）
 
-`index.html` 載入時，`js/render-overview.js` 的 `mountTabContent()` 會把 `TRAVEL_HTML`／`OTHER_HTML` 整段字串塞進 `#mount-travel`／`#mount-other` 掛載點，`js/catalog-nav.js` 再依既有 class（`.souvenir-card`、`.souvenir-item`、`.market-card`、`.info-card`、`.alcohol-warn` 等）判斷每張卡片要用哪一種版型渲染、處理分類切換與詳情 Sheet。
+`index.html` 載入時，`js/render-overview.js` 的 `mountTabContent()` 會把 `TRAVEL_HTML`／`OTHER_HTML` 整段字串塞進 `#mount-travel`／`#mount-other` 掛載點，`js/catalog-nav.js` 再依既有 class（`.catalog-square`、`.catalog-wide`、`.info-card`、`.alcohol-warn`）判斷每張卡片要用哪一種版型渲染、處理總覽／分類切換與詳情 Sheet。
 
 ### 新增或修改內容的方式
 
-直接編輯 `data/travel-content.js` 或 `data/other-content.js` 裡對應分類的 HTML 片段，**不需要**（也不應該）修改 `js/catalog-nav.js`。分類的數量、順序、標籤文字改在 `data/catalog-config.js` 的 `labels` 陣列。
+直接編輯 `data/travel-content.js` 或 `data/other-content.js` 裡對應分類的 HTML 片段，**不需要**（也不應該）修改 `js/catalog-nav.js`。分類的數量、順序、標籤文字、總覽卡片尺寸改在 `data/catalog-config.js`。
 
-### 三種卡片版型（class 決定版型，不是另外設定欄位）
+### 總覽頁：2x4／2x2／1x4 尺寸系統
 
-| Class | 版型 | 用途 |
+「體驗總覽」「工具總覽」頁面的 6 個分類卡片，每個分類指定一種尺寸（`catalog-config.js` 的 `sizes` 陣列，跟 `labels` 一一對應），系統只負責照指定尺寸排版，**不決定**哪個分類該用哪種尺寸——這是 Fisher 自己依內容豐富度／重要性決定的編輯判斷。
+
+| 尺寸 | 排版 | 內容 |
 |---|---|---|
-| `.souvenir-card` | Hero 滿版圖文卡 | 精選／主打內容，每個分類建議只放 1 張 |
-| `.souvenir-item` / `.link-card` | 左圖右文 split 卡 | 一般項目列表 |
-| `.market-card` / `.station-card` | 2 欄磚卡（純圖示＋文字，不放照片） | 比價／比較型清單 |
-| `.info-card` / `.alcohol-warn` | 提醒／說明紙頁 | 補充資訊、警示文字 |
+| `2x4` | 整行滿版、較高 | 4:3 封面照片 + 標題 + 副標，需要一張照片（沒有照片時自動退回大 emoji 佔位） |
+| `2x2` | 半行方卡（跟另一個 2x2 並排） | emoji 圖示 + 標題 + 副標，不需要照片 |
+| `1x4` | 整行滿版、較矮的長條卡 | emoji 圖示 + 標題 + 副標，不需要照片 |
+
+`2x4` 的封面照片來源：先看該分類 `.travel-collapse` 元素本身有沒有 `data-cover="xxx.jpg"` 屬性，沒有就退回 `CATALOG_IMAGE_MAP` 依分類名稱關鍵字比對，兩者都沒有就用 emoji 佔位（不是壞掉，是正常 fallback）。
+
+### 分類詳情頁：三種卡片版型
+
+| Class | 版型 | 列表卡片呈現 | 點開詳情呈現 |
+|---|---|---|---|
+| `.catalog-square` | 正方形圖文框 | 上方 4:3 封面圖 → 標題 → 文字介紹 | 圖片**由上而下直式堆疊**（3:5，不是輪播），下方接原本的文字介紹 |
+| `.catalog-wide` | 橫式圖文框 | 左側 1:1 縮圖 + 右側文字 + 右緣箭頭 | 圖片**左右滑動輪播**（4:3），下方接原本的文字介紹 |
+| `.info-card` / `.alcohol-warn` | 純文字框 | 純文字，不放圖片 | **不能點擊展開**——內容本身已經是完整資訊，`js/catalog-nav.js` 不會替它加點擊事件 |
+
+`.catalog-square` 跟 `.catalog-wide` 的詳情圖片是兩套獨立元件：`buildStackedPhotosHtml()`（直式堆疊，只給 square 用）跟 `buildPhotoCarouselHtml()`（左右輪播，wide 跟景點詳情共用）。兩種呈現在詳情 Sheet 裡都做成貼齊螢幕左右兩側的全出血效果，手法跟首頁 `.trip-hero` 的全出血一致（`width:100%` 搭配左右負邊距抵銷 `.catalog-sheet-body` 的內距）。
+
+原本的比價／比較型清單（超市比一比、油站比一比等）已經沒有獨立的磚卡版型，改成用 `.info-card` 包一個 `.catalog-compare-list`（純文字條列清單），保留圖示、標籤、說明文字跟外部連結按鈕（如果有的話），只是不放照片。
 
 ### 圖片對應規則
 
 商品／品牌圖片放在 `images/catalog/`，一張卡片實際顯示哪張圖，判斷順序是：
 
-1. **優先**：卡片元素本身有沒有 `data-images="file1.jpg,file2.jpg"` 屬性（`js/catalog-nav.js` 的 `catalogImagesFor()`）。這是**補真實照片時該用的正規做法**——直接在 `travel-content.js`／`other-content.js` 對應卡片的 HTML 標籤上加這個屬性，檔名放 `images/catalog/` 底下，多張時可左右滑動，不需要改任何 JS。
-2. **沒有 `data-images` 時**：退回用 `catalog-config.js` 的 `CATALOG_IMAGE_MAP`（`js/catalog-nav.js` 的 `catalogImageFor()`），拿卡片整段文字內容（`card.textContent`）去比對陣列裡的品牌關鍵字（字串包含比對，非精確比對），命中就用對應的圖示／favicon。
-3. **兩者都沒有**：自動 fallback 成 emoji 圖示，這是正常設計，不是每張都要補圖。
+1. **優先**：卡片元素本身有沒有 `data-cover="xxx.jpg"`（清單卡片封面圖）跟 `data-images="a.jpg,b.jpg"`（詳情頁多張圖，逗號分隔）這兩個屬性。這是**補真實照片時該用的正規做法**——直接在 HTML 標籤上加，檔名放 `images/catalog/` 底下，不需要改任何 JS。兩者互相獨立：`data-cover` 只影響清單卡片封面，`data-images` 只影響詳情頁堆疊／輪播圖片，可以只設定其中一個。
+2. **沒有 `data-cover` 時**：退回用 `catalog-config.js` 的 `CATALOG_IMAGE_MAP`，拿卡片標題（`<h4>` 文字）去比對陣列裡的品牌關鍵字（字串包含比對，非精確比對，且**只比對標題，不比對整段描述文字**——避免描述裡順帶提到的其他品牌被誤判成這張卡片的照片），命中就用對應的圖示。
+3. **兩者都沒有**：自動 fallback 成該分類的 emoji 圖示，這是正常設計，不是每張都要補圖。
 
-新增一張有實際照片的卡片時，直接用第 1 種（`data-images` 屬性）即可，不需要為了顯示圖片就去修改 `CATALOG_IMAGE_MAP`。
-- 體驗頁／工具頁共用的 CSS 是各自寫在 `travel-content.js`／`other-content.js` 檔案內的 `<style>` 區塊裡（不是外部 CSS 檔），選擇器一律要包在 `:is(#page-travel,#page-other)` 裡才不會外溢到行程／費用頁。
+新增一張有實際照片的卡片時，直接加 `data-cover`／`data-images` 屬性即可，不需要為了顯示圖片就去修改 `CATALOG_IMAGE_MAP`。
+
+體驗頁／工具頁共用的 CSS 大部分寫在各自檔案內的 `<style>` 區塊裡（負責「手札」editorial 主題色跟字體），三種版型的**基礎結構**（尺寸、排版方式、arrow 顯示等）則放在全站共用的 `css/style.css`，讓其他新旅程套用這個 repo 當模板時，即使不套用 Iceland/Finland 這套視覺主題，版型結構仍然是完整可用的。所有選擇器一律包在 `:is(#page-travel,#page-other)` 裡才不會外溢到行程／費用頁。
 
 ### 語言慣例
 

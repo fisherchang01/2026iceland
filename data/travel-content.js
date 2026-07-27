@@ -64,99 +64,6 @@ const TRAVEL_HTML = `
   }
   :is(#page-travel,#page-other) .catalog-pill-overview::after { display: none; }
 
-  :is(#page-travel,#page-other) .travel-banner.editorial-hero {
-    --editorial-hero-image: url('images/banners/cover-hero.webp');
-    position: relative;
-    min-height: 330px;
-    display: block !important;
-    overflow: hidden;
-    padding: 0;
-    margin: 0 0 16px;
-    border: 1px solid rgba(255,255,255,.62);
-    border-radius: 24px;
-    color: #fff;
-    background-image:
-      linear-gradient(180deg, rgba(18,26,27,.14) 0%, rgba(18,25,25,.23) 42%, rgba(16,23,22,.82) 100%),
-      var(--editorial-hero-image);
-    background-size: cover;
-    background-position: center;
-    box-shadow: 0 13px 28px rgba(49,42,31,.18), inset 0 0 0 1px rgba(255,255,255,.16);
-  }
-  :is(#page-travel,#page-other) .editorial-hero-copy {
-    position: absolute;
-    left: 24px;
-    right: 24px;
-    bottom: 78px;
-    z-index: 2;
-  }
-  :is(#page-travel,#page-other) .editorial-kicker {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    margin-bottom: 10px;
-    font-size: var(--fs-2xs);
-    font-weight: 700;
-    letter-spacing: .13em;
-    text-transform: uppercase;
-    color: rgba(255,255,255,.82);
-  }
-  :is(#page-travel,#page-other) .editorial-kicker::before {
-    content: '';
-    width: 24px;
-    height: 1px;
-    background: rgba(255,255,255,.72);
-  }
-  :is(#page-travel,#page-other) .editorial-hero h2 {
-    max-width: 540px;
-    font-family: var(--font-display);
-    font-size: clamp(2rem, 8vw, 3rem);
-    line-height: 1.12;
-    font-weight: 700;
-    text-shadow: 0 3px 14px rgba(0,0,0,.38);
-  }
-  :is(#page-travel,#page-other) .editorial-hero p {
-    max-width: 520px;
-    margin-top: 10px;
-    font-size: var(--fs-sm);
-    line-height: 1.7;
-    color: rgba(255,255,255,.9);
-  }
-  .editorial-hero-actions,
-  :is(#page-travel,#page-other) .editorial-action-row {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0,1fr));
-    align-items: stretch;
-  }
-  :is(#page-travel,#page-other) .editorial-hero-actions {
-    position: absolute;
-    left: 12px;
-    right: 12px;
-    bottom: 12px;
-    z-index: 3;
-    min-height: 54px;
-    border: 1px solid rgba(255,255,255,.34);
-    border-radius: 16px;
-    overflow: hidden;
-    background: rgba(15,23,22,.68);
-    box-shadow: 0 5px 18px rgba(0,0,0,.24);
-    backdrop-filter: blur(12px);
-  }
-  :is(#page-travel,#page-other) .editorial-hero-actions button {
-    border: 0;
-    border-right: 1px solid rgba(255,255,255,.24);
-    background: transparent;
-    color: #fff;
-    font-size: var(--fs-xs);
-    font-weight: 600;
-    cursor: pointer;
-  }
-  :is(#page-travel,#page-other) .editorial-hero-actions button:last-child { border-right: 0; }
-  :is(#page-travel,#page-other) .editorial-hero-actions button span {
-    display: block;
-    font-size: var(--fs-md);
-    margin-bottom: 2px;
-  }
-
   :is(#page-travel,#page-other).catalog-show-overview .catalog-overview-heading { display: none; }
   :is(#page-travel,#page-other) .catalog-overview { margin-bottom: 10px; }
   :is(#page-travel,#page-other) .catalog-overview-grid {
@@ -174,18 +81,32 @@ const TRAVEL_HTML = `
     background: linear-gradient(145deg, rgba(255,255,255,.95), rgba(247,241,231,.94));
     box-shadow: 0 7px 17px rgba(83,68,47,.09), inset 0 1px rgba(255,255,255,.9);
   }
-  :is(#page-travel,#page-other) .catalog-overview-card:first-child {
+  /* v23：总览卡片尺寸系统——2x4 整行滿版大卡（帶封面照片）／2x2 半行方卡／1x4 整行長條卡，
+     由 catalog-config.js 的 sizes 陣列決定每個分類套用哪一種，跟排列順序無關。 */
+  :is(#page-travel,#page-other) .catalog-overview-card.ov-2x4 {
     grid-column: 1 / -1;
-    min-height: 174px;
-    padding: 22px;
+    padding: 0;
+    overflow: hidden;
     background:
       radial-gradient(circle at 88% 25%, rgba(110,139,101,.22) 0 16%, transparent 38%),
       linear-gradient(135deg, #fdfaf3, #e8eee1);
     border-color: #c6d1bd;
   }
-  :is(#page-travel,#page-other) .catalog-overview-card:nth-child(4) {
+  :is(#page-travel,#page-other) .catalog-overview-media {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    background: linear-gradient(145deg, #dfe8da, #f4eadc);
+  }
+  :is(#page-travel,#page-other) .catalog-overview-media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  :is(#page-travel,#page-other) .catalog-overview-media.image-error {
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2.4rem; color: var(--forest-deep);
+  }
+  :is(#page-travel,#page-other) .catalog-overview-card.ov-2x4 .catalog-overview-copy { padding: 14px 18px 18px; }
+  :is(#page-travel,#page-other) .catalog-overview-card.ov-1x4 {
     grid-column: 1 / -1;
-    min-height: 100px;
+    min-height: 92px;
     flex-direction: row;
     align-items: center;
   }
@@ -197,19 +118,14 @@ const TRAVEL_HTML = `
     background: rgba(255,255,255,.72);
     box-shadow: 0 4px 10px rgba(71,60,45,.08);
   }
-  :is(#page-travel,#page-other) .catalog-overview-card:first-child .catalog-overview-icon {
-    width: 58px;
-    height: 58px;
-    margin-bottom: 13px;
+  :is(#page-travel,#page-other) .catalog-overview-card.ov-2x4 .catalog-overview-copy strong {
+    font-size: var(--fs-xl);
   }
   :is(#page-travel,#page-other) .catalog-overview-copy strong {
     font-family: var(--font-display);
     font-size: var(--fs-base);
     line-height: 1.35;
     color: var(--ink);
-  }
-  :is(#page-travel,#page-other) .catalog-overview-card:first-child .catalog-overview-copy strong {
-    font-size: var(--fs-xl);
   }
   :is(#page-travel,#page-other) .catalog-overview-copy small {
     margin-top: 5px;
@@ -221,6 +137,7 @@ const TRAVEL_HTML = `
     align-self: flex-end;
     color: var(--forest);
   }
+  :is(#page-travel,#page-other) .catalog-overview-card.ov-1x4 .catalog-overview-arrow { align-self: center; }
 
   :is(#page-travel,#page-other) .catalog-category-intro {
     min-height: 112px;
@@ -260,93 +177,134 @@ const TRAVEL_HTML = `
     line-height: 1.5;
   }
 
-  :is(#page-travel,#page-other) .catalog-list-card.catalog-layout-hero {
+  /* 模組一・正方形圖文框（catalog-square）：上方 4:3 封面圖 + 標題 + 最多三行文字介紹 */
+  :is(#page-travel,#page-other) .catalog-list-card.catalog-layout-square {
     overflow: hidden;
     border: 1px solid #d6ccbc;
     border-radius: 22px;
     background: var(--paper);
     box-shadow: 0 10px 22px rgba(74,62,45,.12);
   }
-  :is(#page-travel,#page-other) .editorial-feature-card .souvenir-img-wrap { height: 224px; }
-  :is(#page-travel,#page-other) .editorial-feature-card .souvenir-info { padding: 19px 20px 17px; }
-  :is(#page-travel,#page-other) .catalog-list-card.catalog-layout-hero .souvenir-info h4 {
+  :is(#page-travel,#page-other) .catalog-square-media {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: linear-gradient(145deg, #dfe8da, #f4eadc);
+  }
+  :is(#page-travel,#page-other) .catalog-square-media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  :is(#page-travel,#page-other) .catalog-square-media.image-error {
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2.6rem; color: var(--forest-deep);
+  }
+  :is(#page-travel,#page-other) .catalog-square-info { padding: 19px 20px 17px; }
+  :is(#page-travel,#page-other) .catalog-square-info h4 {
     margin-bottom: 7px;
+    font-family: var(--font-display);
     font-size: var(--fs-xl);
     line-height: 1.35;
     color: var(--ink);
   }
   :is(#page-travel,#page-other) .souvenir-shop { color: var(--forest); }
+  :is(#page-travel,#page-other) .souvenir-desc { margin-top: 4px; font-size: var(--fs-sm); line-height: 1.6; color: var(--muted-ink); }
   :is(#page-travel,#page-other) .souvenir-tip {
     margin-top: 10px;
+    padding: 8px 12px;
+    border-radius: 12px;
     background: #edf1e7;
     color: #4d634a;
-  }
-  :is(#page-travel,#page-other) .editorial-action-row {
-    min-height: 54px;
-    margin: 0 12px 12px;
-    border: 1px solid #d7cdbd;
-    border-radius: 15px;
-    overflow: hidden;
-    background: rgba(255,253,248,.92);
-    box-shadow: 0 5px 12px rgba(69,57,42,.07);
-  }
-  :is(#page-travel,#page-other) .editorial-action-row span {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    padding: 8px 6px;
-    border-right: 1px solid #ddd3c5;
     font-size: var(--fs-xs);
-    font-weight: 700;
-    color: var(--forest);
-    text-align: center;
+    line-height: 1.5;
   }
-  :is(#page-travel,#page-other) .editorial-action-row span:last-child { border-right: 0; }
 
-  :is(#page-travel,#page-other) .catalog-list-card.catalog-layout-split {
-    min-height: 122px;
+  /* 模組二・橫式圖文框（catalog-wide）：左側 1:1 縮圖 + 右側文字 + 右緣箭頭 */
+  :is(#page-travel,#page-other) .catalog-list-card.catalog-layout-wide {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--sp-4);
+    min-height: 108px;
+    padding: var(--sp-4) 30px var(--sp-4) var(--sp-4);
     border-color: #d9cebe !important;
     border-radius: 19px !important;
     background: var(--paper) !important;
     box-shadow: 0 7px 16px rgba(79,65,46,.09);
   }
-  :is(#page-travel,#page-other) .catalog-list-card.catalog-layout-split .souvenir-img-wrap,
-  :is(#page-travel,#page-other) .catalog-list-card.catalog-layout-split .souvenir-img-wrap.small,
-  :is(#page-travel,#page-other) .catalog-list-card.catalog-layout-split .catalog-card-media {
-    width: 108px !important;
-    flex-basis: 108px !important;
-    min-height: 122px;
+  :is(#page-travel,#page-other) .catalog-wide-media {
+    width: 72px;
+    height: 72px;
+    flex-shrink: 0;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
     background: linear-gradient(145deg, #e4eadf, #f5efe4);
   }
-  :is(#page-travel,#page-other) .catalog-list-card.catalog-layout-split h4 {
+  :is(#page-travel,#page-other) .catalog-wide-media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  :is(#page-travel,#page-other) .catalog-wide-media.image-error {
+    display: flex; align-items: center; justify-content: center;
+    font-size: var(--fs-2xl); color: var(--forest-deep);
+  }
+  :is(#page-travel,#page-other) .catalog-wide-info { flex: 1; min-width: 0; }
+  :is(#page-travel,#page-other) .catalog-wide-info h4 {
     font-family: var(--font-display);
+    font-size: var(--fs-sm);
+    font-weight: 700;
     color: var(--ink);
+    margin-bottom: var(--sp-1);
+  }
+  :is(#page-travel,#page-other) .catalog-wide-info p {
+    font-size: var(--fs-xs);
+    line-height: 1.5;
+    color: var(--muted-ink);
   }
 
-  :is(#page-travel,#page-other) .market-grid {
+  /* 比較清單（原本磚卡型比較資訊，改成純文字框裡的條列清單，不放圖片） */
+  :is(#page-travel,#page-other) .catalog-compare-list {
+    list-style: none;
     display: grid;
-    grid-template-columns: repeat(2, minmax(0,1fr));
-    gap: 11px;
-    margin-bottom: 14px;
+    gap: 10px;
+    margin-top: 10px;
   }
-  :is(#page-travel,#page-other) .market-card {
-    min-height: 154px;
-    padding: 18px 14px;
-    border: 1px solid #d9cebe;
-    border-radius: 18px;
-    background: linear-gradient(145deg, #fffdf7, #eee9df);
-    box-shadow: 0 6px 14px rgba(77,64,47,.08);
+  :is(#page-travel,#page-other) .catalog-compare-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 14px;
+    border: 1px solid #ddd2c2;
+    border-radius: 14px;
+    background: rgba(255,255,255,.55);
   }
-  :is(#page-travel,#page-other) .market-card h4 {
-    margin-top: 8px;
+  :is(#page-travel,#page-other) .catalog-compare-icon {
+    flex-shrink: 0;
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background: #edf2e9;
+    font-size: var(--fs-base);
+    font-weight: 700;
+    color: var(--forest);
+  }
+  :is(#page-travel,#page-other) .catalog-compare-copy { flex: 1; min-width: 0; }
+  :is(#page-travel,#page-other) .catalog-compare-copy strong {
     font-family: var(--font-display);
     font-size: var(--fs-base);
     color: var(--ink);
   }
-  :is(#page-travel,#page-other) .market-tag {
+  :is(#page-travel,#page-other) .catalog-compare-tag {
+    display: inline-block;
+    margin: 3px 0 5px;
+    padding: 2px 8px;
+    border-radius: 999px;
     background: #e7eee1;
     color: var(--forest);
+    font-size: var(--fs-2xs);
+    font-weight: 700;
+  }
+  :is(#page-travel,#page-other) .catalog-compare-copy p {
+    margin: 0;
+    font-size: var(--fs-xs);
+    line-height: 1.5;
+    color: var(--muted-ink);
   }
 
   :is(#page-travel,#page-other) .info-card,
@@ -428,55 +386,20 @@ const TRAVEL_HTML = `
     font-size: var(--fs-xs);
     font-weight: 700;
   }
-  :is(#page-travel,#page-other) .editorial-illustration {
-    background:
-      radial-gradient(circle at 30% 28%, rgba(255,255,255,.9), transparent 30%),
-      linear-gradient(145deg, #dfe8da, #f4eadc) !important;
-  }
-  :is(#page-travel,#page-other) .editorial-illustration .img-fallback {
-    color: var(--forest-deep);
-    text-shadow: 0 3px 12px rgba(49,75,46,.15);
-  }
-  :is(#page-travel,#page-other) .catalog-sheet-body .editorial-action-row { display: none !important; }
-
   @media (max-width: 420px) {
-    :is(#page-travel,#page-other) .travel-banner.editorial-hero {
-      min-height: 305px;
-      border-radius: 20px;
-    }
-    :is(#page-travel,#page-other) .editorial-hero-copy {
-      left: 20px;
-      right: 20px;
-      bottom: 75px;
-    }
-    :is(#page-travel,#page-other) .editorial-hero h2 { font-size: 2rem; }
     :is(#page-travel,#page-other) .catalog-overview-card {
       min-height: 126px;
       padding: 15px;
     }
-    :is(#page-travel,#page-other) .catalog-list-card.catalog-layout-split .souvenir-img-wrap,
-    :is(#page-travel,#page-other) .catalog-list-card.catalog-layout-split .souvenir-img-wrap.small,
-    :is(#page-travel,#page-other) .catalog-list-card.catalog-layout-split .catalog-card-media {
-      width: 98px !important;
-      flex-basis: 98px !important;
+    :is(#page-travel,#page-other) .catalog-wide-media {
+      width: 64px;
+      height: 64px;
     }
   }
 </style>
 
 <div class="page" id="page-travel">
   <div class="page-inner">
-    <section class="travel-banner editorial-hero">
-      <div class="editorial-hero-copy">
-        <div class="editorial-kicker">Iceland &amp; Finland · Editorial Guide</div>
-        <h2>旅行中的好物与体验</h2>
-        <p>以路线、购买时机与实际使用场景组织资讯，让旅途中可以快速找到真正需要的内容。</p>
-      </div>
-      <div class="editorial-hero-actions">
-        <button type="button" onclick="selectCatalogCategory('travel',0)"><span>⌁</span>购物路线</button>
-        <button type="button" onclick="selectCatalogCategory('travel',2)"><span>⌂</span>超市补给</button>
-        <button type="button" onclick="selectCatalogCategory('travel',5)"><span>♨</span>在地体验</button>
-      </div>
-    </section>
 
     <!-- 1. 冰岛伴手礼 — 一般商店：正式内容 -->
     <div class="travel-collapse">
@@ -492,20 +415,12 @@ const TRAVEL_HTML = `
       </div>
       <div class="travel-collapse-body">
 
-        <div class="souvenir-card editorial-feature-card" data-images="omnom.jpg">
-          <div class="souvenir-img-wrap">
-            <img src="images/banners/cover-hero.webp" alt="雷市伴手礼购物路线" loading="lazy" decoding="async">
-          </div>
-          <div class="souvenir-info">
+        <div class="catalog-square" data-images="omnom.jpg">
+          <div class="catalog-square-info">
             <h4>雷市伴手礼漫游｜先选路线，再找商品</h4>
             <div class="souvenir-shop">📍 Hallgrímskirkja · 彩虹街 · Laugavegur · Grandi · Harpa</div>
             <div class="souvenir-desc">本页先安排两条雷市购物路线，再依商品类型整理可购买地点。旅途中可先决定从大教堂或音乐厅出发，再查看沿途适合购买的伴手礼。</div>
             <div class="souvenir-tip">路线 A 全程下坡较轻松；路线 B 从海滨上坡，最后以大教堂登塔作为压轴。</div>
-          </div>
-          <div class="editorial-action-row">
-            <span>⌁ 先看路线</span>
-            <span>⌖ 找购买点</span>
-            <span>☆ 建立清单</span>
           </div>
         </div>
 
@@ -533,9 +448,8 @@ const TRAVEL_HTML = `
           </ol>
         </div>
 
-        <div class="souvenir-item">
-          <div class="souvenir-img-wrap small editorial-illustration"><div class="img-fallback">🧥</div></div>
-          <div class="souvenir-item-info">
+        <div class="catalog-wide">
+          <div class="catalog-wide-info">
             <h4>Lopapeysa 冰岛羊毛毛衣</h4>
             <p>传统圆肩花纹手工毛衣，防水保暖。总店位于 Skólavörðustígur 19（大教堂正对彩虹街），分店在 Laugavegur 53b。每件毛衣挂有编织者亲笔签名，约 23,000–44,000 ISK。</p>
             <span class="souvenir-brand">📍 Handknitting Association of Iceland</span>
@@ -543,18 +457,16 @@ const TRAVEL_HTML = `
         </div>
         <div class="tips-box"><p>💡 建议周末顺路逛 Kolaportið 跳蚤市场，二手毛衣约 800–1,300 RMB 可议价</p></div>
 
-        <div class="souvenir-item">
-          <div class="souvenir-img-wrap small"><img src="images/catalog/omnom.jpg" alt="Omnom 巧克力" loading="lazy" decoding="async"></div>
-          <div class="souvenir-item-info">
+        <div class="catalog-wide" data-cover="omnom.jpg">
+          <div class="catalog-wide-info">
             <h4>Omnom 巧克力</h4>
             <p>冰岛精品巧克力品牌，创意口味（海盐、甘草、焦糖）与精美包装，工厂店可试吃。Laugavegur 大街亦有专卖店。</p>
             <span class="souvenir-brand">📍 雷市 Grandi 港口区工厂店</span>
           </div>
         </div>
 
-        <div class="souvenir-item">
-          <div class="souvenir-img-wrap small editorial-illustration"><div class="img-fallback">🧤</div></div>
-          <div class="souvenir-item-info">
+        <div class="catalog-wide">
+          <div class="catalog-wide-info">
             <h4>冰岛羊毛制品（帽/手套/围巾）</h4>
             <p>比毛衣平价，同样保暖实用。Farmers Market 位于 Grandi 旧港区（Hólmaslóð 2）及 Laugavegur 37；66°North 为户外机能品牌；Geysir 在 Skólavörðustíg 7&amp;16 有时尚设计款。</p>
             <span class="souvenir-brand">📍 66°North / Farmers Market / Geysir</span>
@@ -562,27 +474,24 @@ const TRAVEL_HTML = `
         </div>
         <div class="tips-box"><p>💡 帽子手套约 230–560 RMB，Rainbow Street 沿线多间可逛</p></div>
 
-        <div class="souvenir-item">
-          <div class="souvenir-img-wrap small"><img src="images/catalog/saltverk.jpg" alt="Saltverk 冰岛海盐" loading="lazy" decoding="async"></div>
-          <div class="souvenir-item-info">
+        <div class="catalog-wide" data-cover="saltverk.jpg">
+          <div class="catalog-wide-info">
             <h4>火山岩／熔岩盐（Saltverk）</h4>
             <p>以火山地热蒸发制成的冰岛海盐，有黑火山盐、烟熏盐等。适合料理爱好者，包装具北欧设计感。</p>
             <span class="souvenir-brand">📍 设计店、纪念品店、机场</span>
           </div>
         </div>
 
-        <div class="souvenir-item">
-          <div class="souvenir-img-wrap small editorial-illustration"><div class="img-fallback">🧴</div></div>
-          <div class="souvenir-item-info">
+        <div class="catalog-wide">
+          <div class="catalog-wide-info">
             <h4>蓝湖保养品（Blue Lagoon Skincare）</h4>
             <p>硅土面膜、身体乳等，富含地热矿物质。机场价格与市区相近，可最后补买。</p>
             <span class="souvenir-brand">📍 蓝湖温泉店 / 机场免税店</span>
           </div>
         </div>
 
-        <div class="souvenir-item">
-          <div class="souvenir-img-wrap small editorial-illustration"><div class="img-fallback">🐦</div></div>
-          <div class="souvenir-item-info">
+        <div class="catalog-wide">
+          <div class="catalog-wide-info">
             <h4>Puffin 海鹦周边</h4>
             <p>冰岛国鸟玩偶、磁铁、明信片等，雷市 Laugavegur 大街纪念品店常见，适合送孩童。</p>
             <span class="souvenir-brand">📍 纪念品店普遍有售</span>
@@ -604,22 +513,18 @@ const TRAVEL_HTML = `
         <div class="travel-collapse-arrow">▼</div>
       </div>
       <div class="travel-collapse-body">
-        <div class="souvenir-card editorial-feature-card" data-images="noi-sirius.jpg">
-          <div class="souvenir-img-wrap"><img src="images/catalog/noi-sirius.jpg" alt="超市伴手礼包装示范" loading="lazy" decoding="async"></div>
-          <div class="souvenir-info">
+        <div class="catalog-square" data-cover="noi-sirius.jpg" data-images="noi-sirius.jpg">
+          <div class="catalog-square-info">
             <h4>超市伴手礼｜一眼认出包装</h4>
             <div class="souvenir-shop">购物逻辑：品牌识别 → 价格带 → 携带方式</div>
             <div class="souvenir-desc">此分类暂为设计示范，下一阶段再逐项换回正式品牌、包装特征与购买建议。</div>
           </div>
-          <div class="editorial-action-row"><span>▤ 品牌清单</span><span>◉ 包装辨识</span><span>＋ 加入采购</span></div>
         </div>
-        <div class="souvenir-item">
-          <div class="souvenir-img-wrap small"><img src="images/catalog/omnom.jpg" alt="精品巧克力示范" loading="lazy" decoding="async"></div>
-          <div class="souvenir-item-info"><h4>精品巧克力</h4><p>适合送礼、包装醒目；以一行说明购买理由。</p><span class="souvenir-brand">礼物型</span></div>
+        <div class="catalog-wide" data-cover="omnom.jpg">
+          <div class="catalog-wide-info"><h4>精品巧克力</h4><p>适合送礼、包装醒目；以一行说明购买理由。</p><span class="souvenir-brand">礼物型</span></div>
         </div>
-        <div class="souvenir-item">
-          <div class="souvenir-img-wrap small"><img src="images/catalog/noi-sirius.jpg" alt="分享装示范" loading="lazy" decoding="async"></div>
-          <div class="souvenir-item-info"><h4>平价分享装</h4><p>适合办公室分送，重点显示份量、包装与价格层级。</p><span class="souvenir-brand">大量分送</span></div>
+        <div class="catalog-wide" data-cover="noi-sirius.jpg">
+          <div class="catalog-wide-info"><h4>平价分享装</h4><p>适合办公室分送，重点显示份量、包装与价格层级。</p><span class="souvenir-brand">大量分送</span></div>
         </div>
         <div class="info-card editorial-note">
           <h4>超市选购逻辑</h4>
@@ -643,46 +548,51 @@ const TRAVEL_HTML = `
       </div>
       <div class="travel-collapse-body">
 
-        <div class="souvenir-card editorial-feature-card">
-          <div class="souvenir-img-wrap editorial-illustration"><div class="img-fallback">🛒</div></div>
-          <div class="souvenir-info">
+        <div class="catalog-square">
+          <div class="catalog-square-info">
             <h4>冰岛超市补给｜先看任务，再决定去哪一家</h4>
             <div class="souvenir-shop">预算采购 · 生鲜轻食 · 临时补货 · 一次购齐</div>
             <div class="souvenir-desc">超市不只用价格区分。旅途中更实用的方式，是依据今天要买早餐、车上零食、晚餐食材或生活用品，快速选择适合的店型。</div>
             <div class="souvenir-tip">离开雷市前先完成主要补给；进入南部或较偏远路段后，看到合适超市就提早补足。</div>
           </div>
-          <div class="editorial-action-row">
-            <span>⌂ 选择店型</span>
-            <span>▤ 建立清单</span>
-            <span>⌁ 安排顺路</span>
-          </div>
         </div>
 
-        <div class="market-grid">
-          <div class="market-card">
-            <span class="market-icon">🐷</span>
-            <h4>Bónus</h4>
-            <span class="market-tag">预算优先</span>
-            <p>适合基本食品、饮料、零食与大量采购。采购目标明确时，最容易快速完成。</p>
-          </div>
-          <div class="market-card">
-            <span class="market-icon">🟡</span>
-            <h4>Krónan</h4>
-            <span class="market-tag">品项平衡</span>
-            <p>生鲜、轻食与日常食品选择较完整，适合准备自炊晚餐或隔日早餐。</p>
-          </div>
-          <div class="market-card">
-            <span class="market-icon">🔵</span>
-            <h4>Nettó</h4>
-            <span class="market-tag">临时补给</span>
-            <p>适合沿途补买遗漏品项、车上零食或简单生活用品。</p>
-          </div>
-          <div class="market-card">
-            <span class="market-icon">🏬</span>
-            <h4>Hagkaup</h4>
-            <span class="market-tag">一次购齐</span>
-            <p>食品与生活用品范围较广，适合需要同时补齐多种用品时使用。</p>
-          </div>
+        <div class="info-card editorial-note">
+          <h4>四家超市比一比</h4>
+          <ul class="catalog-compare-list">
+            <li class="catalog-compare-item">
+              <span class="catalog-compare-icon">🐷</span>
+              <div class="catalog-compare-copy">
+                <strong>Bónus</strong>
+                <span class="catalog-compare-tag">预算优先</span>
+                <p>适合基本食品、饮料、零食与大量采购。采购目标明确时，最容易快速完成。</p>
+              </div>
+            </li>
+            <li class="catalog-compare-item">
+              <span class="catalog-compare-icon">🟡</span>
+              <div class="catalog-compare-copy">
+                <strong>Krónan</strong>
+                <span class="catalog-compare-tag">品项平衡</span>
+                <p>生鲜、轻食与日常食品选择较完整，适合准备自炊晚餐或隔日早餐。</p>
+              </div>
+            </li>
+            <li class="catalog-compare-item">
+              <span class="catalog-compare-icon">🔵</span>
+              <div class="catalog-compare-copy">
+                <strong>Nettó</strong>
+                <span class="catalog-compare-tag">临时补给</span>
+                <p>适合沿途补买遗漏品项、车上零食或简单生活用品。</p>
+              </div>
+            </li>
+            <li class="catalog-compare-item">
+              <span class="catalog-compare-icon">🏬</span>
+              <div class="catalog-compare-copy">
+                <strong>Hagkaup</strong>
+                <span class="catalog-compare-tag">一次购齐</span>
+                <p>食品与生活用品范围较广，适合需要同时补齐多种用品时使用。</p>
+              </div>
+            </li>
+          </ul>
         </div>
 
         <div class="info-card editorial-note">
@@ -720,51 +630,41 @@ const TRAVEL_HTML = `
       </div>
       <div class="travel-collapse-body">
 
-        <div class="souvenir-card editorial-feature-card">
-          <div class="souvenir-img-wrap editorial-illustration"><div class="img-fallback">🍷</div></div>
-          <div class="souvenir-info">
+        <div class="catalog-square">
+          <div class="catalog-square-info">
             <h4>冰岛酒类购买｜先决定时机，再挑品项</h4>
             <div class="souvenir-shop">抵达机场 · 市区酒类专卖店 · 离境补买</div>
             <div class="souvenir-desc">把购买地点与行程顺序放在一起看，比单纯列出品牌更实用。抵达时先确认旅途中需要的数量，市区再补买当地限定或遗漏品项。</div>
             <div class="souvenir-tip">营业时间、购买限制与免税额度可能变化，出发前及现场应再核对最新规定。</div>
           </div>
-          <div class="editorial-action-row">
-            <span>🛬 抵达购买</span>
-            <span>⌂ 市区补买</span>
-            <span>✈ 离境检查</span>
-          </div>
         </div>
 
-        <div class="souvenir-item">
-          <div class="souvenir-img-wrap small editorial-illustration"><div class="img-fallback">🛬</div></div>
-          <div class="souvenir-item-info">
+        <div class="catalog-wide">
+          <div class="catalog-wide-info">
             <h4>KEF 机场免税店</h4>
             <p>适合在抵达或离境时集中处理。抵达后若已确定需求，可减少之后特别绕去购买的时间。</p>
             <span class="souvenir-brand">适合：旅行途中饮用、一次购齐</span>
           </div>
         </div>
 
-        <div class="souvenir-item">
-          <div class="souvenir-img-wrap small editorial-illustration"><div class="img-fallback">🏪</div></div>
-          <div class="souvenir-item-info">
+        <div class="catalog-wide">
+          <div class="catalog-wide-info">
             <h4>Vínbúðin 酒类专卖店</h4>
             <p>适合寻找特定品牌、当地产品或抵达时遗漏的品项。行程中应先确认分店位置与营业时间。</p>
             <span class="souvenir-brand">适合：特定品牌、当地限定、途中补买</span>
           </div>
         </div>
 
-        <div class="souvenir-item">
-          <div class="souvenir-img-wrap small editorial-illustration"><div class="img-fallback">🍺</div></div>
-          <div class="souvenir-item-info">
+        <div class="catalog-wide">
+          <div class="catalog-wide-info">
             <h4>当地啤酒与轻饮</h4>
             <p>自用可优先选择小容量或组合装，减少重量；送礼则优先确认包装完整与托运行李空间。</p>
             <span class="souvenir-brand">选择重点：容量、重量、包装完整</span>
           </div>
         </div>
 
-        <div class="souvenir-item">
-          <div class="souvenir-img-wrap small editorial-illustration"><div class="img-fallback">🎁</div></div>
-          <div class="souvenir-item-info">
+        <div class="catalog-wide">
+          <div class="catalog-wide-info">
             <h4>送礼型酒类</h4>
             <p>先确认收礼对象与行李限制，再决定是否购买玻璃瓶或礼盒，避免最后一天才发现难以携带。</p>
             <span class="souvenir-brand">选择重点：辨识度、体积、易碎程度</span>
@@ -799,64 +699,49 @@ const TRAVEL_HTML = `
       </div>
       <div class="travel-collapse-body">
 
-        <div class="souvenir-card editorial-feature-card" data-images="nordqvist.jpg">
-          <div class="souvenir-img-wrap">
-            <img src="images/catalog/nordqvist.jpg" alt="芬兰伴手礼" loading="lazy" decoding="async">
-          </div>
-          <div class="souvenir-info">
+        <div class="catalog-square" data-cover="nordqvist.jpg" data-images="nordqvist.jpg">
+          <div class="catalog-square-info">
             <h4>芬兰伴手礼｜轻巧、明亮、适合送礼</h4>
             <div class="souvenir-shop">📍 超市 · 百货食品区 · 设计商店</div>
             <div class="souvenir-desc">芬兰伴手礼适合依收礼对象分组：办公室选择易分送食品，家人选择咖啡与花草茶，喜欢设计的人则可挑选姆明或北欧图案用品。</div>
             <div class="souvenir-tip">赫尔辛基停留时间有限时，优先在交通方便的超市或百货一次买齐。</div>
           </div>
-          <div class="editorial-action-row">
-            <span>🎁 按对象选</span>
-            <span>▤ 按品类找</span>
-            <span>＋ 加入采购</span>
-          </div>
         </div>
 
-        <div class="souvenir-item">
-          <div class="souvenir-img-wrap small editorial-illustration"><div class="img-fallback">🍫</div></div>
-          <div class="souvenir-item-info">
+        <div class="catalog-wide">
+          <div class="catalog-wide-info">
             <h4>Fazer 巧克力与糖果</h4>
             <p>包装辨识度高，适合办公室分送或一般送礼。可优先选择经典包装与方便分装的尺寸。</p>
             <span class="souvenir-brand">适合：同事、朋友、办公室</span>
           </div>
         </div>
 
-        <div class="souvenir-item">
-          <div class="souvenir-img-wrap small editorial-illustration"><div class="img-fallback">☕</div></div>
-          <div class="souvenir-item-info">
+        <div class="catalog-wide">
+          <div class="catalog-wide-info">
             <h4>芬兰咖啡</h4>
             <p>适合常喝咖啡的家人或同事。购买前确认研磨方式、包装重量与是否方便冲泡。</p>
             <span class="souvenir-brand">适合：咖啡爱好者、家人</span>
           </div>
         </div>
 
-        <div class="souvenir-item">
-          <div class="souvenir-img-wrap small">
-            <img src="images/catalog/nordqvist.jpg" alt="Nordqvist 花草茶" loading="lazy" decoding="async">
-          </div>
-          <div class="souvenir-item-info">
+        <div class="catalog-wide" data-cover="nordqvist.jpg">
+          <div class="catalog-wide-info">
             <h4>Nordqvist 花草茶</h4>
             <p>北欧风包装适合送礼，茶包轻巧、容易携带，也适合不喝咖啡的收礼对象。</p>
             <span class="souvenir-brand">适合：长辈、同事、轻量送礼</span>
           </div>
         </div>
 
-        <div class="souvenir-item">
-          <div class="souvenir-img-wrap small editorial-illustration"><div class="img-fallback">🐾</div></div>
-          <div class="souvenir-item-info">
+        <div class="catalog-wide">
+          <div class="catalog-wide-info">
             <h4>姆明与北欧图案用品</h4>
             <p>可选择杯垫、餐巾、文具或小型生活用品，兼具芬兰辨识度与实用性。</p>
             <span class="souvenir-brand">适合：儿童、设计爱好者</span>
           </div>
         </div>
 
-        <div class="souvenir-item">
-          <div class="souvenir-img-wrap small editorial-illustration"><div class="img-fallback">🌿</div></div>
-          <div class="souvenir-item-info">
+        <div class="catalog-wide">
+          <div class="catalog-wide-info">
             <h4>木糖醇与莓果产品</h4>
             <p>体积小、容易放入行李，可作为补充型伴手礼；购买时注意口味与包装语言。</p>
             <span class="souvenir-brand">适合：自用、小份量分送</span>
@@ -896,46 +781,51 @@ const TRAVEL_HTML = `
       </div>
       <div class="travel-collapse-body">
 
-        <div class="souvenir-card editorial-feature-card">
-          <div class="souvenir-img-wrap editorial-illustration"><div class="img-fallback">♨</div></div>
-          <div class="souvenir-info">
+        <div class="catalog-square">
+          <div class="catalog-square-info">
             <h4>芬兰浴体验｜把流程与现场规则先看懂</h4>
             <div class="souvenir-shop">传统桑拿 · 海水泳池 · 酒店桑拿</div>
             <div class="souvenir-desc">体验前先确认是否分男女、是否穿泳衣、毛巾与置物柜是否包含。真正进入现场后，只需要依身体状况调整冷热交替次数。</div>
             <div class="souvenir-tip">不必追求高温或长时间；补水、休息与舒适度比完成次数更重要。</div>
           </div>
-          <div class="editorial-action-row">
-            <span>▤ 体验流程</span>
-            <span>◌ 现场规则</span>
-            <span>🎒 随身物品</span>
-          </div>
         </div>
 
-        <div class="market-grid">
-          <div class="market-card">
-            <span class="market-icon">🔥</span>
-            <h4>传统桑拿</h4>
-            <span class="market-tag">文化体验</span>
-            <p>重点在安静放松、蒸汽与休息节奏，进入前先确认现场服装规则。</p>
-          </div>
-          <div class="market-card">
-            <span class="market-icon">🌊</span>
-            <h4>海水泳池型</h4>
-            <span class="market-tag">冷热交替</span>
-            <p>适合想体验桑拿、户外冷水与休息空间的人，需留意天气与防滑。</p>
-          </div>
-          <div class="market-card">
-            <span class="market-icon">🏨</span>
-            <h4>酒店桑拿</h4>
-            <span class="market-tag">方便入门</span>
-            <p>流程较简单，适合第一次体验或行程时间有限的人。</p>
-          </div>
-          <div class="market-card">
-            <span class="market-icon">♨</span>
-            <h4>冰岛温泉</h4>
-            <span class="market-tag">不同逻辑</span>
-            <p>以户外泡汤与地热体验为主，不应完全套用芬兰桑拿的流程与规则。</p>
-          </div>
+        <div class="info-card editorial-note">
+          <h4>四种洗浴类型比一比</h4>
+          <ul class="catalog-compare-list">
+            <li class="catalog-compare-item">
+              <span class="catalog-compare-icon">🔥</span>
+              <div class="catalog-compare-copy">
+                <strong>传统桑拿</strong>
+                <span class="catalog-compare-tag">文化体验</span>
+                <p>重点在安静放松、蒸汽与休息节奏，进入前先确认现场服装规则。</p>
+              </div>
+            </li>
+            <li class="catalog-compare-item">
+              <span class="catalog-compare-icon">🌊</span>
+              <div class="catalog-compare-copy">
+                <strong>海水泳池型</strong>
+                <span class="catalog-compare-tag">冷热交替</span>
+                <p>适合想体验桑拿、户外冷水与休息空间的人，需留意天气与防滑。</p>
+              </div>
+            </li>
+            <li class="catalog-compare-item">
+              <span class="catalog-compare-icon">🏨</span>
+              <div class="catalog-compare-copy">
+                <strong>酒店桑拿</strong>
+                <span class="catalog-compare-tag">方便入门</span>
+                <p>流程较简单，适合第一次体验或行程时间有限的人。</p>
+              </div>
+            </li>
+            <li class="catalog-compare-item">
+              <span class="catalog-compare-icon">♨</span>
+              <div class="catalog-compare-copy">
+                <strong>冰岛温泉</strong>
+                <span class="catalog-compare-tag">不同逻辑</span>
+                <p>以户外泡汤与地热体验为主，不应完全套用芬兰桑拿的流程与规则。</p>
+              </div>
+            </li>
+          </ul>
         </div>
 
         <div class="info-card editorial-note">

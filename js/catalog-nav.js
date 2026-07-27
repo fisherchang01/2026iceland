@@ -1,5 +1,17 @@
 // 「體驗／工具」頁籤的總覽、分類導覽與卡片詳情。
 // 既有內容仍由 data/travel-content.js 與 data/other-content.js 維護；本檔只負責重新編排互動。
+//
+// v23 改版說明：
+// 舊版本是 hero／split／tile／note 四種版型，這一版改成三種——
+//   square（正方形圖文框）：上方 4:3 封面圖 + 標題 + 文字介紹，詳情頁圖片直式堆疊（3:5）
+//   wide（橫式圖文框）：左側 1:1 縮圖 + 右側文字 + 右緣箭頭，詳情頁圖片左右滑動輪播（4:3）
+//   text（純文字框，info-card／alcohol-warn）：不放圖片、不能點擊展開，內容本身已完整
+// 「滿版大卡 Hero」（travel-banner.editorial-hero）已整段移除，不再保留。
+// 總覽頁卡片新增 2x4／2x2／1x4 尺寸系統，由 catalog-config.js 的 sizes 陣列指定。
+
+function normalizeCatalogImagePath(f) {
+  return /^https?:\/\//.test(f) || f.indexOf('/') === 0 ? f : 'images/catalog/' + f;
+}
 
 function catalogImageFor(text) {
   var value = text || '';
@@ -9,19 +21,22 @@ function catalogImageFor(text) {
   return '';
 }
 
-// v9 新增：這個項目詳情要用哪些照片。
-// 目前多數項目都還沒有真實照片，所以預設沿用 CATALOG_IMAGE_MAP 配對到的單張圖示/favicon。
-// 之後 Fisher 要補真實照片時，只要在 data/travel-content.js 或 data/other-content.js
-// 對應的卡片元素上加一個 data-images="file1.jpg,file2.jpg" 屬性（檔名放在 images/catalog/ 底下），
-// 這裡就會自動改成多張、可左右滑動；不需要動這支程式。
+// 清單卡片／總覽卡片共用的封面圖抓取邏輯：優先讀 data-cover（補真實照片時用這個），
+// 沒有的話才退回關鍵字比對 CATALOG_IMAGE_MAP，兩者都沒有就交給呼叫端顯示 emoji 佔位。
+function catalogCoverFor(el, fallbackText) {
+  var attr = el.getAttribute('data-cover');
+  if (attr) return normalizeCatalogImagePath(attr.trim());
+  return catalogImageFor(fallbackText);
+}
+
+// 詳情頁多張照片：優先讀 data-images（補真實照片時用這個，檔名放 images/catalog/ 底下，逗號分隔）；
+// 沒有的話退回 data-cover／關鍵字比對到的單張圖。
 function catalogImagesFor(card, fallbackText) {
   var attr = card.getAttribute('data-images');
   if (attr) {
-    return attr.split(',').map(function(s){ return s.trim(); }).filter(Boolean).map(function(f){
-      return /^https?:\/\//.test(f) || f.indexOf('/') === 0 ? f : 'images/catalog/' + f;
-    });
+    return attr.split(',').map(function(s){ return s.trim(); }).filter(Boolean).map(normalizeCatalogImagePath);
   }
-  var mapped = catalogImageFor(fallbackText);
+  var mapped = catalogCoverFor(card, fallbackText);
   return mapped ? [mapped] : [];
 }
 
@@ -68,10 +83,22 @@ function initCatalogPage(key) {
       var emoji = cat.querySelector('.travel-collapse-emoji');
       var title = cat.querySelector('.travel-collapse-title');
       var sub = cat.querySelector('.travel-collapse-sub');
-      return '<button class="catalog-overview-card" onclick="selectCatalogCategory(\'' + key + '\',' + index + ')">' +
-        '<span class="catalog-overview-icon">' + (emoji ? emoji.textContent.trim() : '•') + '</span>' +
-        '<span class="catalog-overview-copy"><strong>' + (meta.labels[index] || (title ? title.textContent.trim() : '分類')) + '</strong><small>' +
-        (sub ? sub.textContent.trim() : '點選查看內容') + '</small></span><span class="catalog-overview-arrow">›</span></button>';
+      var size = (meta.sizes && meta.sizes[index]) || '2x2';
+      var isBig = size === '2x4';
+      var label = meta.labels[index] || (title ? title.textContent.trim() : '分類');
+      var subText = sub ? sub.textContent.trim() : '點選查看內容';
+      var emojiText = emoji ? emoji.textContent.trim() : '•';
+      var coverUrl = isBig ? catalogCoverFor(cat, label) : '';
+      var mediaHtml = isBig
+        ? '<div class="catalog-overview-media' + (coverUrl ? '' : ' image-error') + '">' +
+          (coverUrl ? '<img src="' + coverUrl + '" alt="' + label + '" loading="lazy" decoding="async" onerror="this.parentElement.classList.add(\'image-error\');this.remove()">' : '<span>' + emojiText + '</span>') +
+          '</div>'
+        : '<span class="catalog-overview-icon">' + emojiText + '</span>';
+      return '<button class="catalog-overview-card ov-' + size + '" onclick="selectCatalogCategory(\'' + key + '\',' + index + ')">' +
+        mediaHtml +
+        '<span class="catalog-overview-copy"><strong>' + label + '</strong><small>' + subText + '</small></span>' +
+        (isBig ? '' : '<span class="catalog-overview-arrow">›</span>') +
+        '</button>';
     }).join('') + '</div>';
   top.insertAdjacentElement('afterend', overview);
   selectCatalogCategory(key, null);
@@ -83,14 +110,12 @@ function selectCatalogCategory(key, index) {
   if (!page) return;
   var categories = catalogDirectCategories(page);
   var overview = page.querySelector('.catalog-overview');
-  var banner = page.querySelector('.travel-banner');
   var overviewPill = page.querySelector('.catalog-pill-overview');
   var pills = page.querySelectorAll('.catalog-pill-scroll .catalog-pill');
   var isOverview = index === null || typeof index === 'undefined';
 
   page.classList.toggle('catalog-show-overview', isOverview);
   if (overview) overview.style.display = isOverview ? 'block' : 'none';
-  if (banner) banner.style.display = isOverview ? 'flex' : 'none';
   if (overviewPill) overviewPill.classList.toggle('active', isOverview);
   pills.forEach(function(pill){ pill.classList.toggle('active', !isOverview && Number(pill.dataset.index) === Number(index)); });
   categories.forEach(function(cat, i){
@@ -124,27 +149,16 @@ function prepareCatalogCards(category) {
   var body = category.querySelector(':scope > .travel-collapse-body');
   if (!body) return;
   var candidates = Array.from(body.children).filter(function(el){
-    return el.matches('.souvenir-card, .souvenir-item, .market-grid, .station-grid, .info-card, .travel-sub-collapse, .link-card, .alcohol-warn');
+    return el.matches('.catalog-square, .catalog-wide, .info-card, .alcohol-warn');
   });
-  candidates.forEach(function(el){
-    if (el.classList.contains('market-grid') || el.classList.contains('station-grid')) {
-      Array.from(el.children).forEach(function(card){ makeCatalogCard(card); });
-    } else {
-      makeCatalogCard(el);
-    }
-  });
+  candidates.forEach(function(el){ makeCatalogCard(el); });
 }
 
-// v22 新增：卡片依原本的內容型態分成三種呈現模組，而不是全部套用同一種縮圖橫列。
-// hero（souvenir-card）：滿版圖文卡，圖片在上、文字在下，用於精選 / 必玩這類主打內容。
-// split（souvenir-item、link-card）：圖文各半的橫列，用於一般資訊型項目。
-// tile（market-card、station-card）／note（info-card、alcohol-warn、travel-sub-collapse）：
-//   保留原生排版（置中圖示磚卡、提醒框、步驟折疊），只加上可點擊的回饋，不強制塞圖。
+// 版型判斷：card 本身的 class 決定它是哪一種——不再靠猜測內容型態。
 function catalogLayoutFor(card) {
-  if (card.classList.contains('souvenir-card')) return 'hero';
-  if (card.classList.contains('souvenir-item') || card.classList.contains('link-card')) return 'split';
-  if (card.classList.contains('market-card') || card.classList.contains('station-card')) return 'tile';
-  return 'note';
+  if (card.classList.contains('catalog-square')) return 'square';
+  if (card.classList.contains('catalog-wide')) return 'wide';
+  return 'text';
 }
 
 function makeCatalogCard(card) {
@@ -152,37 +166,31 @@ function makeCatalogCard(card) {
   card.dataset.catalogCard = '1';
   var layout = catalogLayoutFor(card);
   card.classList.add('catalog-list-card', 'catalog-layout-' + layout);
+
+  // 純文字框：不放圖片、不能點擊展開，內容本身已經是完整資訊。
+  if (layout === 'text') return;
+
   card.setAttribute('role', 'button');
   card.setAttribute('tabindex', '0');
-  var titleEl = card.querySelector('h4, .travel-sub-title, .warn-title, strong');
+  var titleEl = card.querySelector('h4, strong');
   var title = titleEl ? titleEl.textContent.trim() : '詳細內容';
 
-  if (layout === 'hero' || layout === 'split') {
-    var imageUrl = catalogImageFor(card.textContent);
-    var existingImage = card.querySelector('.souvenir-img-wrap');
-    var hasStandardCopy = !!card.querySelector(':scope > .souvenir-info, :scope > .souvenir-item-info');
-    if (!hasStandardCopy) {
-      var copy = document.createElement('div');
-      copy.className = 'catalog-card-copy';
-      while (card.firstChild) copy.appendChild(card.firstChild);
-      card.appendChild(copy);
-    }
-    if (imageUrl && existingImage && !existingImage.querySelector('img')) {
-      existingImage.innerHTML = '<img src="' + imageUrl + '" alt="' + title.replace(/"/g, '&quot;') + '" loading="lazy" decoding="async" onerror="this.remove()">';
-    } else if (!existingImage) {
-      var media = document.createElement('div');
-      var categoryEmoji = card.closest('.travel-collapse').querySelector('.travel-collapse-emoji');
-      media.className = 'catalog-card-media' + (imageUrl ? '' : ' image-error');
-      media.innerHTML = imageUrl ? '<img src="' + imageUrl + '" alt="' + title.replace(/"/g, '&quot;') + '" loading="lazy" decoding="async" onerror="this.parentElement.classList.add(\'image-error\');this.remove()">' :
-        '<span>' + (categoryEmoji ? categoryEmoji.textContent.trim() : '✦') + '</span>';
-      card.insertBefore(media, card.firstChild);
-    }
+  var coverUrl = catalogCoverFor(card, title);
+  var media = document.createElement('div');
+  media.className = layout === 'square' ? 'catalog-square-media' : 'catalog-wide-media';
+  if (coverUrl) {
+    media.innerHTML = '<img src="' + coverUrl + '" alt="' + title.replace(/"/g, '&quot;') + '" loading="lazy" decoding="async" onerror="this.parentElement.classList.add(\'image-error\');this.remove()">';
+  } else {
+    var categoryEl = card.closest('.travel-collapse');
+    var categoryEmoji = categoryEl && categoryEl.querySelector('.travel-collapse-emoji');
+    media.classList.add('image-error');
+    media.innerHTML = '<span>' + (categoryEmoji ? categoryEmoji.textContent.trim() : '✦') + '</span>';
   }
+  card.insertBefore(media, card.firstChild);
 
   card.addEventListener('click', function(event){
     var nearestLink = event.target.closest('a');
     if (nearestLink && nearestLink !== card) return; // 卡片內部另外嵌的連結，維持原本直接跳轉
-    if (card.tagName === 'A') event.preventDefault(); // 卡片本身就是連結（如 link-card）：先開詳情層，不直接跳走
     openCatalogDetail(card, title);
   });
   card.addEventListener('keydown', function(event){
@@ -200,8 +208,20 @@ function ensureCatalogSheet() {
   document.body.appendChild(wrap);
 }
 
+// v23 新增：正方形圖文框詳情頁的多圖呈現——由上而下直接排列（3:5 直式），不是左右滑動。
+// 跟 buildPhotoCarouselHtml()（景點詳情、橫式圖文框共用的輪播元件）是兩套不同元件，各自服務不同版型。
+function buildStackedPhotosHtml(images, fallbackIconHtml) {
+  if (!images || images.length === 0) {
+    return '<div class="catalog-stacked-fallback"><span>' + fallbackIconHtml + '</span></div>';
+  }
+  return '<div class="catalog-stacked-photos">' + images.map(function(src){
+    return '<div class="catalog-stacked-photo"><img src="' + src + '" alt="" loading="lazy" decoding="async" onerror="this.closest(\'.catalog-stacked-photo\').remove()"></div>';
+  }).join('') + '</div>';
+}
+
 function openCatalogDetail(card, title) {
   ensureCatalogSheet();
+  var layout = catalogLayoutFor(card);
   var categoryEl = card.closest('.travel-collapse');
   var categoryTitleEl = categoryEl && categoryEl.querySelector('.travel-collapse-title');
   var categoryEmojiEl = categoryEl && categoryEl.querySelector('.travel-collapse-emoji');
@@ -211,30 +231,25 @@ function openCatalogDetail(card, title) {
   var clone = card.cloneNode(true);
   clone.classList.remove('catalog-list-card');
   clone.removeAttribute('role'); clone.removeAttribute('tabindex');
-  clone.querySelectorAll('.travel-sub-body, .collapse-body').forEach(function(el){ el.classList.add('open'); });
-  clone.querySelectorAll('[onclick]').forEach(function(el){ el.removeAttribute('onclick'); });
-  // 原本內嵌的圖片/favicon 區塊拿掉，改由下面統一的相片輪播呈現（跟景點詳情同一套元件）
-  clone.querySelectorAll('.souvenir-img-wrap, .catalog-card-media').forEach(function(el){ el.remove(); });
-  // 連結類卡片（link-card 本身是 <a>）：詳情層裡不能整塊還是可點擊連結，
-  // 改成跟住宿導航一樣「先看內容，底部另外放一個按鈕」的模式
-  var linkHref = clone.tagName === 'A' ? clone.getAttribute('href') : null;
-  if (linkHref) { clone.removeAttribute('href'); clone.removeAttribute('target'); }
+  clone.querySelectorAll('[onclick]').forEach(function(el){
+    if (el === clone) return; // 卡片本身若帶 onclick 保留給下方按鈕情境使用；一般清單卡片沒有這個屬性
+    el.removeAttribute('onclick');
+  });
+  // 原本清單卡片自己的封面圖拿掉，改由下面統一的堆疊圖／輪播呈現
+  clone.querySelectorAll('.catalog-square-media, .catalog-wide-media').forEach(function(el){ el.remove(); });
 
   // 固定標題（不捲動）：分類 + 項目名稱，比照景點詳情層的 spot-hero 呈現
   document.getElementById('catalogSheetTitle').innerHTML =
     (categoryLabel ? '<div class="spot-hero-label">' + categoryLabel + '</div>' : '') +
     '<div class="spot-hero-title">' + title + '</div>';
 
-  // 可捲動內容：相片輪播 → 原有介紹文字 → （連結類項目）前往連結按鈕
+  // 可捲動內容：正方形圖文框＝直式堆疊圖；橫式圖文框＝左右滑動輪播；接著是原有介紹文字
   var body = document.getElementById('catalogSheetBody');
-  body.innerHTML = buildPhotoCarouselHtml(catalogImagesFor(card, card.textContent), fallbackIcon, title, 'plain');
+  var images = catalogImagesFor(card, title);
+  body.innerHTML = layout === 'square'
+    ? buildStackedPhotosHtml(images, fallbackIcon)
+    : buildPhotoCarouselHtml(images, fallbackIcon, title, 'plain');
   body.appendChild(clone);
-  if (linkHref) {
-    var btnRow = document.createElement('div');
-    btnRow.className = 'map-btn-row';
-    btnRow.innerHTML = '<a class="map-btn" target="_blank" rel="noopener" href="' + linkHref + '">前往連結 ↗</a>';
-    body.appendChild(btnRow);
-  }
 
   document.getElementById('catalogSheet').classList.add('open');
   document.getElementById('catalogSheetBackdrop').classList.add('open');
