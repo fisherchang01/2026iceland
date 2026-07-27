@@ -84,12 +84,13 @@ function initCatalogPage(key) {
       var title = cat.querySelector('.travel-collapse-title');
       var sub = cat.querySelector('.travel-collapse-sub');
       var size = (meta.sizes && meta.sizes[index]) || '2x2';
-      var isBig = size === '2x4';
       var label = meta.labels[index] || (title ? title.textContent.trim() : '分類');
       var subText = sub ? sub.textContent.trim() : '點選查看內容';
       var emojiText = emoji ? emoji.textContent.trim() : '•';
-      var coverUrl = isBig ? catalogCoverFor(cat, label) : '';
-      var mediaHtml = isBig
+      // 2x4（2.2:1 橫式）／2x2（1:1 小縮圖）都需要封面圖，1x4 維持純 emoji + 文字，不需要圖片
+      var needsImage = size === '2x4' || size === '2x2';
+      var coverUrl = needsImage ? catalogCoverFor(cat, label) : '';
+      var mediaHtml = needsImage
         ? '<div class="catalog-overview-media' + (coverUrl ? '' : ' image-error') + '">' +
           (coverUrl ? '<img src="' + coverUrl + '" alt="' + label + '" loading="lazy" decoding="async" onerror="this.parentElement.classList.add(\'image-error\');this.remove()">' : '<span>' + emojiText + '</span>') +
           '</div>'
@@ -97,7 +98,7 @@ function initCatalogPage(key) {
       return '<button class="catalog-overview-card ov-' + size + '" onclick="selectCatalogCategory(\'' + key + '\',' + index + ')">' +
         mediaHtml +
         '<span class="catalog-overview-copy"><strong>' + label + '</strong><small>' + subText + '</small></span>' +
-        (isBig ? '' : '<span class="catalog-overview-arrow">›</span>') +
+        (size === '2x4' ? '' : '<span class="catalog-overview-arrow">›</span>') +
         '</button>';
     }).join('') + '</div>';
   top.insertAdjacentElement('afterend', overview);

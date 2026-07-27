@@ -94,15 +94,25 @@ const TRAVEL_HTML = `
   }
   :is(#page-travel,#page-other) .catalog-overview-media {
     width: 100%;
-    aspect-ratio: 1 / 1;
     overflow: hidden;
     background: linear-gradient(145deg, #dfe8da, #f4eadc);
+  }
+  :is(#page-travel,#page-other) .catalog-overview-card.ov-2x4 .catalog-overview-media {
+    aspect-ratio: 2.2 / 1;
+  }
+  :is(#page-travel,#page-other) .catalog-overview-card.ov-2x2 .catalog-overview-media {
+    width: 46px;
+    height: 46px;
+    border-radius: 15px;
+    flex-shrink: 0;
   }
   :is(#page-travel,#page-other) .catalog-overview-media img { width: 100%; height: 100%; object-fit: cover; display: block; }
   :is(#page-travel,#page-other) .catalog-overview-media.image-error {
     display: flex; align-items: center; justify-content: center;
-    font-size: 2.4rem; color: var(--forest-deep);
+    color: var(--forest-deep);
   }
+  :is(#page-travel,#page-other) .catalog-overview-card.ov-2x4 .catalog-overview-media.image-error { font-size: 2.4rem; }
+  :is(#page-travel,#page-other) .catalog-overview-card.ov-2x2 .catalog-overview-media.image-error { font-size: var(--fs-xl); }
   :is(#page-travel,#page-other) .catalog-overview-card.ov-2x4 .catalog-overview-copy { padding: 14px 18px 18px; }
   :is(#page-travel,#page-other) .catalog-overview-card.ov-1x4 {
     grid-column: 1 / -1;
