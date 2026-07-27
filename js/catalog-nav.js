@@ -45,6 +45,16 @@ function catalogDirectCategories(page) {
   return inner ? Array.from(inner.children).filter(function(el){ return el.classList.contains('travel-collapse'); }) : [];
 }
 
+// Fisher-Yates 洗牌，回傳新陣列（不改動原陣列）——總覽頁隨機排版用。
+function shuffleArray(arr) {
+  var a = arr.slice();
+  for (var i = a.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+  }
+  return a;
+}
+
 function initCatalogPages() {
   Object.keys(CATALOG_PAGE_META).forEach(function(key){ initCatalogPage(key); });
   ensureCatalogSheet();
@@ -81,13 +91,24 @@ function initCatalogPage(key) {
   // v23：總覽排版順序——2x4 優先、其次 1x4、最後把所有 2x2 集中排在一起（穩定排序，同一尺寸內維持原始分類順序）。
   // 這樣 2x2 一定會從上面開始每列排 2 個，如果數量是奇數，落單的那一個只會出現在整個總覽的最下方，
   // 不會因為中間穿插 1x4／2x4 而被拆散、出現「單獨一個 2x2 卡片卡在中間」的狀況。
-  var sizeRank = { '2x4': 0, '1x4': 1, '2x2': 2 };
-  var order = categories.map(function(_, i){ return i; });
-  order.sort(function(a, b){
-    var ra = sizeRank[(meta.sizes && meta.sizes[a]) || '2x2'];
-    var rb = sizeRank[(meta.sizes && meta.sizes[b]) || '2x2'];
-    return ra - rb;
+  // v23：總覽排版順序——只有 2x4 固定置頂、落單的 2x2（奇數時）固定墊底；
+  // 中間的 1x4 跟成對的 2x2，每次重新隨機排列，讓總覽版面每次看起來不完全一樣、更多樣化。
+  // 2x2 一律先兩兩配對成一個「行單位」再參與洗牌，確保不管怎麼隨機，都不會有落單的 2x2 卡在中間造成排版缺角。
+  var big = [], wide = [], square = [];
+  categories.forEach(function(_, i){
+    var size = (meta.sizes && meta.sizes[i]) || '2x2';
+    if (size === '2x4') big.push(i);
+    else if (size === '1x4') wide.push(i);
+    else square.push(i);
   });
+  square = shuffleArray(square);
+  var trailingOrphan = null;
+  if (square.length % 2 === 1) { trailingOrphan = square.pop(); }
+  var units = wide.map(function(i){ return [i]; });
+  for (var p = 0; p < square.length; p += 2) { units.push([square[p], square[p + 1]]); }
+  units = shuffleArray(units);
+  var order = big.concat.apply(big, units);
+  if (trailingOrphan !== null) order.push(trailingOrphan);
   overview.innerHTML = '<div class="catalog-overview-heading"><h2>' + meta.overview + '</h2><p>選擇分類查看完整內容</p></div><div class="catalog-overview-grid">' +
     order.map(function(index){
       var cat = categories[index];
