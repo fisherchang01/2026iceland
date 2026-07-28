@@ -195,6 +195,23 @@ const TRAVEL_HTML = `
     line-height: 1.5;
   }
 
+  /* v23.1：同一分类内的子群组标签（例如「冰岛伴手礼 — 超市」底下细分「超市食物」「超市伴手礼」两组），
+     纯粹是视觉分隔用的文字标签，不是卡片，不能点击。 */
+  :is(#page-travel,#page-other) .catalog-group-label {
+    margin: 22px 4px 10px;
+    padding-top: 14px;
+    border-top: 1px dashed #cfc4b0;
+    font-family: var(--font-display);
+    font-size: var(--fs-base);
+    font-weight: 700;
+    color: var(--forest-deep);
+  }
+  :is(#page-travel,#page-other) .catalog-group-label:first-child {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: 0;
+  }
+
   /* 模組一・正方形圖文框（catalog-square）：上方 4:3 封面圖 + 標題 + 最多三行文字介紹 */
   :is(#page-travel,#page-other) .catalog-list-card.catalog-layout-square {
     overflow: hidden;
@@ -525,29 +542,77 @@ const TRAVEL_HTML = `
           <div class="travel-collapse-emoji">🛒</div>
           <div>
             <div class="travel-collapse-title">冰岛伴手礼 — 超市</div>
-            <div class="travel-collapse-sub">Bónus · Krónan · Nettó · Hagkaup</div>
+            <div class="travel-collapse-sub">食物 · 伴手礼｜超市必买清单</div>
           </div>
         </div>
         <div class="travel-collapse-arrow">▼</div>
       </div>
       <div class="travel-collapse-body">
-        <div class="catalog-square" data-cover="noi-sirius.jpg" data-images="noi-sirius.jpg">
+        <div class="catalog-group-label">超市食物</div>
+        <div class="catalog-wide" data-cover="skyr-yogurt.webp">
+          <div class="catalog-wide-info"><h4>Skyr 优格</h4><p>冰岛传统国民优格，维京人传下来的做法，质地浓郁绵密，营养价值高、热量低。中份装约 10 元人民币，有原味、蓝莓、草莓等多种口味，当地人也常拿来抹面包或打成奶昔。</p><span class="souvenir-brand">Ísey Skyr</span></div>
+        </div>
+        <div class="catalog-wide" data-cover="kaviar-tube.webp">
+          <div class="catalog-wide-info"><h4>鱼子酱牙膏（Kaviar）</h4><p>挤压条装的鳕鱼子酱，外型像牙膏，常见 Mills 品牌，约 20 元人民币一条。冰岛人喜欢拿来抹面包，口味偏咸，建议少量涂抹。</p><span class="souvenir-brand">Mills</span></div>
+        </div>
+        <div class="catalog-wide" data-cover="ora-caviar-food.webp">
+          <div class="catalog-wide-info"><h4>Ora 鱼子酱</h4><p>玻璃罐装的鱼子酱，冰岛知名罐头品牌，100 克装约 30 元人民币，适合搭面包或义大利面，是高贵不贵的平价美食。</p><span class="souvenir-brand">Ora</span></div>
+        </div>
+        <div class="catalog-wide" data-cover="glacier-water.webp">
+          <div class="catalog-wide-info"><h4>冰川水</h4><p>冰岛自然环境纯净，冰川水被认为是全世界最干净的水之一，矿物质丰富，瓶身常有极光、冰山等特色设计，适合带回家收藏。</p></div>
+        </div>
+        <div class="catalog-wide" data-cover="einstok-beer.webp">
+          <div class="catalog-wide-info"><h4>Einstok 啤酒</h4><p>冰岛精酿啤酒品牌，使用北极圈附近的纯净冰山水酿造，口感滑顺清爽，曾入选世界前 50 强啤酒。经典款是白啤酒，带有花香、麦香与柑橘香气。</p><span class="souvenir-brand">Einstok</span></div>
+        </div>
+        <div class="catalog-wide" data-cover="iceland-cola.webp">
+          <div class="catalog-wide-info"><h4>冰岛可口可乐</h4><p>据说使用当地纯净水源、口感更顺滑。2017 年后玻璃瓶与铝罐已改在瑞典生产，只有宝特瓶仍在冰岛当地制造，认明商品编号 569 开头才是冰岛制。</p></div>
+        </div>
+        <div class="catalog-wide" data-cover="dried-fish.webp">
+          <div class="catalog-wide-info"><h4>鱼干</h4><p>冰岛传统点心，鳕鱼片烘干制成，富含 Omega-3、低热量高蛋白。价格不算便宜，评价也两极，鱼腥味较重，建议先尝鲜再决定要不要多买。</p></div>
+        </div>
+        <div class="catalog-wide" data-cover="hakarl-shark.webp">
+          <div class="catalog-wide-info"><h4>发酵鲨鱼肉（Hákarl）</h4><p>冰岛传统发酵鲨鱼肉，气味强烈，是当地知名的重口味食物，名厨安东尼·波登曾形容这是他吃过最恐怖的味道，好奇的话可以买回民宿试试看。</p></div>
+        </div>
+        <div class="catalog-wide" data-cover="humar-langoustine.webp">
+          <div class="catalog-wide-info"><h4>小龙虾（humar）</h4><p>冰岛语的小龙虾其实指的是挪威海螯虾，价格比一般龙虾便宜，在超市或餐厅都能找到，是冰岛平价版的海鲜享受。</p></div>
+        </div>
+
+        <div class="catalog-group-label">超市伴手礼</div>
+        <div class="catalog-square" data-cover="lakkris-cover.webp">
           <div class="catalog-square-info">
-            <h4>超市伴手礼｜一眼认出包装</h4>
-            <div class="souvenir-shop">购物逻辑：品牌识别 → 价格带 → 携带方式</div>
-            <div class="souvenir-desc">此分类暂为设计示范，下一阶段再逐项换回正式品牌、包装特征与购买建议。</div>
+            <h4>甘草糖 Lakkris</h4>
+            <div class="souvenir-desc">北欧代表性零食，通常呈黑色，带有类似八角茴香的味道，对多数亚洲人来说偏猎奇，但当地人相当喜爱。想送礼又怕踩雷，可以挑巧克力裹层的版本比较好入口，常见品牌是 Lakkris。</div>
           </div>
         </div>
-        <div class="catalog-wide" data-cover="omnom.jpg">
-          <div class="catalog-wide-info"><h4>精品巧克力</h4><p>适合送礼、包装醒目；以一行说明购买理由。</p><span class="souvenir-brand">礼物型</span></div>
+        <div class="catalog-square" data-cover="mills-kaviar-cover.webp">
+          <div class="catalog-square-info">
+            <h4>Mills 鱼子酱牙膏</h4>
+            <div class="souvenir-desc">挪威品牌，当地市占最高的鳕鱼子酱，色泽亮橘、咸味明显，适合涂面包、做沙拉或煎蛋。冰岛气温低通常放在常温区贩售，带回国当伴手礼建议留意气温。</div>
+          </div>
         </div>
-        <div class="catalog-wide" data-cover="noi-sirius.jpg">
-          <div class="catalog-wide-info"><h4>平价分享装</h4><p>适合办公室分送，重点显示份量、包装与价格层级。</p><span class="souvenir-brand">大量分送</span></div>
+        <div class="catalog-square" data-cover="ora-caviar-souvenir-cover.webp">
+          <div class="catalog-square-info">
+            <h4>Ora 鱼子酱</h4>
+            <div class="souvenir-desc">玻璃罐装的鱼子酱，冰岛知名罐头品牌，100 克装约 30 元人民币，是高贵不贵的平价美食，也很适合当伴手礼送人。</div>
+          </div>
         </div>
-        <div class="info-card editorial-note">
-          <h4>超市选购逻辑</h4>
-          <p>正式内容可依「自用、送礼、办公室分送」重新分组。</p>
-          <div class="editorial-chips"><span>容易携带</span><span>常温保存</span><span>包装醒目</span><span>价格清楚</span></div>
+        <div class="catalog-square" data-cover="lava-salt-cover.webp">
+          <div class="catalog-square-info">
+            <h4>冰岛火山海盐</h4>
+            <div class="souvenir-desc">取自冰岛纯净海水，经自然蒸发后加入活性碳，呈现黑色，带有淡淡烟熏风味。用来煎牛排或鲑鱼很对味，价格不贵又有冰岛独特性，自用送礼都合适。</div>
+          </div>
+        </div>
+        <div class="catalog-square" data-cover="lysi-fishoil-cover.webp">
+          <div class="catalog-square-info">
+            <h4>冰岛鱼油 Lysi</h4>
+            <div class="souvenir-desc">冰岛最知名的鱼油品牌，原料取自无污染海域，Omega-3 含量高。当地人称鱼油为「海上的黄金」，早餐常备一匙，有罐装液态与胶囊两种形式可选，送长辈很合适。</div>
+          </div>
+        </div>
+        <div class="catalog-square" data-cover="omnom-super-cover.webp">
+          <div class="catalog-square-info">
+            <h4>Omnom 巧克力</h4>
+            <div class="souvenir-desc">冰岛知名手工巧克力品牌，2013 年创立，口味多样、包装精致，把冰岛文化与自然融入巧克力中。超市价格通常比纪念品店划算，雷克雅未克也有实体店可以逛。</div>
+          </div>
         </div>
       </div>
     </div>
