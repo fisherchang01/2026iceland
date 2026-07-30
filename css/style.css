@@ -1198,7 +1198,6 @@
     .catalog-overview-media.image-error { display: flex; align-items: center; justify-content: center; }
     .catalog-overview-card.ov-2x4 .catalog-overview-media.image-error { font-size: 2.4rem; }
     .catalog-overview-card.ov-2x2 .catalog-overview-media.image-error { font-size: 2.2rem; }
-    .catalog-overview-card.ov-1x4 { grid-column: 1 / -1; flex-direction: row; align-items: center; }
     .catalog-overview-icon {
       width: 48px; height: 48px; border-radius: var(--radius-sm); flex-shrink: 0;
       display: flex; align-items: center; justify-content: center; font-size: var(--fs-xl);
@@ -1266,6 +1265,46 @@
     .catalog-list-card.catalog-layout-square .souvenir-brand { display: none; }
 
     /* 模組三・純文字框（info-card、alcohol-warn）：不需要圖片、不能點擊展開，內容本身已經是完整資訊 */
+
+    /* ===== v24（測試中）：簡化版圖文卡 item-card ─ 取代 square/wide 版型判斷，只依尺寸分大／小兩種 =====
+       - item-lg：2.2:1 封面圖，整行滿版
+       - item-sm：1:1 封面圖，兩張並排（用 .item-row 包住兩張 item-sm）
+       - 點開詳情不再區分堆疊／輪播，直接依 .item-detail 裡「文字、圖片」原始排列順序顯示，
+         圖片不強制裁切比例，依實際尺寸自動等比縮放。 */
+    .item-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-3); margin-bottom: var(--sp-4); }
+    .item-card {
+      position: relative; cursor: pointer; overflow: hidden; margin-bottom: var(--sp-4);
+      border: 1px solid var(--border); border-radius: var(--radius); background: var(--card);
+      box-shadow: 0 2px 10px rgba(30,50,60,.06);
+    }
+    .item-row .item-card { margin-bottom: 0; }
+    .item-card:active { transform: scale(.985); }
+    .item-card-media { width: 100%; background: var(--bg2); overflow: hidden; }
+    .item-card.item-lg .item-card-media { aspect-ratio: 2.2 / 1; }
+    .item-card.item-sm .item-card-media { aspect-ratio: 1 / 1; }
+    .item-card-media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .item-card-media.image-error { display: flex; align-items: center; justify-content: center; font-size: 2.2rem; }
+    .item-card-title { padding: var(--sp-3) var(--sp-4); font-size: var(--fs-base); font-weight: 800; color: var(--text); }
+    .item-card::after {
+      content: '›'; position: absolute; right: 10px; top: 10px;
+      width: 26px; height: 26px; border-radius: 50%;
+      background: rgba(255,255,255,.85); color: var(--text);
+      font-size: var(--fs-lg); display: flex; align-items: center; justify-content: center;
+    }
+    /* 關鍵：第三層內容（.item-detail）平常寫在 .item-card 裡面方便維護，
+       但在第二層清單畫面必須隱藏，只有點擊卡片、由 JS 複製進彈窗後才顯示。
+       只用「.item-card > .item-detail」這個較嚴格的選擇器，
+       確保不會連彈窗裡（不在 .item-card 底下）的 .item-detail 也一併被隱藏。 */
+    .item-card > .item-detail { display: none; }
+
+    /* 詳情彈窗內：文字、圖片自由排列，任意順序、任意數量（含全文字或全圖片） */
+    .item-detail p { font-size: var(--fs-sm); line-height: 1.75; color: var(--text); margin: 0 0 var(--sp-4); }
+    .item-detail img {
+      display: block; width: calc(100% + var(--sp-6) * 2); max-width: none;
+      margin: 0 calc(-1 * var(--sp-6)) var(--sp-4);
+    }
+    .item-detail > img:first-child { margin-top: calc(-1 * var(--sp-6)); }
+    .item-detail > *:last-child { margin-bottom: 0; }
 
     /* 手札感結構：分類內容最上方的引言區塊——裝訂孔暗示 + 襯線標題 + 虛線分隔，取代原本被隱藏的折疊標題 */
     .catalog-category-intro {
