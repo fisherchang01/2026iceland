@@ -1305,6 +1305,10 @@
     }
     .item-detail > img:first-child { margin-top: calc(-1 * var(--sp-6)); }
     .item-detail > *:last-child { margin-bottom: 0; }
+    /* 詳情內文若出現「一列二圖」（.item-detail 內嵌套 .item-row），
+       兩張圖各自維持原始比例、並排顯示，不套用整段內文圖片的滿版出血效果 */
+    .item-detail .item-row { margin: 0 0 var(--sp-4); }
+    .item-detail .item-row img { width: 100%; max-width: 100%; margin: 0; object-fit: contain; }
 
     /* 手札感結構：分類內容最上方的引言區塊——裝訂孔暗示 + 襯線標題 + 虛線分隔，取代原本被隱藏的折疊標題 */
     .catalog-category-intro {
