@@ -1298,7 +1298,7 @@
     .item-card > .item-detail { display: none; }
 
     /* 詳情彈窗內：文字、圖片自由排列，任意順序、任意數量（含全文字或全圖片） */
-    .item-detail p { font-size: var(--fs-sm); line-height: 1.75; color: var(--text); margin: 0 0 var(--sp-4); }
+    .item-detail p { font-size: var(--fs-sm); line-height: 1.75; color: var(--text); margin: 0 0 var(--sp-4); white-space: pre-line; }
     .item-detail img {
       display: block; width: calc(100% + var(--sp-6) * 2); max-width: none;
       margin: 0 calc(-1 * var(--sp-6)) var(--sp-4);
