@@ -433,43 +433,71 @@ const TRAVEL_HTML = `
         <div class="travel-collapse-arrow">›</div>
       </div>
       <div class="travel-collapse-body">
-        <div class="item-card item-lg">
-          <h4 class="item-card-title">超市食物</h4>
-          <div class="item-detail">
-            <h4>一、	Skyr 優格</h4>
-            <p>(1)冰島傳統國民優格，高蛋白、口感綿密，價格實惠。Skyr的水果優格在冰島很常見，對冰島人來說不只可以當早餐或點心，還可以拿來抹麵包吐司，甚至做成甜點或打成奶昔，根本萬用，有大中小不同包裝，中SIZE的一瓶約10元人民幣，有綜合水果、藍莓、草莓⋯等口味可以選，還挺好的。
+        <div class="item-row">
+          <div class="item-card item-sm">
+            <h4 class="item-card-title">Skyr 優格</h4>
+            <div class="item-detail">
+              <p>(1)冰島傳統國民優格，高蛋白、口感綿密，價格實惠。Skyr的水果優格在冰島很常見，對冰島人來說不只可以當早餐或點心，還可以拿來抹麵包吐司，甚至做成甜點或打成奶昔，根本萬用，有大中小不同包裝，中SIZE的一瓶約10元人民幣，有綜合水果、藍莓、草莓⋯等口味可以選，還挺好的。
 
 (2)由維京人傳下來的Skyr 是冰島傳統優格，其實它在冰島人的眼中比較像是起司的存在，更是當地人飲食文化非常重要的一部份。Skyr 優格由大量的脫脂牛奶製成，吃起來相當濃郁綿密，不僅營養價值極高，熱量還很低，非常適合注重飲食養生的人。
 
 (3)	這款優格最經典的吃法是用無糖原味Skyr 作為基底，加上糖及新鮮水果一同享用。Skyr 優格也有推出焦糖布丁、巧克力及香草⋯⋯等等口味，值得一試！
 
 (4)愛吃優格的人千萬不要錯過冰島 Ísey 的 Skyr，質地比一般優格更綿密濃稠，接近希臘優格的稠度，而且 Ísey 的 Skyr 有超多種口味，低糖、低脂、蛋白質含量又高。</p>
-            <img src="images/catalog/item-01.webp" alt="">
-            <h4>二、	魚子醬牙膏 (Kaviar)</h4>
-            <p>(1)擠壓條裝的管狀魚子醬（常見 Mills 品牌），搭配吐司或餅乾非常方便便宜，一條約20元人民幣，因為攜帶方便又便宜，可以買著搭配吐司、餅乾一起吃，是來冰島旅遊節省餐費的好幫手，我們是覺得原味（黑色字）的比較好吃。
+              <img src="images/catalog/item-01.webp" alt="">
+            </div>
+          </div>
+          <div class="item-card item-sm">
+            <h4 class="item-card-title">魚子醬牙膏 (Kaviar)</h4>
+            <div class="item-detail">
+              <p>(1)擠壓條裝的管狀魚子醬（常見 Mills 品牌），搭配吐司或餅乾非常方便便宜，一條約20元人民幣，因為攜帶方便又便宜，可以買著搭配吐司、餅乾一起吃，是來冰島旅遊節省餐費的好幫手，我們是覺得原味（黑色字）的比較好吃。
 
 (2)冰島人喜歡用鱈魚子醬抹麵包。這種魚子醬叫Kaviar，包裝有點像牙膏。我自己覺得挺好吃，不過調味有點鹹，不能塗太多。再夾點蔬菜弄成三文治也行，我們在冰島的午餐都是這樣解決的。</p>
-            <img src="images/catalog/item-02.webp" alt="">
-            <h4>三、	Ora魚子醬</h4>
-            <p>這種玻璃罐裝的Ora魚子醬也很推薦，這是冰島有名的罐頭品牌，用來搭麵包、義大利麵也很絕配，滿滿100克Ora魚子醬才賣30元人民幣，完全是來冰島才能享受到的高貴不貴的平價美食。</p>
-            <img src="images/catalog/item-03.webp" alt="">
-            <h4>四、	冰川水</h4>
-            <p>冰島以純淨的自然環境著名，冰川水被認為是全世界最乾淨的水，不只是口感上優質之外的礦物質也很豐富，瓶身通常會有極光、冰山等等較特別的設計，很適合帶回家收藏。
+              <img src="images/catalog/item-02.webp" alt="">
+            </div>
+          </div>
+        </div>
+
+        <div class="item-row">
+          <div class="item-card item-sm">
+            <h4 class="item-card-title">Ora魚子醬</h4>
+            <div class="item-detail">
+              <p>這種玻璃罐裝的Ora魚子醬也很推薦，這是冰島有名的罐頭品牌，用來搭麵包、義大利麵也很絕配，滿滿100克Ora魚子醬才賣30元人民幣，完全是來冰島才能享受到的高貴不貴的平價美食。</p>
+              <img src="images/catalog/item-03.webp" alt="">
+            </div>
+          </div>
+          <div class="item-card item-sm">
+            <h4 class="item-card-title">冰川水</h4>
+            <div class="item-detail">
+              <p>冰島以純淨的自然環境著名，冰川水被認為是全世界最乾淨的水，不只是口感上優質之外的礦物質也很豐富，瓶身通常會有極光、冰山等等較特別的設計，很適合帶回家收藏。
 
 被譽為「全世界最好喝的水」Icelandic Glacial，不僅是世上第一瓶碳中和瓶裝水，瓶身還美到像藝術品！</p>
-            <img src="images/catalog/item-04.png" alt="">
-            <h4>五、	Einstok 啤酒</h4>
-            <p>(1)作為維京人後代的冰島居民承襲了祖先愛喝酒的基因，所生產的Einstok 啤酒品質極高，榮登世界前50強啤酒。這個冰島精釀啤酒使用最靠近北極圈的純凈冰山水，釀造出口感滑順、清爽的高品質啤酒，非常適合夏天時飲用。整體來說，Einstok家的啤酒非常適合女性享用，淡雅又清爽，是追劇、烤肉或吃宵夜必備！
+              <img src="images/catalog/item-04.png" alt="">
+            </div>
+          </div>
+        </div>
+
+        <div class="item-row">
+          <div class="item-card item-sm">
+            <h4 class="item-card-title">Einstok 啤酒</h4>
+            <div class="item-detail">
+              <p>(1)作為維京人後代的冰島居民承襲了祖先愛喝酒的基因，所生產的Einstok 啤酒品質極高，榮登世界前50強啤酒。這個冰島精釀啤酒使用最靠近北極圈的純凈冰山水，釀造出口感滑順、清爽的高品質啤酒，非常適合夏天時飲用。整體來說，Einstok家的啤酒非常適合女性享用，淡雅又清爽，是追劇、烤肉或吃宵夜必備！
 
 (2)Einstok推出的口味中最經典的是白啤酒，同時具有花香、麥香及柑橘香，另外也有帶有熱帶水果香氣或是莓果滋味的品項。</p>
-            <div class="item-row"><img src="images/catalog/item-05.png" alt="">
-            <img src="images/catalog/item-06.png" alt="">
+              <div class="item-row">
+                <img src="images/catalog/item-05.png" alt="">
+                <img src="images/catalog/item-06.png" alt="">
+              </div>
             </div>
-            <h4>六、	冰島可口可樂</h4>
-            <p>(1)冰島的可口可樂被許多人譽為世界上最好喝的，主要原因在於它使用純淨無污染的冰島水源，天然軟水讓口感更順滑細緻
+          </div>
+          <div class="item-card item-sm">
+            <h4 class="item-card-title">冰島可口可樂</h4>
+            <div class="item-detail">
+              <p>(1)冰島的可口可樂被許多人譽為世界上最好喝的，主要原因在於它使用純淨無污染的冰島水源，天然軟水讓口感更順滑細緻
 
 (2)很多人會問我：冰島可口可樂真的比較好喝嗎？老實說我沒有明顯喝出差別 🤣。自 2017 年起，玻璃瓶裝和鋁罐裝改由瑞典生產，只有寶特瓶裝仍在冰島本地製造、使用當地水源，想體驗道地風味就選寶特瓶，並認明商品編號 569 開頭才是冰島製的。就讓大家自己來驗證這個都市傳說是不是真的囉。</p>
-            <img src="images/catalog/item-07.webp" alt="">
+              <img src="images/catalog/item-07.webp" alt="">
+            </div>
           </div>
         </div>
       </div>
@@ -488,11 +516,11 @@ const TRAVEL_HTML = `
         <div class="travel-collapse-arrow">›</div>
       </div>
       <div class="travel-collapse-body">
-        <div class="item-card item-lg">
-          <h4 class="item-card-title">超市购物</h4>
-          <div class="item-detail">
-            <h4>一、	甘草糖 Lakkris</h4>
-            <p>(1)甘草糖可以说是北欧很有代表性的零食，通常呈黑色，吃起来有类似八角茴香的味道，喜好程度非常见仁见智，对多数亚洲人来说偏猎奇。想送礼又怕踩雷的话，可以挑裹巧克力的版本，比较好入口。
+        <div class="item-row">
+          <div class="item-card item-sm">
+            <h4 class="item-card-title">甘草糖 Lakkris</h4>
+            <div class="item-detail">
+              <p>(1)甘草糖可以说是北欧很有代表性的零食，通常呈黑色，吃起来有类似八角茴香的味道，喜好程度非常见仁见智，对多数亚洲人来说偏猎奇。想送礼又怕踩雷的话，可以挑裹巧克力的版本，比较好入口。
 
 (2)有世界最难吃零食之一的甘草糖 (Lakkrís)，在超市买最划算了，
 虽有不少亚洲人觉得难吃，形容味道像八角一样恐怖，但甘草糖对北欧国家的人来说可是爱不释手的好物呢～
@@ -502,29 +530,45 @@ const TRAVEL_HTML = `
 (4)冰岛马粪糖其实就是甘草糖，因为做成冰岛马粪的形状而有此名。另外当地也有其他造型的甘草糖，最常见的品牌就是Lakkris，可以在大大小小的商店中找到。
 
 (5)甘草糖在欧洲是相当受欢迎的零食，不仅热量低，更有顾肠胃、止咳等等的功效。冰岛马粪糖的味道较重，吃起来就是甜甜的八角味道，对亚洲人来说可能吃起来比较不习惯。建议可以先在当地买一包尝尝味道，确定喜欢再大量购入也不迟！</p>
-            <img src="images/catalog/supermarket-shopping-01.webp" alt="">
-            <h4>二、	Mills鱼子酱牙膏</h4>
-            <p>(1)Mills鱼子抹酱，产地挪威，是当地最大，市占率最高的鳕鱼子酱品牌，色泽亮橘，咸味颇高，记得不要一次加太多，可以用来涂面包、做色拉、煎蛋，有些超市会把它们放在常温区，如果没开封的话可以带回台湾分送给亲友尝尝看喔。
+              <img src="images/catalog/supermarket-shopping-01.webp" alt="">
+            </div>
+          </div>
+          <div class="item-card item-sm">
+            <h4 class="item-card-title">Mills鱼子酱牙膏</h4>
+            <div class="item-detail">
+              <p>(1)Mills鱼子抹酱，产地挪威，是当地最大，市占率最高的鳕鱼子酱品牌，色泽亮橘，咸味颇高，记得不要一次加太多，可以用来涂面包、做色拉、煎蛋，有些超市会把它们放在常温区，如果没开封的话可以带回台湾分送给亲友尝尝看喔。
 
 (2)Mills 鱼子酱牙膏的名气完全不需要多说，若是在冰岛超市有看到买下去就对了！这款鱼子酱牙膏是当地人餐桌常看见的食材，只要在放上水煮蛋的吐司上挤一圈，一口咬下就能品尝到北大西洋的滋味，咸香味十足。
 
 (3)Mills鱼子酱牙膏有两种口味，原味的烟熏海味较浓，另外一款则是有加入蛋黄的，味道较为温润。
 
 (4)由于冰岛温度较低，鱼子酱牙膏在当地是放在室温中贩卖。若是要带回家当伴手礼，建议考虑气温之后再下手喔！</p>
-            <img src="images/catalog/supermarket-shopping-02.webp" alt="">
-            <h4>三、	冰岛火山海盐</h4>
-            <p>(1)冰岛火山海盐取自冰岛纯净的海水，无污染、无添加，是最天然的调味品，价格不贵又有冰岛的独特性，购买回家自用或是送礼都很适合也很实用
+              <img src="images/catalog/supermarket-shopping-02.webp" alt="">
+            </div>
+          </div>
+        </div>
+
+        <div class="item-row">
+          <div class="item-card item-sm">
+            <h4 class="item-card-title">冰岛火山海盐</h4>
+            <div class="item-detail">
+              <p>(1)冰岛火山海盐取自冰岛纯净的海水，无污染、无添加，是最天然的调味品，价格不贵又有冰岛的独特性，购买回家自用或是送礼都很适合也很实用
 
 (2)冰岛火山盐（Lava Salt）来自冰岛纯净的海水，经过自然蒸发后再添加活性碳，这正是它呈现黑色的原因。我自己很喜欢在煎牛排或鲑鱼的时候搭配火山盐，黑盐带有淡淡的烟熏风味，我也买了好多送给亲戚好友。
 </p>
-            <img src="images/catalog/supermarket-shopping-03.webp" alt="">
-            <h4>四、	冰岛鱼油 Lysi</h4>
-            <p>(1)Lysi 是冰岛最知名的鱼油品牌，因鱼油取自无污染的冰岛海域，所以鱼油原料的纯净度和高质量是深受大家喜欢的，不只是传统品牌，这个品牌鱼油的 Omega-3 含量也很高，是非常优的健康食品，自用或当伴手礼送给家中长辈都很适合。
+              <img src="images/catalog/supermarket-shopping-03.webp" alt="">
+            </div>
+          </div>
+          <div class="item-card item-sm">
+            <h4 class="item-card-title">冰岛鱼油 Lysi</h4>
+            <div class="item-detail">
+              <p>(1)Lysi 是冰岛最知名的鱼油品牌，因鱼油取自无污染的冰岛海域，所以鱼油原料的纯净度和高质量是深受大家喜欢的，不只是传统品牌，这个品牌鱼油的 Omega-3 含量也很高，是非常优的健康食品，自用或当伴手礼送给家中长辈都很适合。
 
 (2)鱼油在冰岛有着「海上的黄金」之称，当地人食用鱼油已经有数百年的历史。每个冰岛家庭在早餐时都会要求孩子喝上一匙鱼油，以摄取人体必需的维生素，保护身体健康。由于地理环境优良，冰岛出产的鱼油质量众所皆知，其中更是推荐入手LYSI鱼油。
 
 (3)LYSI是冰岛第一间鱼油研发公司，使用高质量的冰岛鳕鱼生产鱼油及鱼肝油相关产品，名声享誉国际。LYSI家除了罐装可以直接饮用的油之外，也有做成胶囊状的产品贩卖，大家可以按照自身习惯购买。</p>
-            <img src="images/catalog/supermarket-shopping-04.png" alt="">
+              <img src="images/catalog/supermarket-shopping-04.png" alt="">
+            </div>
           </div>
         </div>
       </div>
