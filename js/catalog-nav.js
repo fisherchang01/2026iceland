@@ -7,7 +7,7 @@
 //   wide（橫式圖文框）：左側 1:1 縮圖 + 右側文字 + 右緣箭頭，詳情頁圖片左右滑動輪播（4:3）
 //   text（純文字框，info-card／alcohol-warn）：不放圖片、不能點擊展開，內容本身已完整
 // 「滿版大卡 Hero」（travel-banner.editorial-hero）已整段移除，不再保留。
-// 總覽頁卡片新增 2x4／2x2／1x4 尺寸系統，由 catalog-config.js 的 sizes 陣列指定。
+// 總覽頁卡片尺寸系統（2x4／2x2 兩種），由 catalog-config.js 的 sizes 陣列指定。
 
 function normalizeCatalogImagePath(f) {
   return /^https?:\/\//.test(f) || f.indexOf('/') === 0 ? f : 'images/catalog/' + f;
@@ -88,23 +88,19 @@ function initCatalogPage(key) {
 
   var overview = document.createElement('div');
   overview.className = 'catalog-overview';
-  // v23：總覽排版順序——2x4 優先、其次 1x4、最後把所有 2x2 集中排在一起（穩定排序，同一尺寸內維持原始分類順序）。
-  // 這樣 2x2 一定會從上面開始每列排 2 個，如果數量是奇數，落單的那一個只會出現在整個總覽的最下方，
-  // 不會因為中間穿插 1x4／2x4 而被拆散、出現「單獨一個 2x2 卡片卡在中間」的狀況。
-  // v23：總覽排版順序——只有 2x4 固定置頂、落單的 2x2（奇數時）固定墊底；
-  // 中間的 1x4 跟成對的 2x2，每次重新隨機排列，讓總覽版面每次看起來不完全一樣、更多樣化。
-  // 2x2 一律先兩兩配對成一個「行單位」再參與洗牌，確保不管怎麼隨機，都不會有落單的 2x2 卡在中間造成排版缺角。
-  var big = [], wide = [], square = [];
+  // v24：總覽排版順序——只有 2x4（固定置頂）跟 2x2 兩種尺寸。
+  // 2x2 一律先兩兩配對成一個「行單位」再參與洗牌，確保不管怎麼隨機，
+  // 都不會有落單的 2x2 卡在中間造成排版缺角；奇數時，落單的那一個固定墊底。
+  var big = [], square = [];
   categories.forEach(function(_, i){
     var size = (meta.sizes && meta.sizes[i]) || '2x2';
     if (size === '2x4') big.push(i);
-    else if (size === '1x4') wide.push(i);
     else square.push(i);
   });
   square = shuffleArray(square);
   var trailingOrphan = null;
   if (square.length % 2 === 1) { trailingOrphan = square.pop(); }
-  var units = wide.map(function(i){ return [i]; });
+  var units = [];
   for (var p = 0; p < square.length; p += 2) { units.push([square[p], square[p + 1]]); }
   units = shuffleArray(units);
   var order = big.concat.apply(big, units);
@@ -119,14 +115,11 @@ function initCatalogPage(key) {
       var label = meta.labels[index] || (title ? title.textContent.trim() : '分類');
       var subText = sub ? sub.textContent.trim() : '點選查看內容';
       var emojiText = emoji ? emoji.textContent.trim() : '•';
-      // 2x4（2.2:1 橫式）／2x2（1:1 大縮圖）都需要封面圖，1x4 維持純 emoji + 文字，不需要圖片
-      var needsImage = size === '2x4' || size === '2x2';
-      var coverUrl = needsImage ? catalogCoverFor(cat, label) : '';
-      var mediaHtml = needsImage
-        ? '<div class="catalog-overview-media' + (coverUrl ? '' : ' image-error') + '">' +
-          (coverUrl ? '<img src="' + coverUrl + '" alt="' + label + '" loading="lazy" decoding="async" onerror="this.parentElement.classList.add(\'image-error\');this.remove()">' : '<span>' + emojiText + '</span>') +
-          '</div>'
-        : '<span class="catalog-overview-icon">' + emojiText + '</span>';
+      // v24：兩種尺寸（2x4／2x2）都需要封面圖；圖片讀取失敗時才退回 emoji 佔位，不是設計上的預設選項
+      var coverUrl = catalogCoverFor(cat, label);
+      var mediaHtml = '<div class="catalog-overview-media' + (coverUrl ? '' : ' image-error') + '">' +
+        (coverUrl ? '<img src="' + coverUrl + '" alt="' + label + '" loading="lazy" decoding="async" onerror="this.parentElement.classList.add(\'image-error\');this.remove()">' : '<span>' + emojiText + '</span>') +
+        '</div>';
       return '<button class="catalog-overview-card ov-' + size + '" onclick="selectCatalogCategory(\'' + key + '\',' + index + ')">' +
         mediaHtml +
         '<span class="catalog-overview-copy"><strong>' + label + '</strong><small>' + subText + '</small></span>' +
@@ -185,6 +178,10 @@ function prepareCatalogCards(category) {
     return el.matches('.catalog-square, .catalog-wide, .info-card, .alcohol-warn');
   });
   candidates.forEach(function(el){ makeCatalogCard(el); });
+
+  // v24（測試中）：簡化版 item-card，可以直接放在 body 下（大卡 item-lg 常見這樣），
+  // 也可以包在 .item-row 裡兩張並排（小卡 item-sm 常見這樣）。
+  Array.from(body.querySelectorAll('.item-card')).forEach(function(el){ makeItemCard(el); });
 }
 
 // 版型判斷：card 本身的 class 決定它是哪一種——不再靠猜測內容型態。
@@ -229,6 +226,66 @@ function makeCatalogCard(card) {
   card.addEventListener('keydown', function(event){
     if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openCatalogDetail(card, title); }
   });
+}
+
+// v24（測試中）：簡化版圖文卡，只分大（item-lg，2.2:1）／小（item-sm，1:1）兩種尺寸，
+// 不再區分 square／wide 版型。封面圖不用另外指定，直接取第三層 .item-detail 裡的
+// 第一張圖片；圖片比例跟卡框（2.2:1／1:1）對不上時，用置中裁切（object-fit:cover）顯示，
+// 不會影響到原圖本身——第三層詳情頁看到的仍是完整原圖、原始比例。
+function makeItemCard(card) {
+  if (!card || card.dataset.catalogCard === '1') return;
+  card.dataset.catalogCard = '1';
+
+  var titleEl = card.querySelector(':scope > .item-card-title');
+  var title = titleEl ? titleEl.textContent.trim() : '詳細內容';
+
+  var detailEl = card.querySelector(':scope > .item-detail');
+  var firstImg = detailEl && detailEl.querySelector('img');
+  var coverUrl = firstImg ? firstImg.getAttribute('src') : '';
+
+  var media = document.createElement('div');
+  media.className = 'item-card-media';
+  if (coverUrl) {
+    media.innerHTML = '<img src="' + coverUrl + '" alt="' + title.replace(/"/g, '&quot;') + '" loading="lazy" decoding="async" onerror="this.parentElement.classList.add(\'image-error\');this.remove()">';
+  } else {
+    var categoryEl = card.closest('.travel-collapse');
+    var categoryEmoji = categoryEl && categoryEl.querySelector('.travel-collapse-emoji');
+    media.classList.add('image-error');
+    media.innerHTML = '<span>' + (categoryEmoji ? categoryEmoji.textContent.trim() : '✦') + '</span>';
+  }
+  card.insertBefore(media, card.firstChild);
+
+  card.setAttribute('role', 'button');
+  card.setAttribute('tabindex', '0');
+  card.addEventListener('click', function(){ openItemDetail(card, title); });
+  card.addEventListener('keydown', function(event){
+    if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openItemDetail(card, title); }
+  });
+}
+
+// v24（測試中）：詳情彈窗直接顯示 .item-detail 裡原始寫好的內容（文字、圖片自由排列、
+// 任意順序、任意數量），不再做堆疊／輪播轉換，也不限制圖片比例。
+function openItemDetail(card, title) {
+  ensureCatalogSheet();
+  var categoryEl = card.closest('.travel-collapse');
+  var categoryTitleEl = categoryEl && categoryEl.querySelector('.travel-collapse-title');
+  var categoryLabel = categoryTitleEl ? categoryTitleEl.textContent.trim() : '';
+
+  document.getElementById('catalogSheetTitle').innerHTML =
+    (categoryLabel ? '<div class="spot-hero-label">' + categoryLabel + '</div>' : '') +
+    '<div class="spot-hero-title">' + title + '</div>';
+
+  // 保留 .item-detail 外層容器（而非直接展開內容），這樣裡面的文字／圖片是
+  // .item-detail 的子層、不是 .catalog-sheet-body 的直接子層，
+  // 才不會被舊規則「.catalog-sheet-body > * { margin:0 !important }」蓋掉間距。
+  var detailSrc = card.querySelector(':scope > .item-detail');
+  var body = document.getElementById('catalogSheetBody');
+  body.innerHTML = '<div class="item-detail">' + (detailSrc ? detailSrc.innerHTML : '') + '</div>';
+
+  document.getElementById('catalogSheet').classList.add('open');
+  document.getElementById('catalogSheetBackdrop').classList.add('open');
+  document.getElementById('catalogSheetBody').scrollTop = 0;
+  document.body.style.overflow = 'hidden';
 }
 
 function ensureCatalogSheet() {
