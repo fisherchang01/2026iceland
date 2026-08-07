@@ -638,7 +638,57 @@ const TRAVEL_HTML = `
         <div class="travel-collapse-arrow">›</div>
       </div>
       <div class="travel-collapse-body">
-        <!-- 項目內容之後補充：第二層 item-card（圖＋標題），詳情放在 .item-detail -->
+        <div class="item-card item-sm">
+          <h4 class="item-card-title">面包碗</h4>
+          <div class="item-detail">
+            <h4>麵包湯</h4>
+            <p>•其实把汤放进面包里不只是羊肉汤的专利！Svarta Kaffid餐厅号称拥有全镇最好吃的面包汤，把吸收了食材精华的浓汤放入外酥内软的面包里，一道菜可以拥有双重享受！
+•Svarta Kaffid餐厅位于雷克雅未克最繁荣的街道上，外观看似酒吧，却是冰岛面包汤的创始店！内部灯光昏暗温馨，每张桌子都会点上一盏蜡烛，十分有情调！
+•Svarta Kaffid的浓汤并不向其他餐厅一样一年四季都提供同一种汤，而是依照每日厨师所采买到的新鲜食材再来看当天是要做哪种浓汤，每天会有两种汤品可供客人选择。
+•面包汤的份量极大，面包碗里挖下来的面包也会提供给客人享用，建议可以非常饿的时候造访，保证可以吃得饱饱的回家！
+</p>
+            <img src="images/catalog/svarta-kaffid-01.png" alt="">
+            <p>这家是来冰岛吃面包碗很容易一搜就出现在列表前面的店，它不仅很受旅人欢迎，而且吃完会觉得"整个人活过来"。它就在市区主要街道 Laugavegur 一带，门面其实不算特别显眼，第一次经过甚至可能会差点错过，但这里一直都是很多旅人会记住的店，尤其到了用餐时间，里面常常坐得满满的。
+
+走进去，你会发现这个店甚至可以说简单到有点可爱，里面也只有不超过十张的桌子，和点餐台同处于一个小空间，灯光相对温馨。这里几乎就是专心卖汤，而且通常每天只有两种选择，一种偏肉类、一种偏蔬食，没有太多复杂花样，反而让人更容易记住。
+
+汤头浓郁但不油腻，搭配外酥内软的面包：汤一舀下去是热的，面包外层带一点酥度，里面吸了汤之后又变得柔软，边吃边撕着面包配着汤，会有一种非常朴实但很疗愈的满足感。除此之外，这里也可以点酒搭配喔，吃着面包汤，配一点小酒微醺，惬意到不行。
+
+冰岛那种冷风一吹就很想找东西暖胃的天气里，这样一碗热汤加面包，反而比很多正式大餐，简单、温暖，更让人有记忆点。
+价格：约2000 – 4000 ISK
+</p>
+            <h4>负评</h4>
+            <p>看很多人都推薦冰島這家免費續湯的名店，結果我們四個人一致覺得超難吃
+一碗838台幣 怎麼可以每個口味都又鹹又難喝⋯⋯⋯即便拿來配麵包也是一言難盡
+真的不用特別來🙂‍↕️</p>
+          </div>
+        </div>
+
+        <div class="item-card item-sm">
+          <h4 class="item-card-title">热狗堡</h4>
+          <div class="item-detail">
+            <h4>雷克雅未克必试起点 | 先来个热狗</h4>
+            <img src="images/catalog/b-jarins-beztu-pylsur-01.png" alt="">
+            <p>几乎所有来雷克雅未克的人都会在这里用餐。
+
+这不是什么豪华或装饰华丽的餐厅——只是市中心港口旁的一个小热狗摊。但在冰岛人的日常生活中，这口几乎像是一张城市卡片。 香肠主要是羊肉，搭配猪肉和牛肉，比普通热狗更轻盈。 这家店是 自1937年开业以来，游客们不断前来，当地人真的懂得如何吃它。这里不仅仅是外来者拍照的热门旅游胜地。
+
+冰岛热狗的特别之处在于，香肠不是用简单的猪肉或牛肉制成，而是主要用羊肉和牛肉混合而成。这使得它比预期更清爽，肉味层次更丰富，没有油腻的味道。 许多平时对热狗没抱太大期望的人，实际上会想，"哇，比预期好多了。"
+
+第一次下单，我真的建议买"附带"的订单 "一切"——冰岛人常点的 所有作品。 面包里夹着酥脆的生洋葱，然后挤上甜的芥末、番茄酱等 蛋黄酱风味更浓，酱汁微酸甜。总体来说，这种组合出乎意料地非常均衡。 酥脆、甜美、微辣且湿润——恰到好处——但你会悄悄地吃完整份。你可能会发现还没吃完，然后排队买另一份，这就明白为什么大家都急着来这里作为冰岛的第一站。 站在寒风中，手里拿着热狗咬一口，那种简单却令人难忘的味道，某种程度上非常雷克雅未克。
+
+价格：约500–800 ISK</p>
+            <h4>羊肉热狗堡</h4>
+            <p>羊肉热狗汉堡是冰岛的国菜。这种热狗是用羊肉和牛肉混合而成，顶部撒上生洋葱和炸洋葱，夹在面包里，淋上番茄酱、黄芥末和特制酱料。
+相比冰岛高昂的生活成本，羊肉热狗汉堡非常实惠，是当地的绝佳小吃和深夜小吃。绝对值得一试！
+如果你想尝试羊肉热狗汉堡，一定要去Bæjarins Beztu Pylsur热狗摊！
+这家店有着八十多年的历史，在冰岛有许多分店。雷克雅未克市中心最方便的摊位总是人山人海。
+羊肉热狗汉堡份量较小，是你想吃零食时的绝佳选择。如果你想一次吃两份，它也非常方便。
+摊位旁边有多个座位区和站立区，顾客可以现场享用餐食。
+如果你在冰岛下午有点饿，不妨试试这款被《卫报》评为全欧洲最佳的热狗汉堡——Bæjarins Beztu Pylsur！</p>
+            <img src="images/catalog/b-jarins-beztu-pylsur-02.png" alt="">
+          </div>
+        </div>
       </div>
     </div>
 
@@ -706,7 +756,19 @@ const TRAVEL_HTML = `
         <div class="travel-collapse-arrow">›</div>
       </div>
       <div class="travel-collapse-body">
-        <!-- 項目內容之後補充：第二層 item-card（圖＋標題），詳情放在 .item-detail -->
+        <div class="item-card item-sm">
+          <h4 class="item-card-title"></h4>
+          <div class="item-detail">
+            <img src="images/catalog/flowerchild-01.webp" alt="">
+            <img src="images/catalog/flowerchild-02.webp" alt="">
+            <img src="images/catalog/flowerchild-03.webp" alt="">
+            <img src="images/catalog/flowerchild-04.webp" alt="">
+            <img src="images/catalog/flowerchild-05.webp" alt="">
+            <img src="images/catalog/flowerchild-06.webp" alt="">
+            <img src="images/catalog/flowerchild-07.webp" alt="">
+            <img src="images/catalog/flowerchild-08.webp" alt="">
+          </div>
+        </div>
       </div>
     </div>
 
