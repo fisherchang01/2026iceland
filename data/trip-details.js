@@ -246,7 +246,7 @@ const TRIP = {
         desc:'不仅是交通枢纽，还有许多好逛的购物中心、必吃的美食和芬兰特色的纪念品店。',
         deepDesc:'一、车站本身：外表古老壮观，设有正门和西门，正门左右各有巨大人形雕像拿着圆灯，旁侧还有大钟楼，由芬兰建筑师伊利尔·沙里宁设计，就像一件特大艺术品。站内大厅非常雄伟华丽，细致的雕刻就像到了博物馆，吊灯下方是通往地下的手扶梯，地下能直通地铁站、超市及餐厅卖店。\n二、周边购物中心：（1）Citycenter购物中心——位于车站对面，超过50家店铺、咖啡厅及餐厅，一楼有间2欧商店，每样商品都2欧。（2）Kamppi购物中心——市中心最繁忙的购物中心，超过90家店铺及近50家咖啡厅餐厅，分布七层楼；楼下有K market和Alepa market两间超市（K market较大较齐全），还有一条美食街，拉面、泰式料理、新加坡风味应有尽有。（3）Forum购物中心——约140家店铺，2楼有Moomin专卖店。（4）Sokos百货——设有LUMENE保养品、marimekko、iittala等芬兰本地品牌。（5）Stockmann百货——北欧最大百货公司，超过5万平方米零售空间，几乎都是复合式销售，结帐要到中央结帐台。\n三、延伸景点──静默教堂：位于Kamppi购物中心旁边，非常好找。外观是一个超大椭圆形木质建筑，温暖的木头色调，像一艘船或一滴水滴，非常吸睛，建材主要是芬兰云杉木，内部使用大量自然木材，给人温暖平静的感觉，免费入场。',
         map:'Helsinki Central Station' , images:['centralstation-01.webp', 'centralstation-02.webp', 'centralstation-03.webp', 'centralstation-04.webp']},
-      { icon:'⛪', name:'白教堂 Helsinki Cathedral', tags:[], img:'helsinki-cathedral.webp',
+      { icon:'⛪', name:'白教堂 Helsinki Cathedral', tags:[], images:['helsinki-cathedral-01.webp', 'helsinki-cathedral-02.webp', 'helsinki-cathedral-03.webp', 'helsinki-cathedral-04.webp', 'helsinki-cathedral-05.webp'],
         desc:'纯白色的新古典主义外观、醒目的绿顶设计以及宏伟的百级阶梯广场，内部简约而宁静，没有金箔或大理石的奢华，只有北欧风格的极致简洁。',
         deepDesc:'一、赫尔辛基大教堂坐落于市中心元老院广场上，左右两边分别是芬兰总理府、赫尔辛基大学主楼和国家图书馆，是赫尔辛基地标性建筑之一。\n二、由于教堂以白色为主，旧时出海的水手看到教堂就代表离赫尔辛基越来越近，所以赫尔辛基又被称为「白都」。\n三、教堂外观简洁而宏大，拥有对称的立面和高耸的圆顶，正面由两侧的圆柱和六根高大的柱子支撑，白色外墙和绿色圆顶形成鲜明对比。',
         map:'Helsinki Cathedral' },

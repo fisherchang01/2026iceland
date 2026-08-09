@@ -78,6 +78,10 @@
       min-height: 24px;
     }
     .header-title { font-size: 1rem; font-weight: 700; color: var(--primary); font-family: var(--font-display); line-height: 1.35; }
+    /* 在header-title中，副标题应该比主标题小 */
+    .header-title .hero-title-main { font-size: inherit; font-weight: 800; display: block; }
+    .header-title .hero-title-sub { font-size: 0.75rem; font-weight: 600; color: var(--primary); display: block; line-height: 1.2; }
+    .header-title .hero-sub-tag { background: transparent; padding: 0 0; color: inherit; border: none; }
     .spot-card-meta { font-size: var(--fs-xs); color: var(--sub); margin-top: var(--sp-2); }
     .bottom-nav {
       position: fixed;
