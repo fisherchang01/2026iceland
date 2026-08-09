@@ -209,7 +209,8 @@
     }
     .hero-title-sub {
       display: block;
-      font-size: var(--fs-lg);
+      font-size: var(--fs-base);
+      font-weight: 800;
       color: var(--primary);
       text-align: right;
     }
@@ -1660,7 +1661,7 @@
     }
     /* 標題再放大一級，封面感 */
     .trip-hero-title { font-size: var(--fs-4xl); letter-spacing: 0.02em; }
-    .hero-title-sub { font-size: var(--fs-xl); }
+    .hero-title-sub { font-size: var(--fs-lg); font-weight: 800; }
     .trip-hero-dates { font-size: var(--fs-sm); }
 
     /* 今日卡向上疊住 hero 下緣，做出前後層次；hero 文字往下讓位 */
