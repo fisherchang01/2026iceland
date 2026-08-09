@@ -18,6 +18,6 @@ const TRIP_CONFIG = window.TRIP_CONFIG = {
     header: '#faf3ea'
   },
   coverImage: 'images/banners/cover-hero.webp',
-  bannerTitleHtml: '🧊 冰与火的国度（冰岛 + 芬兰）',
+  bannerTitleHtml: '<span class="hero-title-main">🧊 冰与火的国度</span><span class="hero-title-sub">（冰岛 + 芬兰）</span>',
   badges: ['🇮🇸 冰岛 5天', '🇫🇮 芬兰 2天', '✈️ 含5航班']
 };
