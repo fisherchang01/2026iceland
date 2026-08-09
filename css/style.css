@@ -214,6 +214,12 @@
       color: var(--primary);
       text-align: right;
     }
+    .hero-sub-tag {
+      display: inline-block;
+      background: #fff;
+      padding: 5px 12px;
+      border-radius: 6px;
+    }
     .trip-hero-badges { display: flex; flex-wrap: wrap; gap: var(--sp-3); margin-top: var(--sp-5); }
     .hero-badge {
       font-size: var(--fs-2xs); font-weight: 700;
@@ -1662,6 +1668,7 @@
     /* 標題再放大一級，封面感 */
     .trip-hero-title { font-size: var(--fs-4xl); letter-spacing: 0.02em; }
     .hero-title-sub { font-size: var(--fs-lg); font-weight: 800; }
+    .hero-sub-tag { padding: 6px 16px; border-radius: 7px; }
     .trip-hero-dates { font-size: var(--fs-sm); }
 
     /* 今日卡向上疊住 hero 下緣，做出前後層次；hero 文字往下讓位 */
