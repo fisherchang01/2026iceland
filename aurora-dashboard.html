@@ -231,10 +231,11 @@
     }
     
     .weather-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
+      display: grid !important;
+      grid-template-columns: 1fr 1fr !important;
       gap: 6px;
       margin-top: 6px;
+      width: 100%;
     }
     
     .weather-item {
@@ -246,6 +247,7 @@
       grid-template-columns: auto 1fr;
       align-items: center;
       gap: 10px;
+      min-width: 0;
     }
     
     .weather-left {
