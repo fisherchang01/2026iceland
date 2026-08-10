@@ -63,23 +63,38 @@ async function renderAuroraDashboard() {
   // 取得日落時間（從行程數據中）
   // 優先查找今天的資料；若不在旅行期間，改用第一個旅行日期
   let sunsetTime = null;
+  console.log('[Aurora Debug] TRIP_DATA exists:', typeof TRIP_DATA !== 'undefined');
+  console.log('[Aurora Debug] TRIP_DATA.days:', TRIP_DATA?.days?.length || 0, 'days');
+  
   if (typeof TRIP_DATA !== 'undefined' && TRIP_DATA.days && TRIP_DATA.days.length > 0) {
     const today = new Date();
     const todayStr = today.getFullYear() + '-' + 
                      String(today.getMonth() + 1).padStart(2, '0') + '-' + 
                      String(today.getDate()).padStart(2, '0');
     
+    console.log('[Aurora Debug] Today:', todayStr);
+    
     // 首先嘗試查找今天的資料
     let dayData = TRIP_DATA.days.find(d => d.isoDate === todayStr);
+    console.log('[Aurora Debug] Found today data:', !!dayData);
     
     // 如果不在旅行期間，改用第一個旅行日期（展示用）
     if (!dayData) {
       dayData = TRIP_DATA.days[0];
+      console.log('[Aurora Debug] Using first trip day:', dayData?.isoDate);
     }
+    
+    console.log('[Aurora Debug] Day data exists:', !!dayData);
+    console.log('[Aurora Debug] Aurora data:', dayData?.aurora);
     
     if (dayData && dayData.aurora && dayData.aurora.sunset) {
       sunsetTime = dayData.aurora.sunset;
+      console.log('[Aurora Debug] Sunset time found:', sunsetTime);
+    } else {
+      console.log('[Aurora Debug] No sunset time in aurora data');
     }
+  } else {
+    console.log('[Aurora Debug] TRIP_DATA not available or empty');
   }
   
   renderAuroraUI(loc, sunsetTime);
@@ -140,6 +155,7 @@ function renderAuroraUI(loc, sunsetTime) {
   
   // 使用行程數據中的日落時間，若無則顯示「-」
   const sunsetDisplay = sunsetTime || '-';
+  console.log('[Aurora Debug] renderAuroraUI called with sunsetTime:', sunsetTime, 'display:', sunsetDisplay);
   const currentKp = auroraKpValues.length > 0 ? auroraKpValues[Math.floor(auroraKpValues.length / 2)].kp : 3;
   const cloudCover = auroraWeather ? auroraWeather.cloud_cover : 50;
   const auroraChance = calculateAuroraChance(currentKp, cloudCover);
