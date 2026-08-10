@@ -339,7 +339,10 @@ function renderAuroraUI(loc) {
           <canvas id="auroraKpCanvas"></canvas>
         </div>
         
-        <div style="font-size: 12px; color: #888; text-align: center; margin-bottom: 12px;">過去12h | 未來36h <span style="color: #ff4444;">⬜ 紅框：22:00 觀測窗口</span></div>
+        <div style="font-size: 12px; color: #888; text-align: center; margin-bottom: 12px;">
+          <div>📊 <strong>Kp 指數</strong> 柱狀圖（過去12h | 未來36h）</div>
+          <div style="font-size: 10px; color: #aaa; margin-top: 4px;">Kp ≥5 開始有極光機會｜Kp ≥7 極光機會很高 🌌 <span style="color: #ff4444;">⬜ 紅框：22:00 觀測窗口</span></div>
+        </div>
         
         <div class="gauge-grid">
           <div class="gauge-container">
@@ -619,7 +622,7 @@ function drawGauge(canvas, value, min, max) {
   ctx.font = 'bold 16px Noto Sans SC';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText(value.toFixed(1), centerX, centerY);
+  ctx.fillText(value.toFixed(1), centerX, centerY + 35);
 }
 
 // 在 init.js 中調用此函數
