@@ -60,7 +60,21 @@ async function renderAuroraDashboard() {
     generateMockKpData();
   }
   
-  renderAuroraUI(loc);
+  // 取得今日日落時間（從行程數據中）
+  let sunsetTime = null;
+  if (typeof TRIP_DATA !== 'undefined' && TRIP_DATA.days) {
+    const today = new Date();
+    const todayStr = today.getFullYear() + '-' + 
+                     String(today.getMonth() + 1).padStart(2, '0') + '-' + 
+                     String(today.getDate()).padStart(2, '0');
+    
+    const todayData = TRIP_DATA.days.find(d => d.isoDate === todayStr);
+    if (todayData && todayData.aurora && todayData.aurora.sunset) {
+      sunsetTime = todayData.aurora.sunset;
+    }
+  }
+  
+  renderAuroraUI(loc, sunsetTime);
   auroraLastUpdate = new Date();
 }
 
@@ -78,7 +92,7 @@ function generateMockKpData() {
   }
 }
 
-// 計算太陽高度角
+// 計算太陽高度角（已廢用，改為使用行程數據中的日落時間）
 function calculateSunElevation(lat, lon) {
   const now = new Date();
   const h = (now.getUTCHours() + now.getUTCMinutes() / 60 + lon / 15) % 24;
@@ -112,11 +126,12 @@ function calculateAuroraChance(kp, cloudCover) {
 }
 
 // 渲染 UI
-function renderAuroraUI(loc) {
+function renderAuroraUI(loc, sunsetTime) {
   const content = document.getElementById('auroraContent');
   if (!content) return;
   
-  const sunElevation = calculateSunElevation(loc.lat, loc.lon).toFixed(1);
+  // 使用行程數據中的日落時間，若無則顯示「-」
+  const sunsetDisplay = sunsetTime || '-';
   const currentKp = auroraKpValues.length > 0 ? auroraKpValues[Math.floor(auroraKpValues.length / 2)].kp : 3;
   const cloudCover = auroraWeather ? auroraWeather.cloud_cover : 50;
   const auroraChance = calculateAuroraChance(currentKp, cloudCover);
@@ -354,8 +369,8 @@ function renderAuroraUI(loc) {
           <div class="metric-label">極光機率</div>
         </div>
         <div class="metric-box">
-          <div class="metric-value">${sunElevation}°</div>
-          <div class="metric-label">太陽高度</div>
+          <div class="metric-value">${sunsetDisplay}</div>
+          <div class="metric-label">日落時間</div>
         </div>
       </div>
       
