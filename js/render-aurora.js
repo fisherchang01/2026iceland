@@ -285,9 +285,20 @@ function renderAuroraUI(loc) {
       .location-nav {
         display: flex;
         gap: 6px;
-        margin-top: 12px;
+        margin-top: 0;
         overflow-x: auto;
         padding-bottom: 4px;
+        padding-right: 8px;
+      }
+      
+      .location-nav-wrapper {
+        background: linear-gradient(135deg, #1a2332 0%, #0f1419 100%);
+        padding: 12px;
+        margin: -12px -12px 12px -12px;
+        border-bottom: 1px solid rgba(77, 184, 212, 0.2);
+        position: sticky;
+        top: 0;
+        z-index: 10;
       }
       
       .location-btn {
@@ -317,6 +328,20 @@ function renderAuroraUI(loc) {
     <div class="aurora-header">
       <div class="aurora-title">☄️ 極光即時預報</div>
       <div>更新: ${updateTime}</div>
+    </div>
+    
+    <div class="location-nav-wrapper">
+      <div style="font-size: 11px; color: #666; margin-bottom: 6px;">📍 切換地點</div>
+      <div class="location-nav">
+  `;
+  
+  AURORA_LOCATIONS.forEach((l, idx) => {
+    const isActive = idx === auroraCurrentLocation;
+    html += `<button class="location-btn" onclick="switchAuroraLocation(${idx})" style="${isActive ? 'background: rgba(77, 184, 212, 0.3); border-color: rgba(77, 184, 212, 0.6);' : ''}">${l.emoji} ${l.name}</button>`;
+  });
+  
+  html += `
+      </div>
     </div>
     
     <div class="location-card">
@@ -396,18 +421,6 @@ function renderAuroraUI(loc) {
           </div>
         </div>
       </div>
-    </div>
-    
-    <div style="font-size: 12px; color: #888; margin: 12px 0; font-weight: 600;">📍 切換地點</div>
-    <div class="location-nav">
-  `;
-  
-  AURORA_LOCATIONS.forEach((l, idx) => {
-    const isActive = idx === auroraCurrentLocation;
-    html += `<button class="location-btn" onclick="switchAuroraLocation(${idx})" style="${isActive ? 'background: rgba(77, 184, 212, 0.3); border-color: rgba(77, 184, 212, 0.6);' : ''}">${l.emoji} ${l.name}</button>`;
-  });
-  
-  html += `
     </div>
     
     <div class="update-time">⚡ 每小時自動更新一次</div>
