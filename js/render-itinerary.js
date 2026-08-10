@@ -343,10 +343,6 @@ function showDay(dayId) {
         '<div class="drive-summary-info"><h4>今日自驾里程小计</h4><p>总里程：' + stripEstimateWording(d.driveSummary.total) + '　总驾驶时间：' + stripEstimateWording(d.driveSummary.time) + '</p></div>' +
         '</div></div>';
     }
-    if (d.aurora) {
-      html += '<div class="timeline-row"><div class="timeline-node"><span class="timeline-dot aurora-dot"></span></div>' +
-        buildAuroraWidget(d.aurora) + '</div>';
-    }
     listEl.innerHTML = html;
   }
 
@@ -488,76 +484,6 @@ function lightboxNext(e) {
 // 住宿改为「点击才显示导航」（第5项功能）：卡片本身跟景点一样可点击，点开后在同一个
 // spotSheet 详情弹层里显示导航按钮，逻辑上就是复制一份景点的呈现模式。
 // 没有 map 栏位的住宿（例如 Day8「飞机上」）维持不可点击、纯资讯显示，不会呈现无用的导航按钮。
-// 极光指标卡：以当晚住宿地点为准，气象网站风格呈现（背景依机率换色、图示化四项数值、底部机率总结）。
-// 只有 d.aurora 存在时才会渲染（芬兰段的日子没有这个栏位，天然就不会显示）。
-// 極光夜空插圖（v19）：手繪 SVG——星星 + 三層極光緞帶 + 山影。
-// 不依賴外部圖片，離線可用；緞帶用綠→青漸層營造極光流動感。
-function aurora2SkySvg() {
-  var stars = '<circle cx="30" cy="24" r="1.6" opacity=".9"/><circle cx="72" cy="44" r="1.1" opacity=".6"/>' +
-    '<circle cx="118" cy="18" r="1.4" opacity=".8"/><circle cx="164" cy="38" r="1" opacity=".5"/>' +
-    '<circle cx="208" cy="14" r="1.5" opacity=".85"/><circle cx="252" cy="34" r="1" opacity=".55"/>' +
-    '<circle cx="296" cy="16" r="1.3" opacity=".75"/><circle cx="338" cy="40" r="1" opacity=".5"/>' +
-    '<circle cx="372" cy="20" r="1.6" opacity=".9"/><circle cx="96" cy="66" r="1" opacity=".45"/>' +
-    '<circle cx="186" cy="60" r="1.2" opacity=".5"/><circle cx="272" cy="58" r="1" opacity=".4"/>' +
-    '<circle cx="356" cy="64" r="1.1" opacity=".5"/><circle cx="48" cy="56" r="1" opacity=".4"/>';
-  return '<svg class="aurora2-sky" viewBox="0 0 400 170" preserveAspectRatio="xMidYMid slice" aria-hidden="true">' +
-    '<defs><linearGradient id="aurG1" x1="0" y1="0" x2="1" y2="0">' +
-    '<stop offset="0" stop-color="#5ee8b0" stop-opacity="0"/><stop offset=".35" stop-color="#5ee8b0"/>' +
-    '<stop offset=".7" stop-color="#4ac8e8"/><stop offset="1" stop-color="#4ac8e8" stop-opacity="0"/></linearGradient></defs>' +
-    '<g fill="#ffffff">' + stars + '</g>' +
-    '<path d="M-20,58 C70,18 140,86 230,44 S350,22 430,64" stroke="url(#aurG1)" stroke-width="30" fill="none" opacity="0.35" stroke-linecap="round"/>' +
-    '<path d="M-20,64 C70,26 150,92 240,52 S360,34 430,72" stroke="url(#aurG1)" stroke-width="16" fill="none" opacity="0.55" stroke-linecap="round"/>' +
-    '<path d="M-20,72 C80,38 160,98 250,62 S370,46 430,82" stroke="url(#aurG1)" stroke-width="7" fill="none" opacity="0.85" stroke-linecap="round"/>' +
-    '<path d="M60,110 C130,84 210,120 290,96 S390,84 430,106" stroke="url(#aurG1)" stroke-width="10" fill="none" opacity="0.3" stroke-linecap="round"/>' +
-    '<path d="M0,170 L0,132 L55,108 L115,138 L185,112 L255,142 L325,116 L400,138 L400,170 Z" fill="#070f1d"/>' +
-  '</svg>';
-}
-
-// 極光觀測卡（v19）：依設計稿改版並全面放大字體與圖形——
-// 夜空插圖 hero（機率徽章 + 標題 + 觀測點）→ 180px 大型機率圓環 → 三指標大卡（KP/雲量/日落）
-// → 行動建議（summary）→ 資料核實提醒。圓環不顯示假百分比，直接填「高/中等/偏低」三級。
-function buildAuroraWidget(aurora) {
-  if (!aurora) return '';
-  var probLabel = { high:'高', medium:'中等', low:'偏低' }[aurora.probability] || aurora.probability;
-  var ringFill = { high:0.9, medium:0.6, low:0.32 }[aurora.probability] || 0.5;
-  var kp = Number(aurora.kpIndex);
-  var kpSub = isNaN(kp) ? '' : (kp >= 5 ? '強光帶，可能見紫色' : kp >= 4 ? '明顯光帶' : kp >= 3 ? '肉眼可見光帶' : '較微弱，靠相機捕捉');
-  var cc = Number(aurora.cloudCover);
-  var ccSub = isNaN(cc) ? '' : (cc <= 30 ? '晴朗，極佳' : cc <= 60 ? '尚可，留意雲縫' : '偏厚，待觀察');
-
-  // 機率圓環：r=74，周長 ≈ 465
-  var C = 465;
-  var offset = Math.round(C * (1 - ringFill));
-
-  // v22：KP 指數／雲量兩張小卡改成可點擊連結，直接跳到冰島氣象局極光預報頁面看當天實際數據。
-  // 沒有另外新增資料欄位——若某天想指定不同來源，可在該天的 aurora 物件加 forecastUrl 覆蓋。
-  var auroraSourceUrl = aurora.forecastUrl || 'https://en.vedur.is/weather/forecasts/aurora/';
-
-  return '<div class="aurora-card aurora2 aurora-prob-' + aurora.probability + '">' +
-    '<div class="aurora2-hero">' +
-      aurora2SkySvg() +
-      '<div class="aurora2-hero-text">' +
-        '<span class="aurora2-badge">机率：' + probLabel + '</span>' +
-        '<div class="aurora2-title">🌌 今晚极光观测指标</div>' +
-        '<div class="aurora2-location">📍 ' + aurora.location.name + '</div>' +
-      '</div>' +
-    '</div>' +
-    '<div class="aurora2-ring-wrap">' +
-      '<svg width="180" height="180" viewBox="0 0 180 180">' +
-        '<circle cx="90" cy="90" r="74" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="9"/>' +
-        '<circle class="aurora2-ring-fill" cx="90" cy="90" r="74" fill="none" stroke-width="9" stroke-linecap="round" stroke-dasharray="' + C + '" stroke-dashoffset="' + offset + '"/>' +
-      '</svg>' +
-      '<div class="aurora2-ring-num">' + probLabel + '<span>观测机率</span></div>' +
-    '</div>' +
-    '<div class="aurora2-metrics">' +
-      '<a class="aurora2-metric aurora2-metric-link" href="' + auroraSourceUrl + '" target="_blank" rel="noopener" onclick="event.stopPropagation()" aria-label="查看 KP 指数即时预报（外部网站）"><div class="aurora2-m-icon">🌌</div><div class="aurora2-m-name">KP指数</div><div class="aurora2-m-val">KP ' + aurora.kpIndex + '</div><div class="aurora2-m-sub">' + kpSub + '</div></a>' +
-      '<a class="aurora2-metric aurora2-metric-link" href="' + auroraSourceUrl + '" target="_blank" rel="noopener" onclick="event.stopPropagation()" aria-label="查看云量即时预报（外部网站）"><div class="aurora2-m-icon">☁️</div><div class="aurora2-m-name">天空云量</div><div class="aurora2-m-val">' + aurora.cloudCover + '%</div><div class="aurora2-m-sub">' + ccSub + '</div></a>' +
-      '<div class="aurora2-metric"><div class="aurora2-m-icon">🌇</div><div class="aurora2-m-name">日落</div><div class="aurora2-m-val">' + aurora.sunset + '</div><div class="aurora2-m-sub">日出 ' + aurora.sunrise + '</div></div>' +
-    '</div>' +
-    '<div class="aurora2-advice"><h4>📖 今晚行动建议</h4><p>' + aurora.summary + '</p></div>' +
-    (aurora.updatedAt ? '<div class="aurora-updated">⚠️ ' + aurora.updatedAt + '</div>' : '') +
-  '</div>';
-}
 
 // 條列式段落格式化：deepDesc/tips 內容用「\n」分段，一級用「一、二、三」，二級用「(1)(2)(3)」，
 // 每行各自包成一個 <p class="outline-p">，靠 CSS 的 margin 做出「段落間 0.5 行距」的視覺效果。
