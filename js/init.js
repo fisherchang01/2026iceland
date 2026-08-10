@@ -6,6 +6,7 @@ mountTabContent();
 initBudgetForm();
 renderDocs();
 initCatalogPages();
+initAuroraPage();
 renderOverview();
 setHeaderDefaultBanner();
 renderItinSelector();

@@ -102,6 +102,7 @@
 <div id="mount-travel"></div>
 <div id="mount-budget"></div>
 <div id="mount-other"></div>
+<div id="mount-aurora"></div>
 
 <!-- ══ BOTTOM NAV ══ -->
 <nav class="bottom-nav">
@@ -129,6 +130,12 @@
       <span class="nav-tab-label">費用</span>
     </span>
   </button>
+  <button class="nav-tab" id="tab-aurora" onclick="switchTab('aurora')">
+    <span class="nav-tab-pill">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm0 18c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zM4.22 4.22c.78.78 2.05.78 2.83 0s.78-2.05 0-2.83-2.05-.78-2.83 0-.78 2.05 0 2.83zm12.73 12.73c.78.78 2.05.78 2.83 0s.78-2.05 0-2.83-2.05-.78-2.83 0-.78 2.05 0 2.83zM2 12c0 1.1.9 2 2 2s2-.9 2-2-.9-2-2-2-2 .9-2 2zm16 0c0 1.1.9 2 2 2s2-.9 2-2-.9-2-2-2-2 .9-2 2z"/></svg>
+      <span class="nav-tab-label">極光</span>
+    </span>
+  </button>
 </nav>
 
 <div class="toast" id="toast"></div>
@@ -154,6 +161,7 @@
 <script src="js/budget.js"></script>           <!-- 費用記帳 -->
 <script src="js/render-overview.js"></script>  <!-- 總覽頁與其他頁籤掛載 -->
 <script src="js/render-docs.js"></script>      <!-- 旅行文件清單渲染 -->
+<script src="js/render-aurora.js"></script>    <!-- 極光儀表板 -->
 <script src="js/init.js"></script>             <!-- 啟動流程，務必放最後 -->
 
 <!-- 費用雲端同步（Firebase）：一定要放在最後面，且獨立於上面的載入順序，
