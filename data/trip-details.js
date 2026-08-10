@@ -2,6 +2,7 @@
 const TRIP = {
   day0: {
     num:'0', dateLabel:'10月3日（周六）→ 10月4日（周日）', title:'飞越北境·初抵冰岛', transit:true,
+    routeMapImg:'route-day0.webp',
     flights:[
       { airline:'国泰航空', flightNo:'CX635', from:'香港 HKG T1', to:'新加坡樟宜 SIN T4', dep:'15:05', arr:'19:05', duration:'约4小时', date:'10月3日', layoverAfter:'约 2 小时 30 分钟' },
       { airline:'芬兰航空', flightNo:'AY132', from:'新加坡樟宜 SIN T1', to:'赫尔辛基万塔 HEL', dep:'21:35', arr:'06:00+1', duration:'约12小时25分', date:'10月3日→10月4日', note:'当地10月4日抵达', layoverAfter:'约 1 小时 10 分钟（转机时间较紧凑）' },
@@ -227,6 +228,7 @@ const TRIP = {
   },
   day6: {
     num:'6', dateLabel:'10月9日（周五）', title:'告别冰岛·飞向芬兰', transit:true,
+    routeMapImg:'route-day6.webp',
     flights:[
       { airline:'芬兰航空', flightNo:'AY992', from:'凯夫拉维克 KEF', to:'赫尔辛基万塔 HEL', dep:'08:35', arr:'15:00', duration:'约3小时25分', date:'10月9日' }
     ],
@@ -281,6 +283,7 @@ const TRIP = {
   },
   day8: {
     num:'8', dateLabel:'10月10日（周六）深夜 → 10月11日（周日）', title:'满载回忆·返回香港', transit:true,
+    routeMapImg:'route-day8.webp',
     flights:[
       { airline:'芬兰航空', flightNo:'AY099', from:'赫尔辛基万塔 HEL', to:'香港 HKG', dep:'00:35', arr:'17:10', duration:'约9小时35分', date:'10月11日', note:'10月10日行程结束后深夜航班' }
     ],
