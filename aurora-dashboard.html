@@ -77,48 +77,81 @@
       font-weight: 600;
     }
     
-    .card-large {
-      grid-column: 1 / -1;
-    }
-    
     .sun-elevation {
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    
+    .sun-main {
+      flex: 1;
     }
     
     .sun-value {
-      font-size: 36px;
+      font-size: 32px;
       font-weight: 700;
-      color: #ffa500;
+      background: linear-gradient(135deg, #ffa500, #ffb84d);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
     
     .sun-status {
-      font-size: 12px;
+      font-size: 11px;
+      color: #888;
+      margin-top: 4px;
+    }
+    
+    .sun-emoji {
+      font-size: 48px;
+      opacity: 0.8;
+    }
+    
+    .location-info {
+      background: linear-gradient(135deg, rgba(77, 184, 212, 0.1) 0%, rgba(77, 184, 212, 0.05) 100%);
+      padding: 12px;
+      border-radius: 10px;
+      border-left: 3px solid #4db8d4;
+      margin-bottom: 12px;
+    }
+    
+    .location-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: #4db8d4;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    .location-coords {
+      font-size: 10px;
       color: #666;
-      max-width: 150px;
+      margin-top: 4px;
+      font-family: 'Courier New', monospace;
     }
     
     #kpChart {
       width: 100%;
-      height: 200px;
-      margin: 15px 0;
-      background: #0f1419;
-      border-radius: 4px;
+      height: 160px;
+      margin: 12px 0;
+      background: rgba(15, 20, 25, 0.5);
+      border-radius: 8px;
     }
     
     .chart-label {
-      font-size: 12px;
+      font-size: 11px;
       color: #666;
       text-align: center;
-      margin-top: 8px;
+      margin-top: 6px;
     }
     
     .gauges-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-      gap: 15px;
-      margin-top: 15px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 12px;
     }
     
     .gauge-container {
@@ -127,73 +160,93 @@
     
     .gauge {
       width: 100%;
-      height: 120px;
+      height: 100px;
       margin: 0 auto;
     }
     
     .gauge-value {
-      font-size: 20px;
+      font-size: 16px;
       font-weight: 700;
-      margin-top: 8px;
+      margin-top: 6px;
       color: #4db8d4;
     }
     
     .gauge-label {
-      font-size: 12px;
+      font-size: 10px;
       color: #888;
+      margin-top: 2px;
     }
     
     .aurora-probability {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 20px;
-      background: rgba(77, 184, 212, 0.1);
-      border-radius: 8px;
-      border-left: 4px solid #4db8d4;
+      gap: 16px;
+      padding: 16px;
+      background: linear-gradient(135deg, rgba(77, 184, 212, 0.15) 0%, rgba(77, 184, 212, 0.05) 100%);
+      border-radius: 12px;
+      border: 1px solid rgba(77, 184, 212, 0.2);
+    }
+    
+    .probability-content {
+      flex: 1;
     }
     
     .probability-value {
-      font-size: 48px;
+      font-size: 40px;
       font-weight: 700;
       color: #4db8d4;
+      line-height: 1;
     }
     
     .probability-label {
-      font-size: 12px;
+      font-size: 11px;
       color: #888;
+      margin-top: 6px;
+    }
+    
+    .probability-emoji {
+      font-size: 40px;
+      opacity: 0.7;
     }
     
     .weather-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 15px;
-      margin-top: 15px;
+      gap: 10px;
+      margin-top: 12px;
     }
     
     .weather-item {
       padding: 12px;
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 6px;
-      border: 1px solid #2a3f52;
+      background: linear-gradient(135deg, rgba(77, 184, 212, 0.08) 0%, rgba(77, 184, 212, 0.03) 100%);
+      border-radius: 10px;
+      border: 1px solid rgba(77, 184, 212, 0.1);
+      transition: all 0.3s ease;
+    }
+    
+    .weather-item:hover {
+      background: linear-gradient(135deg, rgba(77, 184, 212, 0.12) 0%, rgba(77, 184, 212, 0.06) 100%);
+      border-color: rgba(77, 184, 212, 0.2);
     }
     
     .weather-item-label {
-      font-size: 11px;
-      color: #888;
+      font-size: 10px;
+      color: #666;
       text-transform: uppercase;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
+      font-weight: 600;
     }
     
     .weather-item-value {
-      font-size: 18px;
+      font-size: 16px;
       font-weight: 600;
       color: #e0e0e0;
     }
     
     .loading {
       text-align: center;
-      padding: 40px;
+      padding: 40px 20px;
       color: #888;
     }
     
@@ -201,7 +254,7 @@
       display: inline-block;
       width: 30px;
       height: 30px;
-      border: 3px solid #2a3f52;
+      border: 3px solid rgba(77, 184, 212, 0.2);
       border-top-color: #4db8d4;
       border-radius: 50%;
       animation: spin 1s linear infinite;
@@ -212,34 +265,39 @@
     }
     
     .error {
-      background: rgba(244, 67, 54, 0.1);
+      background: linear-gradient(135deg, rgba(244, 67, 54, 0.1) 0%, rgba(244, 67, 54, 0.05) 100%);
       border: 1px solid #f44336;
       color: #f44336;
-      padding: 15px;
+      padding: 12px;
       border-radius: 8px;
-      margin-bottom: 20px;
+      margin-bottom: 12px;
+      font-size: 13px;
     }
     
     .info-note {
-      font-size: 11px;
+      font-size: 10px;
       color: #666;
-      margin-top: 15px;
-      padding-top: 15px;
-      border-top: 1px solid #2a3f52;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(77, 184, 212, 0.1);
     }
     
-    @media (max-width: 768px) {
-      .dashboard-grid {
-        grid-template-columns: 1fr;
+    @media (max-width: 480px) {
+      .container {
+        max-width: 100%;
+        padding: 8px;
       }
       h1 {
-        font-size: 24px;
-      }
-      .gauges-grid {
-        grid-template-columns: repeat(3, 1fr);
+        font-size: 22px;
       }
       .sun-value {
         font-size: 28px;
+      }
+      .probability-value {
+        font-size: 36px;
+      }
+      #kpChart {
+        height: 140px;
       }
     }
   </style>
@@ -279,7 +337,8 @@ function generateMockKpData() {
   const now = new Date();
   const data = [];
   
-  for (let i = -24; i < 72; i += 3) {
+  // 過去 12 小時 + 未來 36 小時（3 小時間隔）
+  for (let i = -12; i <= 36; i += 3) {
     const time = new Date(now.getTime() + i * 3600000);
     const hour = time.getHours();
     let kp = 2 + Math.sin((hour - 6) / 24 * Math.PI) * 3 + (Math.random() - 0.5) * 1;
@@ -370,15 +429,15 @@ function calculateSunElevation(lat, lon, date = new Date()) {
 // ═══ 解析數據 ═══
 function parseSpaceWeatherData(kpData, planetaryData) {
   const kpValues = kpData
-    .slice(0, 32)
     .map(d => ({
       time: new Date(d[0]),
       kp: parseFloat(d[1]),
     }))
     .filter(d => !isNaN(d.kp));
   
-  const currentKp = kpValues.length > 0 ? kpValues[kpValues.length - 1].kp : 2;
-  const kpForProbability = kpValues.length > 0 ? Math.max(...kpValues.slice(-8).map(v => v.kp)) : 2;
+  // 取得最新的 Kp 值（當前時刻或最接近的未來時刻）
+  const currentKp = kpValues.length > 0 ? kpValues[Math.floor(kpValues.length / 2)].kp : 2;
+  const kpForProbability = kpValues.length > 0 ? Math.max(...kpValues.map(v => v.kp)) : 2;
   
   let auroraChance = 10;
   if (kpForProbability < 4) auroraChance = 10;
@@ -401,10 +460,15 @@ function drawKpChart(canvas, kpValues) {
   const width = canvas.width;
   const height = canvas.height;
   
-  ctx.fillStyle = '#1a2332';
+  // 背景
+  const gradient = ctx.createLinearGradient(0, 0, 0, height);
+  gradient.addColorStop(0, 'rgba(15, 20, 25, 0.8)');
+  gradient.addColorStop(1, 'rgba(10, 15, 21, 0.8)');
+  ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, width, height);
   
-  ctx.strokeStyle = '#2a3f52';
+  // 網格線
+  ctx.strokeStyle = 'rgba(77, 184, 212, 0.1)';
   ctx.lineWidth = 1;
   for (let i = 0; i <= 5; i++) {
     const y = (height / 5) * i;
@@ -414,30 +478,40 @@ function drawKpChart(canvas, kpValues) {
     ctx.stroke();
   }
   
-  const barWidth = width / kpValues.length - 2;
-  const padding = 20;
+  const barWidth = Math.max(4, width / kpValues.length - 3);
+  const padding = 18;
   const chartHeight = height - padding * 2;
   
   kpValues.forEach((item, idx) => {
-    const x = (width / kpValues.length) * idx + 1;
+    const x = padding + (width - padding * 2) * idx / (kpValues.length - 1);
     const kpHeight = (item.kp / 9) * chartHeight;
     
-    if (item.kp < 4) ctx.fillStyle = '#3dbd67';
-    else if (item.kp < 6) ctx.fillStyle = '#ffc107';
-    else if (item.kp < 8) ctx.fillStyle = '#ff9800';
-    else ctx.fillStyle = '#f44336';
+    // 根據 Kp 值著色
+    if (item.kp < 4) {
+      ctx.fillStyle = '#3dbd67'; // 綠
+    } else if (item.kp < 6) {
+      ctx.fillStyle = '#ffc107'; // 黃
+    } else if (item.kp < 8) {
+      ctx.fillStyle = '#ff9800'; // 橙
+    } else {
+      ctx.fillStyle = '#f44336'; // 紅
+    }
     
-    ctx.fillRect(x, height - padding - kpHeight, barWidth, kpHeight);
+    ctx.fillRect(x - barWidth / 2, height - padding - kpHeight, barWidth, kpHeight);
   });
   
+  // 時間標籤（每隔一個顯示）
   ctx.fillStyle = '#666';
-  ctx.font = '11px Noto Sans SC';
+  ctx.font = '10px Noto Sans SC';
   ctx.textAlign = 'center';
+  
   kpValues.forEach((item, idx) => {
-    if (idx % 4 === 0) {
-      const x = (width / kpValues.length) * idx + (width / kpValues.length) / 2;
-      const timeStr = item.time.toLocaleTimeString('zh-Hans', { hour: '2-digit', minute: '2-digit', hour12: false });
-      ctx.fillText(timeStr, x, height - 5);
+    if (idx % 2 === 0) {
+      const x = padding + (width - padding * 2) * idx / (kpValues.length - 1);
+      const hours = item.time.getHours();
+      const mins = item.time.getMinutes();
+      const timeStr = `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}`;
+      ctx.fillText(timeStr, x, height - 4);
     }
   });
 }
@@ -449,47 +523,76 @@ function drawGauge(canvas, value, min, max) {
   const height = canvas.height;
   const centerX = width / 2;
   const centerY = height / 2;
-  const radius = Math.min(width, height) / 2 - 10;
+  const radius = Math.min(width, height) / 2 - 8;
   
-  ctx.fillStyle = '#2a3f52';
+  // 背景圓
+  const bgGradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, radius);
+  bgGradient.addColorStop(0, 'rgba(30, 40, 55, 0.6)');
+  bgGradient.addColorStop(1, 'rgba(20, 28, 42, 0.6)');
+  ctx.fillStyle = bgGradient;
   ctx.beginPath();
   ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
   ctx.fill();
   
+  // 邊框
+  ctx.strokeStyle = 'rgba(77, 184, 212, 0.2)';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+  
   const startAngle = Math.PI;
   const endAngle = 2 * Math.PI;
+  const arcRadius = radius - 12;
   
+  // 綠色段（0-33%）
   ctx.strokeStyle = '#3dbd67';
-  ctx.lineWidth = 8;
+  ctx.lineWidth = 6;
   ctx.beginPath();
-  ctx.arc(centerX, centerY, radius - 15, startAngle, startAngle + (endAngle - startAngle) / 3);
+  ctx.arc(centerX, centerY, arcRadius, startAngle, startAngle + (endAngle - startAngle) / 3);
   ctx.stroke();
   
+  // 黃色段（33-66%）
   ctx.strokeStyle = '#ffc107';
   ctx.beginPath();
-  ctx.arc(centerX, centerY, radius - 15, startAngle + (endAngle - startAngle) / 3, startAngle + 2 * (endAngle - startAngle) / 3);
+  ctx.arc(centerX, centerY, arcRadius, startAngle + (endAngle - startAngle) / 3, startAngle + 2 * (endAngle - startAngle) / 3);
   ctx.stroke();
   
+  // 紅色段（66-100%）
   ctx.strokeStyle = '#f44336';
   ctx.beginPath();
-  ctx.arc(centerX, centerY, radius - 15, startAngle + 2 * (endAngle - startAngle) / 3, endAngle);
+  ctx.arc(centerX, centerY, arcRadius, startAngle + 2 * (endAngle - startAngle) / 3, endAngle);
   ctx.stroke();
   
+  // 指針
   const normalizedValue = Math.max(min, Math.min(max, value));
   const ratio = (normalizedValue - min) / (max - min);
   const angle = startAngle + ratio * (endAngle - startAngle);
   
   ctx.strokeStyle = '#4db8d4';
-  ctx.lineWidth = 3;
+  ctx.lineWidth = 2.5;
+  ctx.lineCap = 'round';
   ctx.beginPath();
   ctx.moveTo(centerX, centerY);
-  ctx.lineTo(centerX + Math.cos(angle) * (radius - 25), centerY + Math.sin(angle) * (radius - 25));
+  ctx.lineTo(
+    centerX + Math.cos(angle) * (arcRadius - 3),
+    centerY + Math.sin(angle) * (arcRadius - 3)
+  );
   ctx.stroke();
   
-  ctx.fillStyle = '#1a2332';
+  // 中心點
+  const dotGradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, 4);
+  dotGradient.addColorStop(0, '#4db8d4');
+  dotGradient.addColorStop(1, '#2a7a94');
+  ctx.fillStyle = dotGradient;
   ctx.beginPath();
-  ctx.arc(centerX, centerY, 5, 0, 2 * Math.PI);
+  ctx.arc(centerX, centerY, 4, 0, 2 * Math.PI);
   ctx.fill();
+  
+  // 外框
+  ctx.strokeStyle = 'rgba(77, 184, 212, 0.3)';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.arc(centerX, centerY, 3.5, 0, 2 * Math.PI);
+  ctx.stroke();
 }
 
 // ═══ 主渲染函數 ═══
@@ -509,33 +612,43 @@ async function renderDashboard() {
     
     const html = `
       <div class="demo-badge">
-        ⚠️ 演示模式 - 使用模擬數據（實時數據 API 暫不可用）
+        ⚠️ 演示模式 - 使用模擬數據
       </div>
       <div class="dashboard-grid">
         
         <div class="card">
-          <div class="card-title">太陽高度角</div>
+          <div class="location-info">
+            <div class="location-name">
+              📍 ${CONFIG.location.name}
+            </div>
+            <div class="location-coords">
+              ${CONFIG.location.lat.toFixed(2)}° N, ${Math.abs(CONFIG.location.lon).toFixed(2)}° W
+            </div>
+          </div>
+          <div class="card-title"><span class="card-icon">☀️</span>太陽高度角</div>
           <div class="sun-elevation">
-            <div>
+            <div class="sun-main">
               <div class="sun-value">${sunElevation.toFixed(1)}°</div>
               <div class="sun-status">
                 ${sunElevation < -6 ? '天文暮光中 ⭐' : sunElevation < -0.833 ? '民間暮光中' : sunElevation < 0 ? '航海暮光中' : '白天'}
               </div>
             </div>
+            <div class="sun-emoji">${sunElevation < -6 ? '🌌' : sunElevation < 0 ? '🌅' : '☀️'}</div>
           </div>
           <div class="info-note">
             ${sunElevation < -6 ? '✅ 極光觀測條件良好' : '⚠️ 可能看不到極光（太陽未完全落下）'}
           </div>
         </div>
         
-        <div class="card card-large">
-          <div class="card-title">Kp 指數（過去 24h + 未來 72h）</div>
+        <div class="card">
+          <div class="card-title"><span class="card-icon">📊</span>Kp 指數趨勢</div>
+          <div style="font-size: 11px; color: #888; margin-bottom: 8px;">過去 12h + 未來 36h（3 小時間隔）</div>
           <canvas id="kpCanvas" width="800" height="200"></canvas>
-          <div class="chart-label">過去 24 小時觀測，未來 72 小時預報</div>
+          <div class="chart-label">綠=活躍 黃=升高 橙=強 紅=非常強</div>
         </div>
         
-        <div class="card card-large">
-          <div class="card-title">磁場參數</div>
+        <div class="card">
+          <div class="card-title"><span class="card-icon">🧲</span>磁場參數</div>
           <div class="gauges-grid">
             <div class="gauge-container">
               <canvas class="gauge" id="gaugeKp" width="120" height="120"></canvas>
@@ -556,41 +669,42 @@ async function renderDashboard() {
         </div>
         
         <div class="card">
+          <div class="card-title"><span class="card-icon">✨</span>極光可見機率</div>
           <div class="aurora-probability">
-            <div>
-              <div class="probability-label">此地點極光機率</div>
+            <div class="probability-content">
               <div class="probability-value">${auroraChance}%</div>
               <div class="probability-label">根據當地磁場參數預估</div>
             </div>
+            <div class="probability-emoji">${auroraChance > 70 ? '🎉' : auroraChance > 50 ? '👀' : auroraChance > 30 ? '🤔' : '😴'}</div>
           </div>
         </div>
         
         <div class="card">
-          <div class="card-title">該地點天氣</div>
+          <div class="card-title"><span class="card-icon">🌤️</span>當地天氣</div>
           <div class="weather-grid">
             <div class="weather-item">
-              <div class="weather-item-label">氣溫</div>
-              <div class="weather-item-value">${weather ? weather.temperature_2m.toFixed(1) + ' °C' : 'N/A'}</div>
+              <div class="weather-item-label">🌡️ 氣溫</div>
+              <div class="weather-item-value">${weather ? weather.temperature_2m.toFixed(1) : 'N/A'} °C</div>
             </div>
             <div class="weather-item">
-              <div class="weather-item-label">低雲</div>
-              <div class="weather-item-value">${weather ? weather.cloud_cover_low + ' %' : 'N/A'}</div>
+              <div class="weather-item-label">💨 風速</div>
+              <div class="weather-item-value">${weather ? weather.wind_speed_10m.toFixed(1) : 'N/A'} m/s</div>
             </div>
             <div class="weather-item">
-              <div class="weather-item-label">中雲</div>
-              <div class="weather-item-value">${weather ? weather.cloud_cover_mid + ' %' : 'N/A'}</div>
+              <div class="weather-item-label">☁️ 總雲量</div>
+              <div class="weather-item-value">${weather ? weather.cloud_cover : 'N/A'}%</div>
             </div>
             <div class="weather-item">
-              <div class="weather-item-label">高雲</div>
-              <div class="weather-item-value">${weather ? weather.cloud_cover_high + ' %' : 'N/A'}</div>
+              <div class="weather-item-label">⬇️ 低雲</div>
+              <div class="weather-item-value">${weather ? weather.cloud_cover_low : 'N/A'}%</div>
             </div>
             <div class="weather-item">
-              <div class="weather-item-label">有效遮蔽率</div>
-              <div class="weather-item-value">${weather ? weather.cloud_cover + ' %' : 'N/A'}</div>
+              <div class="weather-item-label">➡️ 中雲</div>
+              <div class="weather-item-value">${weather ? weather.cloud_cover_mid : 'N/A'}%</div>
             </div>
             <div class="weather-item">
-              <div class="weather-item-label">風速</div>
-              <div class="weather-item-value">${weather ? weather.wind_speed_10m.toFixed(1) + ' m/s' : 'N/A'}</div>
+              <div class="weather-item-label">⬆️ 高雲</div>
+              <div class="weather-item-value">${weather ? weather.cloud_cover_high : 'N/A'}%</div>
             </div>
           </div>
         </div>
