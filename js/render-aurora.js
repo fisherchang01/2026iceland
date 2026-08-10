@@ -61,7 +61,7 @@ async function renderAuroraDashboard() {
   }
   
   // 取得日落時間（從行程數據中）
-  // 優先查找今天的資料；若不在旅行期間，改用第一個旅行日期
+  // 優先查找今天的資料；若不在旅行期間，改用第一個「有 aurora 數據」的旅行日期
   let sunsetTime = null;
   console.log('[Aurora Debug] TRIP_DATA exists:', typeof TRIP_DATA !== 'undefined');
   console.log('[Aurora Debug] TRIP_DATA.days:', TRIP_DATA?.days?.length || 0, 'days');
@@ -78,10 +78,10 @@ async function renderAuroraDashboard() {
     let dayData = TRIP_DATA.days.find(d => d.isoDate === todayStr);
     console.log('[Aurora Debug] Found today data:', !!dayData);
     
-    // 如果不在旅行期間，改用第一個旅行日期（展示用）
+    // 如果不在旅行期間，改用第一個「有 aurora 數據」的旅行日期（展示用）
     if (!dayData) {
-      dayData = TRIP_DATA.days[0];
-      console.log('[Aurora Debug] Using first trip day:', dayData?.isoDate);
+      dayData = TRIP_DATA.days.find(d => d.aurora);
+      console.log('[Aurora Debug] Using first day with aurora data:', dayData?.isoDate);
     }
     
     console.log('[Aurora Debug] Day data exists:', !!dayData);
