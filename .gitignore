@@ -1,0 +1,17 @@
+# Sensitive personal documents
+docs/*.pdf
+
+# Personal data (if any)
+data/private-*.js
+
+# Editor & OS
+.DS_Store
+.vscode/
+*.swp
+*~
+*.bak
+
+# Build artifacts
+dist/
+build/
+*.tmp
