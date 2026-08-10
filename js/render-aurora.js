@@ -336,22 +336,22 @@ function renderAuroraUI(loc) {
       
       <div style="border-top: 1px solid rgba(77, 184, 212, 0.2); padding-top: 12px; margin-top: 12px;">
         <div class="kp-chart">
-          <canvas id="auroraKpCanvas"></canvas>
+          <canvas id="auroraKpCanvas" width="380" height="120"></canvas>
         </div>
         
         <div style="font-size: 12px; color: #888; text-align: center; margin-bottom: 12px;">過去12h | 未來36h <span style="color: #ff4444;">⬜ 紅框：22:00</span></div>
         
         <div class="gauge-grid">
           <div class="gauge-container">
-            <canvas id="auroraGaugeKp"></canvas>
+            <canvas id="auroraGaugeKp" width="90" height="90"></canvas>
             <div class="gauge-label">Kp 指數</div>
           </div>
           <div class="gauge-container">
-            <canvas id="auroraGaugeBz"></canvas>
+            <canvas id="auroraGaugeBz" width="90" height="90"></canvas>
             <div class="gauge-label">Bz (nT)</div>
           </div>
           <div class="gauge-container">
-            <canvas id="auroraGaugeBt"></canvas>
+            <canvas id="auroraGaugeBt" width="90" height="90"></canvas>
             <div class="gauge-label">Bt (nT)</div>
           </div>
         </div>
@@ -424,37 +424,11 @@ function renderAuroraUI(loc) {
     const gaugeBz = document.getElementById('auroraGaugeBz');
     const gaugeBt = document.getElementById('auroraGaugeBt');
     
-    if (kpCanvas) {
-      const kpRect = kpCanvas.getBoundingClientRect();
-      kpCanvas.width = kpRect.width;
-      kpCanvas.height = kpRect.height;
-      drawKpChart(kpCanvas, auroraKpValues);
-    }
-    
-    if (gaugeKp) {
-      const gaugeRect = gaugeKp.getBoundingClientRect();
-      const size = Math.min(gaugeRect.width, gaugeRect.height);
-      gaugeKp.width = size;
-      gaugeKp.height = size;
-      drawGauge(gaugeKp, currentKp, 0, 9);
-    }
-    
-    if (gaugeBz) {
-      const gaugeRect = gaugeBz.getBoundingClientRect();
-      const size = Math.min(gaugeRect.width, gaugeRect.height);
-      gaugeBz.width = size;
-      gaugeBz.height = size;
-      drawGauge(gaugeBz, -15 + Math.random() * 30, -50, 50);
-    }
-    
-    if (gaugeBt) {
-      const gaugeRect = gaugeBt.getBoundingClientRect();
-      const size = Math.min(gaugeRect.width, gaugeRect.height);
-      gaugeBt.width = size;
-      gaugeBt.height = size;
-      drawGauge(gaugeBt, 20 + Math.random() * 30, 0, 100);
-    }
-  }, 100);
+    if (kpCanvas && kpCanvas.width > 0) drawKpChart(kpCanvas, auroraKpValues);
+    if (gaugeKp && gaugeKp.width > 0) drawGauge(gaugeKp, currentKp, 0, 9);
+    if (gaugeBz && gaugeBz.width > 0) drawGauge(gaugeBz, -15 + Math.random() * 30, -50, 50);
+    if (gaugeBt && gaugeBt.width > 0) drawGauge(gaugeBt, 20 + Math.random() * 30, 0, 100);
+  }, 150);
 }
 
 // 切換地點
