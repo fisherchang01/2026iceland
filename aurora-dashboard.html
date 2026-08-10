@@ -199,8 +199,8 @@
     .gauges-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 6px;
-      margin-top: 6px;
+      gap: 4px;
+      margin-top: 3px;
     }
     
     .gauge-container {
@@ -212,12 +212,13 @@
       height: 100px;
       display: block;
       aspect-ratio: 1;
+      margin: 0;
     }
     
     .gauge-value {
       font-size: 24px;
       font-weight: 700;
-      margin-top: 2px;
+      margin-top: 0;
       color: #4db8d4;
       line-height: 1;
     }
@@ -225,13 +226,13 @@
     .gauge-label {
       font-size: 18px;
       color: #888;
-      margin-top: 1px;
+      margin-top: 0;
       font-weight: 600;
     }
     
     .weather-grid {
       display: grid;
-      grid-template-columns: 1fr;
+      grid-template-columns: 1fr 1fr;
       gap: 6px;
       margin-top: 6px;
     }
@@ -481,7 +482,7 @@ function drawKpChart(canvas, kpValues) {
   }
   
   const barWidth = Math.max(2, width / kpValues.length - 2);
-  const padding = 14;
+  const padding = 8;
   const chartHeight = height - padding * 2;
   
   kpValues.forEach((item, idx) => {
