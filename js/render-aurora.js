@@ -154,17 +154,17 @@ function renderAuroraUI(loc) {
         background: linear-gradient(135deg, rgba(77, 184, 212, 0.15) 0%, rgba(77, 184, 212, 0.05) 100%);
         border: 1px solid rgba(77, 184, 212, 0.2);
         border-radius: 12px;
-        padding: 16px;
+        padding: 12px;
         margin-bottom: 12px;
         position: relative;
         overflow: hidden;
       }
       
       .location-name {
-        font-size: 22px;
+        font-size: 18px;
         font-weight: 700;
         color: #4db8d4;
-        margin-bottom: 12px;
+        margin-bottom: 8px;
       }
       
       .location-emoji {
@@ -178,40 +178,40 @@ function renderAuroraUI(loc) {
       .metric-row {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 12px;
+        gap: 8px;
         margin-bottom: 12px;
       }
       
       .metric-box {
         background: rgba(77, 184, 212, 0.08);
-        padding: 12px;
+        padding: 8px;
         border-radius: 8px;
         text-align: center;
       }
       
       .metric-value {
-        font-size: 28px;
+        font-size: 20px;
         font-weight: 700;
         color: #4db8d4;
-        line-height: 1;
+        line-height: 1.2;
       }
       
       .metric-label {
-        font-size: 12px;
+        font-size: 11px;
         color: #888;
-        margin-top: 6px;
+        margin-top: 3px;
       }
       
       .kp-chart {
         background: rgba(15, 20, 25, 0.5);
         border-radius: 8px;
-        padding: 8px;
-        margin-bottom: 12px;
+        padding: 6px;
+        margin-bottom: 10px;
       }
       
       #auroraKpCanvas {
         width: 100%;
-        height: 140px;
+        height: 120px;
         display: block;
       }
       
@@ -224,19 +224,25 @@ function renderAuroraUI(loc) {
       
       .gauge-container {
         text-align: center;
+        aspect-ratio: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
       }
       
       #auroraGaugeBz, #auroraGaugeBt, #auroraGaugeKp {
         width: 100%;
-        height: 80px;
+        height: 100%;
+        max-width: 90px;
+        max-height: 90px;
         display: block;
-        aspect-ratio: 1;
       }
       
       .gauge-label {
-        font-size: 14px;
+        font-size: 12px;
         color: #888;
-        margin-top: 4px;
+        margin-top: 2px;
         font-weight: 600;
       }
       
@@ -251,20 +257,23 @@ function renderAuroraUI(loc) {
         background: rgba(77, 184, 212, 0.08);
         padding: 10px;
         border-radius: 8px;
-        display: grid;
-        grid-template-columns: auto 1fr;
+        display: flex;
+        flex-direction: column;
         align-items: center;
-        gap: 8px;
+        justify-content: center;
+        text-align: center;
       }
       
       .weather-emoji {
-        font-size: 20px;
+        font-size: 18px;
+        margin-bottom: 4px;
       }
       
       .weather-label {
-        font-size: 12px;
+        font-size: 11px;
         color: #888;
         line-height: 1.2;
+        margin-bottom: 2px;
       }
       
       .weather-value {
@@ -354,45 +363,33 @@ function renderAuroraUI(loc) {
       <div class="weather-grid">
         <div class="weather-item">
           <div class="weather-emoji">🌡️</div>
-          <div>
-            <div class="weather-label">氣溫</div>
-            <div class="weather-value">${auroraWeather ? auroraWeather.temperature_2m.toFixed(0) : '--'}°C</div>
-          </div>
+          <div class="weather-label">氣溫</div>
+          <div class="weather-value">${auroraWeather ? auroraWeather.temperature_2m.toFixed(0) : '--'}°C</div>
         </div>
         <div class="weather-item">
           <div class="weather-emoji">💨</div>
-          <div>
-            <div class="weather-label">風速</div>
-            <div class="weather-value">${auroraWeather ? auroraWeather.wind_speed_10m.toFixed(1) : '--'} m/s</div>
-          </div>
+          <div class="weather-label">風速</div>
+          <div class="weather-value">${auroraWeather ? auroraWeather.wind_speed_10m.toFixed(1) : '--'} m/s</div>
         </div>
         <div class="weather-item">
           <div class="weather-emoji">☁️</div>
-          <div>
-            <div class="weather-label">總雲</div>
-            <div class="weather-value">${auroraWeather ? auroraWeather.cloud_cover : '--'}%</div>
-          </div>
+          <div class="weather-label">總雲</div>
+          <div class="weather-value">${auroraWeather ? auroraWeather.cloud_cover : '--'}%</div>
         </div>
         <div class="weather-item">
           <div class="weather-emoji">⬇️</div>
-          <div>
-            <div class="weather-label">低雲</div>
-            <div class="weather-value">${auroraWeather ? auroraWeather.cloud_cover_low : '--'}%</div>
-          </div>
+          <div class="weather-label">低雲</div>
+          <div class="weather-value">${auroraWeather ? auroraWeather.cloud_cover_low : '--'}%</div>
         </div>
         <div class="weather-item">
           <div class="weather-emoji">➡️</div>
-          <div>
-            <div class="weather-label">中雲</div>
-            <div class="weather-value">${auroraWeather ? auroraWeather.cloud_cover_mid : '--'}%</div>
-          </div>
+          <div class="weather-label">中雲</div>
+          <div class="weather-value">${auroraWeather ? auroraWeather.cloud_cover_mid : '--'}%</div>
         </div>
         <div class="weather-item">
           <div class="weather-emoji">⬆️</div>
-          <div>
-            <div class="weather-label">高雲</div>
-            <div class="weather-value">${auroraWeather ? auroraWeather.cloud_cover_high : '--'}%</div>
-          </div>
+          <div class="weather-label">高雲</div>
+          <div class="weather-value">${auroraWeather ? auroraWeather.cloud_cover_high : '--'}%</div>
         </div>
       </div>
     </div>
@@ -421,10 +418,36 @@ function renderAuroraUI(loc) {
     const gaugeBz = document.getElementById('auroraGaugeBz');
     const gaugeBt = document.getElementById('auroraGaugeBt');
     
-    if (kpCanvas) drawKpChart(kpCanvas, auroraKpValues);
-    if (gaugeKp) drawGauge(gaugeKp, currentKp, 0, 9);
-    if (gaugeBz) drawGauge(gaugeBz, -15 + Math.random() * 30, -50, 50);
-    if (gaugeBt) drawGauge(gaugeBt, 20 + Math.random() * 30, 0, 100);
+    if (kpCanvas) {
+      const kpRect = kpCanvas.getBoundingClientRect();
+      kpCanvas.width = kpRect.width;
+      kpCanvas.height = kpRect.height;
+      drawKpChart(kpCanvas, auroraKpValues);
+    }
+    
+    if (gaugeKp) {
+      const gaugeRect = gaugeKp.getBoundingClientRect();
+      const size = Math.min(gaugeRect.width, gaugeRect.height);
+      gaugeKp.width = size;
+      gaugeKp.height = size;
+      drawGauge(gaugeKp, currentKp, 0, 9);
+    }
+    
+    if (gaugeBz) {
+      const gaugeRect = gaugeBz.getBoundingClientRect();
+      const size = Math.min(gaugeRect.width, gaugeRect.height);
+      gaugeBz.width = size;
+      gaugeBz.height = size;
+      drawGauge(gaugeBz, -15 + Math.random() * 30, -50, 50);
+    }
+    
+    if (gaugeBt) {
+      const gaugeRect = gaugeBt.getBoundingClientRect();
+      const size = Math.min(gaugeRect.width, gaugeRect.height);
+      gaugeBt.width = size;
+      gaugeBt.height = size;
+      drawGauge(gaugeBt, 20 + Math.random() * 30, 0, 100);
+    }
   }, 100);
 }
 
