@@ -339,10 +339,7 @@ function renderAuroraUI(loc) {
           <canvas id="auroraKpCanvas"></canvas>
         </div>
         
-        <div style="font-size: 12px; color: #888; text-align: center; margin-bottom: 12px;">
-          <div>📊 <strong>Kp 指數</strong> 柱狀圖（過去12h | 未來36h）</div>
-          <div style="font-size: 10px; color: #aaa; margin-top: 4px;">Kp ≥5 開始有極光機會｜Kp ≥7 極光機會很高 🌌 <span style="color: #ff4444;">⬜ 紅框：22:00 觀測窗口</span></div>
-        </div>
+        <div style="font-size: 12px; color: #888; text-align: center; margin-bottom: 12px;">過去12h | 未來36h <span style="color: #ff4444;">⬜ 紅框：22:00</span></div>
         
         <div class="gauge-grid">
           <div class="gauge-container">
