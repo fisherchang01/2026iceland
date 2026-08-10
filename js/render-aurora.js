@@ -339,7 +339,7 @@ function renderAuroraUI(loc) {
           <canvas id="auroraKpCanvas"></canvas>
         </div>
         
-        <div style="font-size: 12px; color: #888; text-align: center; margin-bottom: 12px;">過去12h | 未來36h</div>
+        <div style="font-size: 12px; color: #888; text-align: center; margin-bottom: 12px;">過去12h | 未來36h <span style="color: #ff4444;">⬜ 紅框：22:00 觀測窗口</span></div>
         
         <div class="gauge-grid">
           <div class="gauge-container">
@@ -354,6 +354,12 @@ function renderAuroraUI(loc) {
             <canvas id="auroraGaugeBt"></canvas>
             <div class="gauge-label">Bt (nT)</div>
           </div>
+        </div>
+        
+        <div style="font-size: 10px; color: #666; margin-top: 8px; line-height: 1.6;">
+          <strong>磁場參數說明</strong><br>
+          🔵 <strong>Bz</strong> = 行星際磁場南北分量｜負值（向南）時極光活動更活躍<br>
+          🔵 <strong>Bt</strong> = 行星際磁場總強度｜高值表示磁場擾動
         </div>
       </div>
     </div>
@@ -483,6 +489,39 @@ function drawKpChart(canvas, kpValues) {
   const padding = 8;
   const chartHeight = height - padding * 2;
   
+  // 計算每天 22:00 的位置（每3小時一個點，24小時 = 8個點）
+  // 過去12h(-12, -9, -6, -3) + 現在(0) + 未來(+3, +6, +9, +12, +15, +18, +21, +24, +27, +30, +33, +36)
+  // 22:00 大約在 idx=12 和 idx=20 的位置（相隔8個點，即24小時）
+  const now = new Date();
+  const currentHour = now.getHours();
+  const hoursTill22 = (22 - currentHour + 24) % 24;
+  const idx22Today = Math.round(hoursTill22 / 3);
+  const idx22Tomorrow = idx22Today + 8; // 24小時後
+  
+  // 繪製 22:00 紅框（觀測窗口：21:00-23:00）
+  ctx.strokeStyle = '#ff4444';
+  ctx.lineWidth = 2;
+  ctx.setLineDash([4, 4]);
+  
+  // 今天 22:00
+  if (idx22Today >= 0 && idx22Today < kpValues.length) {
+    const x = padding + (width - padding * 2) * idx22Today / (kpValues.length - 1);
+    ctx.beginPath();
+    ctx.rect(x - 6, padding - 2, 12, chartHeight + 4);
+    ctx.stroke();
+  }
+  
+  // 明天 22:00
+  if (idx22Tomorrow >= 0 && idx22Tomorrow < kpValues.length) {
+    const x = padding + (width - padding * 2) * idx22Tomorrow / (kpValues.length - 1);
+    ctx.beginPath();
+    ctx.rect(x - 6, padding - 2, 12, chartHeight + 4);
+    ctx.stroke();
+  }
+  
+  ctx.setLineDash([]);
+  
+  // 繪製柱狀圖
   kpValues.forEach((item, idx) => {
     const x = padding + (width - padding * 2) * idx / (kpValues.length - 1);
     const kpHeight = (item.kp / 9) * chartHeight;
@@ -495,6 +534,7 @@ function drawKpChart(canvas, kpValues) {
     ctx.fillRect(x - barWidth / 2, height - padding - kpHeight, barWidth, kpHeight);
   });
   
+  // 繪製時間標籤
   ctx.fillStyle = '#666';
   ctx.font = '9px Noto Sans SC';
   ctx.textAlign = 'center';
@@ -573,6 +613,13 @@ function drawGauge(canvas, value, min, max) {
   ctx.beginPath();
   ctx.arc(centerX, centerY, 3.5, 0, 2 * Math.PI);
   ctx.stroke();
+  
+  // 繪製數值
+  ctx.fillStyle = '#4db8d4';
+  ctx.font = 'bold 16px Noto Sans SC';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(value.toFixed(1), centerX, centerY);
 }
 
 // 在 init.js 中調用此函數
