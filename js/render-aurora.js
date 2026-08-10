@@ -156,9 +156,21 @@ function renderAuroraUI(loc, sunsetTime) {
   // 使用行程數據中的日落時間，若無則顯示「-」
   const sunsetDisplay = sunsetTime || '-';
   console.log('[Aurora Debug] renderAuroraUI called with sunsetTime:', sunsetTime, 'display:', sunsetDisplay);
-  const currentKp = auroraKpValues.length > 0 ? auroraKpValues[Math.floor(auroraKpValues.length / 2)].kp : 3;
+  
+  // 獲取 22:00 時刻的 KP 指數預測（最佳觀測時間）
+  // 優先找 22:00，次選 >= 20:00，最後降級使用中間值
+  let current22Kp = 3;
+  if (auroraKpValues.length > 0) {
+    const target22 = auroraKpValues.find(v => v.time.getHours() === 22) ||
+                     auroraKpValues.find(v => v.time.getHours() >= 21) ||
+                     auroraKpValues.find(v => v.time.getHours() >= 20) ||
+                     auroraKpValues[Math.floor(auroraKpValues.length / 2)];
+    current22Kp = target22?.kp || 3;
+    console.log('[Aurora Debug] 22:00 KP value:', current22Kp, 'from time:', target22?.time?.toLocaleTimeString());
+  }
+  
   const cloudCover = auroraWeather ? auroraWeather.cloud_cover : 50;
-  const auroraChance = calculateAuroraChance(currentKp, cloudCover);
+  const auroraChance = calculateAuroraChance(current22Kp, cloudCover);
   
   const updateTime = auroraLastUpdate ? 
     `${auroraLastUpdate.getHours().toString().padStart(2, '0')}:${auroraLastUpdate.getMinutes().toString().padStart(2, '0')}` :
@@ -390,7 +402,7 @@ function renderAuroraUI(loc, sunsetTime) {
       <div class="metric-row">
         <div class="metric-box">
           <div class="metric-value">${auroraChance}%</div>
-          <div class="metric-label">極光機率</div>
+          <div class="metric-label">極光機率<br/><span style="font-size: 10px; color: #888;">@22:00</span></div>
         </div>
         <div class="metric-box">
           <div class="metric-value">${sunsetDisplay}</div>
@@ -404,6 +416,8 @@ function renderAuroraUI(loc, sunsetTime) {
         </div>
         
         <div style="font-size: 12px; color: #888; text-align: center; margin-bottom: 12px;">過去12h | 未來36h <span style="color: #ff4444;">⬜ 紅框：22:00</span></div>
+        
+        <div style="font-size: 11px; color: #666; text-align: center; margin-bottom: 8px; font-style: italic;">下方數據基於 22:00 時刻預測</div>
         
         <div class="gauge-grid">
           <div class="gauge-container">
@@ -475,7 +489,7 @@ function renderAuroraUI(loc, sunsetTime) {
     const gaugeBt = document.getElementById('auroraGaugeBt');
     
     if (kpCanvas && kpCanvas.width > 0) drawKpChart(kpCanvas, auroraKpValues);
-    if (gaugeKp && gaugeKp.width > 0) drawGauge(gaugeKp, currentKp, 0, 9);
+    if (gaugeKp && gaugeKp.width > 0) drawGauge(gaugeKp, current22Kp, 0, 9);
     if (gaugeBz && gaugeBz.width > 0) drawGauge(gaugeBz, -15 + Math.random() * 30, -50, 50);
     if (gaugeBt && gaugeBt.width > 0) drawGauge(gaugeBt, 20 + Math.random() * 30, 0, 100);
   }, 150);
