@@ -355,47 +355,45 @@ function renderAuroraUI(loc) {
             <div class="gauge-label">Bt (nT)</div>
           </div>
         </div>
-        
-        <div style="font-size: 10px; color: #666; margin-top: 8px; line-height: 1.6;">
-          <strong>磁場參數說明</strong><br>
-          🔵 <strong>Bz</strong> = 行星際磁場南北分量｜負值（向南）時極光活動更活躍<br>
-          🔵 <strong>Bt</strong> = 行星際磁場總強度｜高值表示磁場擾動
-        </div>
       </div>
     </div>
     
     <div>
       <div style="font-size: 12px; color: #888; margin-bottom: 8px; font-weight: 600;">🌤️ 當地天氣</div>
       <div class="weather-grid">
-        <div class="weather-item">
-          <div class="weather-emoji">🌡️</div>
-          <div class="weather-label">氣溫</div>
-          <div class="weather-value">${auroraWeather ? auroraWeather.temperature_2m.toFixed(0) : '--'}°C</div>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <div class="weather-item">
+            <div class="weather-emoji">🌡️</div>
+            <div class="weather-label">氣溫</div>
+            <div class="weather-value">${auroraWeather ? auroraWeather.temperature_2m.toFixed(0) : '--'}°C</div>
+          </div>
+          <div class="weather-item">
+            <div class="weather-emoji">💨</div>
+            <div class="weather-label">風速</div>
+            <div class="weather-value">${auroraWeather ? auroraWeather.wind_speed_10m.toFixed(1) : '--'} m/s</div>
+          </div>
+          <div class="weather-item">
+            <div class="weather-emoji">☁️</div>
+            <div class="weather-label">總雲</div>
+            <div class="weather-value">${auroraWeather ? auroraWeather.cloud_cover : '--'}%</div>
+          </div>
         </div>
-        <div class="weather-item">
-          <div class="weather-emoji">💨</div>
-          <div class="weather-label">風速</div>
-          <div class="weather-value">${auroraWeather ? auroraWeather.wind_speed_10m.toFixed(1) : '--'} m/s</div>
-        </div>
-        <div class="weather-item">
-          <div class="weather-emoji">☁️</div>
-          <div class="weather-label">總雲</div>
-          <div class="weather-value">${auroraWeather ? auroraWeather.cloud_cover : '--'}%</div>
-        </div>
-        <div class="weather-item">
-          <div class="weather-emoji">⬇️</div>
-          <div class="weather-label">低雲</div>
-          <div class="weather-value">${auroraWeather ? auroraWeather.cloud_cover_low : '--'}%</div>
-        </div>
-        <div class="weather-item">
-          <div class="weather-emoji">➡️</div>
-          <div class="weather-label">中雲</div>
-          <div class="weather-value">${auroraWeather ? auroraWeather.cloud_cover_mid : '--'}%</div>
-        </div>
-        <div class="weather-item">
-          <div class="weather-emoji">⬆️</div>
-          <div class="weather-label">高雲</div>
-          <div class="weather-value">${auroraWeather ? auroraWeather.cloud_cover_high : '--'}%</div>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <div class="weather-item">
+            <div class="weather-emoji">⬆️</div>
+            <div class="weather-label">高雲</div>
+            <div class="weather-value">${auroraWeather ? auroraWeather.cloud_cover_high : '--'}%</div>
+          </div>
+          <div class="weather-item">
+            <div class="weather-emoji">➡️</div>
+            <div class="weather-label">中雲</div>
+            <div class="weather-value">${auroraWeather ? auroraWeather.cloud_cover_mid : '--'}%</div>
+          </div>
+          <div class="weather-item">
+            <div class="weather-emoji">⬇️</div>
+            <div class="weather-label">低雲</div>
+            <div class="weather-value">${auroraWeather ? auroraWeather.cloud_cover_low : '--'}%</div>
+          </div>
         </div>
       </div>
     </div>
