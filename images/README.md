@@ -41,7 +41,21 @@
 
 ## 維護原則
 
+### 目錄組織
+- **景點圖片只能在 `spots/` 目錄**：必須組織在 `images/spots/thumb/` 和 `images/spots/medium/`，不應在根目錄 `images/` 中放景點圖片
+- **根目錄應只放**：App 圖示（`app-icon-*`）和 `README.md`；其他圖片分門別類放入對應子目錄
+
+### 檔案格式
 - 網站使用 WebP 景點圖與路線圖，不保留同內容 JPG／PNG
+- WebP 版本存在時，刪除對應的 PNG／JPG 重複檔案
+- 孤立的 PNG 文件（無 WebP 對應版本）應改用 WebP 重新製作或刪除
+
+### 操作流程
 - 刪除資料前先搜尋檔名，確認 `data/`、`index.html` 與 CSS 沒有引用
 - 照片是橫式還是直式，網站會在載入完成的當下自動判斷（看實際尺寸），不用另外登記維護清單
 - 不把攝影原檔、編輯暫存、下載壓縮包或重複備份提交到 Repository
+
+### 隱私與安全
+- ⚠️ 個人敏感檔案（旅行文件、機票 PDF 等）不應上傳到公開 Repository
+- 使用 `.gitignore` 排除 `docs/*.pdf` 與其他敏感檔案
+- 詳見 [安全與隱私指南](../docs/SECURITY.md)

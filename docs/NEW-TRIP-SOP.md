@@ -14,6 +14,9 @@
 3. 修改 `data/trip-details.js`：每日景點、交通、住宿、提醒與路線圖。
 4. 修改 `data/budget-config.js`：同行者、幣別、匯率與本機儲存名稱。
 5. 修改 `data/docs-content.js`，並刪除 `docs/` 中不屬於新旅程的文件。
+   
+   > ⚠️ **重要隱私提醒**：不要上傳個人敏感文件（機票 PDF、護照掃描、租車合約等）到公開 Repository。這些檔案應存在本地，不提交到 git。已透過 `.gitignore` 排除 `docs/*.pdf`，但應確保 `.gitignore` 設定無誤。詳見 [安全與隱私指南](SECURITY.md)。
+
 6. 依需要替換 `data/travel-content.js`、`data/other-content.js` 與 `data/catalog-config.js`。
 7. 修改 `manifest.webmanifest` 的網站名稱、簡稱、說明與色彩；需要時替換 `images/app-icon-192.png`、`app-icon-512.png`。
 
