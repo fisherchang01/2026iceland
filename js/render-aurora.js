@@ -60,17 +60,25 @@ async function renderAuroraDashboard() {
     generateMockKpData();
   }
   
-  // 取得今日日落時間（從行程數據中）
+  // 取得日落時間（從行程數據中）
+  // 優先查找今天的資料；若不在旅行期間，改用第一個旅行日期
   let sunsetTime = null;
-  if (typeof TRIP_DATA !== 'undefined' && TRIP_DATA.days) {
+  if (typeof TRIP_DATA !== 'undefined' && TRIP_DATA.days && TRIP_DATA.days.length > 0) {
     const today = new Date();
     const todayStr = today.getFullYear() + '-' + 
                      String(today.getMonth() + 1).padStart(2, '0') + '-' + 
                      String(today.getDate()).padStart(2, '0');
     
-    const todayData = TRIP_DATA.days.find(d => d.isoDate === todayStr);
-    if (todayData && todayData.aurora && todayData.aurora.sunset) {
-      sunsetTime = todayData.aurora.sunset;
+    // 首先嘗試查找今天的資料
+    let dayData = TRIP_DATA.days.find(d => d.isoDate === todayStr);
+    
+    // 如果不在旅行期間，改用第一個旅行日期（展示用）
+    if (!dayData) {
+      dayData = TRIP_DATA.days[0];
+    }
+    
+    if (dayData && dayData.aurora && dayData.aurora.sunset) {
+      sunsetTime = dayData.aurora.sunset;
     }
   }
   
