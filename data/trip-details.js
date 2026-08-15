@@ -1,292 +1,1050 @@
-// ===== TRIP DATA =====
+/**
+ * Trip Details - 旅程数据
+ * 
+ * 颜色标记说明：
+ * 文字中可能包含颜色标记格式：{#RRGGBB}文字{/color}
+ * 例如：{#FF0000}重要{/color} 表示红色的"重要"字样
+ * 
+ * 在网站上显示时，可用正则表达式解析：
+ * text.replace(/\{#([0-9A-Fa-f]{6})\}(.*?)\{\/color\}/g, '<span style="color: #$1;">$2</span>')
+ */
+
 const TRIP = {
-  day0: {
-    num:'0', dateLabel:'10月3日（周六）→ 10月4日（周日）', title:'飞越北境·初抵冰岛', transit:true,
-    routeMapImg:'route-day0.webp',
-    flights:[
-      { airline:'国泰航空', flightNo:'CX635', from:'香港 HKG T1', to:'新加坡樟宜 SIN T4', dep:'15:05', arr:'19:05', duration:'约4小时', date:'10月3日', layoverAfter:'约 2 小时 30 分钟' },
-      { airline:'芬兰航空', flightNo:'AY132', from:'新加坡樟宜 SIN T1', to:'赫尔辛基万塔 HEL', dep:'21:35', arr:'06:00+1', duration:'约12小时25分', date:'10月3日→10月4日', note:'当地10月4日抵达', layoverAfter:'约 1 小时 10 分钟（转机时间较紧凑）' },
-      { airline:'芬兰航空', flightNo:'AY991', from:'赫尔辛基万塔 HEL', to:'凯夫拉维克 KEF', dep:'07:10', arr:'07:50', duration:'约3小时40分', date:'10月4日' }
+  "day0": {
+    "num": "0",
+    "dateLabel": "10月3日（周六）→ 10月4日（周日）",
+    "title": "飞越北境·初抵冰岛",
+    "transit": true,
+    "routeMapImg": "route-day0.webp",
+    "flights": [
+      {
+        "airline": "国泰航空",
+        "flightNo": "CX635",
+        "from": "香港 HKG T1",
+        "to": "新加坡樟宜 SIN T4",
+        "dep": "15:05",
+        "arr": "19:05",
+        "duration": "约4小时",
+        "date": "10月3日",
+        "layoverAfter": "约 2 小时 30 分钟"
+      },
+      {
+        "airline": "芬兰航空",
+        "flightNo": "AY132",
+        "from": "新加坡樟宜 SIN T1",
+        "to": "赫尔辛基万塔 HEL",
+        "dep": "21:35",
+        "arr": "06:00+1",
+        "duration": "约12小时25分",
+        "date": "10月3日→10月4日",
+        "note": "当地10月4日抵达",
+        "layoverAfter": "约 1 小时 10 分钟（转机时间较紧凑）"
+      },
+      {
+        "airline": "芬兰航空",
+        "flightNo": "AY991",
+        "from": "赫尔辛基万塔 HEL",
+        "to": "凯夫拉维克 KEF",
+        "dep": "07:10",
+        "arr": "07:50",
+        "duration": "约3小时40分",
+        "date": "10月4日"
+      }
     ],
-    note:'一、香港机场贵宾室：65号玉衡堂（优先）、33号逸连堂、1号寰宇堂。\n二、新加坡机场：Qantas或英国航空贵宾室，T1航厦D5登机口。\n三、赫尔辛基机场：芬兰航空申根区3楼22号登机口；回程为非申根区52号登机口。'
+    "note": "一、香港机场贵宾室：65号玉衡堂（优先）、33号逸连堂、1号寰宇堂。\n二、新加坡机场：Qantas或英国航空贵宾室，T1航厦D5登机口。\n三、赫尔辛基机场：芬兰航空申根区3楼22号登机口；回程为非申根区52号登机口。"
   },
-  day1: {
-    num:'1', dateLabel:'10月4日（周日）', title:'雷市初见·地热启程',
-    routeMapImg:'route-day1.webp',
-    driveSummary: { total:'约 165 km', time:'约 2小时45分钟（不含景点停留，市区路段为步行）' },
-    hotel:{ name:'South Central Country Apartment 民宿', note:'黄金圈地区，舒适乡村民宿环境', map:'South Central Country Apartment Iceland' },
-    aurora:{ location:{ name:'南部民宿（Selfoss 一带）', lat:63.93, lon:-20.85 },
-      sunrise:'07:57', sunset:'18:52', kpIndex:3, cloudCover:30, probability:'medium',
-      summary:'云量偏低、KP指数中等，示例情境下观测机会中等', updatedAt:'示例数值，出发前请再核实预报' },
-    spots: [
-      { icon:'🛬', name:'冰岛机场 KEF Airport', tags:['机场'],
-        desc:'欢迎来到冰岛！抵达机场后可先在入境免税店采买酒类，出境后搭接驳车前往 MyCar 办理租车手续，正式展开冰岛自驾之旅。',
-        deepDesc:'机场很小，进入主楼之后跟着Arrival的标志走，在一个特别细长的走廊会有passport control检查，非欧盟国家护照会经历超长入境排队，过关本身很快，就问一些很基础的问题，之后往exit to Iceland指引的方向走就好了。\n \n一、机场位置：凯夫拉维克国际机场（KEF）是游客入境冰岛的第一站，位于冰岛西南部雷克雅内斯半岛，距离蓝湖温泉约20公里，距离首都雷克雅未克约50公里。\n二、入境系统：欧盟的入出境系统（EES）是申根国通用的数位化边境管理系统，已正式启用，全面取代过去人工护照盖章，会自动记录非申根国籍旅客进出申根区的时间地点，并计算剩余合法停留天数。\n三、免税店购物：入境大厅行李提取处旁设有一间大型免税店，出关前务必在此买齐酒类，价格比市区划算不少。\n四、ATM取钱：下飞机等行李的输送带附近就有ATM柜员机，是下飞机后最快能到的一台；如果人多，出了海关关口后的换钱柜台也有ATM可用。\n五、租车：领完行李、走出入境大厅后，寻找写着 "National, Enterprise, Alamo" 的告示牌，工作人员会引导前往 MyCar 站点搭接驳车，每10–15分钟一班， mycar.is 進行的預訂由 Enterprise經營。五、\n在机场找到P2停车场出来看到四个人在丢手绢的雕塑，就有Car Rental Shuttle的指示牌，沿着路一直走就有各种租车公司的牌子，有两个排队点，找到对应公司去排队，大概等10分钟就有来接的免费摆渡车。\n六、道路税：金额6,950 ISK，取车时缴纳；保险为Zero Excess（自负额0），已涵盖碰撞、挡风玻璃裂痕、强风吹门受损、风砂损伤、碎石损伤、刮伤/凹痕、轮胎保护等，但不包含底盘损伤及轮圈。\n七、邮筒！来世界的尽头怎么能忘记寄明信片呢！邮筒就在p5附近，过安检之后，一直延右手走，走过书店，再走过另一家店，看到要下楼的地方（那是入境的地方），就有一个红色邮筒，在那个很大的baker后面那里。',
-        toilet:'机场内免费',
-        map:'Keflavik International Airport',
-        nextStop:{ type:'drive', text:'🚗 前往雷克雅未克市区', detail:'约 50 km · 约 45 分钟' } , images:['kefairport-01.webp', 'kefairport-02.webp', 'kefairport-03.webp', 'kefairport-04.webp', 'kefairport-05.webp', 'kefairport-06.webp']},
-      { icon:'⛪', name:'哈尔格林姆教堂 Hallgrímskirkja', label:'A', images:['hallgrimskirkja.webp','Hallgrímskirkja-1.webp','Hallgrímskirkja-2.webp','Hallgrímskirkja-3.webp','Hallgrímskirkja-4.webp','Hallgrímskirkja-5.webp','Hallgrímskirkja-6.webp','Hallgrímskirkja-7.webp'], tags:['花儿与少年'],
-        desc:'冰岛首都雷克雅未克的著名地标，外观以火山爆发所呈现的玄武岩熔岩流为主要意象，前卫设计让人很难与传统欧洲教堂联想在一起。',
-        deepDesc:'一、教堂高达73公尺，是冰岛最大的教堂，也是全国第六高建筑。外观以玄武岩熔岩流为意象，有人说很像NASA太空梭，是100%观光客都会造访的打卡景点。\n二、教堂前的广场立着一尊青铜雕像，是1930年美国为庆祝冰岛建国千年所赠，雕的是冰岛独立运动之父雷弗尔·西格松。\n三、走进教堂内部，不像欧洲传统教堂迎面而来大大的十字架与花窗玻璃，反而是明亮极简的味道，符合北欧风设计。巨大的管风琴不时传来沉稳悠扬的琴声，吸引游客忍不住坐下来聆听。\n四、教堂入口旁有个小小的贩售区，卖冰岛风景明信片和纪念品；购票（成人1400 ISK，可刷卡）就能搭电梯登顶，欣赏雷克雅未克市容，全程没有人收票或管制。',
-        tips:'教堂周边原先有一些免费停车场，若找不到，亦有许多收费停车场。\n厕所：教堂内免费。',
-        map:'Hallgrimskirkja Reykjavik',
-        nextStop:{ type:'walk', text:'🚶 沿彩虹步道步行前往彩虹街', detail:'约 5 分钟步行' } },
-      { icon:'🌈', name:'彩虹街与购物主街 Laugavegur', label:'B', tags:['花儿与少年'],
-        desc:'从大教堂正门沿彩虹步道缓坡下行，直接汇入热闹购物主街，一路逛至旧港边的哈帕音乐厅。',
-        deepDesc:'一、彩虹街位在雷克雅未克中心地段，是冰岛精华中的精华——想吃冰岛美食、买伴手礼，甚至想找间酒吧、餐酒馆坐下来，通通都在这里解决，不只好拍还很好玩。\n二、劳德威格尔购物街（Laugavegur）是冰岛最古老、也最热闹繁华的一条街，纪念品种类比沿途各景点附设商店齐全得多：蓝湖温泉保养品、各种羊毛制品、帕芬鸟造型娃娃、冰箱贴、明信片、巧克力应有尽有，只是价格不算便宜。\n三、冰岛不像欧洲其他国家可以买精品（LV、香奈儿并不适合来这里找），这里主要是 Geysir、Icewear、Lopapeysa、66°North 这类本土保暖品牌。\n四、花儿与少年同款店：MJÚK 帽子店（各种彩色羊毛帽子围巾）、Icewear 分店（冰岛常见连锁户外品牌）、Valdís 冰淇淋店、Icelandic Street Food（羊肉汤跟海鲜汤面包碗）。',
-        map:'Laugavegur Reykjavik',
-        nextStop:{ type:'walk', text:'🚶 步行前往哈帕音乐厅', detail:'约 10–15 分钟步行' } , images:['laugavegur-01.webp', 'laugavegur-02.webp', 'laugavegur-03.webp', 'laugavegur-04.webp', 'laugavegur-05.webp']},
-      { icon:'🎼', name:'哈帕音乐厅 Harpa', label:'C', images:['harpa.webp','Harpa-1.webp','Harpa-2.webp','Harpa-3.webp','Harpa-4.webp','Harpa-5.webp','Harpa-6.webp','Harpa-7.webp'], tags:['花儿与少年'],
-        desc:'冰岛最重要的艺术场地，外观使用不规则玻璃片，灵感同样来自冰岛的六边形玄武岩地质。',
-        deepDesc:'一、哈帕音乐厅外观使用不规则玻璃片作为主要材料，灵感来源是冰岛的六边形玄武岩。不同材质、不同颜色的玻璃片在阳光洒下时非常独特，随光线和天气变化都会有所不同，内部阳光折射进来的光影也很美。晚上还会亮起LED灯，幸运的话可以同时看到音乐厅跟极光，是白天晚上来都美的建筑。\n二、太阳航海者：雷克雅未克海岸线上的一座雕塑，又称维京船骨架，象征探索和冒险精神，也是冰岛航海历史的象征，距离哈帕音乐厅很近，散步就能到。冰岛历史和维京人密不可分——公元9世纪维京人首次抵达冰岛，是这片土地的第一批定居者。也有人说太阳航海者是一艘梦想之船，象征光明与希望。',
-        map:'Harpa Reykjavik',
-        nextStop:{ type:'drive', text:'🚗 前往辛格维利尔国家公园', detail:'约 50 km · 约 50 分钟' } },
-      { icon:'🚶', name:'回程路线：海港与托宁湖', tags:[], isOptional:true, images:['Tjornin-1.webp','Tjornin-2.webp','Tjornin-4.webp'],
-        desc:'离开哈帕音乐厅后，不走回头路，改沿旧港区海滨及托宁湖，徒步感受不同路径返回大教堂。',
-        deepDesc:'一、托宁湖是雷克雅未克市内最大的湖泊，沿湖畔走一圈，好多天鹅、海鸥、野鸭漫游其中，有些游客还会带饲料或面包来场喂食秀，景色相当美。\n二、托宁湖算是比较小众的冰岛秘境，不是每个到雷克雅未克的人都会去。湖里有超多天鹅、鸭子，很多人会直接带饲料或面包来喂食，所以被当地人称为「世界最大面包汤」。' },
-      { icon:'🏞️', name:'辛格维利尔国家公园 Þingvellir', label:'D', images:['thingvellir.webp','thingvellir-alt-1.webp','thingvellir-alt-2.webp','thingvellir-alt-3.webp','thingvellir-alt-4.webp','thingvellir-alt-5.webp','pingvellir-1.webp','pingvellir-2.webp','pingvellir-3.webp','pingvellir-4.webp','pingvellir-5.webp','oxararfoss-1.webp'], tags:['花儿与少年','世界遗产','火山','喷泉'],
-        desc:'游客可在北美板块与欧亚板块之间行走，这里也是冰岛国会的诞生地，历史可追溯至西元930年。',
-        deepDesc:'一、建议路线：车停P1停车场，以游客中心为起点，步行经过欧美板块交界、全世界最早的议会遗址、法律石 Lögberg、辛格瓦拉教堂、冰岛总理夏季官邸等景点。\n二、欧美板块交界：这里是欧亚板块与北美板块海平面上唯一的交会处——一边是美洲、另一边是欧洲，两大板块每年以约2.5公分的速度撕裂，形成壮观的大裂谷地貌，经过一亿多年才出现现在的大西洋。地壳长期拉张，形成一条条向外打开的裂谷，能看到明显的岩壁、高低落差和狭长谷地。阿尔曼纳峡谷（Almannagjá）从游客中心出发，沿步道下行进入这座壮观的断层峡谷，两旁高耸的岩壁即为板块交界处。\n三、议会遗址：最早的议会地点就在名为 Lögberg（法律石）的巨石周围，也就是插着冰岛国旗的那块巨石区域。公元930年维京人在此建立世界最早的议会之一，园区被联合国教科文组织列为世界文化遗产——这里岩壁天然形成的回音效果，让所有人都能听清演讲者的声音。法律石是法官、议员与群众「集会宣法」的讲坛，「站上这里说出的话，全冰岛人都听得到。」\n四、Hakið观景台：可以俯瞰整个辛格维利尔，除了远眺一望无际的山脉湖泊，还能看到建于1859年的辛格维利尔教堂，旁边的农舍则是冰岛总理夏季官邸。\n五、黄金大裂缝 Silfra：阿尔曼纳陡崖高30米，Silfra裂缝能见度达100米，议会湖存有全球唯一的天然鳟鱼种群。Silfra是被冰川融水经过地下熔岩过滤30~100年后所填满的大裂缝，是世界上唯一可以在两个板块（欧亚板块和北美板块）间潜水或浮潜的位置，因此许多人会参加「Silfra裂缝潜水」行程，由专业导游带领探索。\n六、延伸景点──奥克萨瀑布（Öxarárfoss）：沿步道往北，或开车到P2停车场，可到达隐藏在裂缝峡谷间、落差约13米的小巧瀑布，虽不算最厉害，但小而美、乾净清澈，值得顺路拍照。',
-        tips:'共有五个收费停车场（P1、P2、P3、P4、P5），ISK 1000/天。\n推荐将车停在P1（游客中心）或P5（近潜水集合点）或P2（Öxarárfoss瀑布）。',
-        toilet:'游客中心 200 ISK。',
-        map:'Thingvellir National Park Iceland',
-        nextStop:{ type:'drive', text:'🚗 前往 Kerið 火山口湖', detail:'约 30 km · 约 30 分钟' } },
-      { icon:'🌀', name:'火山口湖 Kerið', label:'E', images:['kerid.webp','kerid-alt-1.webp','kerid-alt-2.webp','kerid-alt-3.webp','kerid-alt-4.webp','kerid-alt-5.webp','Kerio-1.webp','Kerio-2.webp'], tags:['火山'],
-        desc:'这座漂亮的火口湖形成于6500年前的火山爆发，深度达50公尺，从山顶看相当壮观，沿着步道可以绕火山口一整圈。',
-        deepDesc:'一、Kerið 火山口湖位于35号公路旁，是黄金圈路线上很容易顺路造访的景点，特色是椭圆形火山口与碧绿色湖水，加上周围红褐色岩壁，颜色对比强烈，阳光充足时拍照相当抢眼。火山口周围坡度相对平缓，可以沿边缘走一圈，也可以沿步道走到湖边，对脚力普通的旅人来说不算吃力。\n二、收费亭后方的步道就是环绕火山口步道的起点，环绕一圈大概30分钟；再沿楼梯往下走到火山口湖旁（湖口55公尺深），下楼梯的入口和环绕步道起点一样都在售票亭旁边，看到「down to the lake」的指标就是了。\n三、Kerið 本来是一个锥形火山，经官方证实并非火山喷发造成，而是火山喷发熔岩后椎体塌落形成的巨型凹洞。火山口底部的水跟地下水处于同一水平面，含大量矿物质，在不同阳光照射下颜色略有不同，有时深蓝、有时翡翠绿；这座火山湖是冰岛最年轻的火山之一，所以岩壁仍是鲜明的红色火山岩。',
-        tips:'少数需要收门票的自然景点，门票每人ISK 600。\n无停车费用，没有提供厕所。',
-        map:'Kerid Crater Iceland',
-        // 两段式导航链：先到超市补给，再到民宿（10/4、10/5 两晚都住这间）
-        nextStops:[
-          { name:'超市', address:'Bónus Selfoss Iceland', distanceKm:15, etaMin:15 },
-          { name:'民宿', address:'South Central Country Apartment Iceland', distanceKm:20, etaMin:25 }
-        ] }
+  "day1": {
+    "num": "1",
+    "dateLabel": "10月4日（周日）",
+    "title": "雷市初见·地热启程",
+    "routeMapImg": "route-day1.webp",
+    "driveSummary": {
+      "total": "约 165 km",
+      "time": "约 2小时45分钟（不含景点停留，市区路段为步行）"
+    },
+    "hotel": {
+      "name": "South Central Country Apartment 民宿",
+      "note": "黄金圈地区，舒适乡村民宿环境",
+      "map": "South Central Country Apartment Iceland"
+    },
+    "aurora": {
+      "location": {
+        "name": "南部民宿（Selfoss 一带）",
+        "lat": 63.93,
+        "lon": -20.85
+      },
+      "sunrise": "07:57",
+      "sunset": "18:52",
+      "kpIndex": 3,
+      "cloudCover": 30,
+      "probability": "medium",
+      "summary": "云量偏低、KP指数中等，示例情境下观测机会中等",
+      "updatedAt": "示例数值，出发前请再核实预报"
+    },
+    "spots": [
+      {
+        "icon": "🛬",
+        "name": "冰岛机场 KEF Airport",
+        "tags": [
+          "机场"
+        ],
+        "desc": "欢迎来到冰岛！抵达机场后可先在入境免税店采买酒类，出境后搭接驳车前往 MyCar 办理租车手续，正式展开冰岛自驾之旅。",
+        "deepDesc": "机场很小，进入主楼之后跟着Arrival的标志走，在一个特别细长的走廊会有passport control检查，非欧盟国家护照会经历超长入境排队，过关本身很快，就问一些很基础的问题，之后往exit to Iceland指引的方向走就好了。\n \n一、机场位置：凯夫拉维克国际机场（KEF）是游客入境冰岛的第一站，位于冰岛西南部雷克雅内斯半岛，距离蓝湖温泉约20公里，距离首都雷克雅未克约50公里。\n二、入境系统：欧盟的入出境系统（EES）是申根国通用的数位化边境管理系统，已正式启用，全面取代过去人工护照盖章，会自动记录非申根国籍旅客进出申根区的时间地点，并计算剩余合法停留天数。\n三、免税店购物：入境大厅行李提取处旁设有一间大型免税店，出关前务必在此买齐酒类，价格比市区划算不少。\n四、ATM取钱：下飞机等行李的输送带附近就有ATM柜员机，是下飞机后最快能到的一台；如果人多，出了海关关口后的换钱柜台也有ATM可用。\n五、租车：领完行李、走出入境大厅后，寻找写着 \"National, Enterprise, Alamo\" 的告示牌，工作人员会引导前往 MyCar 站点搭接驳车，每10–15分钟一班， mycar.is 進行的預訂由 Enterprise經營。五、\n在机场找到P2停车场出来看到四个人在丢手绢的雕塑，就有Car Rental Shuttle的指示牌，沿着路一直走就有各种租车公司的牌子，有两个排队点，找到对应公司去排队，大概等10分钟就有来接的免费摆渡车。\n六、道路税：金额6,950 ISK，取车时缴纳；保险为Zero Excess（自负额0），已涵盖碰撞、挡风玻璃裂痕、强风吹门受损、风砂损伤、碎石损伤、刮伤/凹痕、轮胎保护等，但不包含底盘损伤及轮圈。\n七、邮筒！来世界的尽头怎么能忘记寄明信片呢！邮筒就在p5附近，过安检之后，一直延右手走，走过书店，再走过另一家店，看到要下楼的地方（那是入境的地方），就有一个红色邮筒，在那个很大的baker后面那里。",
+        "toilet": "机场内免费",
+        "map": "Keflavik International Airport",
+        "nextStop": {
+          "type": "drive",
+          "text": "🚗 前往雷克雅未克市区",
+          "detail": "约 50 km · 约 45 分钟"
+        },
+        "images": [
+          "kefairport-01.webp",
+          "kefairport-02.webp",
+          "kefairport-03.webp",
+          "kefairport-04.webp",
+          "kefairport-05.webp",
+          "kefairport-06.webp"
+        ]
+      },
+      {
+        "icon": "⛪",
+        "name": "哈尔格林姆教堂 Hallgrímskirkja",
+        "label": "A",
+        "images": [
+          "hallgrimskirkja.webp",
+          "Hallgrímskirkja-1.webp",
+          "Hallgrímskirkja-2.webp",
+          "Hallgrímskirkja-3.webp",
+          "Hallgrímskirkja-4.webp",
+          "Hallgrímskirkja-5.webp",
+          "Hallgrímskirkja-6.webp",
+          "Hallgrímskirkja-7.webp"
+        ],
+        "tags": [
+          "花儿与少年"
+        ],
+        "desc": "冰岛首都雷克雅未克的著名地标，外观以火山爆发所呈现的玄武岩熔岩流为主要意象，前卫设计让人很难与传统欧洲教堂联想在一起。",
+        "deepDesc": "一、教堂高达73公尺，是冰岛最大的教堂，也是全国第六高建筑。外观以玄武岩熔岩流为意象，有人说很像NASA太空梭，是100%观光客都会造访的打卡景点。\n二、教堂前的广场立着一尊青铜雕像，是1930年美国为庆祝冰岛建国千年所赠，雕的是冰岛独立运动之父雷弗尔·西格松。\n三、走进教堂内部，不像欧洲传统教堂迎面而来大大的十字架与花窗玻璃，反而是明亮极简的味道，符合北欧风设计。巨大的管风琴不时传来沉稳悠扬的琴声，吸引游客忍不住坐下来聆听。\n四、教堂入口旁有个小小的贩售区，卖冰岛风景明信片和纪念品；购票（成人1400 ISK，可刷卡）就能搭电梯登顶，欣赏雷克雅未克市容，全程没有人收票或管制。",
+        "tips": "教堂周边原先有一些免费停车场，若找不到，亦有许多收费停车场。\n厕所：教堂内免费。",
+        "map": "Hallgrimskirkja Reykjavik",
+        "nextStop": {
+          "type": "walk",
+          "text": "🚶 沿彩虹步道步行前往彩虹街",
+          "detail": "约 5 分钟步行"
+        }
+      },
+      {
+        "icon": "🌈",
+        "name": "彩虹街与购物主街 Laugavegur",
+        "label": "B",
+        "tags": [
+          "花儿与少年"
+        ],
+        "desc": "从大教堂正门沿彩虹步道缓坡下行，直接汇入热闹购物主街，一路逛至旧港边的哈帕音乐厅。",
+        "deepDesc": "一、彩虹街位在雷克雅未克中心地段，是冰岛精华中的精华——想吃冰岛美食、买伴手礼，甚至想找间酒吧、餐酒馆坐下来，通通都在这里解决，不只好拍还很好玩。\n二、劳德威格尔购物街（Laugavegur）是冰岛最古老、也最热闹繁华的一条街，纪念品种类比沿途各景点附设商店齐全得多：蓝湖温泉保养品、各种羊毛制品、帕芬鸟造型娃娃、冰箱贴、明信片、巧克力应有尽有，只是价格不算便宜。\n三、冰岛不像欧洲其他国家可以买精品（LV、香奈儿并不适合来这里找），这里主要是 Geysir、Icewear、Lopapeysa、66°North 这类本土保暖品牌。\n四、花儿与少年同款店：MJÚK 帽子店（各种彩色羊毛帽子围巾）、Icewear 分店（冰岛常见连锁户外品牌）、Valdís 冰淇淋店、Icelandic Street Food（羊肉汤跟海鲜汤面包碗）。",
+        "map": "Laugavegur Reykjavik",
+        "nextStop": {
+          "type": "walk",
+          "text": "🚶 步行前往哈帕音乐厅",
+          "detail": "约 10–15 分钟步行"
+        },
+        "images": [
+          "laugavegur-01.webp",
+          "laugavegur-02.webp",
+          "laugavegur-03.webp",
+          "laugavegur-04.webp",
+          "laugavegur-05.webp"
+        ]
+      },
+      {
+        "icon": "🎼",
+        "name": "哈帕音乐厅 Harpa",
+        "label": "C",
+        "images": [
+          "harpa.webp",
+          "Harpa-1.webp",
+          "Harpa-2.webp",
+          "Harpa-3.webp",
+          "Harpa-4.webp",
+          "Harpa-5.webp",
+          "Harpa-6.webp",
+          "Harpa-7.webp"
+        ],
+        "tags": [
+          "花儿与少年"
+        ],
+        "desc": "冰岛最重要的艺术场地，外观使用不规则玻璃片，灵感同样来自冰岛的六边形玄武岩地质。",
+        "deepDesc": "一、哈帕音乐厅外观使用不规则玻璃片作为主要材料，灵感来源是冰岛的六边形玄武岩。不同材质、不同颜色的玻璃片在阳光洒下时非常独特，随光线和天气变化都会有所不同，内部阳光折射进来的光影也很美。晚上还会亮起LED灯，幸运的话可以同时看到音乐厅跟极光，是白天晚上来都美的建筑。\n二、太阳航海者：雷克雅未克海岸线上的一座雕塑，又称维京船骨架，象征探索和冒险精神，也是冰岛航海历史的象征，距离哈帕音乐厅很近，散步就能到。冰岛历史和维京人密不可分——公元9世纪维京人首次抵达冰岛，是这片土地的第一批定居者。也有人说太阳航海者是一艘梦想之船，象征光明与希望。",
+        "map": "Harpa Reykjavik",
+        "nextStop": {
+          "type": "drive",
+          "text": "🚗 前往辛格维利尔国家公园",
+          "detail": "约 50 km · 约 50 分钟"
+        }
+      },
+      {
+        "icon": "🚶",
+        "name": "回程路线：海港与托宁湖",
+        "tags": [],
+        "isOptional": true,
+        "images": [
+          "Tjornin-1.webp",
+          "Tjornin-2.webp",
+          "Tjornin-4.webp"
+        ],
+        "desc": "离开哈帕音乐厅后，不走回头路，改沿旧港区海滨及托宁湖，徒步感受不同路径返回大教堂。",
+        "deepDesc": "一、托宁湖是雷克雅未克市内最大的湖泊，沿湖畔走一圈，好多天鹅、海鸥、野鸭漫游其中，有些游客还会带饲料或面包来场喂食秀，景色相当美。\n二、托宁湖算是比较小众的冰岛秘境，不是每个到雷克雅未克的人都会去。湖里有超多天鹅、鸭子，很多人会直接带饲料或面包来喂食，所以被当地人称为「世界最大面包汤」。"
+      },
+      {
+        "icon": "🏞️",
+        "name": "辛格维利尔国家公园 Þingvellir",
+        "label": "D",
+        "images": [
+          "thingvellir.webp",
+          "thingvellir-alt-1.webp",
+          "thingvellir-alt-2.webp",
+          "thingvellir-alt-3.webp",
+          "thingvellir-alt-4.webp",
+          "thingvellir-alt-5.webp",
+          "pingvellir-1.webp",
+          "pingvellir-2.webp",
+          "pingvellir-3.webp",
+          "pingvellir-4.webp",
+          "pingvellir-5.webp",
+          "oxararfoss-1.webp"
+        ],
+        "tags": [
+          "花儿与少年",
+          "世界遗产",
+          "火山",
+          "喷泉"
+        ],
+        "desc": "游客可在北美板块与欧亚板块之间行走，这里也是冰岛国会的诞生地，历史可追溯至西元930年。",
+        "deepDesc": "一、建议路线：车停P1停车场，以游客中心为起点，步行经过欧美板块交界、全世界最早的议会遗址、法律石 Lögberg、辛格瓦拉教堂、冰岛总理夏季官邸等景点。\n二、欧美板块交界：这里是欧亚板块与北美板块海平面上唯一的交会处——一边是美洲、另一边是欧洲，两大板块每年以约2.5公分的速度撕裂，形成壮观的大裂谷地貌，经过一亿多年才出现现在的大西洋。地壳长期拉张，形成一条条向外打开的裂谷，能看到明显的岩壁、高低落差和狭长谷地。阿尔曼纳峡谷（Almannagjá）从游客中心出发，沿步道下行进入这座壮观的断层峡谷，两旁高耸的岩壁即为板块交界处。\n三、议会遗址：最早的议会地点就在名为 Lögberg（法律石）的巨石周围，也就是插着冰岛国旗的那块巨石区域。公元930年维京人在此建立世界最早的议会之一，园区被联合国教科文组织列为世界文化遗产——这里岩壁天然形成的回音效果，让所有人都能听清演讲者的声音。法律石是法官、议员与群众「集会宣法」的讲坛，「站上这里说出的话，全冰岛人都听得到。」\n四、Hakið观景台：可以俯瞰整个辛格维利尔，除了远眺一望无际的山脉湖泊，还能看到建于1859年的辛格维利尔教堂，旁边的农舍则是冰岛总理夏季官邸。\n五、黄金大裂缝 Silfra：阿尔曼纳陡崖高30米，Silfra裂缝能见度达100米，议会湖存有全球唯一的天然鳟鱼种群。Silfra是被冰川融水经过地下熔岩过滤30~100年后所填满的大裂缝，是世界上唯一可以在两个板块（欧亚板块和北美板块）间潜水或浮潜的位置，因此许多人会参加「Silfra裂缝潜水」行程，由专业导游带领探索。\n六、延伸景点──奥克萨瀑布（Öxarárfoss）：沿步道往北，或开车到P2停车场，可到达隐藏在裂缝峡谷间、落差约13米的小巧瀑布，虽不算最厉害，但小而美、乾净清澈，值得顺路拍照。",
+        "tips": "共有五个收费停车场（P1、P2、P3、P4、P5），ISK 1000/天。\n推荐将车停在P1（游客中心）或P5（近潜水集合点）或P2（Öxarárfoss瀑布）。",
+        "toilet": "游客中心 200 ISK。",
+        "map": "Thingvellir National Park Iceland",
+        "nextStop": {
+          "type": "drive",
+          "text": "🚗 前往 Kerið 火山口湖",
+          "detail": "约 30 km · 约 30 分钟"
+        }
+      },
+      {
+        "icon": "🌀",
+        "name": "火山口湖 Kerið",
+        "label": "E",
+        "images": [
+          "kerid.webp",
+          "kerid-alt-1.webp",
+          "kerid-alt-2.webp",
+          "kerid-alt-3.webp",
+          "kerid-alt-4.webp",
+          "kerid-alt-5.webp",
+          "Kerio-1.webp",
+          "Kerio-2.webp"
+        ],
+        "tags": [
+          "火山"
+        ],
+        "desc": "这座漂亮的火口湖形成于6500年前的火山爆发，深度达50公尺，从山顶看相当壮观，沿着步道可以绕火山口一整圈。",
+        "deepDesc": "一、Kerið 火山口湖位于35号公路旁，是黄金圈路线上很容易顺路造访的景点，特色是椭圆形火山口与碧绿色湖水，加上周围红褐色岩壁，颜色对比强烈，阳光充足时拍照相当抢眼。火山口周围坡度相对平缓，可以沿边缘走一圈，也可以沿步道走到湖边，对脚力普通的旅人来说不算吃力。\n二、收费亭后方的步道就是环绕火山口步道的起点，环绕一圈大概30分钟；再沿楼梯往下走到火山口湖旁（湖口55公尺深），下楼梯的入口和环绕步道起点一样都在售票亭旁边，看到「down to the lake」的指标就是了。\n三、Kerið 本来是一个锥形火山，经官方证实并非火山喷发造成，而是火山喷发熔岩后椎体塌落形成的巨型凹洞。火山口底部的水跟地下水处于同一水平面，含大量矿物质，在不同阳光照射下颜色略有不同，有时深蓝、有时翡翠绿；这座火山湖是冰岛最年轻的火山之一，所以岩壁仍是鲜明的红色火山岩。",
+        "tips": "少数需要收门票的自然景点，门票每人ISK 600。\n无停车费用，没有提供厕所。",
+        "map": "Kerid Crater Iceland",
+        "nextStops": [
+          {
+            "name": "超市",
+            "address": "Bónus Selfoss Iceland",
+            "distanceKm": 15,
+            "etaMin": 15
+          },
+          {
+            "name": "民宿",
+            "address": "South Central Country Apartment Iceland",
+            "distanceKm": 20,
+            "etaMin": 25
+          }
+        ]
+      }
     ]
   },
-  day2: {
-    num:'2', dateLabel:'10月5日（周一）', title:'追泉逐瀑·黄金圈巡礼',
-    routeMapImg:'route-day2.webp',
-    driveSummary: { total:'约 102 km', time:'约 1小时45分钟（不含景点停留，不含备选景点绕行）' },
-    hotel:{ name:'South Central Country Apartment 民宿', note:'连住，黄金圈地区', map:'South Central Country Apartment Iceland' },
-    aurora:{ location:{ name:'南部民宿（Selfoss 一带）', lat:63.93, lon:-20.85 },
-      sunrise:'08:00', sunset:'18:49', kpIndex:2, cloudCover:55, probability:'low',
-      summary:'云量偏高，示例情境下观测机会偏低', updatedAt:'示例数值，出发前请再核实预报' },
-    spots: [
-      { icon:'💎', name:'蓝色秘境瀑布 Brúarfoss', label:'A', images:['bruarfoss.webp','bruarfoss-alt-2.webp','bruarfoss-alt-3.webp','bruarfoss-alt-4.webp','bruarfoss-alt-5.webp','Bruarfoss-1.webp','Bruarfoss-2.webp','Bruarfoss-3.webp','Bruarfoss-4.webp','Bruarfoss-5.webp'], tags:['瀑布'],
-        desc:'这是冰岛最美的瀑布之一，河水因玄武岩地质呈现黄金圈隐藏版的蒂芙尼蓝绿色。',
-        deepDesc:'一、foss就是冰岛话「瀑布」的意思，冰岛可以说是世界上瀑布最多的地方，因为这里断崖很多，非常容易形成瀑布，与一些更著名的瀑布相比，这里更加宁静祥和。\n二、蒂芙尼蓝瀑布之所以得名，是因为瀑布所呈现的颜色接近蒂芙尼蓝——瀑布高度不高，水量集中在一个水道，水道深度也不深，刚好反射阳光后呈现出这种颜色。\n三、旧停车场「Brúará Trail」可以走三小时的荒野健行。虽然大家都叫它秘境，但说实话，现在有了新停车场之后，这里已经不算秘境了。正对着 Brúarfoss 的最佳拍摄点就是那座木桥，桥面空间略小，遇到旅行团放人的时候，要在桥上卡到位子拍空景需要一点耐心跟运气。',
-        tips:'Brúarfoss Parking 为私人经营，开车从37号公路转进来后有3公里的碎石路，停车费750 ISK。\n没有厕所，旁边有禁止大便的告示牌。',
-        parking:'750 ISK（私人停车场，Parka app）',
-        toilet:'无。',
-        map:'Bruarfoss Iceland',
-        nextStop:{ type:'drive', text:'🚗 前往 Geysir', detail:'约 35 km · 约 35 分钟' } },
-      { icon:'💦', name:'盖锡尔地热区 Geysir', label:'B', images:['geysir.webp','geysir-alt-1.webp','geysir-alt-2.webp','geysir-alt-3.webp','geysir-alt-4.webp','geysir-alt-5.webp'], tags:['花儿与少年','火山'],
-        desc:'Strokkur 间歇泉大约每5–10分钟就会把热水柱直冲天空几十公尺，不应该错过的「现场Live表演」。',
-        deepDesc:'一、盖锡尔大喷泉（Geysir）又称冰岛大喷泉，是冰岛喷得最高也最大的间歇泉，每次喷发高度约70-80公尺，比出名的黄石公园老忠实间歇泉还多出25~50公尺。不过现在处于休眠期——它曾在20世纪中停止喷发，2000年冰岛南部地震后重新活动，但已不像早年那样规律壮观，目前多数游客很少有机会亲眼看到它完整喷发。\n二、第二大喷泉斯特罗库间歇泉（Strokkur）目前还处于活跃期，每5~10分钟就会喷发一次，高度大约25~35公尺。Strokkur 这个名字在冰岛语中有「搅拌」的意思，位于 Haukadalur 谷地，是 Geysir 地区最活跃的一个间歇泉，也是抵达现场后会看到最多游客围着拍照的那一个。\n三、Geysir间歇泉的游客中心里有餐厅、逛街区、博物馆等。餐厅采开放式自由入席，有轻食料理、面包、汤品等，采光很不错；里面还有冰岛自有品牌66° North的服饰店，连冰岛的新鲜罐装空气也有卖。',
-        tips:'游客中心有免费的厕所。\n停车费1000 ISK。',
-        parking:'1000 ISK',
-        toilet:'游客中心内免费，环境不错。',
-        map:'Geysir Iceland',
-        nextStop:{ type:'drive', text:'🚗 前往 Gullfoss', detail:'约 10 km · 约 10 分钟' } },
-      { icon:'🌊', name:'黄金瀑布 Gullfoss', label:'C', images:['gullfoss.webp','gullfoss-alt-1.webp','gullfoss-alt-2.webp','gullfoss-alt-3.webp','gullfoss-alt-4.webp','gullfoss-alt-5.webp','Gullfoss-1.webp','Gullfoss-2.webp','Gullfoss-3.webp','Gullfoss-4.webp','Gullfoss-5.webp','Gullfoss-6.webp','Gullfoss-7.webp','Gullfoss-8.webp'], tags:['花儿与少年','瀑布'],
-        desc:'黄金瀑布是冰岛第二大瀑布，晴天很容易拍到「黄金瀑布＋彩虹」的经典画面，是整个黄金圈里最具震撼力的一站。',
-        deepDesc:'一、黄金瀑布（Gullfoss）身处的峡谷宽约2500米、瀑布高度约70米，是冰岛最大的断层瀑布。Gullfoss 的冰岛语翻译直接就是「黄金=Gull；瀑布=Foss」。Hvítá 河水沿着阶梯状岩壁分两层坠入狭窄峡谷，水雾在阳光下常折射出彩虹，因此晴天很容易拍到「黄金瀑布＋彩虹」的经典画面。\n二、大瀑布分上、下两部分，高度分别为11公尺和21公尺，最后流入70公尺深的河谷，最大水量可达每秒2000立方公尺，加上水量庞大、峡谷狭窄，现场感受会比照片中壮观得多。上、下两个观景区以步道相连：上方平台接近游客中心，视野较广、步道铺设完善；下方贴近河道与瀑布，水雾较重、临场感更强。秋冬水雾在低温下容易在步道结成厚冰，当地管理单位每年都会在路面过于湿滑时暂时封闭部分下方步道。\n三、Gullfoss 也承载了一段环境保育的冰岛故事：20世纪初曾有计画将 Gullfoss 和附近河流开发成水力发电厂，甚至一度签署了相关租约。相传当时农场主人的女儿 Sigríður Tómasdóttir 为了守护瀑布，不断往返雷克雅未克与律师协商，甚至扬言如果瀑布被强行开发就要跳进瀑布抗议，这段故事后来成为冰岛早期环境保护运动的象征，Sigríður 也常被称为「守护黄金瀑布的女孩」。\n四、游客中心：上方靠近游客中心的停车场有洗手间、咖啡馆、餐厅和纪念品店，适合中途休息用餐，直接跟店员点 Lamb Soup 羊肉汤就能听懂，一碗 ISK 2490，凭发票还可以免费续一次汤。停车场旁边就是一家很大的商店，东西不比首都市中心来得少。',
-        tips:'上、下两个主要停车场均可免费停车。\n上方靠近游客中心，下方停车场则更接近部分步道入口，空间相对朴素，但走到瀑布会更快。',
-        parking:'免费（上、下两个停车场）',
-        toilet:'游客中心内。',
-        map:'Gullfoss Iceland',
-        nextStop:{ type:'drive', text:'🚗 前往 Faxi 瀑布（备选）', detail:'约 24 km · 约 20 分钟' } },
-      { icon:'💧', name:'黄金圈隐藏版瀑布 Faxi', label:'D', images:['Faxi-1.webp','Faxi-2.webp'], tags:['瀑布'], isOptional:true,
-        desc:'Faxi 意为马鬃，生动地形容了瀑布鬃毛般的绵密水势，有点像缩小版的「迷你黄金瀑布」。',
-        deepDesc:'一、Faxi（又写作 Faxafoss）是位于黄金圈一带的一条矮瀑布，瀑宽大、水流量足，看起来有点像缩小版、平和许多的「迷你黄金瀑布」，但少了峡谷的戏剧性，取而代之的是比较宁静、开阔的河谷景色。\n二、很多人会把 Faxi 当作「介于大景之间的一个 bonus stop」，适合自驾旅人顺路停15–30分钟拍照、伸展筋骨，不一定需要特地绕一大圈专程造访。Faxi 位于 Tungufljót 河上，介于 Geysir／Gullfoss 一带与南部平原之间，自驾时常见安排是从黄金圈主线略微绕入，短暂停留后再接回主路。\n三、停车费约900至1000冰岛克朗，缴费后会获得一张折扣券，可在现场咖啡厅（如经过营业）折抵部分消费。',
-        tips:'停车费900 ISK。走不走这站不影响后续路线。',
-        parking:'约 900 ISK（现场缴费）',
-        map:'Faxi Waterfall Iceland' },
-      { icon:'🍦', name:'家庭农庄 Efstidalur II', label:'E', images:['Efstidalur-1.webp','Efstidalur-2.webp','Efstidalur-3.webp','Efstidalur-4.webp','Efstidalur-5.webp'], tags:[], isOptional:true,
-        desc:'一家位于黄金圈的家庭式乳品厂，可以尝到农场直供的冰淇淋跟美食。',
-        deepDesc:'一、地点就在前往盖锡尔间歇泉、Gullfoss黄金瀑布的必经道路上，几乎很多冰岛当地的旅游行程都会来这里看牛牛、吃冰淇淋，人潮络绎不绝。\n二、这是一间非常有名的在地农场餐厅，自产的冰淇淋超级香浓好吃，一边吃冰还能透过玻璃窗看牛棚里的乳牛，是黄金圈自驾中很棒的休息站。两球是1400 kr，要用饼干装再加50 kr，以冰岛的物价来说算是平价美食，吃起来偏甜却也不至于腻口。\n三、农场周边的草地上，常常能看到悠闲吃草的冰岛马。牠们体型小巧结实，拥有独特的五种步法，自维京时代就被带到冰岛，千年以来未与外来马种混血，是冰岛文化的重要象征。',
-        map:'Efstidalur II Iceland' },
-      { icon:'🐴', name:'冰岛马场 Bru Horsefarm', label:'F', images:['BruHorsefarm-1.webp','BruHorsefarm-2.webp','BruHorsefarm-3.webp','BruHorsefarm-4.webp'], tags:[],
-        desc:'超可爱、一直想靠近人的冰岛马，却也是世界上最孤独的马。',
-        deepDesc:'一、来到冰岛，如果没有亲手喂过冰岛马，别说你来过！这里不只有壮阔的冰岛冬色，还有一群非常有「个性」的冰岛马等着大家。\n二、自助式马糖果（Horse Candy）一盒300克朗，五盒只要1000克朗，自己拿、自己投钱。远方山上设有监视器，想吃霸王餐可不容易。当你手上有糖果时，牠们是世界上最温柔的伙伴；盒子空了，转身的速度绝对让你目瞪口呆。喂马小撇步：记得将掌心平放，让马儿轻轻舔走糖果，看着牠们厚实的嘴唇、飘逸的长发，那一瞬间所有的寒冷都被疗愈了。\n三、冰岛马特色：（1）世界唯一步法「tölt」——一般马奔跑时身体会明显上下震动，但tölt几乎不太颠，马蹄以固定节奏轮流落地，整匹马像在滑行，平稳到有点不可思议。（2）千年纯种与防疫孤岛——冰岛马是世界上最纯种的马，西元九世纪由维京人引进后，冰岛极严格禁止任何马匹进口，冰岛马一旦出国就终生不得回国，造就了血统最纯正的马种。（3）耐寒长寿又亲人——身形矮小但肌肉扎实、毛发丰厚，能适应冰岛极地气候，性格极度温驯亲人，不具防御或攻击本能。',
-        parking:'农场旁免费停车',
-        toilet:'无',
-        map:'Bru Horsefarm Iceland',
-        // 农场与民宿同一带，距离极近
-        nextStop:{ type:'drive', text:'🚗 前往民宿', detail:'约 2 km · 约 5 分钟' } }
+  "day2": {
+    "num": "2",
+    "dateLabel": "10月5日（周一）",
+    "title": "追泉逐瀑·黄金圈巡礼",
+    "routeMapImg": "route-day2.webp",
+    "driveSummary": {
+      "total": "约 102 km",
+      "time": "约 1小时45分钟（不含景点停留，不含备选景点绕行）"
+    },
+    "hotel": {
+      "name": "South Central Country Apartment 民宿",
+      "note": "连住，黄金圈地区",
+      "map": "South Central Country Apartment Iceland"
+    },
+    "aurora": {
+      "location": {
+        "name": "南部民宿（Selfoss 一带）",
+        "lat": 63.93,
+        "lon": -20.85
+      },
+      "sunrise": "08:00",
+      "sunset": "18:49",
+      "kpIndex": 2,
+      "cloudCover": 55,
+      "probability": "low",
+      "summary": "云量偏高，示例情境下观测机会偏低",
+      "updatedAt": "示例数值，出发前请再核实预报"
+    },
+    "spots": [
+      {
+        "icon": "💎",
+        "name": "蓝色秘境瀑布 Brúarfoss",
+        "label": "A",
+        "images": [
+          "bruarfoss.webp",
+          "bruarfoss-alt-2.webp",
+          "bruarfoss-alt-3.webp",
+          "bruarfoss-alt-4.webp",
+          "bruarfoss-alt-5.webp",
+          "Bruarfoss-1.webp",
+          "Bruarfoss-2.webp",
+          "Bruarfoss-3.webp",
+          "Bruarfoss-4.webp",
+          "Bruarfoss-5.webp"
+        ],
+        "tags": [
+          "瀑布"
+        ],
+        "desc": "这是冰岛最美的瀑布之一，河水因玄武岩地质呈现黄金圈隐藏版的蒂芙尼蓝绿色。",
+        "deepDesc": "一、{#ff0000}foss就是冰岛话「瀑布」的意思{/color}，冰岛可以说是世界上瀑布最多的地方，因为这里断崖很多，非常容易形成瀑布，与一些更著名的瀑布相比，这里更加宁静祥和。\\n\\n二、蒂芙尼蓝瀑布之所以得名，是因为瀑布所呈现的颜色接近蒂芙尼蓝——瀑布高度不高，水量集中在一个水道，水道深度也不深，刚好反射阳光后呈现出这种颜色。\\n\\n三、旧停车场「Brúará Trail」可以走三小时的荒野健行。虽然大家都叫它秘境，但说实话，现在有了新停车场之后，这里已经不算秘境了。正对着 Brúarfoss 的最佳拍摄点就是那座木桥，桥面空间略小，遇到旅行团放人的时候，要在桥上卡到位子拍空景需要一点耐心跟运气。",
+        "tips": "Brúarfoss Parking 为私人经营，开车从37号公路转进来后有3公里的碎石路，停车费750 ISK。\n没有厕所，旁边有禁止大便的告示牌。",
+        "parking": "750 ISK（私人停车场，Parka app）",
+        "toilet": "无。",
+        "map": "Bruarfoss Iceland",
+        "nextStop": {
+          "type": "drive",
+          "text": "🚗 前往 Geysir",
+          "detail": "约 35 km · 约 35 分钟"
+        }
+      },
+      {
+        "icon": "💦",
+        "name": "盖锡尔地热区 Geysir",
+        "label": "B",
+        "images": [
+          "geysir.webp",
+          "geysir-alt-1.webp",
+          "geysir-alt-2.webp",
+          "geysir-alt-3.webp",
+          "geysir-alt-4.webp",
+          "geysir-alt-5.webp"
+        ],
+        "tags": [
+          "花儿与少年",
+          "火山"
+        ],
+        "desc": "Strokkur 间歇泉大约每5–10分钟就会把热水柱直冲天空几十公尺，不应该错过的「现场Live表演」。",
+        "deepDesc": "一、盖锡尔大喷泉（Geysir）又称冰岛大喷泉，是冰岛喷得最高也最大的间歇泉，每次喷发高度约70-80公尺，比出名的黄石公园老忠实间歇泉还多出25~50公尺。不过现在处于休眠期——它曾在20世纪中停止喷发，2000年冰岛南部地震后重新活动，但已不像早年那样规律壮观，目前多数游客很少有机会亲眼看到它完整喷发。\\n\\n二、第二大喷泉斯特罗库间歇泉（Strokkur）目前还处于活跃期，每5~10分钟就会喷发一次，高度大约25~35公尺。Strokkur 这个名字在冰岛语中有「搅拌」的意思，位于 Haukadalur 谷地，是 Geysir 地区最活跃的一个间歇泉，也是抵达现场后会看到最多游客围着拍照的那一个。\\n\\n三、Geysir间歇泉的游客中心里有餐厅、逛街区、博物馆等。餐厅采开放式自由入席，有轻食料理、面包、汤品等，采光很不错；里面还有冰岛自有品牌66° North的服饰店，连冰岛的新鲜罐装空气也有卖。",
+        "tips": "游客中心有免费的厕所。\n停车费1000 ISK。",
+        "parking": "1000 ISK",
+        "toilet": "游客中心内免费，环境不错。",
+        "map": "Geysir Iceland",
+        "nextStop": {
+          "type": "drive",
+          "text": "🚗 前往 Gullfoss",
+          "detail": "约 10 km · 约 10 分钟"
+        }
+      },
+      {
+        "icon": "🌊",
+        "name": "黄金瀑布 Gullfoss",
+        "label": "C",
+        "images": [
+          "gullfoss.webp",
+          "gullfoss-alt-1.webp",
+          "gullfoss-alt-2.webp",
+          "gullfoss-alt-3.webp",
+          "gullfoss-alt-4.webp",
+          "gullfoss-alt-5.webp",
+          "Gullfoss-1.webp",
+          "Gullfoss-2.webp",
+          "Gullfoss-3.webp",
+          "Gullfoss-4.webp",
+          "Gullfoss-5.webp",
+          "Gullfoss-6.webp",
+          "Gullfoss-7.webp",
+          "Gullfoss-8.webp"
+        ],
+        "tags": [
+          "花儿与少年",
+          "瀑布"
+        ],
+        "desc": "黄金瀑布是冰岛第二大瀑布，晴天很容易拍到「黄金瀑布＋彩虹」的经典画面，是整个黄金圈里最具震撼力的一站。",
+        "deepDesc": "一、黄金瀑布（Gullfoss）身处的峡谷宽约2500米、瀑布高度约70米，是冰岛最大的断层瀑布。Gullfoss 的冰岛语翻译直接就是「黄金=Gull；瀑布=Foss」。Hvítá 河水沿着阶梯状岩壁分两层坠入狭窄峡谷，水雾在阳光下常折射出彩虹，因此晴天很容易拍到「黄金瀑布＋彩虹」的经典画面。\\n\\n二、大瀑布分上、下两部分，高度分别为11公尺和21公尺，最后流入70公尺深的河谷，最大水量可达每秒2000立方公尺，加上水量庞大、峡谷狭窄，现场感受会比照片中壮观得多。上、下两个观景区以步道相连：上方平台接近游客中心，视野较广、步道铺设完善；下方贴近河道与瀑布，水雾较重、临场感更强。秋冬水雾在低温下容易在步道结成厚冰，当地管理单位每年都会在路面过于湿滑时暂时封闭部分下方步道。\\n\\n三、Gullfoss 也承载了一段环境保育的冰岛故事：20世纪初曾有计画将 Gullfoss 和附近河流开发成水力发电厂，甚至一度签署了相关租约。相传当时农场主人的女儿 Sigríður Tómasdóttir 为了守护瀑布，不断往返雷克雅未克与律师协商，甚至扬言如果瀑布被强行开发就要跳进瀑布抗议，这段故事后来成为冰岛早期环境保护运动的象征，Sigríður 也常被称为「守护黄金瀑布的女孩」。\\n\\n四、游客中心：上方靠近游客中心的停车场有洗手间、咖啡馆、餐厅和纪念品店，适合中途休息用餐，直接跟店员点 Lamb Soup 羊肉汤就能听懂，一碗 ISK 2490，凭发票还可以免费续一次汤。停车场旁边就是一家很大的商店，东西不比首都市中心来得少。",
+        "tips": "{#ff0000}上、下两个主要停车场均可免费停车。{/color}\\n上方靠近游客中心，下方停车场则更接近部分步道入口，空间相对朴素，但走到瀑布会更快。",
+        "parking": "免费（上、下两个停车场）",
+        "toilet": "游客中心内。",
+        "map": "Gullfoss Iceland",
+        "nextStop": {
+          "type": "drive",
+          "text": "🚗 前往 Faxi 瀑布（备选）",
+          "detail": "约 24 km · 约 20 分钟"
+        }
+      },
+      {
+        "icon": "💧",
+        "name": "黄金圈隐藏版瀑布 Faxi",
+        "label": "D",
+        "images": [
+          "Faxi-1.webp",
+          "Faxi-2.webp"
+        ],
+        "tags": [
+          "瀑布"
+        ],
+        "isOptional": true,
+        "desc": "Faxi 意为马鬃，生动地形容了瀑布鬃毛般的绵密水势，有点像缩小版的「迷你黄金瀑布」。",
+        "deepDesc": "一、Faxi（又写作 Faxafoss）是位于黄金圈一带的一条矮瀑布，瀑宽大、水流量足，看起来有点像缩小版、平和许多的「迷你黄金瀑布」，但少了峡谷的戏剧性，取而代之的是比较宁静、开阔的河谷景色。\n二、很多人会把 Faxi 当作「介于大景之间的一个 bonus stop」，适合自驾旅人顺路停15–30分钟拍照、伸展筋骨，不一定需要特地绕一大圈专程造访。Faxi 位于 Tungufljót 河上，介于 Geysir／Gullfoss 一带与南部平原之间，自驾时常见安排是从黄金圈主线略微绕入，短暂停留后再接回主路。\n三、停车费约900至1000冰岛克朗，缴费后会获得一张折扣券，可在现场咖啡厅（如经过营业）折抵部分消费。",
+        "tips": "停车费900 ISK。走不走这站不影响后续路线。",
+        "parking": "约 900 ISK（现场缴费）",
+        "map": "Faxi Waterfall Iceland"
+      },
+      {
+        "icon": "🍦",
+        "name": "家庭农庄 Efstidalur II",
+        "label": "E",
+        "images": [
+          "Efstidalur-1.webp",
+          "Efstidalur-2.webp",
+          "Efstidalur-3.webp",
+          "Efstidalur-4.webp",
+          "Efstidalur-5.webp"
+        ],
+        "tags": [],
+        "isOptional": true,
+        "desc": "一家位于黄金圈的家庭式乳品厂，可以尝到农场直供的冰淇淋跟美食。",
+        "deepDesc": "一、地点就在前往盖锡尔间歇泉、Gullfoss黄金瀑布的必经道路上，几乎很多冰岛当地的旅游行程都会来这里看牛牛、吃冰淇淋，人潮络绎不绝。\n二、这是一间非常有名的在地农场餐厅，自产的冰淇淋超级香浓好吃，一边吃冰还能透过玻璃窗看牛棚里的乳牛，是黄金圈自驾中很棒的休息站。两球是1400 kr，要用饼干装再加50 kr，以冰岛的物价来说算是平价美食，吃起来偏甜却也不至于腻口。\n三、农场周边的草地上，常常能看到悠闲吃草的冰岛马。牠们体型小巧结实，拥有独特的五种步法，自维京时代就被带到冰岛，千年以来未与外来马种混血，是冰岛文化的重要象征。",
+        "map": "Efstidalur II Iceland"
+      },
+      {
+        "icon": "🐴",
+        "name": "冰岛马场 Bru Horsefarm",
+        "label": "F",
+        "images": [
+          "BruHorsefarm-1.webp",
+          "BruHorsefarm-2.webp",
+          "BruHorsefarm-3.webp",
+          "BruHorsefarm-4.webp"
+        ],
+        "tags": [],
+        "desc": "超可爱、一直想靠近人的冰岛马，却也是世界上最孤独的马。",
+        "deepDesc": "一、来到冰岛，如果没有亲手喂过冰岛马，别说你来过！这里不只有壮阔的冰岛冬色，还有一群非常有「个性」的冰岛马等着大家。\n二、自助式马糖果（Horse Candy）一盒300克朗，五盒只要1000克朗，自己拿、自己投钱。远方山上设有监视器，想吃霸王餐可不容易。当你手上有糖果时，牠们是世界上最温柔的伙伴；盒子空了，转身的速度绝对让你目瞪口呆。喂马小撇步：记得将掌心平放，让马儿轻轻舔走糖果，看着牠们厚实的嘴唇、飘逸的长发，那一瞬间所有的寒冷都被疗愈了。\n三、冰岛马特色：（1）世界唯一步法「tölt」——一般马奔跑时身体会明显上下震动，但tölt几乎不太颠，马蹄以固定节奏轮流落地，整匹马像在滑行，平稳到有点不可思议。（2）千年纯种与防疫孤岛——冰岛马是世界上最纯种的马，西元九世纪由维京人引进后，冰岛极严格禁止任何马匹进口，冰岛马一旦出国就终生不得回国，造就了血统最纯正的马种。（3）耐寒长寿又亲人——身形矮小但肌肉扎实、毛发丰厚，能适应冰岛极地气候，性格极度温驯亲人，不具防御或攻击本能。",
+        "parking": "农场旁免费停车",
+        "toilet": "无",
+        "map": "Bru Horsefarm Iceland",
+        "nextStop": {
+          "type": "drive",
+          "text": "🚗 前往民宿",
+          "detail": "约 2 km · 约 5 分钟"
+        }
+      }
     ]
   },
-  day3: {
-    num:'3', dateLabel:'10月6日（周二）', title:'瀑布之路·南岸奇境',
-    routeMapImg:'route-day3.webp',
-    driveSummary: { total:'约 158 km', time:'约 2小时25分钟（不含景点停留）' },
-    hotel:{ name:'Lakeview Cabin 民宿', note:'南岸地区，湖景小屋，有机会观赏极光', map:'Lakeview Cabin Iceland' },
-    aurora:{ location:{ name:'Lakeview Cabin（近 Kirkjubæjarklaustur）', lat:63.79, lon:-18.06 },
-      sunrise:'08:03', sunset:'18:45', kpIndex:4, cloudCover:20, probability:'high',
-      summary:'云量低、KP指数偏高，示例情境下是这趟旅程观测机会最好的一晚', updatedAt:'示例数值，出发前请再核实预报' },
-    spots: [
-      { icon:'💧', name:'塞里雅兰瀑布 Seljalandsfoss', label:'A', images:['seljalandsfoss.webp','Seljalandsfoss-1.webp','Seljalandsfoss-2.webp','Seljalandsfoss-3.webp'], tags:['需带雨衣','瀑布'],
-        desc:'又称水帘洞瀑布，后方有一条步道可以穿过瀑布，从瀑布里面往外拍照，景色更为优美。',
-        deepDesc:'一、塞里雅兰瀑布在冰岛景点中相当有名，虽然不像其他几个大型瀑布那么壮观，但因为可以顺着步道走进瀑布后面，瞬间很像来到孙悟空的花果山水帘洞，所以也被叫做「水帘洞瀑布」，甚至被选为冰岛最美的瀑布之一，是很多人喜欢的冰岛摄影点。地点就在主要环岛公路上，来冰岛租车自驾的话肯定会经过，造就了这里游客如织的高人气。\n二、水帘洞瀑布并不是特别壮观，但可以走到瀑布后方的独特体验却让它成为唯一——只要通过瀑布就一定会湿，差别只在于半身湿或是全身湿而已。如果要走到瀑布后方，非常建议准备「全身的防水装备」，像是附帽子的防水外套、防水裤、防水靴等，千万不要小看这里所溅起的水花，绝对是又大又湿又冷。\n三、延伸版景点──秘密瀑布 Gljúfrabúi：距离水帘洞瀑布大约500公尺，还有一个隐藏在石壁内的秘密瀑布，直接就在密闭洞穴里面，只要走进去就会被满满的大水淋上全身。从岩石缝涉水入内之后，就会看到这座不小的瀑布，被石壁圍繞，和水帘洞瀑布呈现完全不同的感觉，同样非常壮观。要离开的话一样要涉水通过，虽然石壁旁有一些较大的石头可以踩踏，但建议穿防水鞋（最好是靴子），不然踩进水里，湿湿的双脚对后续行程会很不舒服。',
-        tips:'门票 700 ISK。\n有厕所（免费）、简单轻食吧、纪念品店。',
-        parking:'700 ISK',
-        toilet:'有（免费）',
-        map:'Seljalandsfoss Iceland',
-        nextStop:{ type:'drive', text:'🚗 前往 Skógafoss', detail:'约 30 km · 约 25 分钟' } },
-      { icon:'🏔️', name:'史可加瀑布 Skógafoss', label:'B', images:['skogafoss.webp','Skógafoss-1.webp','Skógafoss-2.webp','Skógafoss-3.webp','Skógafoss-4.webp','Skógafoss-5.webp','Skógafoss-6.webp'], tags:['瀑布','花儿与少年'],
-        desc:'又称「彩虹瀑布」，因为有阳光的时候，约有九成的机率可以在这里看到彩虹。',
-        deepDesc:'一、位于冰岛南部1号环岛公路旁，宽25公尺、高60公尺，是冰岛经典瀑布之一，几乎所有南部行程都会包含在内，电影《白日梦冒险王》曾在此取景而声名大噪。与其说是一个瀑布，倒不如说它是个瀑布群——从接近停车场的彩虹瀑布开始，沿着步道不断往上走，一共会出现大大小小共九个瀑布，很多人认为这条步道是冰岛最让人惊艳的瀑布步道之一，全长大约7公里，能走多远看个人脚程。\n二、九个瀑布中就以停车场前的彩虹瀑布最为知名，瀑布前就能拍下不少照片。步行时间：从停车场到彩虹瀑布大约5分钟；如果要完整收集步道中9个瀑布，来回大约需要2~2.5小时。推荐停留时间：只看彩虹瀑布0.5~1小时，完整收集9个瀑布则需预留半天时间。',
-        tips:'停车费 1000 ISK/天。\n有厕所（免费）。',
-        parking:'1000 ISK/天',
-        toilet:'有（免费）',
-        map:'Skogafoss Iceland',
-        nextStop:{ type:'drive', text:'🚗 前往 Dyrhólaey', detail:'约 35 km · 约 30 分钟' } },
-      { icon:'🐦', name:'岬角 Dyrhólaey', label:'C', images:['Dyrholaey-1.webp','Dyrholaey-2.webp','Dyrholaey-3.webp','Dyrholaey-4.webp'], tags:['花儿与少年','火山'],
-        desc:'著名特色是一座横跨在海面上的巨型火成岩拱桥、灯塔、黑沙滩与黑色玄武岩柱，对面就是黑沙滩。',
-        deepDesc:'一、冰岛南岸最南端的壮观火山岬角，特色是巨大火山熔岩海蚀拱门 Dyrhólaey Arch 与经典灯塔，登高可俯瞰黑沙滩与海岸线，以及远处的 Arnardrangur（鹰石）。每年夏天（5-8月）是海鹦筑巢繁殖季节的热门赏鸟点，站在悬崖边可眺望辽阔风景。高处与黑沙滩皆适合散步，天气好时气势非凡。\n二、如果从首都出发，会在到达维克之前先到达 Dyrhólaey，从环岛1号公路转218号公路后有两条路可选：其一直走朝平地黑沙滩前进；其二右转往高山里爬坡前行，规定要四驱车才能上山（虽然当天也有看到小车开上去，但建议开四驱车比较保险）。前往的218号公路是一段崎岖难行的碎石路，如果不是开四驱SUV最好不要开上去，路程颠簸坑洞多。\n三、可从高处俯瞰黑沙滩海岸线，和千年遗迹拱门状海岬，一望无际的海岸线黑白分明。山顶上还有一座像「城堡」外形的灯塔，孤傲地坐立在那里，像是这片美景的守护者。',
-        map:'Dyrholaey Iceland',
-        nextStop:{ type:'drive', text:'🚗 前往 Reynisfjara 黑沙滩', detail:'约 10 km · 约 10 分钟' } },
-      { icon:'⚫', name:'黑沙滩 Reynisfjara', label:'D', images:['reynisfjara.webp','Reynisfjara-1.webp','Reynisfjara-2.webp','Reynisfjara-3.webp','Reynisfjara-4.webp','Reynisfjara-5.webp','Reynisfjara-6.webp','Reynisfjara-7.webp','Reynisfjara-8.webp','Reynisfjara-9.webp','Reynisfjara-10.webp'], tags:['花儿与少年','火山'],
-        desc:'冰岛很多地方都有黑沙滩，但只有这里的黑沙滩有玄武岩岩石群和人形岩石群可以欣赏。',
-        deepDesc:'一、虽然冰岛很多地方都有黑沙滩，但只有 Reynisfjara 这里有玄武岩岩石群和海上 Reynisdrangar 人形岩石群可以欣赏，尤其是玄武岩岩石群形状相当特殊，很值得一看。维克黑沙滩和 Reynisfjara 地理上虽然紧邻，却因一座山隔开，两边景观与体验截然不同，千万别搞混地点。\n二、进入黑沙滩之前，有明显的警告标语需要注意——这里的浪其实相当危险，很多人为了拍照而走入浪花里，下一秒就有可能被卷走。入口处有个警示灯号立牌，红、黄、绿三种颜色分别代表不同的危险等级。\n三、黑沙滩的起源：这片黑沙滩由古老火山爆发后的熔岩冷卻、碎裂，经历数千年冰岛南岸极端天气与大西洋巨浪反复冲刷，才淬炼而成。每一粒细沙本身都是火山岩风化的黑色结晶；岸边壮观的玄武岩石柱群，是岩浆遇冷急速凝固，再被海浪侵蚀雕塑出的天然奇观，代表冰岛「火」与「冰」、「山」与「海」的完美结合。黑色沙子来自邻近卡特拉火山的喷发物，透水性极高，很难预测海浪沖上沙滩的最上缘是何处，这也是危险的地方。\n四、传说如果把黑沙滩的石头带回家就会招来厄运，来这里时请静静欣赏美丽的景色就好，不要将石头捡回家。',
-        tips:'停车收费 1000 ISK。',
-        parking:'1000 ISK',
-        map:'Reynisfjara Black Sand Beach',
-        nextStops:[
-          { name:'超市', address:'Kronan Vik Iceland', distanceKm:1, etaMin:5 },
-          { name:'教堂', address:'Vík í Mýrdal Church', distanceKm:1, etaMin:5 }
-        ] },
-      { icon:'🏘️', name:'维克镇 Vík', label:'E', img:'Vík-1.webp', tags:['补给'],
-        desc:'冰岛本岛最南部的小镇，也是南部海岸线最适合停留加油、住宿、采买食材的地方。',
-        deepDesc:'一、超市补给：维克镇是冰岛本岛最南部的小镇，常住人口约几百人，虽然面积不大，却是所有旅行团必经地，也是自驾旅人向东出发南岸的重要补给站。镇上唯一的一间大型超级市场 KRÓNAN，结完帐之后收银台旁边有位置可以在这里用餐休息，这间复合式商场里面也有餐厅可以选择，还有一区是 ICEWEAR 的衣服专卖店，各项登山露营用品一应俱全，羊毛衫、羽绒外套、整块皮毛料都有卖。KRÓNAN 和 ICEWEAR 两间店的中间有连通，可以不用走到冷冷的建筑物外，直接两间一起逛。\n二、维克教堂 Vík í Mýrdal Church：冰岛南岸最具标志性的景点之一，位于小镇山丘上，白墙红顶与黑沙滩、海岸线、火山背景形成鲜明对比，是南岸自驾或跟团必拍的经典地标。教堂小巧朴实，但无论外观或内部皆极具安静美感；教堂入口、教堂外的墓地，以及教堂后方山坡都是拍照取景的极佳位置，能俯瞰维克小镇全景、海岸及 Reynisdrangar 海上巨石，日出日落时分更有戏剧性的光线。沿着教堂后方步道往上走，利用地势的前后景衬托，可以拍出宏伟且带有童话感的教堂全貌。有趣的是，这座教堂常被拿来跟全球视力检查标准图像（红色小屋）的本尊——位于冰岛西部海德利桑德的英格亚尔德斯霍尔教堂相提并论，算是「平替款」。\n三、维克镇红顶教堂/路德教会Víkurkirkja 抵达教堂后继续往上开一段，就能到最佳观景点，可以停几辆车',
-        map:'Vík í Mýrdal Church',
-        // 民宿与维克镇之间没有实测数据，为估算值
-        nextStop:{ type:'drive', text:'🚗 前往民宿', detail:'约 72 km · 约 60 分钟' } , images:['vik-01.webp', 'vik-02.webp', 'vik-03.webp']}
+  "day3": {
+    "num": "3",
+    "dateLabel": "10月6日（周二）",
+    "title": "瀑布之路·南岸奇境",
+    "routeMapImg": "route-day3.webp",
+    "driveSummary": {
+      "total": "约 158 km",
+      "time": "约 2小时25分钟（不含景点停留）"
+    },
+    "hotel": {
+      "name": "Lakeview Cabin 民宿",
+      "note": "南岸地区，湖景小屋，有机会观赏极光",
+      "map": "Lakeview Cabin Iceland"
+    },
+    "aurora": {
+      "location": {
+        "name": "Lakeview Cabin（近 Kirkjubæjarklaustur）",
+        "lat": 63.79,
+        "lon": -18.06
+      },
+      "sunrise": "08:03",
+      "sunset": "18:45",
+      "kpIndex": 4,
+      "cloudCover": 20,
+      "probability": "high",
+      "summary": "云量低、KP指数偏高，示例情境下是这趟旅程观测机会最好的一晚",
+      "updatedAt": "示例数值，出发前请再核实预报"
+    },
+    "spots": [
+      {
+        "icon": "💧",
+        "name": "塞里雅兰瀑布 Seljalandsfoss",
+        "label": "A",
+        "images": [
+          "seljalandsfoss.webp",
+          "Seljalandsfoss-1.webp",
+          "Seljalandsfoss-2.webp",
+          "Seljalandsfoss-3.webp"
+        ],
+        "tags": [
+          "需带雨衣",
+          "瀑布"
+        ],
+        "desc": "又称水帘洞瀑布，后方有一条步道可以穿过瀑布，从瀑布里面往外拍照，景色更为优美。",
+        "deepDesc": "一、塞里雅兰瀑布在冰岛景点中相当有名，虽然不像其他几个大型瀑布那么壮观，但因为可以顺着步道走进瀑布后面，瞬间很像来到孙悟空的花果山水帘洞，所以也被叫做「水帘洞瀑布」，甚至被选为冰岛最美的瀑布之一，是很多人喜欢的冰岛摄影点。地点就在主要环岛公路上，来冰岛租车自驾的话肯定会经过，造就了这里游客如织的高人气。\n二、水帘洞瀑布并不是特别壮观，但可以走到瀑布后方的独特体验却让它成为唯一——只要通过瀑布就一定会湿，差别只在于半身湿或是全身湿而已。如果要走到瀑布后方，非常建议准备「全身的防水装备」，像是附帽子的防水外套、防水裤、防水靴等，千万不要小看这里所溅起的水花，绝对是又大又湿又冷。\n三、延伸版景点──秘密瀑布 Gljúfrabúi：距离水帘洞瀑布大约500公尺，还有一个隐藏在石壁内的秘密瀑布，直接就在密闭洞穴里面，只要走进去就会被满满的大水淋上全身。从岩石缝涉水入内之后，就会看到这座不小的瀑布，被石壁圍繞，和水帘洞瀑布呈现完全不同的感觉，同样非常壮观。要离开的话一样要涉水通过，虽然石壁旁有一些较大的石头可以踩踏，但建议穿防水鞋（最好是靴子），不然踩进水里，湿湿的双脚对后续行程会很不舒服。",
+        "tips": "门票 700 ISK。\n有厕所（免费）、简单轻食吧、纪念品店。",
+        "parking": "700 ISK",
+        "toilet": "有（免费）",
+        "map": "Seljalandsfoss Iceland",
+        "nextStop": {
+          "type": "drive",
+          "text": "🚗 前往 Skógafoss",
+          "detail": "约 30 km · 约 25 分钟"
+        }
+      },
+      {
+        "icon": "🏔️",
+        "name": "史可加瀑布 Skógafoss",
+        "label": "B",
+        "images": [
+          "skogafoss.webp",
+          "Skógafoss-1.webp",
+          "Skógafoss-2.webp",
+          "Skógafoss-3.webp",
+          "Skógafoss-4.webp",
+          "Skógafoss-5.webp",
+          "Skógafoss-6.webp"
+        ],
+        "tags": [
+          "瀑布",
+          "花儿与少年"
+        ],
+        "desc": "又称「彩虹瀑布」，因为有阳光的时候，约有九成的机率可以在这里看到彩虹。",
+        "deepDesc": "一、位于冰岛南部1号环岛公路旁，宽25公尺、高60公尺，是冰岛经典瀑布之一，几乎所有南部行程都会包含在内，电影《白日梦冒险王》曾在此取景而声名大噪。与其说是一个瀑布，倒不如说它是个瀑布群——从接近停车场的彩虹瀑布开始，沿着步道不断往上走，一共会出现大大小小共九个瀑布，很多人认为这条步道是冰岛最让人惊艳的瀑布步道之一，全长大约7公里，能走多远看个人脚程。\n二、九个瀑布中就以停车场前的彩虹瀑布最为知名，瀑布前就能拍下不少照片。步行时间：从停车场到彩虹瀑布大约5分钟；如果要完整收集步道中9个瀑布，来回大约需要2~2.5小时。推荐停留时间：只看彩虹瀑布0.5~1小时，完整收集9个瀑布则需预留半天时间。",
+        "tips": "停车费 1000 ISK/天。\n有厕所（免费）。",
+        "parking": "1000 ISK/天",
+        "toilet": "有（免费）",
+        "map": "Skogafoss Iceland",
+        "nextStop": {
+          "type": "drive",
+          "text": "🚗 前往 Dyrhólaey",
+          "detail": "约 35 km · 约 30 分钟"
+        }
+      },
+      {
+        "icon": "🐦",
+        "name": "岬角 Dyrhólaey",
+        "label": "C",
+        "images": [
+          "Dyrholaey-1.webp",
+          "Dyrholaey-2.webp",
+          "Dyrholaey-3.webp",
+          "Dyrholaey-4.webp"
+        ],
+        "tags": [
+          "花儿与少年",
+          "火山"
+        ],
+        "desc": "著名特色是一座横跨在海面上的巨型火成岩拱桥、灯塔、黑沙滩与黑色玄武岩柱，对面就是黑沙滩。",
+        "deepDesc": "一、冰岛南岸最南端的壮观火山岬角，特色是巨大火山熔岩海蚀拱门 Dyrhólaey Arch 与经典灯塔，登高可俯瞰黑沙滩与海岸线，以及远处的 Arnardrangur（鹰石）。每年夏天（5-8月）是海鹦筑巢繁殖季节的热门赏鸟点，站在悬崖边可眺望辽阔风景。高处与黑沙滩皆适合散步，天气好时气势非凡。\n二、如果从首都出发，会在到达维克之前先到达 Dyrhólaey，从环岛1号公路转218号公路后有两条路可选：其一直走朝平地黑沙滩前进；其二右转往高山里爬坡前行，规定要四驱车才能上山（虽然当天也有看到小车开上去，但建议开四驱车比较保险）。前往的218号公路是一段崎岖难行的碎石路，如果不是开四驱SUV最好不要开上去，路程颠簸坑洞多。\n三、可从高处俯瞰黑沙滩海岸线，和千年遗迹拱门状海岬，一望无际的海岸线黑白分明。山顶上还有一座像「城堡」外形的灯塔，孤傲地坐立在那里，像是这片美景的守护者。",
+        "map": "Dyrholaey Iceland",
+        "nextStop": {
+          "type": "drive",
+          "text": "🚗 前往 Reynisfjara 黑沙滩",
+          "detail": "约 10 km · 约 10 分钟"
+        }
+      },
+      {
+        "icon": "⚫",
+        "name": "黑沙滩 Reynisfjara",
+        "label": "D",
+        "images": [
+          "reynisfjara.webp",
+          "Reynisfjara-1.webp",
+          "Reynisfjara-2.webp",
+          "Reynisfjara-3.webp",
+          "Reynisfjara-4.webp",
+          "Reynisfjara-5.webp",
+          "Reynisfjara-6.webp",
+          "Reynisfjara-7.webp",
+          "Reynisfjara-8.webp",
+          "Reynisfjara-9.webp",
+          "Reynisfjara-10.webp"
+        ],
+        "tags": [
+          "花儿与少年",
+          "火山"
+        ],
+        "desc": "冰岛很多地方都有黑沙滩，但只有这里的黑沙滩有玄武岩岩石群和人形岩石群可以欣赏。",
+        "deepDesc": "一、虽然冰岛很多地方都有黑沙滩，但只有 Reynisfjara 这里有玄武岩岩石群和海上 Reynisdrangar 人形岩石群可以欣赏，尤其是玄武岩岩石群形状相当特殊，很值得一看。维克黑沙滩和 Reynisfjara 地理上虽然紧邻，却因一座山隔开，两边景观与体验截然不同，千万别搞混地点。\n二、进入黑沙滩之前，有明显的警告标语需要注意——这里的浪其实相当危险，很多人为了拍照而走入浪花里，下一秒就有可能被卷走。入口处有个警示灯号立牌，红、黄、绿三种颜色分别代表不同的危险等级。\n三、黑沙滩的起源：这片黑沙滩由古老火山爆发后的熔岩冷卻、碎裂，经历数千年冰岛南岸极端天气与大西洋巨浪反复冲刷，才淬炼而成。每一粒细沙本身都是火山岩风化的黑色结晶；岸边壮观的玄武岩石柱群，是岩浆遇冷急速凝固，再被海浪侵蚀雕塑出的天然奇观，代表冰岛「火」与「冰」、「山」与「海」的完美结合。黑色沙子来自邻近卡特拉火山的喷发物，透水性极高，很难预测海浪沖上沙滩的最上缘是何处，这也是危险的地方。\n四、传说如果把黑沙滩的石头带回家就会招来厄运，来这里时请静静欣赏美丽的景色就好，不要将石头捡回家。",
+        "tips": "停车收费 1000 ISK。",
+        "parking": "1000 ISK",
+        "map": "Reynisfjara Black Sand Beach",
+        "nextStops": [
+          {
+            "name": "超市",
+            "address": "Kronan Vik Iceland",
+            "distanceKm": 1,
+            "etaMin": 5
+          },
+          {
+            "name": "教堂",
+            "address": "Vík í Mýrdal Church",
+            "distanceKm": 1,
+            "etaMin": 5
+          }
+        ]
+      },
+      {
+        "icon": "🏘️",
+        "name": "维克镇 Vík",
+        "label": "E",
+        "img": "Vík-1.webp",
+        "tags": [
+          "补给"
+        ],
+        "desc": "冰岛本岛最南部的小镇，也是南部海岸线最适合停留加油、住宿、采买食材的地方。",
+        "deepDesc": "一、超市补给：维克镇是冰岛本岛最南部的小镇，常住人口约几百人，虽然面积不大，却是所有旅行团必经地，也是自驾旅人向东出发南岸的重要补给站。镇上唯一的一间大型超级市场 KRÓNAN，结完帐之后收银台旁边有位置可以在这里用餐休息，这间复合式商场里面也有餐厅可以选择，还有一区是 ICEWEAR 的衣服专卖店，各项登山露营用品一应俱全，羊毛衫、羽绒外套、整块皮毛料都有卖。KRÓNAN 和 ICEWEAR 两间店的中间有连通，可以不用走到冷冷的建筑物外，直接两间一起逛。\n二、维克教堂 Vík í Mýrdal Church：冰岛南岸最具标志性的景点之一，位于小镇山丘上，白墙红顶与黑沙滩、海岸线、火山背景形成鲜明对比，是南岸自驾或跟团必拍的经典地标。教堂小巧朴实，但无论外观或内部皆极具安静美感；教堂入口、教堂外的墓地，以及教堂后方山坡都是拍照取景的极佳位置，能俯瞰维克小镇全景、海岸及 Reynisdrangar 海上巨石，日出日落时分更有戏剧性的光线。沿着教堂后方步道往上走，利用地势的前后景衬托，可以拍出宏伟且带有童话感的教堂全貌。有趣的是，这座教堂常被拿来跟全球视力检查标准图像（红色小屋）的本尊——位于冰岛西部海德利桑德的英格亚尔德斯霍尔教堂相提并论，算是「平替款」。\n三、维克镇红顶教堂/路德教会Víkurkirkja 抵达教堂后继续往上开一段，就能到最佳观景点，可以停几辆车",
+        "map": "Vík í Mýrdal Church",
+        "nextStop": {
+          "type": "drive",
+          "text": "🚗 前往民宿",
+          "detail": "约 72 km · 约 60 分钟"
+        },
+        "images": [
+          "vik-01.webp",
+          "vik-02.webp",
+          "vik-03.webp"
+        ]
+      }
     ]
   },
-  day4: {
-    num:'4', dateLabel:'10月7日（周三）', title:'走进蓝冰·闪耀钻石海岸',
-    driveSummary: { total:'约 121 km', time:'约 2小时（不含景点停留）' },
-    hotel:{ name:'Lakeview Cabin 民宿', note:'连住，南岸湖景小屋', map:'Lakeview Cabin Iceland' },
-    aurora:{ location:{ name:'Lakeview Cabin（近 Kirkjubæjarklaustur）', lat:63.79, lon:-18.06 },
-      sunrise:'08:06', sunset:'18:41', kpIndex:3, cloudCover:45, probability:'medium',
-      summary:'云量中等，示例情境下观测机会中等', updatedAt:'示例数值，出发前请再核实预报' },
-    spots: [
-      { icon:'🧊', name:'冰川徒步与蓝冰洞', label:'A', img:'blue-ice-cave.webp', tags:['花儿与少年','冰川'],
-        desc:'踩上万年冰川、走进梦幻蓝冰洞，再亲口喝一口超甜的冰川水，这绝对是整趟旅程最酷、最值得的冒险。',
-        deepDesc:'一、行程流程与时间分配：4小时包含「集合前置＋车程＋冰上活动」，实际在冰上行走的时间约2.5~3小时，整体体力负担适中，属于兼具挑战性与赏景的最佳比例。\n二、步骤：（1）集合与领取装备（约30分钟）：于 Skaftafell 服务中心报到，工作人员发放安全帽、安全绑带、冰爪与冰斧。（2）搭乘巨轮越野车（约15~20分钟）前往冰川舌边缘。（3）穿着冰爪与安全教学（约15分钟），导游示范如何正确穿上冰爪，并教导冰上行走步态与注意事项。（4）冰川健行与蓝冰洞探险（约2~2.5小时）：穿梭于千年的瓦特纳冰原分支上，欣赏蓝色冰川裂隙，进入天然蓝冰洞拍照，体验原汁原味的冰川纯净水。（5）卸下装备与接驳返回（约30分钟）。\n三、出发前一日准备：装备打包入包（空水壶/保温瓶、高热量小零食、晕车药），电子设备充饱电（携带行动电源），充分休息。当日准备：直接穿上洋葱式保暖层＋防水外衣裤＋高筒健行鞋，吃晕车药。冰上安全三口诀：（1）企鹅步——双脚开立与肩同宽，防冰爪互勾。（2）踩剉冰——全脚掌垂直重踩下压，防滑倒。（3）不脱队。\n四、冰岛蓝冰洞呈现梦幻蓝色的原因：冰川历经数百年极大压力，内部气泡几乎完全被挤出，形成密度极高、纯净的「压缩冰」。当光线穿过这种致密的冰层时，会吸收光谱中的红色与黄色光波，唯有蓝色光波能穿透并折射出来，造就了宛如蓝宝石般的天然色彩。',
-        map:'Troll Expeditions Skaftafel',
-        nextStop:{ type:'drive', text:'🚗 前往 Jökulsárlón', detail:'约 15 km · 约 15 分钟' } , images:['icehiking-01.webp', 'icehiking-02.webp', 'icehiking-03.webp', 'icehiking-04.webp', 'icehiking-05.webp', 'icehiking-06.webp', 'icehiking-07.webp', 'icehiking-08.webp', 'icehiking-09.webp']},
-      { icon:'🚤', name:'杰古沙龙冰河湖 Jökulsárlón', label:'B', img:'jokulsarlon.webp', tags:['花儿与少年','冰川'],
-        desc:'冰岛最大、最著名的冰河湖，以布满漂浮巨型冰块的湛蓝湖水、岸边慵懒的野生海豹，以及对面闪闪发光的钻石沙滩闻名，是冰岛招牌景点。',
-        deepDesc:'一、杰古沙龙冰河湖（又作冰潟湖）是冰岛最著名和最大的冰川湖，位于冰岛东南部、瓦特纳冰原的南端。冰河湖于1934-35年开始出现，由于冰岛冰川的大量融化，从1970年代开始，冰河湖的面积不断扩大，如今面积为18平方公里，湖深200公尺，是冰岛第二深湖。\n二、全年都可以造访，但浮冰的数量与大小会随季节变化而不同。如果想欣赏湖中壮观的浮冰景象，夏季至秋季（5月至10月）通常是最佳观赏时机，尤其是6月到8月——这段期间气温较高，冰川融化速度加快，大量冰块从瓦特纳冰川崩解并漂浮至湖面，形成壮观的景象。\n三、导航会直接带领到最大的停车场，冰河湖就在停车场旁边，一下车就能看到美景。停车场的商店里有卖简单的面包餐点、咖啡饮料，还有不少冰岛明信片、纪念品等。',
-        tips:'停车场可以免费使用厕所。\n钻石冰沙滩东停车场、西停车场，以及杰古沙龙冰河湖停车场，这三个停车场收费皆为 ISK 1000。',
-        parking:'1000 ISK',
-        toilet:'停车场免费',
-        map:'Jokulsarlon Glacier Lagoon',
-        nextStop:{ type:'drive', text:'🚗 前往小冰河湖 Fjallsárlón', detail:'约 15 km · 约 20 分钟' } , images:['jokulsarlon-01.webp', 'jokulsarlon-02.webp', 'jokulsarlon-03.webp', 'jokulsarlon-04.webp', 'jokulsarlon-05.webp']},
-      { icon:'🏔️', name:'小冰河湖 Fjallsárlón', label:'C', tags:['冰川'],
-        desc:'规模小于杰古沙龙冰河湖，但离壮观的冰舌极近，能清楚看见断落的冰块与冰川交织的画面，游客也少非常多。',
-        deepDesc:'一、杰古沙龙冰河湖的名气较大，因此观光客比这里多非常多，两个冰河湖相较之下，这里的宁静清幽更迷人。停车场到小冰河湖还要步行五到十分钟，规模虽然没有杰古沙龙冰河湖那么大，但有壮阔的瓦特纳冰川作为背景，非常壮观。\n二、途中可以从高处眺望瓦特纳冰川及其冰舌，以及小冰河湖，景色非常壮观，别忘了稍作停留欣赏。虽然规模比知名的杰古沙龙冰河湖小了许多，但人潮也少非常多，是个相对清幽的景点，可以顺路过来看看，享受这份只属于冰河湖和自己的宁静时刻。而且若当下环境非常安静，记得张开耳朵、静下心聆听，说不定还能听见冰块断裂或相互碰撞的声音。',
-        tips:'三个停车场停车费皆为 ISK 100。',
-        parking:'100 ISK',
-        map:'Fjallsarlon Iceland',
-        nextStop:{ type:'walk', text:'🚶 前往钻石海滩', detail:'约 1 km · 约 10 分钟（过桥即达）' } },
-      { icon:'💠', name:'钻石海滩 Diamond Beach', label:'D', img:'diamond-beach.webp', tags:['花儿与少年','冰川'],
-        desc:'因黑沙滩上布满晶莹的冰块而闻名，整个景色是由火山与海洋共创的，黑沙是火山活动的产物，冰块则是从瓦特纳冰川的冰舌尾端断落而来。',
-        deepDesc:'一、瓦特纳冰川融化崩解之后，大大小小的冰块从旁边的杰古龙冰河湖中顺着水道被带到海上，再被海浪冲上岸边——潟湖内大大小小的冰块，是瓦特纳冰川尾端的冰从冰舌断落而成，湖水带着冰块慢慢汇入大海，再由海浪反复冲刷上岸，因此形成沙滩上有着大大小小冰块的景象。\n二、钻石海滩是火山与海洋共创的奇观：沙滩上的黑沙，与冰岛其他黑沙滩相似，是火山活动的产物。火山熔岩经过数千年的海浪侵蚀与风化，磨成了细致的黑色沙粒，铺满整个沙滩，形成冰块与黑沙的强烈对比。',
-        tips:'三个停车场停车费皆为 ISK 100。',
-        parking:'100 ISK',
-        map:'Diamond Beach Iceland',
-        nextStop:{ type:'drive', text:'🚗 前往民宿', detail:'约 90 km · 约 75 分钟' } , images:['diamond-beach-01.webp', 'diamond-beach-02.webp', 'diamond-beach-03.webp', 'diamond-beach-04.webp', 'diamond-beach-05.webp', 'diamond-beach-06.webp', 'diamond-beach-07.webp']}
+  "day4": {
+    "num": "4",
+    "dateLabel": "10月7日（周三）",
+    "title": "走进蓝冰·闪耀钻石海岸",
+    "driveSummary": {
+      "total": "约 121 km",
+      "time": "约 2小时（不含景点停留）"
+    },
+    "hotel": {
+      "name": "Lakeview Cabin 民宿",
+      "note": "连住，南岸湖景小屋",
+      "map": "Lakeview Cabin Iceland"
+    },
+    "aurora": {
+      "location": {
+        "name": "Lakeview Cabin（近 Kirkjubæjarklaustur）",
+        "lat": 63.79,
+        "lon": -18.06
+      },
+      "sunrise": "08:06",
+      "sunset": "18:41",
+      "kpIndex": 3,
+      "cloudCover": 45,
+      "probability": "medium",
+      "summary": "云量中等，示例情境下观测机会中等",
+      "updatedAt": "示例数值，出发前请再核实预报"
+    },
+    "spots": [
+      {
+        "icon": "🧊",
+        "name": "冰川徒步与蓝冰洞",
+        "label": "A",
+        "img": "blue-ice-cave.webp",
+        "tags": [
+          "花儿与少年",
+          "冰川"
+        ],
+        "desc": "踩上万年冰川、走进梦幻蓝冰洞，再亲口喝一口超甜的冰川水，这绝对是整趟旅程最酷、最值得的冒险。",
+        "deepDesc": "一、行程流程与时间分配：4小时包含「集合前置＋车程＋冰上活动」，实际在冰上行走的时间约2.5~3小时，整体体力负担适中，属于兼具挑战性与赏景的最佳比例。\n二、步骤：（1）集合与领取装备（约30分钟）：于 Skaftafell 服务中心报到，工作人员发放安全帽、安全绑带、冰爪与冰斧。（2）搭乘巨轮越野车（约15~20分钟）前往冰川舌边缘。（3）穿着冰爪与安全教学（约15分钟），导游示范如何正确穿上冰爪，并教导冰上行走步态与注意事项。（4）冰川健行与蓝冰洞探险（约2~2.5小时）：穿梭于千年的瓦特纳冰原分支上，欣赏蓝色冰川裂隙，进入天然蓝冰洞拍照，体验原汁原味的冰川纯净水。（5）卸下装备与接驳返回（约30分钟）。\n三、出发前一日准备：装备打包入包（空水壶/保温瓶、高热量小零食、晕车药），电子设备充饱电（携带行动电源），充分休息。当日准备：直接穿上洋葱式保暖层＋防水外衣裤＋高筒健行鞋，吃晕车药。冰上安全三口诀：（1）企鹅步——双脚开立与肩同宽，防冰爪互勾。（2）踩剉冰——全脚掌垂直重踩下压，防滑倒。（3）不脱队。\n四、冰岛蓝冰洞呈现梦幻蓝色的原因：冰川历经数百年极大压力，内部气泡几乎完全被挤出，形成密度极高、纯净的「压缩冰」。当光线穿过这种致密的冰层时，会吸收光谱中的红色与黄色光波，唯有蓝色光波能穿透并折射出来，造就了宛如蓝宝石般的天然色彩。",
+        "map": "Troll Expeditions Skaftafel",
+        "nextStop": {
+          "type": "drive",
+          "text": "🚗 前往 Jökulsárlón",
+          "detail": "约 15 km · 约 15 分钟"
+        },
+        "images": [
+          "icehiking-01.webp",
+          "icehiking-02.webp",
+          "icehiking-03.webp",
+          "icehiking-04.webp",
+          "icehiking-05.webp",
+          "icehiking-06.webp",
+          "icehiking-07.webp",
+          "icehiking-08.webp",
+          "icehiking-09.webp"
+        ]
+      },
+      {
+        "icon": "🚤",
+        "name": "杰古沙龙冰河湖 Jökulsárlón",
+        "label": "B",
+        "img": "jokulsarlon.webp",
+        "tags": [
+          "花儿与少年",
+          "冰川"
+        ],
+        "desc": "冰岛最大、最著名的冰河湖，以布满漂浮巨型冰块的湛蓝湖水、岸边慵懒的野生海豹，以及对面闪闪发光的钻石沙滩闻名，是冰岛招牌景点。",
+        "deepDesc": "一、杰古沙龙冰河湖（又作冰潟湖）是冰岛最著名和最大的冰川湖，位于冰岛东南部、瓦特纳冰原的南端。冰河湖于1934-35年开始出现，由于冰岛冰川的大量融化，从1970年代开始，冰河湖的面积不断扩大，如今面积为18平方公里，湖深200公尺，是冰岛第二深湖。\n二、全年都可以造访，但浮冰的数量与大小会随季节变化而不同。如果想欣赏湖中壮观的浮冰景象，夏季至秋季（5月至10月）通常是最佳观赏时机，尤其是6月到8月——这段期间气温较高，冰川融化速度加快，大量冰块从瓦特纳冰川崩解并漂浮至湖面，形成壮观的景象。\n三、导航会直接带领到最大的停车场，冰河湖就在停车场旁边，一下车就能看到美景。停车场的商店里有卖简单的面包餐点、咖啡饮料，还有不少冰岛明信片、纪念品等。",
+        "tips": "停车场可以免费使用厕所。\n钻石冰沙滩东停车场、西停车场，以及杰古沙龙冰河湖停车场，这三个停车场收费皆为 ISK 1000。",
+        "parking": "1000 ISK",
+        "toilet": "停车场免费",
+        "map": "Jokulsarlon Glacier Lagoon",
+        "nextStop": {
+          "type": "drive",
+          "text": "🚗 前往小冰河湖 Fjallsárlón",
+          "detail": "约 15 km · 约 20 分钟"
+        },
+        "images": [
+          "jokulsarlon-01.webp",
+          "jokulsarlon-02.webp",
+          "jokulsarlon-03.webp",
+          "jokulsarlon-04.webp",
+          "jokulsarlon-05.webp"
+        ]
+      },
+      {
+        "icon": "🏔️",
+        "name": "小冰河湖 Fjallsárlón",
+        "label": "C",
+        "tags": [
+          "冰川"
+        ],
+        "desc": "规模小于杰古沙龙冰河湖，但离壮观的冰舌极近，能清楚看见断落的冰块与冰川交织的画面，游客也少非常多。",
+        "deepDesc": "一、杰古沙龙冰河湖的名气较大，因此观光客比这里多非常多，两个冰河湖相较之下，这里的宁静清幽更迷人。停车场到小冰河湖还要步行五到十分钟，规模虽然没有杰古沙龙冰河湖那么大，但有壮阔的瓦特纳冰川作为背景，非常壮观。\n二、途中可以从高处眺望瓦特纳冰川及其冰舌，以及小冰河湖，景色非常壮观，别忘了稍作停留欣赏。虽然规模比知名的杰古沙龙冰河湖小了许多，但人潮也少非常多，是个相对清幽的景点，可以顺路过来看看，享受这份只属于冰河湖和自己的宁静时刻。而且若当下环境非常安静，记得张开耳朵、静下心聆听，说不定还能听见冰块断裂或相互碰撞的声音。",
+        "tips": "三个停车场停车费皆为 ISK 100。",
+        "parking": "100 ISK",
+        "map": "Fjallsarlon Iceland",
+        "nextStop": {
+          "type": "walk",
+          "text": "🚶 前往钻石海滩",
+          "detail": "约 1 km · 约 10 分钟（过桥即达）"
+        }
+      },
+      {
+        "icon": "💠",
+        "name": "钻石海滩 Diamond Beach",
+        "label": "D",
+        "img": "diamond-beach.webp",
+        "tags": [
+          "花儿与少年",
+          "冰川"
+        ],
+        "desc": "因黑沙滩上布满晶莹的冰块而闻名，整个景色是由火山与海洋共创的，黑沙是火山活动的产物，冰块则是从瓦特纳冰川的冰舌尾端断落而来。",
+        "deepDesc": "一、瓦特纳冰川融化崩解之后，大大小小的冰块从旁边的杰古龙冰河湖中顺着水道被带到海上，再被海浪冲上岸边——潟湖内大大小小的冰块，是瓦特纳冰川尾端的冰从冰舌断落而成，湖水带着冰块慢慢汇入大海，再由海浪反复冲刷上岸，因此形成沙滩上有着大大小小冰块的景象。\n二、钻石海滩是火山与海洋共创的奇观：沙滩上的黑沙，与冰岛其他黑沙滩相似，是火山活动的产物。火山熔岩经过数千年的海浪侵蚀与风化，磨成了细致的黑色沙粒，铺满整个沙滩，形成冰块与黑沙的强烈对比。",
+        "tips": "三个停车场停车费皆为 ISK 100。",
+        "parking": "100 ISK",
+        "map": "Diamond Beach Iceland",
+        "nextStop": {
+          "type": "drive",
+          "text": "🚗 前往民宿",
+          "detail": "约 90 km · 约 75 分钟"
+        },
+        "images": [
+          "diamond-beach-01.webp",
+          "diamond-beach-02.webp",
+          "diamond-beach-03.webp",
+          "diamond-beach-04.webp",
+          "diamond-beach-05.webp",
+          "diamond-beach-06.webp",
+          "diamond-beach-07.webp"
+        ]
+      }
     ]
   },
-  day5: {
-    num:'5', dateLabel:'10月8日（周四）', title:'公路慢行·蓝湖疗愈',
-    routeMapImg:'route-day5.webp',
-    driveSummary: { total:'约 325 km', time:'约 4小时50分钟（不含景点停留，这天是长途转场日）' },
-    hotel:{ name:'Garður Apartments 民宿', note:'Garður 地区公寓式民宿，邻近蓝湖与机场', map:'Gardur Apartments Iceland' },
-    aurora:{ location:{ name:'Garður（近蓝湖与机场）', lat:64.07, lon:-22.70 },
-      sunrise:'08:09', sunset:'18:38', kpIndex:2, cloudCover:65, probability:'low',
-      summary:'云量偏高、又邻近机场光害，示例情境下观测机会偏低', updatedAt:'示例数值，出发前请再核实预报' },
-    spots: [
-      { icon:'🏞️', name:'羽毛峡谷 Fjaðrárgljúfur', label:'A', tags:[],
-        desc:'冰岛南部最壮丽的自然奇观之一，拥有「世界最美峡谷」的美誉。',
-        deepDesc:'一、从卫星图上可以看到是一条狭长的河谷地形。羽毛河峡谷由小冰河末期流水和冰川侵蚀而成，软质的岩体被流水和冰川带走，而坚硬的岩体则被留下，造就了现在看到的壮丽峡谷地形。峡谷岩壁陡峭又蜿蜒，全长约2公里、深约100公尺，从高空俯瞰时，峡谷的形状如同一根羽毛，因此才会有「羽毛河」这个名称。\n二、设有上方与下方两个停车场。若想轻松俯瞰壮阔地形，建议停上方停车场，通往此处的道路属于F-Road，仅限四轮传动车辆行驶；若想沿溪谷漫步，停下方停车场即可，一般轿车可达。两处停车场均须透过 Parka APP 缴费。\n三、从下方停车场走过来，还不用爬上步道就会看到一座铁桥，在这里看就已经非常壮观，不想爬步道的话在这个位置拍照也可以。不过既然都付了停车费，建议还是爬到最上面的观景台看看——单程30~45分钟，可以俯瞰整个峡谷，跟周围一望无际的山脉，这里的山很像抹茶蛋糕，非常疗愈，而且步道规划得平整完善，慢慢走应该都不会太累。',
-        tips:'下方停车场设有免费的简易厕所。\n停车费 ISK 1000。',
-        parking:'1000 ISK',
-        toilet:'下方停车场设有免费简易厕所',
-        map:'Fjadrargljufur Canyon Iceland',
-        nextStop:{ type:'drive', text:'🚗 前往 Blue Lagoon 蓝湖', detail:'约 295 km · 约 4 小时 15 分钟' } , images:['fjadrargljufur-01.webp', 'fjadrargljufur-02.webp', 'fjadrargljufur-03.webp']},
-      { icon:'♨️', name:'蓝湖温泉 Blue Lagoon', label:'B', img:'blue-lagoon.webp', tags:['火山','温泉'],
-        desc:'世界知名的蓝湖温泉，并非天然湖泊也非自然温泉，这片梦幻乳蓝色温泉其实来自地热发电后排出的矿物热水，却意外变成冰岛最传奇的景观之一。',
-        deepDesc:'一、蓝湖如何形成：湖水是海水在当地天然地热加热而变成现在这样的地热温泉，因此它并不是纯天然的地热温泉。水温一年365天都保持在37°C~39°C。\n二、水为什么是蓝色的：湖水本身其实是乳白色的，只是因为水中的物质不同，影响的颜色也不同——能看到蓝色主要是水中的矽土折射阳光光线而产生。除了矽土外，湖水中也有其他矿物质成分和海藻。夏天时海藻在阳光照射下增生速度非常快，海藻是绿色的，数量多的时候折射出的光线会让湖水看起来偏绿，这个情况在夏天比较普遍；天空的蓝度、天气好坏也会稍微影响水色，但九成以上的时间，蓝湖的水还是美美的蓝色。\n三、敷脸的矽泥面膜：所有游客都可以敷蓝湖内提供的矽泥面膜（Silica Mud Mask），这些矽泥是天然产于蓝湖湖底的（走在湖里某些区域还能感觉到踩到它们），主要作为清洁面膜用途，有去角质、美白、让皮肤有弹性的功效。敷在脸上或身体上约5分钟，等它稍干就可以洗掉。\n四、健康功效：蓝湖的水富含大量矿物质，其中以氯、钠、钾和钙为主，其结晶物质经冰岛医学院证明在某种程度上可以纾解精神压力，对治愈皮肤病也有特别疗效——蓝湖设有专门为牛皮癣患者设立的诊所，使用天然蓝湖水和自制产品为患者提供治疗。\n五、票种：Comfort（舒适门票）含入场、蒸气浴桑拿冷池、毛巾及洗护用品、置物柜，矽泥面膜可无限次使用（工作人员说敷十分钟可以洗掉，海藻款五分钟，但冬天其实根本撑不到十分钟就干了，差不多五分钟就要赶快用掉，不然事后脸会痒）。水上酒吧有非酒精饮料一杯：Blueberry slush蓝莓冰沙拍照好看也蛮好喝，Green is good绿色果汁比较健康但姜味比较重。\n六、入场须知：所有游客都需要在无泳衣状态下洗澡结束后，才可以穿泳衣进入蓝湖，这是所有冰岛温泉和泳池入场前的统一规定。如果打算使用面膜体验，建议当天素颜入场效果会更好，让矽泥直接接触皮肤。冲凉的地方有沐浴乳、洗头水和护发素，建议头发上多用一些护发素，因为矿物质丰富的蓝湖水容易让头发打结。毛巾、拖鞋、浴袍可直接挂在／放在岸边，不太可能被偷，但相机、手机仍需自行保管妥当。进入蓝湖后完全不需要把钱包或信用卡带进水里——手环本身就是场内唯一的支付工具，水上吧台点饮料、做面膜、购买额外服务，全部靠手环扫一扫记帐，离场前才在出口柜台一次性结清，弄丢手环需要赔偿。',
-        toilet:'温泉区内。务必导航「Blue Lagoon Iceland」，勿搜中文「蓝湖」以免误导至废弃地热厂区。',
-        map:'Blue Lagoon Iceland',
-        nextStop:{ type:'drive', text:'🚗 前往民宿', detail:'约 20 km · 约 20 分钟' } , images:['bluelagoon-01.webp', 'bluelagoon-02.webp', 'bluelagoon-03.webp', 'bluelagoon-04.webp', 'bluelagoon-05.webp', 'bluelagoon-06.webp', 'bluelagoon-07.webp', 'bluelagoon-08.webp', 'bluelagoon-09.webp', 'bluelagoon-10.webp', 'bluelagoon-11.webp']}
+  "day5": {
+    "num": "5",
+    "dateLabel": "10月8日（周四）",
+    "title": "公路慢行·蓝湖疗愈",
+    "routeMapImg": "route-day5.webp",
+    "driveSummary": {
+      "total": "约 325 km",
+      "time": "约 4小时50分钟（不含景点停留，这天是长途转场日）"
+    },
+    "hotel": {
+      "name": "Garður Apartments 民宿",
+      "note": "Garður 地区公寓式民宿，邻近蓝湖与机场",
+      "map": "Gardur Apartments Iceland"
+    },
+    "aurora": {
+      "location": {
+        "name": "Garður（近蓝湖与机场）",
+        "lat": 64.07,
+        "lon": -22.7
+      },
+      "sunrise": "08:09",
+      "sunset": "18:38",
+      "kpIndex": 2,
+      "cloudCover": 65,
+      "probability": "low",
+      "summary": "云量偏高、又邻近机场光害，示例情境下观测机会偏低",
+      "updatedAt": "示例数值，出发前请再核实预报"
+    },
+    "spots": [
+      {
+        "icon": "🏞️",
+        "name": "羽毛峡谷 Fjaðrárgljúfur",
+        "label": "A",
+        "tags": [],
+        "desc": "冰岛南部最壮丽的自然奇观之一，拥有「世界最美峡谷」的美誉。",
+        "deepDesc": "一、从卫星图上可以看到是一条狭长的河谷地形。羽毛河峡谷由小冰河末期流水和冰川侵蚀而成，软质的岩体被流水和冰川带走，而坚硬的岩体则被留下，造就了现在看到的壮丽峡谷地形。峡谷岩壁陡峭又蜿蜒，全长约2公里、深约100公尺，从高空俯瞰时，峡谷的形状如同一根羽毛，因此才会有「羽毛河」这个名称。\n二、设有上方与下方两个停车场。若想轻松俯瞰壮阔地形，建议停上方停车场，通往此处的道路属于F-Road，仅限四轮传动车辆行驶；若想沿溪谷漫步，停下方停车场即可，一般轿车可达。两处停车场均须透过 Parka APP 缴费。\n三、从下方停车场走过来，还不用爬上步道就会看到一座铁桥，在这里看就已经非常壮观，不想爬步道的话在这个位置拍照也可以。不过既然都付了停车费，建议还是爬到最上面的观景台看看——单程30~45分钟，可以俯瞰整个峡谷，跟周围一望无际的山脉，这里的山很像抹茶蛋糕，非常疗愈，而且步道规划得平整完善，慢慢走应该都不会太累。",
+        "tips": "下方停车场设有免费的简易厕所。\n停车费 ISK 1000。",
+        "parking": "1000 ISK",
+        "toilet": "下方停车场设有免费简易厕所",
+        "map": "Fjadrargljufur Canyon Iceland",
+        "nextStop": {
+          "type": "drive",
+          "text": "🚗 前往 Blue Lagoon 蓝湖",
+          "detail": "约 295 km · 约 4 小时 15 分钟"
+        },
+        "images": [
+          "fjadrargljufur-01.webp",
+          "fjadrargljufur-02.webp",
+          "fjadrargljufur-03.webp"
+        ]
+      },
+      {
+        "icon": "♨️",
+        "name": "蓝湖温泉 Blue Lagoon",
+        "label": "B",
+        "img": "blue-lagoon.webp",
+        "tags": [
+          "火山",
+          "温泉"
+        ],
+        "desc": "世界知名的蓝湖温泉，并非天然湖泊也非自然温泉，这片梦幻乳蓝色温泉其实来自地热发电后排出的矿物热水，却意外变成冰岛最传奇的景观之一。",
+        "deepDesc": "一、蓝湖如何形成：湖水是海水在当地天然地热加热而变成现在这样的地热温泉，因此它并不是纯天然的地热温泉。水温一年365天都保持在37°C~39°C。\n二、水为什么是蓝色的：湖水本身其实是乳白色的，只是因为水中的物质不同，影响的颜色也不同——能看到蓝色主要是水中的矽土折射阳光光线而产生。除了矽土外，湖水中也有其他矿物质成分和海藻。夏天时海藻在阳光照射下增生速度非常快，海藻是绿色的，数量多的时候折射出的光线会让湖水看起来偏绿，这个情况在夏天比较普遍；天空的蓝度、天气好坏也会稍微影响水色，但九成以上的时间，蓝湖的水还是美美的蓝色。\n三、敷脸的矽泥面膜：所有游客都可以敷蓝湖内提供的矽泥面膜（Silica Mud Mask），这些矽泥是天然产于蓝湖湖底的（走在湖里某些区域还能感觉到踩到它们），主要作为清洁面膜用途，有去角质、美白、让皮肤有弹性的功效。敷在脸上或身体上约5分钟，等它稍干就可以洗掉。\n四、健康功效：蓝湖的水富含大量矿物质，其中以氯、钠、钾和钙为主，其结晶物质经冰岛医学院证明在某种程度上可以纾解精神压力，对治愈皮肤病也有特别疗效——蓝湖设有专门为牛皮癣患者设立的诊所，使用天然蓝湖水和自制产品为患者提供治疗。\n五、票种：Comfort（舒适门票）含入场、蒸气浴桑拿冷池、毛巾及洗护用品、置物柜，矽泥面膜可无限次使用（工作人员说敷十分钟可以洗掉，海藻款五分钟，但冬天其实根本撑不到十分钟就干了，差不多五分钟就要赶快用掉，不然事后脸会痒）。水上酒吧有非酒精饮料一杯：Blueberry slush蓝莓冰沙拍照好看也蛮好喝，Green is good绿色果汁比较健康但姜味比较重。\n六、入场须知：所有游客都需要在无泳衣状态下洗澡结束后，才可以穿泳衣进入蓝湖，这是所有冰岛温泉和泳池入场前的统一规定。如果打算使用面膜体验，建议当天素颜入场效果会更好，让矽泥直接接触皮肤。冲凉的地方有沐浴乳、洗头水和护发素，建议头发上多用一些护发素，因为矿物质丰富的蓝湖水容易让头发打结。毛巾、拖鞋、浴袍可直接挂在／放在岸边，不太可能被偷，但相机、手机仍需自行保管妥当。进入蓝湖后完全不需要把钱包或信用卡带进水里——手环本身就是场内唯一的支付工具，水上吧台点饮料、做面膜、购买额外服务，全部靠手环扫一扫记帐，离场前才在出口柜台一次性结清，弄丢手环需要赔偿。",
+        "toilet": "温泉区内。务必导航「Blue Lagoon Iceland」，勿搜中文「蓝湖」以免误导至废弃地热厂区。",
+        "map": "Blue Lagoon Iceland",
+        "nextStop": {
+          "type": "drive",
+          "text": "🚗 前往民宿",
+          "detail": "约 20 km · 约 20 分钟"
+        },
+        "images": [
+          "bluelagoon-01.webp",
+          "bluelagoon-02.webp",
+          "bluelagoon-03.webp",
+          "bluelagoon-04.webp",
+          "bluelagoon-05.webp",
+          "bluelagoon-06.webp",
+          "bluelagoon-07.webp",
+          "bluelagoon-08.webp",
+          "bluelagoon-09.webp",
+          "bluelagoon-10.webp",
+          "bluelagoon-11.webp"
+        ]
+      }
     ]
   },
-  day6: {
-    num:'6', dateLabel:'10月9日（周五）', title:'告别冰岛·飞向芬兰', transit:true,
-    routeMapImg:'route-day6.webp',
-    flights:[
-      { airline:'芬兰航空', flightNo:'AY992', from:'凯夫拉维克 KEF', to:'赫尔辛基万塔 HEL', dep:'08:35', arr:'15:00', duration:'约3小时25分', date:'10月9日' }
+  "day6": {
+    "num": "6",
+    "dateLabel": "10月9日（周五）",
+    "title": "告别冰岛·飞向芬兰",
+    "transit": true,
+    "routeMapImg": "route-day6.webp",
+    "flights": [
+      {
+        "airline": "芬兰航空",
+        "flightNo": "AY992",
+        "from": "凯夫拉维克 KEF",
+        "to": "赫尔辛基万塔 HEL",
+        "dep": "08:35",
+        "arr": "15:00",
+        "duration": "约3小时25分",
+        "date": "10月9日"
+      }
     ],
-    note:'一、冰岛机场退税（冰岛非欧盟国家，离境前务必完成）：（1）购物时向店员索取退税单并签字盖章，附上原始购物收据，填妥姓名、地址、护照号码、信用卡信息等个人资料。（2）备妥文件与商品：退税单据、购物发票、护照与登机证（登机当日务必携带）、购买的商品（供机场退税点核对）。（3）抵达机场后前往退税柜台（通常在登机前的海关区域），排队时备妥文件与商品等待工作人员检查；核对无误后会盖章确认，退税款可选信用卡返还或现金退税，建议选信用卡较快速且汇率较佳。\n二、退税金额及时间：退税比例大约为商品金额的11%-14.5%，依消费金额与税率而定；退款时间一般需等待6至8周，现金则是马上拿。\n三、机场贵宾室位置：A15登机口附近。建议提前抵达机场办理退税。',
-    hotel:{ name:'Hilton Helsinki Airport', note:'赫尔辛基机场希尔顿酒店，抵达后入住，交通便利', map:'Hilton Helsinki Airport' }
+    "note": "一、冰岛机场退税（冰岛非欧盟国家，离境前务必完成）：（1）购物时向店员索取退税单并签字盖章，附上原始购物收据，填妥姓名、地址、护照号码、信用卡信息等个人资料。（2）备妥文件与商品：退税单据、购物发票、护照与登机证（登机当日务必携带）、购买的商品（供机场退税点核对）。（3）抵达机场后前往退税柜台（通常在登机前的海关区域），排队时备妥文件与商品等待工作人员检查；核对无误后会盖章确认，退税款可选信用卡返还或现金退税，建议选信用卡较快速且汇率较佳。\n二、退税金额及时间：退税比例大约为商品金额的11%-14.5%，依消费金额与税率而定；退款时间一般需等待6至8周，现金则是马上拿。\n三、机场贵宾室位置：A15登机口附近。建议提前抵达机场办理退税。",
+    "hotel": {
+      "name": "Hilton Helsinki Airport",
+      "note": "赫尔辛基机场希尔顿酒店，抵达后入住，交通便利",
+      "map": "Hilton Helsinki Airport"
+    }
   },
-  day7: {
-    num:'7', dateLabel:'10月10日（周六）', title:'赫尔辛基·北欧漫游日',
-    routeMapImg:'route-day7.webp',
-    hotel:{ name:'飞机上', note:'当晚搭乘深夜航班返港（AY099，00:35起飞）' },
-    spots: [
-      { icon:'✈️', name:'赫尔辛基机场', tags:['机场'], images:['helairport-01.webp', 'helairport-02.webp', 'helairport-03.webp', 'helairport-04.webp', 'helairport-05.webp', 'helairport-06.webp', 'helairport-07.webp'],
-        desc:'以北欧美学设计、高效转机动线以及浓厚芬兰文化闻名。',
-        deepDesc:'一、Alepa超市：芬兰人最爱的国民超市，位于机场到达层（取完行李出来就能看到）汉堡王旁边，是机场性价比最高的选择。面包（如牛角包仅0.5欧）、牛奶、泡面和熟食都很便宜，且24小时营业。\n二、熟食与色拉吧：机场超市的秤重色拉和熟食区非常受欢迎，烟熏鲑鱼、烤鸡和小虾仁价格实惠，14.9欧/kg，还有金枪鱼、山羊干酪及各种种子和琳琅满目的蔬菜；咖啡和蛋糕套餐只需2欧元。超市内设有自助标签机和结帐机：选好不同种类的面包按类别分别装袋，记住号码，在旁边的标签打印机上先按绿色部分（面包件数），再按号码，价格标签就打出来了。\n三、购买交通一日卡进城：搭环状线铁道（Ring Rail Line），I线（逆时针）约32分钟、P线（顺时针）约27分钟，两线皆可前往市中心。班次：周一至周六每10分钟一班，周日每15分钟一班，夜间可能延后。单程票€4.10（需购买涵盖ABC区域车票），车站位于航厦下方。24小时（一日）无限搭乘票：ABC区10.60€，另有12.80€版本。\n四、赫尔辛基机场的整体设计充分体现了北欧和欧洲研究，从关注人性出发，表达对自然的热爱，从而提升了用户的生活质量，曾经被评比全球最好睡的机场。',
-        map:'Helsinki Airport' },
-      { icon:'🚉', name:'中央车站 Helsinki Central Station', tags:[],
-        desc:'不仅是交通枢纽，还有许多好逛的购物中心、必吃的美食和芬兰特色的纪念品店。',
-        deepDesc:'一、车站本身：外表古老壮观，设有正门和西门，正门左右各有巨大人形雕像拿着圆灯，旁侧还有大钟楼，由芬兰建筑师伊利尔·沙里宁设计，就像一件特大艺术品。站内大厅非常雄伟华丽，细致的雕刻就像到了博物馆，吊灯下方是通往地下的手扶梯，地下能直通地铁站、超市及餐厅卖店。\n二、周边购物中心：（1）Citycenter购物中心——位于车站对面，超过50家店铺、咖啡厅及餐厅，一楼有间2欧商店，每样商品都2欧。（2）Kamppi购物中心——市中心最繁忙的购物中心，超过90家店铺及近50家咖啡厅餐厅，分布七层楼；楼下有K market和Alepa market两间超市（K market较大较齐全），还有一条美食街，拉面、泰式料理、新加坡风味应有尽有。（3）Forum购物中心——约140家店铺，2楼有Moomin专卖店。（4）Sokos百货——设有LUMENE保养品、marimekko、iittala等芬兰本地品牌。（5）Stockmann百货——北欧最大百货公司，超过5万平方米零售空间，几乎都是复合式销售，结帐要到中央结帐台。\n三、延伸景点──静默教堂：位于Kamppi购物中心旁边，非常好找。外观是一个超大椭圆形木质建筑，温暖的木头色调，像一艘船或一滴水滴，非常吸睛，建材主要是芬兰云杉木，内部使用大量自然木材，给人温暖平静的感觉，免费入场。',
-        map:'Helsinki Central Station' , images:['centralstation-01.webp', 'centralstation-02.webp', 'centralstation-03.webp', 'centralstation-04.webp']},
-      { icon:'⛪', name:'白教堂 Helsinki Cathedral', tags:[], images:['helsinki-cathedral-01.webp', 'helsinki-cathedral-02.webp', 'helsinki-cathedral-03.webp', 'helsinki-cathedral-04.webp', 'helsinki-cathedral-05.webp'],
-        desc:'纯白色的新古典主义外观、醒目的绿顶设计以及宏伟的百级阶梯广场，内部简约而宁静，没有金箔或大理石的奢华，只有北欧风格的极致简洁。',
-        deepDesc:'一、赫尔辛基大教堂坐落于市中心元老院广场上，左右两边分别是芬兰总理府、赫尔辛基大学主楼和国家图书馆，是赫尔辛基地标性建筑之一。\n二、由于教堂以白色为主，旧时出海的水手看到教堂就代表离赫尔辛基越来越近，所以赫尔辛基又被称为「白都」。\n三、教堂外观简洁而宏大，拥有对称的立面和高耸的圆顶，正面由两侧的圆柱和六根高大的柱子支撑，白色外墙和绿色圆顶形成鲜明对比。',
-        map:'Helsinki Cathedral' },
-      { icon:'🐟', name:'市集广场及老农贸市场', tags:[], img:'market-square-helsinki.webp',
-        desc:'赫尔辛基老农贸市场于1889年开幕，规模并不大，不过是赫尔辛基最具历史意义和人气的市场之一。',
-        deepDesc:'一、位于市中心的海港附近，靠近芬兰湾。自1889年开业以来，成为当地居民和游客的热门去处，既是购买新鲜食材的地方，也是感受赫尔辛基传统饮食文化的好场所。市场内共有约20多间不同的摊贩和咖啡店，主要售卖食品，也有少量纪念品店。\n二、营业时间：大部分店铺约10:00-11:00开门，下午16:00左右就会提前关门，周日很多店铺休息。\n三、推荐好店：（1）SOUP+MORE——主打三文鱼汤（14欧），有中文菜单，面包免费续，座位较少，饭点容易排队。（2）E. Eriksson——市场内的人气老店，三文鱼汤、烟熏三文鱼、章鱼沙拉和生蚝都很受欢迎。',
-        map:'Vanha Kauppahalli Helsinki' , images:['market-square-01.webp', 'market-square-02.webp', 'market-square-03.webp', 'market-square-04.webp', 'market-square-05.webp', 'market-square-06.webp', 'market-square-07.webp']},
-      { icon:'🔴', name:'红教堂 Uspenski Cathedral', tags:[], img:'uspenski-cathedral.webp',
-        desc:'以13座24K镀金洋葱头穹顶、深红色砖墙和浓郁的俄式拜占庭风格著称，是西欧最大的东正教教堂。',
-        deepDesc:'一、乌斯佩斯基大教堂耗时6年完工，兴建于芬兰仍被俄国统治的1862-1868年，由俄国建筑师设计。建筑风格属于俄式拜占庭风格，外立面采用了70万块红色砖石堆砌而成，最大特色是大量金色圆顶和十字架，象征东正教的神圣。\n二、从赫尔辛基大教堂走过去不到十分钟，大多数人拍摄都是在门口的广场，在拍摄点可以拍到爱情锁桥+乌斯佩斯基大教堂同框的角度，还满特别的。外观是典型的红砖绿圆顶拜占庭式建筑风格，共有十三座塔，所有尖塔上的十字架都朝向东方，象征耶稣与十二使徒。\n三、内部最值得一看的是位在正中央的Iconostasis圣龛墙，每一位圣像都画得栩栩如生，金色为底的背景增添了几分华丽；教堂正上方挑高的穹顶描绘着华丽的饰画与宗教典故雕饰，建筑以蓝底代表天空、高挂着金色星星，还有壁面细腻的雕花，看似朴实的外观，内部却有着低调的华丽，是传统东正教堂的艺术风格。',
-        tips:'周六开放时间 10:00-15:00。',
-        map:'Uspenski Cathedral Helsinki' , images:['uspenski-01.webp', 'uspenski-02.webp', 'uspenski-03.webp', 'uspenski-04.webp', 'uspenski-05.webp', 'uspenski-06.webp', 'uspenski-07.webp', 'uspenski-08.webp', 'uspenski-09.webp']},
-      { icon:'🪨', name:'岩石教堂 Temppeliaukio Church', tags:[], img:'temppeliaukio-church.webp',
-        desc:'赫尔辛基三大教堂中最近代的建筑，教堂内部以裸露的岩石为基础，融合了现代感与自然美。',
-        deepDesc:'一、岩石教堂又称「圣殿广场教堂」，是一座修建于巨大岩石中的教堂。教堂外观简洁，外墙完全由岩石形成；教堂内部以裸露的岩石为基础，融合了现代感与自然美，顶部有一个圆形天窗，让自然光照射到教堂内部。\n二、赫尔辛基的岩石教堂可说颠覆了很多对欧洲教堂华丽古典的刻板印象。完工于1969年，是赫尔辛基三大教堂中最近代的建筑。虽没有华丽的装饰，也没有精致的雕花，但内部特殊的氛围、别出心裁的建筑方式，已让它成为赫尔辛基最热门的景点和重要建筑之一。',
-        tips:'周六 10:00-13:05、14:15-14:35、15:45-16:50。门票：成人票 €8。',
-        map:'Temppeliaukio Church Helsinki' , images:['temppeliaukio-01.webp', 'temppeliaukio-02.webp', 'temppeliaukio-03.webp']},
-      { icon:'🏰', name:'芬兰堡 Suomenlinna', tags:['世界遗产'],
-        desc:'世界文化遗产、海上军事要塞、自然与历史融合，建于18世纪的巨大海上防御堡垒，由多个岛屿组成，从赫尔辛基市中心搭船约15分钟即可抵达。',
-        deepDesc:'一、芬兰堡位在芬兰外海，1991年因身为同时代军事建筑的典范，被联合国教科文组织列为世界遗产，曾经保卫过瑞典、俄罗斯和芬兰三个国家。目前仍保留相当多历史原貌，很多结构都是原始建筑，非常珍贵。\n二、交通：搭乘前往芬兰堡的HSL渡轮，位置在市集广场旁的码头，每天都有船班，大概40分钟一班，可在现场用码头旁的自动售票机购票，也可事先下载HSL App购票，持赫尔辛基城市卡则免费。搭乘渡轮约20分钟，票价3.20欧。\n三、门票：如果只是沿着经典路线四处走走看军事堡垒遗迹，不需要门票；若要参观岛上的博物馆群（共五座），除了海关博物馆免费之外，其他博物馆都要单独购票，可在各博物馆内购买。\n四、经典蓝色路线：下船后沿指标先前往游客中心拿取地图（游客中心也有厕所）。蓝色路线始于防波堤兵营前的主码头，终止于国王之门，路线长度约1.5公里。游客中心和小超市之间有条小路，是蓝色路线的起点，第一个景点就是芬兰堡教堂——建于1854年，最初是俄罗斯东正教驻军教堂，原建筑有五座洋葱顶尖塔；后来芬兰时代改建成福音路德教堂，圆顶不再是洋葱状，塔楼改为四方型。教堂尖塔内设有一座为空中和海上交通导航的灯塔，会发出四次连续闪光——摩斯电码中代表「H」，就是赫尔辛基的意思。如今芬兰堡教堂是举办婚礼、音乐会等活动的场所。\n五、终点国王门：建于1753至1754年间，是堡垒的入口大门，这个位置是1752年瑞典国王阿道夫·弗雷德里克检查堡垒建设时停泊船只的地方。门的立面为凹形，门框以大理石石块镶边，使用粗石砌成；1770年代大门被改造成双吊桥，吊桥前建有码头和宽敞的阶梯，可从这里欣赏海景。从国王门码头可搭水上巴士（另外收费）或步行1.5公里回主要码头搭渡轮，往回走约20分钟。',
-        toilet:'游客中心有厕所',
-        map:'Suomenlinna Helsinki' , images:['suomenlinna-01.webp', 'suomenlinna-02.webp', 'suomenlinna-03.webp', 'suomenlinna-04.webp', 'suomenlinna-05.webp', 'suomenlinna-06.webp', 'suomenlinna-07.webp', 'suomenlinna-08.webp']},
-      { icon:'🛍️', name:'购物', tags:[], isOptional:true,
-        desc:'传说中是世界上最便宜LV的地方，原因是LV在欧盟统一订价，但芬兰享有极高的退税比例（最高可达约17%）。',
-        deepDesc:'一、Helsinki Outlet：芬兰唯一的大型官方奥特莱斯，距离市中心约20公里，集合了40多个品牌，户外品牌如Helly Hansen、Haglöfs、Norrøna、Luhta折扣力度很大，设计品牌如Marimekko、Lumene以及厨具Le Creuset也很值得淘，园区是开放式小镇设计，逛起来很舒服。交通：市中心火车站旁乘坐75路巴士直达，约30分钟；或用HSL App绑定信用卡购买公交票。营业时间：周六10:00-20:00。\n二、LV门市：赫尔辛基有两家Louis Vuitton门市，在此购买是全球定价与退税后最便宜的地区之一，价格比中国专柜便宜约25%。（1）Helsinki Esplanadi旗舰店，周六营业时间10:00-18:00，款项最全，有中文店员服务。（2）Helsinki Stockmann百货分店，周六营业时间10:00-19:00。',
-        map:'Helsinki Outlet' , images:['helsinki-lv-01.webp', 'helsinki-lv-02.webp', 'helsinki-lv-03.webp', 'helsinki-lv-04.webp']},
-      { icon:'🍽️', name:'餐厅', tags:[], isOptional:true,
-        desc:'码头热门三文鱼餐厅 Kappeli Restaurant，玻璃房子坐落在海边码头公园中央，喷泉环绕，仿佛置身童话世界。',
-        deepDesc:'一、Kappeli Restaurant：位于海边码头公园的玻璃房餐厅，环境极佳。三文鱼汤约16.9-17.9欧，自助按人头收费，搭配店里的方块黄油面包非常绝，可无限续杯，本地人和游客都爱去。咖啡馆区域（进门左手边）周一至周六10:00-22:00，没有正餐，有各种蛋糕、饮品，还有自助三文鱼汤；正餐餐厅通常11:00才开始供应，包含前菜、主菜（煎三文鱼与烟熏三文鱼）和甜品。\n二、其他选择：（1）Merimakasiini——距离市中心步行约15分钟的码头旁，三文鱼汤分量足（Big Size约20欧），味道浓郁。（2）南码头露天市场（Kauppatori）——露天摊位众多，各家都卖三文鱼和三文鱼汤，价格相近（约11-15欧），建议直接去靠海的摊位，边吹海风边吃。（3）Cafe Regatta——赫尔辛基绝对不能错过的肉桂卷专卖店，也大推热巧克力（加一圈奶油），还可以买几个香肠在火炉旁边烤，配上湖边景色很享受，吃完还可以顺便到旁边的西贝流士公园走走。',
-        map:'Kappeli Restaurant Helsinki' }
+  "day7": {
+    "num": "7",
+    "dateLabel": "10月10日（周六）",
+    "title": "赫尔辛基·北欧漫游日",
+    "routeMapImg": "route-day7.webp",
+    "hotel": {
+      "name": "飞机上",
+      "note": "当晚搭乘深夜航班返港（AY099，00:35起飞）"
+    },
+    "spots": [
+      {
+        "icon": "✈️",
+        "name": "赫尔辛基机场",
+        "tags": [
+          "机场"
+        ],
+        "images": [
+          "helairport-01.webp",
+          "helairport-02.webp",
+          "helairport-03.webp",
+          "helairport-04.webp",
+          "helairport-05.webp",
+          "helairport-06.webp",
+          "helairport-07.webp"
+        ],
+        "desc": "以北欧美学设计、高效转机动线以及浓厚芬兰文化闻名。",
+        "deepDesc": "一、Alepa超市：芬兰人最爱的国民超市，位于机场到达层（取完行李出来就能看到）汉堡王旁边，是机场性价比最高的选择。面包（如牛角包仅0.5欧）、牛奶、泡面和熟食都很便宜，且24小时营业。\n二、熟食与色拉吧：机场超市的秤重色拉和熟食区非常受欢迎，烟熏鲑鱼、烤鸡和小虾仁价格实惠，14.9欧/kg，还有金枪鱼、山羊干酪及各种种子和琳琅满目的蔬菜；咖啡和蛋糕套餐只需2欧元。超市内设有自助标签机和结帐机：选好不同种类的面包按类别分别装袋，记住号码，在旁边的标签打印机上先按绿色部分（面包件数），再按号码，价格标签就打出来了。\n三、购买交通一日卡进城：搭环状线铁道（Ring Rail Line），I线（逆时针）约32分钟、P线（顺时针）约27分钟，两线皆可前往市中心。班次：周一至周六每10分钟一班，周日每15分钟一班，夜间可能延后。单程票€4.10（需购买涵盖ABC区域车票），车站位于航厦下方。24小时（一日）无限搭乘票：ABC区10.60€，另有12.80€版本。\n四、赫尔辛基机场的整体设计充分体现了北欧和欧洲研究，从关注人性出发，表达对自然的热爱，从而提升了用户的生活质量，曾经被评比全球最好睡的机场。",
+        "map": "Helsinki Airport"
+      },
+      {
+        "icon": "🚉",
+        "name": "中央车站 Helsinki Central Station",
+        "tags": [],
+        "desc": "不仅是交通枢纽，还有许多好逛的购物中心、必吃的美食和芬兰特色的纪念品店。",
+        "deepDesc": "一、车站本身：外表古老壮观，设有正门和西门，正门左右各有巨大人形雕像拿着圆灯，旁侧还有大钟楼，由芬兰建筑师伊利尔·沙里宁设计，就像一件特大艺术品。站内大厅非常雄伟华丽，细致的雕刻就像到了博物馆，吊灯下方是通往地下的手扶梯，地下能直通地铁站、超市及餐厅卖店。\n二、周边购物中心：（1）Citycenter购物中心——位于车站对面，超过50家店铺、咖啡厅及餐厅，一楼有间2欧商店，每样商品都2欧。（2）Kamppi购物中心——市中心最繁忙的购物中心，超过90家店铺及近50家咖啡厅餐厅，分布七层楼；楼下有K market和Alepa market两间超市（K market较大较齐全），还有一条美食街，拉面、泰式料理、新加坡风味应有尽有。（3）Forum购物中心——约140家店铺，2楼有Moomin专卖店。（4）Sokos百货——设有LUMENE保养品、marimekko、iittala等芬兰本地品牌。（5）Stockmann百货——北欧最大百货公司，超过5万平方米零售空间，几乎都是复合式销售，结帐要到中央结帐台。\n三、延伸景点──静默教堂：位于Kamppi购物中心旁边，非常好找。外观是一个超大椭圆形木质建筑，温暖的木头色调，像一艘船或一滴水滴，非常吸睛，建材主要是芬兰云杉木，内部使用大量自然木材，给人温暖平静的感觉，免费入场。",
+        "map": "Helsinki Central Station",
+        "images": [
+          "centralstation-01.webp",
+          "centralstation-02.webp",
+          "centralstation-03.webp",
+          "centralstation-04.webp"
+        ]
+      },
+      {
+        "icon": "⛪",
+        "name": "白教堂 Helsinki Cathedral",
+        "tags": [],
+        "images": [
+          "helsinki-cathedral-01.webp",
+          "helsinki-cathedral-02.webp",
+          "helsinki-cathedral-03.webp",
+          "helsinki-cathedral-04.webp",
+          "helsinki-cathedral-05.webp"
+        ],
+        "desc": "纯白色的新古典主义外观、醒目的绿顶设计以及宏伟的百级阶梯广场，内部简约而宁静，没有金箔或大理石的奢华，只有北欧风格的极致简洁。",
+        "deepDesc": "一、赫尔辛基大教堂坐落于市中心元老院广场上，左右两边分别是芬兰总理府、赫尔辛基大学主楼和国家图书馆，是赫尔辛基地标性建筑之一。\n二、由于教堂以白色为主，旧时出海的水手看到教堂就代表离赫尔辛基越来越近，所以赫尔辛基又被称为「白都」。\n三、教堂外观简洁而宏大，拥有对称的立面和高耸的圆顶，正面由两侧的圆柱和六根高大的柱子支撑，白色外墙和绿色圆顶形成鲜明对比。",
+        "map": "Helsinki Cathedral"
+      },
+      {
+        "icon": "🐟",
+        "name": "市集广场及老农贸市场",
+        "tags": [],
+        "img": "market-square-helsinki.webp",
+        "desc": "赫尔辛基老农贸市场于1889年开幕，规模并不大，不过是赫尔辛基最具历史意义和人气的市场之一。",
+        "deepDesc": "一、位于市中心的海港附近，靠近芬兰湾。自1889年开业以来，成为当地居民和游客的热门去处，既是购买新鲜食材的地方，也是感受赫尔辛基传统饮食文化的好场所。市场内共有约20多间不同的摊贩和咖啡店，主要售卖食品，也有少量纪念品店。\n二、营业时间：大部分店铺约10:00-11:00开门，下午16:00左右就会提前关门，周日很多店铺休息。\n三、推荐好店：（1）SOUP+MORE——主打三文鱼汤（14欧），有中文菜单，面包免费续，座位较少，饭点容易排队。（2）E. Eriksson——市场内的人气老店，三文鱼汤、烟熏三文鱼、章鱼沙拉和生蚝都很受欢迎。",
+        "map": "Vanha Kauppahalli Helsinki",
+        "images": [
+          "market-square-01.webp",
+          "market-square-02.webp",
+          "market-square-03.webp",
+          "market-square-04.webp",
+          "market-square-05.webp",
+          "market-square-06.webp",
+          "market-square-07.webp"
+        ]
+      },
+      {
+        "icon": "🔴",
+        "name": "红教堂 Uspenski Cathedral",
+        "tags": [],
+        "img": "uspenski-cathedral.webp",
+        "desc": "以13座24K镀金洋葱头穹顶、深红色砖墙和浓郁的俄式拜占庭风格著称，是西欧最大的东正教教堂。",
+        "deepDesc": "一、乌斯佩斯基大教堂耗时6年完工，兴建于芬兰仍被俄国统治的1862-1868年，由俄国建筑师设计。建筑风格属于俄式拜占庭风格，外立面采用了70万块红色砖石堆砌而成，最大特色是大量金色圆顶和十字架，象征东正教的神圣。\n二、从赫尔辛基大教堂走过去不到十分钟，大多数人拍摄都是在门口的广场，在拍摄点可以拍到爱情锁桥+乌斯佩斯基大教堂同框的角度，还满特别的。外观是典型的红砖绿圆顶拜占庭式建筑风格，共有十三座塔，所有尖塔上的十字架都朝向东方，象征耶稣与十二使徒。\n三、内部最值得一看的是位在正中央的Iconostasis圣龛墙，每一位圣像都画得栩栩如生，金色为底的背景增添了几分华丽；教堂正上方挑高的穹顶描绘着华丽的饰画与宗教典故雕饰，建筑以蓝底代表天空、高挂着金色星星，还有壁面细腻的雕花，看似朴实的外观，内部却有着低调的华丽，是传统东正教堂的艺术风格。",
+        "tips": "周六开放时间 10:00-15:00。",
+        "map": "Uspenski Cathedral Helsinki",
+        "images": [
+          "uspenski-01.webp",
+          "uspenski-02.webp",
+          "uspenski-03.webp",
+          "uspenski-04.webp",
+          "uspenski-05.webp",
+          "uspenski-06.webp",
+          "uspenski-07.webp",
+          "uspenski-08.webp",
+          "uspenski-09.webp"
+        ]
+      },
+      {
+        "icon": "🪨",
+        "name": "岩石教堂 Temppeliaukio Church",
+        "tags": [],
+        "img": "temppeliaukio-church.webp",
+        "desc": "赫尔辛基三大教堂中最近代的建筑，教堂内部以裸露的岩石为基础，融合了现代感与自然美。",
+        "deepDesc": "一、岩石教堂又称「圣殿广场教堂」，是一座修建于巨大岩石中的教堂。教堂外观简洁，外墙完全由岩石形成；教堂内部以裸露的岩石为基础，融合了现代感与自然美，顶部有一个圆形天窗，让自然光照射到教堂内部。\n二、赫尔辛基的岩石教堂可说颠覆了很多对欧洲教堂华丽古典的刻板印象。完工于1969年，是赫尔辛基三大教堂中最近代的建筑。虽没有华丽的装饰，也没有精致的雕花，但内部特殊的氛围、别出心裁的建筑方式，已让它成为赫尔辛基最热门的景点和重要建筑之一。",
+        "tips": "周六 10:00-13:05、14:15-14:35、15:45-16:50。门票：成人票 €8。",
+        "map": "Temppeliaukio Church Helsinki",
+        "images": [
+          "temppeliaukio-01.webp",
+          "temppeliaukio-02.webp",
+          "temppeliaukio-03.webp"
+        ]
+      },
+      {
+        "icon": "🏰",
+        "name": "芬兰堡 Suomenlinna",
+        "tags": [
+          "世界遗产"
+        ],
+        "desc": "世界文化遗产、海上军事要塞、自然与历史融合，建于18世纪的巨大海上防御堡垒，由多个岛屿组成，从赫尔辛基市中心搭船约15分钟即可抵达。",
+        "deepDesc": "一、芬兰堡位在芬兰外海，1991年因身为同时代军事建筑的典范，被联合国教科文组织列为世界遗产，曾经保卫过瑞典、俄罗斯和芬兰三个国家。目前仍保留相当多历史原貌，很多结构都是原始建筑，非常珍贵。\n二、交通：搭乘前往芬兰堡的HSL渡轮，位置在市集广场旁的码头，每天都有船班，大概40分钟一班，可在现场用码头旁的自动售票机购票，也可事先下载HSL App购票，持赫尔辛基城市卡则免费。搭乘渡轮约20分钟，票价3.20欧。\n三、门票：如果只是沿着经典路线四处走走看军事堡垒遗迹，不需要门票；若要参观岛上的博物馆群（共五座），除了海关博物馆免费之外，其他博物馆都要单独购票，可在各博物馆内购买。\n四、经典蓝色路线：下船后沿指标先前往游客中心拿取地图（游客中心也有厕所）。蓝色路线始于防波堤兵营前的主码头，终止于国王之门，路线长度约1.5公里。游客中心和小超市之间有条小路，是蓝色路线的起点，第一个景点就是芬兰堡教堂——建于1854年，最初是俄罗斯东正教驻军教堂，原建筑有五座洋葱顶尖塔；后来芬兰时代改建成福音路德教堂，圆顶不再是洋葱状，塔楼改为四方型。教堂尖塔内设有一座为空中和海上交通导航的灯塔，会发出四次连续闪光——摩斯电码中代表「H」，就是赫尔辛基的意思。如今芬兰堡教堂是举办婚礼、音乐会等活动的场所。\n五、终点国王门：建于1753至1754年间，是堡垒的入口大门，这个位置是1752年瑞典国王阿道夫·弗雷德里克检查堡垒建设时停泊船只的地方。门的立面为凹形，门框以大理石石块镶边，使用粗石砌成；1770年代大门被改造成双吊桥，吊桥前建有码头和宽敞的阶梯，可从这里欣赏海景。从国王门码头可搭水上巴士（另外收费）或步行1.5公里回主要码头搭渡轮，往回走约20分钟。",
+        "toilet": "游客中心有厕所",
+        "map": "Suomenlinna Helsinki",
+        "images": [
+          "suomenlinna-01.webp",
+          "suomenlinna-02.webp",
+          "suomenlinna-03.webp",
+          "suomenlinna-04.webp",
+          "suomenlinna-05.webp",
+          "suomenlinna-06.webp",
+          "suomenlinna-07.webp",
+          "suomenlinna-08.webp"
+        ]
+      },
+      {
+        "icon": "🛍️",
+        "name": "购物",
+        "tags": [],
+        "isOptional": true,
+        "desc": "传说中是世界上最便宜LV的地方，原因是LV在欧盟统一订价，但芬兰享有极高的退税比例（最高可达约17%）。",
+        "deepDesc": "一、Helsinki Outlet：芬兰唯一的大型官方奥特莱斯，距离市中心约20公里，集合了40多个品牌，户外品牌如Helly Hansen、Haglöfs、Norrøna、Luhta折扣力度很大，设计品牌如Marimekko、Lumene以及厨具Le Creuset也很值得淘，园区是开放式小镇设计，逛起来很舒服。交通：市中心火车站旁乘坐75路巴士直达，约30分钟；或用HSL App绑定信用卡购买公交票。营业时间：周六10:00-20:00。\n二、LV门市：赫尔辛基有两家Louis Vuitton门市，在此购买是全球定价与退税后最便宜的地区之一，价格比中国专柜便宜约25%。（1）Helsinki Esplanadi旗舰店，周六营业时间10:00-18:00，款项最全，有中文店员服务。（2）Helsinki Stockmann百货分店，周六营业时间10:00-19:00。",
+        "map": "Helsinki Outlet",
+        "images": [
+          "helsinki-lv-01.webp",
+          "helsinki-lv-02.webp",
+          "helsinki-lv-03.webp",
+          "helsinki-lv-04.webp"
+        ]
+      },
+      {
+        "icon": "🍽️",
+        "name": "餐厅",
+        "tags": [],
+        "isOptional": true,
+        "desc": "码头热门三文鱼餐厅 Kappeli Restaurant，玻璃房子坐落在海边码头公园中央，喷泉环绕，仿佛置身童话世界。",
+        "deepDesc": "一、Kappeli Restaurant：位于海边码头公园的玻璃房餐厅，环境极佳。三文鱼汤约16.9-17.9欧，自助按人头收费，搭配店里的方块黄油面包非常绝，可无限续杯，本地人和游客都爱去。咖啡馆区域（进门左手边）周一至周六10:00-22:00，没有正餐，有各种蛋糕、饮品，还有自助三文鱼汤；正餐餐厅通常11:00才开始供应，包含前菜、主菜（煎三文鱼与烟熏三文鱼）和甜品。\n二、其他选择：（1）Merimakasiini——距离市中心步行约15分钟的码头旁，三文鱼汤分量足（Big Size约20欧），味道浓郁。（2）南码头露天市场（Kauppatori）——露天摊位众多，各家都卖三文鱼和三文鱼汤，价格相近（约11-15欧），建议直接去靠海的摊位，边吹海风边吃。（3）Cafe Regatta——赫尔辛基绝对不能错过的肉桂卷专卖店，也大推热巧克力（加一圈奶油），还可以买几个香肠在火炉旁边烤，配上湖边景色很享受，吃完还可以顺便到旁边的西贝流士公园走走。",
+        "map": "Kappeli Restaurant Helsinki"
+      }
     ]
   },
-  day8: {
-    num:'8', dateLabel:'10月10日（周六）深夜 → 10月11日（周日）', title:'满载回忆·返回香港', transit:true,
-    routeMapImg:'route-day8.webp',
-    flights:[
-      { airline:'芬兰航空', flightNo:'AY099', from:'赫尔辛基万塔 HEL', to:'香港 HKG', dep:'00:35', arr:'17:10', duration:'约9小时35分', date:'10月11日', note:'10月10日行程结束后深夜航班' }
+  "day8": {
+    "num": "8",
+    "dateLabel": "10月10日（周六）深夜 → 10月11日（周日）",
+    "title": "满载回忆·返回香港",
+    "transit": true,
+    "routeMapImg": "route-day8.webp",
+    "flights": [
+      {
+        "airline": "芬兰航空",
+        "flightNo": "AY099",
+        "from": "赫尔辛基万塔 HEL",
+        "to": "香港 HKG",
+        "dep": "00:35",
+        "arr": "17:10",
+        "duration": "约9小时35分",
+        "date": "10月11日",
+        "note": "10月10日行程结束后深夜航班"
+      }
     ],
-    note:'10月10日为「芬兰人的一天」行程，当晚无需住宿，深夜航班返港；10月11日傍晚抵达香港。'
+    "note": "10月10日为「芬兰人的一天」行程，当晚无需住宿，深夜航班返港；10月11日傍晚抵达香港。"
   }
 };
