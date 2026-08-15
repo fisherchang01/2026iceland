@@ -116,7 +116,7 @@ const OTHER_HTML = `
           <div style="font-family: var(--font-display); font-size: var(--fs-base); font-weight: 600; color: #333; margin-bottom: 4px;">✏️ 編輯行程細節</div>
           <div style="font-size: var(--fs-xs); color: #666; line-height: 1.4;">快速編輯和格式化行程文本、顏色標記與換行</div>
         </div>
-        <button class="tool-open-btn" onclick="window.open('../tools/trip-details-editor.html', 'trip-editor', 'width=900,height=800,resizable=yes')" style="margin: 0; white-space: nowrap;">開啟編輯器</button>
+        <button class="tool-open-btn" onclick="window.open('./tools/trip-details-editor.html', 'trip-editor', 'width=900,height=800,resizable=yes')" style="margin: 0; white-space: nowrap;">開啟編輯器</button>
       </div>
     </div>
 
