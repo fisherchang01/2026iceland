@@ -109,6 +109,17 @@ const OTHER_HTML = `
 <div class="page" id="page-other">
   <div class="page-inner">
 
+    <!-- 編輯行程工具 -->
+    <div class="tool-editor-section" style="margin-bottom: 24px; padding: 16px; background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%); border-radius: 12px; border-left: 4px solid #4a90e2;">
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+        <div>
+          <div style="font-family: var(--font-display); font-size: var(--fs-base); font-weight: 600; color: #333; margin-bottom: 4px;">✏️ 編輯行程細節</div>
+          <div style="font-size: var(--fs-xs); color: #666; line-height: 1.4;">快速編輯和格式化行程文本、顏色標記與換行</div>
+        </div>
+        <button class="tool-open-btn" onclick="window.open('../tools/trip-details-editor.html', 'trip-editor', 'width=900,height=800,resizable=yes')" style="margin: 0; white-space: nowrap;">開啟編輯器</button>
+      </div>
+    </div>
+
     <!-- 1. 冰岛退税 -->
     <div class="travel-collapse" data-cover="iceland_tax_refund.webp">
       <div class="travel-collapse-header" onclick="toggleTravelCollapse(this)">
