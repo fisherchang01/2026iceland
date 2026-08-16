@@ -478,50 +478,75 @@ async function uploadToGitHub() {
 function parseContent() {
   STATE.categories = [];
 
-  // 不用 DOMParser，直接用正则表达式从原始 HTML 字符串中提取
-  // 这样可以保留完整的 HTML 结构
+  console.log('📝 開始解析 HTML...');
+  console.log('  原始 HTML 長度:', STATE.originalHTML.length);
+  console.log('  包含 travel-collapse:', STATE.originalHTML.includes('travel-collapse'));
 
-  // 按分类分块
-  const collapsePattern = /<div class="travel-collapse"[^>]*?data-cover="([^"]*)"[^>]*?>[\s\S]*?<\/div>\s*<\/div>\s*<\/div>/g;
-  let collapseMatch;
+  // 方法1：用 DOMParser 的替代方案 - 創建 DOM 容器並直接操作
+  const tempDiv = document.createElement('div');
+  tempDiv.innerHTML = STATE.originalHTML;
 
-  while ((collapseMatch = collapsePattern.exec(STATE.originalHTML)) !== null) {
-    const blockHTML = collapseMatch[0];
-    const cover = collapseMatch[1] || '';
+  const collapses = tempDiv.querySelectorAll('div.travel-collapse');
+  console.log('  找到分類數:', collapses.length);
 
-    // 提取emoji
-    const emojiMatch = /<div class="travel-collapse-emoji">(.+?)<\/div>/.exec(blockHTML);
-    const emoji = emojiMatch ? emojiMatch[1].trim() : '📌';
+  collapses.forEach((collapse, idx) => {
+    const cover = collapse.getAttribute('data-cover') || '';
+    const emojiEl = collapse.querySelector('.travel-collapse-emoji');
+    const titleEl = collapse.querySelector('.travel-collapse-title');
+    const bodyEl = collapse.querySelector('.travel-collapse-body');
 
-    // 提取标题
-    const titleMatch = /<div class="travel-collapse-title">(.+?)<\/div>/.exec(blockHTML);
-    const title = titleMatch ? titleMatch[1].trim() : '(未命名)';
+    const emoji = emojiEl ? emojiEl.textContent.trim() : '📌';
+    const title = titleEl ? titleEl.textContent.trim() : '(未命名)';
 
-    // 提取所有项目卡片
     const items = [];
-    const cardPattern = /<div class="item-card[\s\w-]*">[\s\S]*?<h4 class="item-card-title">(.+?)<\/h4>[\s\S]*?<div class="item-detail">([\s\S]*?)<\/div>[\s\S]*?<\/div>/g;
-    let cardMatch;
+    
+    if (bodyEl) {
+      // 遍歷所有 item-card
+      const itemRows = bodyEl.querySelectorAll('div.item-row, div');
+      let cardCount = 0;
 
-    while ((cardMatch = cardPattern.exec(blockHTML)) !== null) {
-      const itemTitle = cardMatch[1].trim();
-      const itemDetail = cardMatch[2];  // 保留原始 HTML，包括 <p> <img> 等
-
-      items.push({
-        title: itemTitle,
-        detail: itemDetail
+      itemRows.forEach(row => {
+        // 如果這個元素包含 item-card，提取所有卡片
+        const cards = row.querySelectorAll('div.item-card');
+        cards.forEach(card => {
+          const titleNode = card.querySelector('.item-card-title');
+          const detailNode = card.querySelector('.item-detail');
+          
+          if (titleNode && detailNode) {
+            // 保留原始 innerHTML，這樣包含所有 HTML 標籤
+            items.push({
+              title: titleNode.textContent.trim(),
+              detail: detailNode.innerHTML
+            });
+            cardCount++;
+          }
+        });
       });
+
+      // 如果上面沒找到，直接在 bodyEl 中找 item-card
+      if (cardCount === 0) {
+        const cards = bodyEl.querySelectorAll('div.item-card');
+        cards.forEach(card => {
+          const titleNode = card.querySelector('.item-card-title');
+          const detailNode = card.querySelector('.item-detail');
+          
+          if (titleNode && detailNode) {
+            items.push({
+              title: titleNode.textContent.trim(),
+              detail: detailNode.innerHTML
+            });
+          }
+        });
+      }
     }
 
     STATE.categories.push({ emoji, title, cover, items });
-  }
+  });
 
   console.log('✓ 解析完成:', STATE.categories.length, '個分類');
-  console.log('  首个分类项目数:', STATE.categories[0]?.items.length || 0);
-  if (STATE.categories[0]?.items[0]) {
-    console.log('  首项详情长度:', STATE.categories[0].items[0].detail.length);
-    console.log('  首项包含<p>:', STATE.categories[0].items[0].detail.includes('<p>'));
-    console.log('  首项包含<img>:', STATE.categories[0].items[0].detail.includes('<img'));
-  }
+  STATE.categories.forEach((cat, idx) => {
+    console.log(`  分類 ${idx}: ${cat.emoji} ${cat.title} (${cat.items.length} 項)`);
+  });
 }
 
 // ==================== UI 渲染 ====================
