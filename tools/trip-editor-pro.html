@@ -101,6 +101,7 @@
             flex: 1;
             overflow-y: auto;
             padding: 16px;
+            padding-bottom: 100px;
             display: flex;
             flex-direction: column;
             gap: 16px;
@@ -222,6 +223,10 @@
         }
 
         .editor-footer {
+            position: fixed;
+            bottom: 0;
+            left: 251px;
+            right: 321px;
             padding: 12px 16px;
             border-top: 1px solid #e5e5e5;
             background: white;
@@ -229,8 +234,9 @@
             gap: 10px;
             justify-content: flex-end;
             align-items: center;
-            flex-shrink: 0;
-            box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.08);
+            height: 50px;
+            box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.15);
+            z-index: 99;
         }
 
         .btn {
@@ -498,6 +504,10 @@
             const editor = document.getElementById('editor');
             editor.innerHTML = '<div class="empty-state">請選擇一個景點開始編輯</div>';
             document.getElementById('previewContent').innerHTML = '（選擇景點查看預覽）';
+            
+            // 移除 footer
+            const footer = document.querySelector('.editor-footer');
+            if (footer) footer.remove();
         }
 
         function renderEditor() {
@@ -581,14 +591,25 @@
                         <input type="text" id="mapInput" value="${escapeAttr(spot.map || '')}" oninput="updateAllPreviews()">
                     </div>
                 </div>
-
-                <div class="editor-footer">
-                    <button class="btn btn-secondary" onclick="discardChanges()">放棄</button>
-                    <button class="btn btn-primary" id="saveBtn" onclick="saveToGitHub()">💾 保存</button>
-                </div>
             `;
 
             updateAllPreviews();
+            createFooter();
+        }
+
+        function createFooter() {
+            // 移除旧的 footer
+            const oldFooter = document.querySelector('.editor-footer');
+            if (oldFooter) oldFooter.remove();
+
+            // 创建新的 fixed footer
+            const footer = document.createElement('div');
+            footer.className = 'editor-footer';
+            footer.innerHTML = `
+                <button class="btn btn-secondary" onclick="discardChanges()">放棄</button>
+                <button class="btn btn-primary" id="saveBtn" onclick="saveToGitHub()">💾 保存</button>
+            `;
+            document.body.appendChild(footer);
         }
 
         function updateAllPreviews() {
