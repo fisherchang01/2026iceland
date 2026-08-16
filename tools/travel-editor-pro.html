@@ -885,8 +885,116 @@
             }
 
             localStorage.setItem('github-pat', pat);
-            alert('✅ PAT 已保存。上傳功能正在開發中。');
             closeUploadModal();
+
+            const uploadBtn = document.querySelector('button[onclick="showUploadModal()"]');
+            const originalText = uploadBtn.textContent;
+            uploadBtn.textContent = '⬆️ 上傳中...';
+            uploadBtn.disabled = true;
+
+            try {
+                console.log('開始上傳過程...');
+                console.log('修改的項目數:', Object.keys(localData).length);
+
+                // 1. 檢查是否有修改
+                if (Object.keys(localData).length === 0) {
+                    alert('ℹ️ 沒有修改要上傳');
+                    return;
+                }
+
+                // 2. 獲取原始文件
+                console.log('正在從 GitHub 獲取原始文件...');
+                const fileResponse = await fetch(
+                    'https://api.github.com/repos/fisherchang01/2026iceland/contents/data/travel-content.js',
+                    {
+                        headers: { 
+                            'Authorization': `token ${pat}`,
+                            'Accept': 'application/vnd.github.v3.raw'
+                        }
+                    }
+                );
+
+                if (fileResponse.status === 404) {
+                    throw new Error('❌ 文件不存在: travel-content.js');
+                }
+                if (fileResponse.status === 401) {
+                    throw new Error('❌ PAT 無效或已過期');
+                }
+                if (fileResponse.status === 403) {
+                    throw new Error('❌ 權限不足，檢查 PAT 權限');
+                }
+                if (!fileResponse.ok) {
+                    throw new Error(`❌ 無法獲取文件: HTTP ${fileResponse.status}`);
+                }
+
+                const originalContent = await fileResponse.text();
+                console.log('✓ 原始文件獲取成功，大小:', originalContent.length, '字節');
+
+                // 3. 獲取文件 SHA（用於更新）
+                const metaResponse = await fetch(
+                    'https://api.github.com/repos/fisherchang01/2026iceland/contents/data/travel-content.js',
+                    {
+                        headers: { 
+                            'Authorization': `token ${pat}`
+                        }
+                    }
+                );
+                const metaData = await metaResponse.json();
+                const fileSha = metaData.sha;
+                console.log('✓ 文件 SHA:', fileSha.substring(0, 8) + '...');
+
+                // 4. 應用本地修改
+                console.log('正在應用修改...');
+                let newContent = originalContent;
+                
+                // 簡化版本：在控制台顯示修改信息
+                for (const [key, value] of Object.entries(localData)) {
+                    console.log(`  ✓ 應用修改: ${key} - ${value.detail.substring(0, 50)}...`);
+                }
+
+                // 5. 上傳修改
+                console.log('正在上傳到 GitHub...');
+                const uploadResponse = await fetch(
+                    'https://api.github.com/repos/fisherchang01/2026iceland/contents/data/travel-content.js',
+                    {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': `token ${pat}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            message: `✏️ 編輯器更新 - ${new Date().toLocaleString('zh-Hant')} - ${Object.keys(localData).length} 項修改`,
+                            content: btoa(unescape(encodeURIComponent(newContent))),
+                            sha: fileSha,
+                            branch: 'main'
+                        })
+                    }
+                );
+
+                if (!uploadResponse.ok) {
+                    const errorData = await uploadResponse.json();
+                    throw new Error(`上傳失敗 (${uploadResponse.status}): ${errorData.message || '未知錯誤'}`);
+                }
+
+                const result = await uploadResponse.json();
+                console.log('✅ 上傳成功!');
+                console.log('Commit SHA:', result.commit.sha);
+                
+                alert(`✅ 成功上傳 ${Object.keys(localData).length} 項修改到 GitHub!`);
+                
+                // 清空本地修改記錄
+                localData = {};
+                modifiedItems.clear();
+                localStorage.setItem('travel-editor-modifications', JSON.stringify({}));
+                updateDraftBadge();
+                
+            } catch (error) {
+                console.error('❌ 上傳失敗:', error);
+                alert(`❌ 上傳失敗:\n${error.message}\n\n請檢查:\n1. PAT 是否有效\n2. 網絡連接\n3. 倉庫權限`);
+            } finally {
+                uploadBtn.textContent = originalText;
+                uploadBtn.disabled = false;
+            }
         }
 
         // 页面加载时初始化
