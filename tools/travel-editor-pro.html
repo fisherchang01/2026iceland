@@ -399,7 +399,6 @@
                 </div>
                 <div class="button-group">
                     <button onclick="saveLocal()" class="primary">💾 本地保存</button>
-                    <button onclick="showUploadModal()" class="primary">⬆️ 上傳到 GitHub</button>
                 </div>
             </div>
 
@@ -418,21 +417,6 @@
             <div class="right-panel-title">ℹ️ 資訊</div>
             <div id="statusArea">
                 <div class="loading-state">加載中...</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- 上传模态框 -->
-    <div class="modal" id="uploadModal">
-        <div class="modal-content">
-            <h3>輸入 GitHub PAT</h3>
-            <p style="font-size: 11px; color: #999; margin-bottom: 12px;">
-                首次使用請輸入 Personal Access Token
-            </p>
-            <input type="password" id="patInput" placeholder="粘貼你的 GitHub PAT">
-            <div class="modal-footer">
-                <button onclick="closeUploadModal()">取消</button>
-                <button onclick="uploadToGithub()" class="primary">上傳</button>
             </div>
         </div>
     </div>
@@ -726,33 +710,6 @@
                 badge.style.display = 'none';
                 document.getElementById('topBar').classList.remove('has-unsaved');
             }
-        }
-
-        // ===== 上传模态框 =====
-        function showUploadModal() {
-            document.getElementById('uploadModal').classList.add('active');
-        }
-
-        function closeUploadModal() {
-            document.getElementById('uploadModal').classList.remove('active');
-            document.getElementById('patInput').value = '';
-        }
-
-        // ===== 上传到 GitHub =====
-        async function uploadToGithub() {
-            let pat = document.getElementById('patInput').value;
-            if (!pat) {
-                pat = localStorage.getItem('github-pat');
-            }
-
-            if (!pat) {
-                alert('❌ 請輸入 GitHub PAT');
-                return;
-            }
-
-            localStorage.setItem('github-pat', pat);
-            alert('✅ PAT 已保存。上傳功能正在開發中。');
-            closeUploadModal();
         }
 
         // 页面加载时初始化
