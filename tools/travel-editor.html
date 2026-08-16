@@ -177,7 +177,7 @@
     }
 
     .item-button {
-      padding: 8px 10px;
+      padding: 10px 12px;
       background: #f5f1e8;
       border: 1px solid #e0d7c8;
       border-radius: 5px;
@@ -190,6 +190,9 @@
       overflow: hidden;
       color: #2a2f2e;
       font-weight: 500;
+      margin-bottom: 6px;
+      display: block;
+      width: 100%;
     }
     .item-button:hover {
       background: #ede5da;
@@ -620,17 +623,9 @@ function selectItem(idx) {
   document.getElementById('editTitle').value = item.title;
   document.getElementById('editDetail').value = item.detail;  // 显示原始 HTML
 
-  // 调试：显示实际长度
-  console.log('📝 项目详情信息：');
-  console.log('  标题:', item.title);
-  console.log('  HTML长度:', item.detail.length, '字符');
-  console.log('  首100字:', item.detail.substring(0, 100));
-  console.log('  包含\\n:', item.detail.includes('\n'));
-  console.log('  包含<p>:', item.detail.includes('<p>'));
-
-  // 预览区用 innerHTML 渲染（这样才能显示分段、图片、格式等）
+  // 预览区：渲染自定义标记（颜色、粗体等）+ HTML
   const previewPanel = document.getElementById('previewPanel');
-  previewPanel.innerHTML = item.detail || '（無內容）';
+  previewPanel.innerHTML = renderCustomMarkup(item.detail) || '（無內容）';
 
   document.querySelectorAll('.item-button').forEach((btn, i) => {
     btn.classList.toggle('active', i === idx);
@@ -661,8 +656,8 @@ function saveItem() {
   item.title = document.getElementById('editTitle').value;
   item.detail = document.getElementById('editDetail').value;
 
-  // 保存后立即用 innerHTML 更新预览，这样才能显示分段、图片等
-  document.getElementById('previewPanel').innerHTML = item.detail || '（無內容）';
+  // 保存后立即用 renderCustomMarkup 更新预览
+  document.getElementById('previewPanel').innerHTML = renderCustomMarkup(item.detail) || '（無內容）';
 
   showToast('✓ 已保存');
 }
@@ -676,8 +671,30 @@ function resetEdit() {
 // 实时预览
 function updatePreview() {
   const content = document.getElementById('editDetail').value;
+  // 先转换自定义标记为 HTML
+  const htmlContent = renderCustomMarkup(content);
   // 用 innerHTML 渲染，这样才能显示 HTML 格式、分段、图片等
-  document.getElementById('previewPanel').innerHTML = content || '（無內容）';
+  document.getElementById('previewPanel').innerHTML = htmlContent || '（無內容）';
+}
+
+// 将自定义标记转换为 HTML
+function renderCustomMarkup(text) {
+  if (!text) return '';
+  
+  // 处理换行符 /n → <br>
+  text = text.replace(/\/n/g, '<br>');
+  
+  // 处理颜色标记 {#ff0000}...{/color} → <span style="color: #ff0000">...</span>
+  text = text.replace(/\{#([0-9a-fA-F]{6})\}([\s\S]*?)\{\/color\}/g, 
+    '<span style="color: #$1; font-weight: 500;">$2</span>');
+  
+  // 处理粗体 {bold}...{/bold} → <strong>...</strong>
+  text = text.replace(/\{bold\}([\s\S]*?)\{\/bold\}/g, '<strong style="font-weight: 700;">$1</strong>');
+  
+  // 处理斜体 {italic}...{/italic} → <em>...</em>
+  text = text.replace(/\{italic\}([\s\S]*?)\{\/italic\}/g, '<em style="font-style: italic; color: #0066cc;">$1</em>');
+  
+  return text;
 }
 
 // ==================== 初始化 ====================
