@@ -320,56 +320,23 @@ async function loadFromGitHub() {
   showStatus('加載中...', 'loading');
 
   try {
-    // 第一步：用 GitHub API 获取文件（返回 base64 编码）
-    const apiUrl = 'https://api.github.com/repos/fisherchang01/2026iceland/contents/data/travel-content.js';
+    // 关键：用 raw.githubusercontent.com 直接获取文本（完全避免编码问题）
+    const fileUrl = 'https://raw.githubusercontent.com/fisherchang01/2026iceland/main/data/travel-content.js';
     
-    const response = await fetch(apiUrl, {
-      headers: { 'Authorization': `token ${pat}` }
-    });
-    
-    if (!response.ok) throw new Error(`GitHub API 錯誤: ${response.status}`);
+    const response = await fetch(fileUrl);
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
-    const data = await response.json();
+    const content = await response.text();
     
-    // 第二步：正确解码 Base64（修复 UTF-8 问题）
-    // atob() 只能处理 Latin1，需要用 TextDecoder 处理 UTF-8
-    let content;
-    try {
-      const binaryString = atob(data.content);
-      const bytes = new Uint8Array(binaryString.length);
-      for (let i = 0; i < binaryString.length; i++) {
-        bytes[i] = binaryString.charCodeAt(i);
-      }
-      content = new TextDecoder('utf-8').decode(bytes);
-    } catch (e) {
-      throw new Error('Base64 解碼失敗: ' + e.message);
+    // 用正则匹配提取 TRAVEL_HTML 字符串内容
+    const match = content.match(/const TRAVEL_HTML = `([\s\S]*?)`;/);
+    if (!match) {
+      throw new Error('無法在文件中找到 TRAVEL_HTML');
     }
     
-    // 第三步：提取 TRAVEL_HTML（不用 eval，直接字符串操作）
-    const startMarker = 'const TRAVEL_HTML = `';
-    const endMarker = '`;';
-    
-    const startIdx = content.indexOf(startMarker);
-    const endIdx = content.lastIndexOf(endMarker);
-    
-    if (startIdx === -1 || endIdx === -1) {
-      console.error('文件內容前 500 字符:', content.substring(0, 500));
-      throw new Error('無法在文件中找到 TRAVEL_HTML 定義');
-    }
-    
-    const htmlContent = content.substring(
-      startIdx + startMarker.length,
-      endIdx
-    );
+    STATE.originalHTML = match[1];
 
-    if (!htmlContent || htmlContent.length < 100) {
-      throw new Error('提取的 HTML 內容太短或為空');
-    }
-
-    STATE.originalHTML = htmlContent;
-    STATE.sha = data.sha;
-
-    // 第四步：解析 HTML
+    // 解析 HTML
     parseContent();
     renderUI();
 
