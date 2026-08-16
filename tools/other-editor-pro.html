@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🛠️ 工具編輯器 Pro - 穩定版</title>
+    <title>🛠️ 工具編輯器 Pro - 簡化版</title>
     <style>
         * {
             margin: 0;
@@ -189,42 +189,6 @@
             color: #999;
             padding: 40px 20px;
             font-size: 12px;
-        }
-
-        .loading-spinner {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid #e5e5e5;
-            border-top-color: #667eea;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 10px;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .error-state {
-            background: #ffe5e5;
-            color: #d32f2f;
-            padding: 20px;
-            border-radius: 4px;
-            margin: 20px;
-            text-align: center;
-        }
-
-        .error-state button {
-            background: #d32f2f;
-            color: white;
-            border-color: #d32f2f;
-            margin-top: 10px;
-        }
-
-        .error-state button:hover {
-            background: #b71c1c;
-            border-color: #b71c1c;
         }
 
         .empty-state {
@@ -435,6 +399,7 @@
                 </div>
                 <div class="button-group">
                     <button onclick="saveLocal()" class="primary">💾 本地保存</button>
+                    <button onclick="showUploadModal()" class="primary">⬆️ 上傳到 GitHub</button>
                 </div>
             </div>
 
@@ -444,11 +409,7 @@
             </div>
 
             <div class="editor-content" id="editorContent">
-                <div class="loading-state">
-                    <div class="loading-spinner"></div>
-                    正在從 GitHub 導入真實數據...<br>
-                    <small>（如果一直不動，請點擊重新加載）</small>
-                </div>
+                <div class="loading-state">正在從網站導入真實數據...</div>
             </div>
         </div>
 
@@ -470,7 +431,20 @@
         </div>
     </div>
 
-
+    <!-- 上传模态框 -->
+    <div class="modal" id="uploadModal">
+        <div class="modal-content">
+            <h3>輸入 GitHub PAT</h3>
+            <p style="font-size: 11px; color: #999; margin-bottom: 12px;">
+                首次使用請輸入 Personal Access Token
+            </p>
+            <input type="password" id="patInput" placeholder="粘貼你的 GitHub PAT">
+            <div class="modal-footer">
+                <button onclick="closeUploadModal()">取消</button>
+                <button onclick="uploadToGithub()" class="primary">上傳</button>
+            </div>
+        </div>
+    </div>
 
     <script>
         // ===== 全局状态 =====
@@ -479,28 +453,14 @@
         let currentItem = null;
         let modifiedItems = new Set();
         let localData = {};
-        let isLoading = false;
 
         // ===== 初始化 =====
         async function init() {
             console.log('开始导入工具数据...');
-            isLoading = true;
             loadLocalData();
-            
-            // 设置10秒超时
-            const timeout = new Promise((_, reject) => 
-                setTimeout(() => reject(new Error('加载超时（超过10秒）')), 10000)
-            );
-            
-            try {
-                await Promise.race([importWebsiteData(), timeout]);
-                renderCategories();
-                updateStatus();
-            } catch (error) {
-                showErrorState(error.message);
-            } finally {
-                isLoading = false;
-            }
+            await importWebsiteData();
+            renderCategories();
+            updateStatus();
         }
 
         // ===== 加载本地修改 =====
@@ -515,53 +475,22 @@
             }
         }
 
-        // ===== 显示错误状态 =====
-        function showErrorState(message) {
-            document.getElementById('editorContent').innerHTML = `
-                <div class="error-state">
-                    ❌ 加載失敗<br>
-                    <small>${message}</small><br>
-                    <button onclick="location.reload()">🔄 重新加載</button>
-                </div>
-            `;
-        }
-
         // ===== 从网站导入真实数据 =====
         async function importWebsiteData() {
             try {
-                console.log('正在從 GitHub 抓取數據...');
-                const response = await fetch('https://raw.githubusercontent.com/fisherchang01/2026iceland/main/data/other-content.js', {
-                    method: 'GET',
-                    headers: { 'Accept': 'application/javascript' }
-                });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP 錯誤 ${response.status}`);
-                }
-
+                const response = await fetch('https://raw.githubusercontent.com/fisherchang01/2026iceland/main/data/other-content.js');
                 const jsContent = await response.text();
-                console.log('已獲取文件，大小:', jsContent.length, '字節');
 
-                // 更灵活的正则表达式
-                const htmlMatch = jsContent.match(/const\s+OTHER_HTML\s*=\s*`([\s\S]*)`/) ||
-                                 jsContent.match(/OTHER_HTML\s*=\s*`([\s\S]*)`/);
-                
-                if (!htmlMatch || !htmlMatch[1]) {
-                    throw new Error('無法提取 OTHER_HTML，文件格式可能已更改');
+                const htmlMatch = jsContent.match(/const OTHER_HTML = `([\s\S]*)`/);
+                if (!htmlMatch) {
+                    throw new Error('无法提取 OTHER_HTML');
                 }
 
                 const htmlContent = htmlMatch[1];
-                console.log('已提取 HTML，大小:', htmlContent.length, '字節');
-
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(htmlContent, 'text/html');
 
                 const collapses = doc.querySelectorAll('.travel-collapse');
-                console.log(`找到 ${collapses.length} 个分类`);
-
-                if (collapses.length === 0) {
-                    throw new Error('無法解析分類數據，可能网络问题或文件格式变更');
-                }
 
                 collapses.forEach((collapse, index) => {
                     const emoji = collapse.querySelector('.travel-collapse-emoji')?.textContent || '📌';
@@ -604,15 +533,14 @@
                         sub,
                         items
                     };
-
-                    console.log(`分類 ${index}: ${title} (${items.length} 項)`);
                 });
 
-                console.log('✅ 數據導入成功！');
+                console.log('✅ 数据导入成功！');
                 return true;
             } catch (error) {
-                console.error('❌ 導入失敗:', error);
-                throw error;
+                console.error('❌ 导入失败:', error);
+                document.getElementById('editorContent').innerHTML = `<div class="error-message">❌ 导入失败：${error.message}</div>`;
+                return false;
             }
         }
 
@@ -625,12 +553,6 @@
         // ===== 渲染分类 =====
         function renderCategories() {
             const container = document.getElementById('categories');
-            
-            if (Object.keys(otherData).length === 0) {
-                container.innerHTML = '<div class="sidebar-title">❌ 無數據</div>';
-                return;
-            }
-
             container.innerHTML = '<div class="sidebar-title">📂 分類</div>';
 
             const sortedKeys = Object.keys(otherData).sort((a, b) => {
@@ -811,14 +733,24 @@
         function updatePreview() {
             const detail = document.getElementById('detailInput')?.value || '';
             
+            // 解析格式化代码
             let displayText = detail;
+            
+            // 处理换行
             displayText = displayText.replace(/\/n/g, '\n');
+            
+            // 处理粗体
             displayText = displayText.replace(/\{bold\}([\s\S]*?)\{\/bold\}/g, '<b>$1</b>');
+            
+            // 处理斜体
             displayText = displayText.replace(/\{italic\}([\s\S]*?)\{\/italic\}/g, '<i>$1</i>');
+            
+            // 处理颜色
             displayText = displayText.replace(/\{#ff6b6b\}([\s\S]*?)\{\/color\}/g, '<span style="color: #ff6b6b;">$1</span>');
             displayText = displayText.replace(/\{#0066cc\}([\s\S]*?)\{\/color\}/g, '<span style="color: #0066cc;">$1</span>');
             displayText = displayText.replace(/\{#00aa00\}([\s\S]*?)\{\/color\}/g, '<span style="color: #00aa00;">$1</span>');
             
+            const previewArea = document.getElementById('previewArea');
             const previewDiv = document.getElementById('preview');
             const formatHint = document.getElementById('formatHint');
             
@@ -863,7 +795,32 @@
             }
         }
 
+        // ===== 上传模态框 =====
+        function showUploadModal() {
+            document.getElementById('uploadModal').classList.add('active');
+        }
 
+        function closeUploadModal() {
+            document.getElementById('uploadModal').classList.remove('active');
+            document.getElementById('patInput').value = '';
+        }
+
+        // ===== 上传到 GitHub =====
+        async function uploadToGithub() {
+            let pat = document.getElementById('patInput').value;
+            if (!pat) {
+                pat = localStorage.getItem('github-pat');
+            }
+
+            if (!pat) {
+                alert('❌ 請輸入 GitHub PAT');
+                return;
+            }
+
+            localStorage.setItem('github-pat', pat);
+            alert('✅ PAT 已保存。上傳功能正在開發中。');
+            closeUploadModal();
+        }
 
         // 页面加载时初始化
         window.addEventListener('load', init);
