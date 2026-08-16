@@ -147,12 +147,41 @@
             border-color: #999;
         }
 
-        .color-input {
+        .color-btn {
+            padding: 4px 6px;
+            border: 1px solid #d0d0d0;
+            background: white;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 10px;
+            font-weight: 700;
+            color: white;
             width: 20px;
             height: 20px;
-            border: 1px solid #d0d0d0;
-            cursor: pointer;
-            padding: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .color-btn.red {
+            background: #ff0000;
+            border-color: #cc0000;
+        }
+
+        .color-btn.blue {
+            background: #0066cc;
+            border-color: #0052a3;
+        }
+
+        .color-btn.green {
+            background: #00aa00;
+            border-color: #008800;
+        }
+
+        .color-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
         .field-group input,
@@ -374,9 +403,9 @@
             updateAllPreviews();
         }
 
-        // 应用颜色到指定字段
-        function applyColorToField(fieldId, color) {
-            const hex = color.substring(1);
+        // 应用颜色到指定字段（十六进制值）
+        function applyColorToField(fieldId, hexColor) {
+            const hex = hexColor.replace('#', '');
             insertToField(fieldId, `{#${hex}}`, '{/color}');
         }
 
@@ -484,7 +513,9 @@
                                 <button class="mini-btn" onclick="insertToField('descInput', '{bold}', '{/bold}')"><strong>B</strong></button>
                                 <button class="mini-btn" onclick="insertToField('descInput', '{italic}', '{/italic}')"><em>I</em></button>
                                 <button class="mini-btn" onclick="insertToField('descInput', '/n')">↵</button>
-                                <input type="color" class="color-input" value="#ff0000" onchange="applyColorToField('descInput', this.value)">
+                                <button class="color-btn red" onclick="applyColorToField('descInput', '#ff0000')" title="紅色">R</button>
+                                <button class="color-btn blue" onclick="applyColorToField('descInput', '#0066cc')" title="藍色">B</button>
+                                <button class="color-btn green" onclick="applyColorToField('descInput', '#00aa00')" title="綠色">G</button>
                             </div>
                         </div>
                         <input type="text" id="descInput" value="${escapeAttr(spot.desc || '')}" oninput="updateAllPreviews()">
@@ -497,7 +528,9 @@
                                 <button class="mini-btn" onclick="insertToField('deepDescInput', '{bold}', '{/bold}')"><strong>B</strong></button>
                                 <button class="mini-btn" onclick="insertToField('deepDescInput', '{italic}', '{/italic}')"><em>I</em></button>
                                 <button class="mini-btn" onclick="insertToField('deepDescInput', '/n')">↵</button>
-                                <input type="color" class="color-input" value="#ff0000" onchange="applyColorToField('deepDescInput', this.value)">
+                                <button class="color-btn red" onclick="applyColorToField('deepDescInput', '#ff0000')" title="紅色">R</button>
+                                <button class="color-btn blue" onclick="applyColorToField('deepDescInput', '#0066cc')" title="藍色">B</button>
+                                <button class="color-btn green" onclick="applyColorToField('deepDescInput', '#00aa00')" title="綠色">G</button>
                             </div>
                         </div>
                         <textarea id="deepDescInput" oninput="updateAllPreviews()">${escapeAttr(spot.deepDesc || '')}</textarea>
@@ -510,7 +543,9 @@
                                 <button class="mini-btn" onclick="insertToField('tipsInput', '{bold}', '{/bold}')"><strong>B</strong></button>
                                 <button class="mini-btn" onclick="insertToField('tipsInput', '{italic}', '{/italic}')"><em>I</em></button>
                                 <button class="mini-btn" onclick="insertToField('tipsInput', '/n')">↵</button>
-                                <input type="color" class="color-input" value="#ff0000" onchange="applyColorToField('tipsInput', this.value)">
+                                <button class="color-btn red" onclick="applyColorToField('tipsInput', '#ff0000')" title="紅色">R</button>
+                                <button class="color-btn blue" onclick="applyColorToField('tipsInput', '#0066cc')" title="藍色">B</button>
+                                <button class="color-btn green" onclick="applyColorToField('tipsInput', '#00aa00')" title="綠色">G</button>
                             </div>
                         </div>
                         <textarea id="tipsInput" oninput="updateAllPreviews()">${escapeAttr(spot.tips || '')}</textarea>
@@ -523,7 +558,9 @@
                                 <button class="mini-btn" onclick="insertToField('parkingInput', '{bold}', '{/bold}')"><strong>B</strong></button>
                                 <button class="mini-btn" onclick="insertToField('parkingInput', '{italic}', '{/italic}')"><em>I</em></button>
                                 <button class="mini-btn" onclick="insertToField('parkingInput', '/n')">↵</button>
-                                <input type="color" class="color-input" value="#ff0000" onchange="applyColorToField('parkingInput', this.value)">
+                                <button class="color-btn red" onclick="applyColorToField('parkingInput', '#ff0000')" title="紅色">R</button>
+                                <button class="color-btn blue" onclick="applyColorToField('parkingInput', '#0066cc')" title="藍色">B</button>
+                                <button class="color-btn green" onclick="applyColorToField('parkingInput', '#00aa00')" title="綠色">G</button>
                             </div>
                         </div>
                         <textarea id="parkingInput" oninput="updateAllPreviews()">${escapeAttr(spot.parking || '')}</textarea>
