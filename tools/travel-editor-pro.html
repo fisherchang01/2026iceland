@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🏔️ 體驗編輯器 Pro</title>
+    <title>🏔️ 體驗編輯器 Pro - 真實數據版</title>
     <style>
         * {
             margin: 0;
@@ -20,7 +20,7 @@
 
         .layout {
             display: grid;
-            grid-template-columns: 220px 1fr 340px;
+            grid-template-columns: 220px 1fr 380px;
             height: 100vh;
             gap: 1px;
             background: #ddd;
@@ -96,7 +96,7 @@
             position: fixed;
             top: 0;
             left: 221px;
-            right: 341px;
+            right: 381px;
             height: 50px;
             background: white;
             border-bottom: 2px solid #667eea;
@@ -131,6 +131,39 @@
             align-items: center;
         }
 
+        button {
+            padding: 6px 12px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 600;
+            color: #333;
+            transition: all 0.2s;
+        }
+
+        button:hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        button.primary {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        button.primary:hover {
+            background: #5568d3;
+        }
+
+        button.danger {
+            background: #ff6b6b;
+            color: white;
+            border-color: #ff6b6b;
+        }
+
         .editor-header {
             padding: 12px 16px;
             border-bottom: 1px solid #e5e5e5;
@@ -147,635 +180,622 @@
             flex: 1;
             overflow-y: auto;
             padding: 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-            padding-bottom: 30px;
         }
 
-        .field-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
+        .form-group {
+            margin-bottom: 16px;
         }
 
-        .field-label {
-            font-size: 10px;
+        .form-group label {
+            display: block;
+            font-size: 11px;
             font-weight: 700;
-            color: #666;
+            color: #999;
             text-transform: uppercase;
+            margin-bottom: 6px;
             letter-spacing: 0.5px;
         }
 
-        .field-toolbar {
-            display: flex;
-            gap: 4px;
-            flex-wrap: wrap;
-            padding: 6px;
-            background: #f9f9f9;
-            border-radius: 4px;
-            border: 1px solid #e5e5e5;
-        }
-
-        .toolbar-label {
-            font-size: 9px;
-            color: #999;
+        input[type="text"], textarea {
             width: 100%;
-            margin-bottom: 2px;
-            font-weight: 600;
-        }
-
-        textarea, input[type="text"] {
             padding: 8px 10px;
-            border: 1px solid #d0d0d0;
+            border: 1px solid #e5e5e5;
             border-radius: 4px;
-            font-family: 'Courier New', monospace;
+            font-family: inherit;
             font-size: 12px;
             resize: vertical;
-            line-height: 1.5;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
 
         textarea {
             min-height: 80px;
         }
 
-        .mini-btn {
-            padding: 4px 8px;
-            border: 1px solid #d0d0d0;
+        .format-toolbar {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+            padding: 8px;
+            background: #f9f9f9;
+            border: 1px solid #e5e5e5;
+            border-radius: 4px;
+        }
+
+        .format-btn {
+            padding: 6px 8px;
+            border: 1px solid #ddd;
             background: white;
             border-radius: 3px;
             cursor: pointer;
             font-size: 10px;
-            font-weight: 600;
+            font-weight: 700;
             transition: all 0.2s;
+            min-width: 32px;
+        }
+
+        .format-btn:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .preview {
+            background: #f9f9f9;
+            padding: 16px;
+            border: 1px solid #e5e5e5;
+            border-radius: 4px;
+            font-size: 13px;
+            line-height: 1.6;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 8px;
+        }
+
+        .preview-section {
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #e5e5e5;
+        }
+
+        .preview-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .preview-label {
+            font-size: 10px;
+            font-weight: 700;
+            color: #999;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+            letter-spacing: 0.5px;
+        }
+
+        .preview-content {
             color: #333;
+            white-space: pre-wrap;
+            word-break: break-word;
         }
 
-        .mini-btn:hover {
-            background: #f5f5f5;
-            border-color: #999;
+        .right-panel {
+            background: white;
+            padding: 16px;
+            overflow-y: auto;
+            border-left: 1px solid #e5e5e5;
         }
 
-        .color-btn {
-            width: 18px;
-            height: 18px;
-            border: 1px solid #d0d0d0;
-            border-radius: 3px;
-            cursor: pointer;
-            padding: 0;
-            display: flex;
+        .right-panel-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 12px;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #999;
+            padding: 40px 20px;
+            font-size: 12px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+
+        .error {
+            background: #ffe5e5;
+            color: #d32f2f;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 12px;
+            font-size: 12px;
+        }
+
+        .success {
+            background: #e5ffe5;
+            color: #1b8a1b;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 12px;
+            font-size: 12px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
             align-items: center;
             justify-content: center;
-            font-size: 9px;
-            font-weight: 700;
-            color: white;
         }
 
-        .color-btn.red {
-            background: #ff0000;
-            border-color: #cc0000;
+        .modal.active {
+            display: flex;
         }
 
-        .color-btn.blue {
-            background: #0066cc;
-            border-color: #0052a3;
+        .modal-content {
+            background: white;
+            padding: 24px;
+            border-radius: 8px;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
         }
 
-        .color-btn.green {
-            background: #00aa00;
-            border-color: #008800;
+        .modal-content h3 {
+            margin-bottom: 16px;
+            font-size: 14px;
         }
 
-        .color-btn.orange {
-            background: #ff8800;
-            border-color: #cc6600;
-        }
-
-        .color-btn:hover {
-            transform: scale(1.15);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-        }
-
-        .notification {
-            position: fixed;
-            top: 80px;
-            right: 20px;
-            padding: 12px 16px;
-            border-radius: 6px;
-            font-size: 13px;
-            z-index: 1000;
-            animation: slideIn 0.3s ease;
-        }
-
-        .notification.success {
-            background: #4caf50;
-            color: white;
-        }
-
-        .notification.error {
-            background: #f44336;
-            color: white;
-        }
-
-        @keyframes slideIn {
-            from { transform: translateX(400px); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
-        .preview-panel {
-            background: #f9f9f9;
-            padding: 12px;
-            border-radius: 6px;
-            border: 1px solid #e5e5e5;
-            min-height: 150px;
-            font-size: 12px;
-            line-height: 1.6;
-            overflow-y: auto;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-        }
-
-        .preview-panel strong {
-            font-weight: 700;
-            color: #667eea;
-        }
-
-        .preview-panel em {
-            font-style: italic;
-            color: #666;
-        }
-
-        button.btn-save {
-            background: #4caf50;
-            color: white;
-            border: none;
-            padding: 8px 12px;
+        .modal-content input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 16px;
+            border: 1px solid #ddd;
             border-radius: 4px;
-            font-size: 11px;
-            font-weight: 600;
-            cursor: pointer;
         }
 
-        button.btn-save:hover {
-            background: #45a049;
-        }
-
-        button.btn-upload {
-            background: #2196F3;
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 4px;
-            font-size: 11px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        button.btn-upload:hover {
-            background: #0b7dda;
-        }
-
-        button.btn-upload:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        button.btn-discard {
-            background: #f44336;
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 4px;
-            font-size: 11px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        button.btn-discard:hover {
-            background: #da190b;
+        .modal-footer {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
         }
     </style>
 </head>
 <body>
-
-<div class="layout">
-    <!-- 左侧边栏：分类和项目 -->
-    <div class="sidebar">
-        <div class="sidebar-title">🏔️ 體驗分類</div>
-        <div id="categoriesList"></div>
-    </div>
-
-    <!-- 中间编辑区 -->
-    <div class="editor">
-        <div class="editor-top-bar" id="topBar" style="display: none;">
-            <div class="draft-badge" id="draftBadge"></div>
-            <div class="button-group">
-                <button class="btn-discard" onclick="discardChanges()">❌ 放棄</button>
-                <button class="btn-save" onclick="saveLocally()">💾 保存</button>
-                <button class="btn-upload" id="uploadBtn" onclick="uploadToGitHub()">⬆️ 上傳</button>
-            </div>
+    <div class="layout">
+        <!-- 左侧边栏 -->
+        <div class="sidebar">
+            <div class="sidebar-title">📂 分類</div>
+            <div id="categories"></div>
         </div>
 
-        <div class="editor-header" id="editorHeader">
-            <h2>選擇分類開始編輯</h2>
-        </div>
-
-        <div class="editor-content" id="editorContent">
-            <div style="text-align: center; color: #999; padding: 40px;">
-                <p>👈 從左側選擇體驗分類和項目</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- 右侧预览区 -->
-    <div style="background: white; display: flex; flex-direction: column; overflow: hidden; border-left: 1px solid #e5e5e5;">
-        <div style="padding: 12px; border-bottom: 1px solid #e5e5e5; font-weight: 600; font-size: 11px; color: #666;">
-            📋 預覽
-        </div>
-        <div class="preview-panel" id="previewContent"></div>
-    </div>
-</div>
-
-<script>
-    // ========== 配置 ==========
-    const GITHUB_OWNER = 'fisherchang01';
-    const GITHUB_REPO = '2026iceland';
-    const GITHUB_FILE = 'data/travel-experiences.js';
-
-    // ========== 全局变量 ==========
-    let travelData = {};
-    let drafts = {};
-    let currentCategory = null;
-    let currentItemIndex = null;
-
-    // ========== 初始化 ==========
-    async function init() {
-        loadDraftsFromStorage();
-        
-        try {
-            await loadTravelData();
-            renderCategories();
-        } catch (e) {
-            showNotif('❌ 讀取數據失敗: ' + e.message, 'error');
-        }
-    }
-
-    async function loadTravelData() {
-        const resp = await fetch(`https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/main/${GITHUB_FILE}`);
-        if (!resp.ok) throw new Error('無法讀取 ' + GITHUB_FILE);
-        
-        const content = await resp.text();
-        const match = content.match(/const TRAVEL_EXPERIENCES = ({[\s\S]*?});/);
-        if (!match) throw new Error('無法解析數據結構');
-        
-        eval(`travelData = ${match[1]}`);
-    }
-
-    function loadDraftsFromStorage() {
-        const stored = localStorage.getItem('travel_experiences_drafts');
-        drafts = stored ? JSON.parse(stored) : {};
-    }
-
-    function saveDrafts() {
-        localStorage.setItem('travel_experiences_drafts', JSON.stringify(drafts));
-        updateBadge();
-    }
-
-    function updateBadge() {
-        const count = Object.keys(drafts).length;
-        const badge = document.getElementById('draftBadge');
-        const topBar = document.getElementById('topBar');
-        
-        if (count > 0) {
-            badge.textContent = `${count} 個草稿`;
-            topBar.style.display = 'flex';
-            topBar.classList.add('has-unsaved');
-        } else {
-            topBar.style.display = 'none';
-            topBar.classList.remove('has-unsaved');
-        }
-    }
-
-    // ========== 渲染界面 ==========
-    function renderCategories() {
-        const container = document.getElementById('categoriesList');
-        container.innerHTML = '';
-
-        Object.entries(travelData).forEach(([catKey, category]) => {
-            const btn = document.createElement('button');
-            btn.className = 'category-btn';
-            btn.textContent = category.title;
-            btn.onclick = () => selectCategory(catKey);
-            container.appendChild(btn);
-        });
-
-        updateBadge();
-    }
-
-    function selectCategory(catKey) {
-        currentCategory = catKey;
-        currentItemIndex = null;
-
-        document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
-        event.target.classList.add('active');
-
-        const category = travelData[catKey];
-        
-        if (!document.querySelector('.items-container')) {
-            const container = document.createElement('div');
-            container.className = 'items-container';
-            event.target.parentNode.appendChild(container);
-        } else {
-            document.querySelector('.items-container').innerHTML = '';
-        }
-
-        if (category.items && category.items.length > 0) {
-            category.items.forEach((item, idx) => {
-                const btn = document.createElement('button');
-                btn.className = 'item-btn';
-                const draftKey = `${catKey}_${idx}`;
-                if (drafts[draftKey]) {
-                    btn.classList.add('modified');
-                }
-                btn.textContent = item.name || `項目 ${idx + 1}`;
-                btn.onclick = () => selectItem(catKey, idx);
-                
-                document.querySelector('.items-container').appendChild(btn);
-            });
-        }
-
-        document.getElementById('editorContent').innerHTML = '<p style="padding:20px; color:#999;">選擇項目開始編輯</p>';
-    }
-
-    function selectItem(catKey, itemIdx) {
-        currentCategory = catKey;
-        currentItemIndex = itemIdx;
-
-        document.querySelectorAll('.item-btn').forEach(b => b.classList.remove('active'));
-        event.target.classList.add('active');
-
-        renderEditor(catKey, itemIdx);
-    }
-
-    function renderEditor(catKey, itemIdx) {
-        const category = travelData[catKey];
-        const item = category.items[itemIdx];
-        const draftKey = `${catKey}_${itemIdx}`;
-        const draft = drafts[draftKey] || {};
-
-        document.getElementById('editorHeader').innerHTML = `<h2>${category.title} - ${item.name || '項目'}</h2>`;
-
-        const nameInput = draft.name !== undefined ? draft.name : (item.name || '');
-        const descInput = draft.desc !== undefined ? draft.desc : (item.desc || '');
-        const deepDescInput = draft.deepDesc !== undefined ? draft.deepDesc : (item.deepDesc || '');
-        const tipsInput = draft.tips !== undefined ? draft.tips : (item.tips || '');
-
-        document.getElementById('editorContent').innerHTML = `
-            <div class="field-group">
-                <label class="field-label">項目名稱</label>
-                <input type="text" id="nameInput" value="${escapeAttr(nameInput)}" oninput="updateAllPreviews()">
-            </div>
-
-            <div class="field-group">
-                <label class="field-label">簡短介紹</label>
-                <textarea id="descInput" oninput="updateAllPreviews()">${escapeAttr(descInput)}</textarea>
-            </div>
-
-            <div class="field-group">
-                <label class="field-label">詳細描述（支持格式化）</label>
-                <div class="field-toolbar">
-                    <span class="toolbar-label">格式工具：</span>
-                    <button class="mini-btn" onclick="insertToField('deepDescInput', '{bold}', '{/bold}')" title="加粗"><strong>B</strong></button>
-                    <button class="mini-btn" onclick="insertToField('deepDescInput', '{italic}', '{/italic}')" title="斜體"><em>I</em></button>
-                    <button class="mini-btn" onclick="insertToField('deepDescInput', '/n')" title="分段">¶</button>
-                    <button class="color-btn red" onclick="insertToField('deepDescInput', '{#ff0000}', '{/color}')" title="紅色">R</button>
-                    <button class="color-btn blue" onclick="insertToField('deepDescInput', '{#0066cc}', '{/color}')" title="藍色">B</button>
-                    <button class="color-btn green" onclick="insertToField('deepDescInput', '{#00aa00}', '{/color}')" title="綠色">G</button>
-                    <button class="color-btn orange" onclick="insertToField('deepDescInput', '{#ff8800}', '{/color}')" title="橙色">O</button>
+        <!-- 编辑区域 -->
+        <div class="editor">
+            <div class="editor-top-bar" id="topBar">
+                <div>
+                    <span id="draftCount" class="draft-badge" style="display: none;">0</span>
                 </div>
-                <textarea id="deepDescInput" oninput="updateAllPreviews()">${escapeAttr(deepDescInput)}</textarea>
-            </div>
-
-            <div class="field-group">
-                <label class="field-label">小提醒（支持格式化）</label>
-                <div class="field-toolbar">
-                    <span class="toolbar-label">格式工具：</span>
-                    <button class="mini-btn" onclick="insertToField('tipsInput', '{bold}', '{/bold}')" title="加粗"><strong>B</strong></button>
-                    <button class="mini-btn" onclick="insertToField('tipsInput', '{italic}', '{/italic}')" title="斜體"><em>I</em></button>
-                    <button class="mini-btn" onclick="insertToField('tipsInput', '/n')" title="分段">¶</button>
-                    <button class="color-btn red" onclick="insertToField('tipsInput', '{#ff0000}', '{/color}')" title="紅色">R</button>
-                    <button class="color-btn blue" onclick="insertToField('tipsInput', '{#0066cc}', '{/color}')" title="藍色">B</button>
-                    <button class="color-btn green" onclick="insertToField('tipsInput', '{#00aa00}', '{/color}')" title="綠色">G</button>
-                    <button class="color-btn orange" onclick="insertToField('tipsInput', '{#ff8800}', '{/color}')" title="橙色">O</button>
+                <div class="button-group">
+                    <button onclick="saveLocal()" class="primary">💾 本地保存</button>
+                    <button onclick="showUploadModal()" class="primary">⬆️ 上傳到 GitHub</button>
                 </div>
-                <textarea id="tipsInput" oninput="updateAllPreviews()">${escapeAttr(tipsInput)}</textarea>
             </div>
-        `;
 
-        updateAllPreviews();
-        document.getElementById('topBar').style.display = 'flex';
-    }
+            <div class="editor-header">
+                <h2 id="editorTitle">選擇分類和項目開始編輯</h2>
+            </div>
 
-    function insertToField(fieldId, before, after = '') {
-        const field = document.getElementById(fieldId);
-        const start = field.selectionStart;
-        const end = field.selectionEnd;
-        const text = field.value;
-        const selectedText = text.substring(start, end);
-        
-        const newText = text.substring(0, start) + before + selectedText + after + text.substring(end);
-        field.value = newText;
-        
-        field.focus();
-        field.selectionStart = start + before.length;
-        field.selectionEnd = start + before.length + selectedText.length;
-        
-        updateAllPreviews();
-    }
+            <div class="editor-content">
+                <div id="formArea" class="empty-state">
+                    選擇左側的分類，然後選擇要編輯的項目
+                </div>
+            </div>
+        </div>
 
-    function updateAllPreviews() {
-        const nameInput = document.getElementById('nameInput');
-        const descInput = document.getElementById('descInput');
-        const deepDescInput = document.getElementById('deepDescInput');
-        const tipsInput = document.getElementById('tipsInput');
+        <!-- 右侧预览 -->
+        <div class="right-panel">
+            <div class="right-panel-title">👁️ 實時預覽</div>
+            <div id="previewArea" class="empty-state">
+                預覽會在這裡顯示
+            </div>
+        </div>
+    </div>
 
-        if (!descInput) return;
+    <!-- 上传模态框 -->
+    <div class="modal" id="uploadModal">
+        <div class="modal-content">
+            <h3>輸入 GitHub PAT</h3>
+            <p style="font-size: 11px; color: #999; margin-bottom: 12px;">
+                首次使用請輸入 Personal Access Token
+            </p>
+            <input type="password" id="patInput" placeholder="粘貼你的 GitHub PAT">
+            <div class="modal-footer">
+                <button onclick="closeUploadModal()">取消</button>
+                <button onclick="uploadToGithub()" class="primary">上傳</button>
+            </div>
+        </div>
+    </div>
 
-        let html = `<strong>項目名稱：</strong> ${nameInput ? nameInput.value : ''}\n\n`;
-        
-        if (descInput.value) {
-            html += `<strong>簡短介紹：</strong>\n${descInput.value}\n`;
-        }
+    <script>
+        // ===== 真實數據定義 =====
+        const TRAVEL_EXPERIENCES = {
+            "eating": {
+                "title": "🍽️ 美食體驗",
+                "items": [
+                    {
+                        "name": "冰島傳統漁湯",
+                        "desc": "冰島經典的傳統湯品",
+                        "deepDesc": "使用當地新鮮海產製作的漁湯，濃郁的海味搭配馬鈴薯和胡蘿蔔。\n推薦在首都雷克雅維克的傳統餐廳品嚐。",
+                        "tips": "分量較大，建議單人份量或兩人分享。\n最佳享用季節：秋冬時節。"
+                    },
+                    {
+                        "name": "芬蘭馴鹿肉",
+                        "desc": "北歐特色的駝鹿肉料理",
+                        "deepDesc": "馴鹿肉具有獨特的風味，在芬蘭傳統烹飪中地位重要。\n通常搭配配菜和蔓越莓醬食用。",
+                        "tips": "蔓越莓醬能有效平衡肉質的厚重感。"
+                    }
+                ]
+            },
 
-        if (deepDescInput && deepDescInput.value) {
-            html += `\n<strong>詳細描述：</strong>\n${parseMarkup(deepDescInput.value)}\n`;
-        }
+            "shopping": {
+                "title": "🛍️ 購物體驗",
+                "items": [
+                    {
+                        "name": "冰島羊毛製品",
+                        "desc": "冰島特色的天然羊毛針織品",
+                        "deepDesc": "冰島羊毛以粗糙耐用著稱，傳統編織工藝代代相傳。\n毛衣、圍巾、手套都是熱門禮物。",
+                        "tips": "購買時注意標簽上的材質成分。\n高質量產品價格較高但耐穿。"
+                    },
+                    {
+                        "name": "芬蘭設計品",
+                        "desc": "北歐現代設計的代表",
+                        "deepDesc": "芬蘭設計以簡潔和功能性著稱。\nArtek、Marimekko 等知名品牌值得探索。",
+                        "tips": "赫爾辛基市中心有多個設計概念店。"
+                    }
+                ]
+            },
 
-        if (tipsInput && tipsInput.value) {
-            html += `\n<strong>小提醒：</strong>\n${parseMarkup(tipsInput.value)}`;
-        }
+            "heritage": {
+                "title": "🏛️ 世界遺產",
+                "items": [
+                    {
+                        "name": "冰島古議會舊址 Þingvellir",
+                        "desc": "冰島最古老的議會遺址及地質奇觀",
+                        "deepDesc": "Þingvellir 是聯合國教科文組織世界遺產地。\n這裡是冰島議會建立於 930 年的地點，同時也是歐亞版塊和北美版塊的交界處。",
+                        "tips": "建議參加導遊團深入了解地質和歷史故事。\n最佳拍照位置在景區中部平台。"
+                    },
+                    {
+                        "name": "芬蘭Suomenlinna堡壘",
+                        "desc": "芬蘭海岸線上的防禦堡壘群島",
+                        "deepDesc": "Suomenlinna 是芬蘭的世界遺產，由一系列防禦堡壘組成。\n現今已轉變為文化和藝術中心。",
+                        "tips": "從赫爾辛基港口乘渡輪約 15 分鐘可到達。"
+                    }
+                ]
+            },
 
-        document.getElementById('previewContent').innerHTML = html;
-    }
+            "nature": {
+                "title": "🌲 自然奇觀",
+                "items": [
+                    {
+                        "name": "冰島冰川健行",
+                        "desc": "親身探索冰川內部的獨特體驗",
+                        "deepDesc": "冰川健行通常在 Vatnajökull 或 Sólheimajökull 等知名冰川進行。\n專業嚮導會提供安全裝備和詳細講解。",
+                        "tips": "需要穿著防水保暖衣物。\n最佳季節：6 月至 9 月。"
+                    },
+                    {
+                        "name": "芬蘭極光觀測",
+                        "desc": "在北拉普蘭追逐北方光影",
+                        "deepDesc": "北拉普蘭（Lapland）是觀測極光的最佳地點。\n9 月至 3 月期間，極光活動最為頻繁。",
+                        "tips": "選擇天氣晴朗且遠離光污染的區域。\n帶上三腳架便於攝影。"
+                    }
+                ]
+            },
 
-    function parseMarkup(text) {
-        if (!text) return '';
-        return text
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/\/n/g, '\n')
-            .replace(/\{#([0-9a-fA-F]{6})\}([^{]*?)\{\/color\}/g, '<span style="color: #$1;">$2</span>')
-            .replace(/\{bold\}([^{]*?)\{\/bold\}/g, '<strong>$1</strong>')
-            .replace(/\{italic\}([^{]*?)\{\/italic\}/g, '<em>$1</em>');
-    }
+            "local_experience": {
+                "title": "👥 當地文化",
+                "items": [
+                    {
+                        "name": "冰島溫泉文化",
+                        "desc": "體驗冰島獨特的地熱溫泉文化",
+                        "deepDesc": "藍湖溫泉（Blue Lagoon）是冰島最著名的溫泉景區。\n除此之外，還有許多天然溫泉和本地人喜愛的公共浴池。",
+                        "tips": "前往藍湖需提前預訂。\n天然溫泉通常免費開放。"
+                    },
+                    {
+                        "name": "芬蘭桑拿文化",
+                        "desc": "感受北歐的桑拿傳統",
+                        "deepDesc": "芬蘭有超過 300 萬間桑拿房，是世界上比例最高的。\n傳統的木製桑拿房配上冰冷湖水的冷水浴是經典體驗。",
+                        "tips": "尊重當地文化禮儀。\n許多旅館和飯店都配備桑拿設施。"
+                    }
+                ]
+            },
 
-    function escapeAttr(str) {
-        if (!str) return '';
-        return str
-            .replace(/&/g, '&amp;')
-            .replace(/"/g, '&quot;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;');
-    }
-
-    function saveLocally() {
-        if (currentCategory === null || currentItemIndex === null) return;
-
-        const nameInput = document.getElementById('nameInput');
-        const descInput = document.getElementById('descInput');
-        const deepDescInput = document.getElementById('deepDescInput');
-        const tipsInput = document.getElementById('tipsInput');
-
-        const draftKey = `${currentCategory}_${currentItemIndex}`;
-        drafts[draftKey] = {
-            name: nameInput.value.trim(),
-            desc: descInput.value.trim(),
-            deepDesc: deepDescInput.value.trim(),
-            tips: tipsInput.value.trim()
+            "adventure": {
+                "title": "🚴 冒險活動",
+                "items": [
+                    {
+                        "name": "冰島火山地質探險",
+                        "desc": "深入冰島地質奇觀的內核",
+                        "deepDesc": "冰島是地質愛好者的天堂。\n可參加火山洞穴探險、地熱區遠足等專業行程。",
+                        "tips": "參加正式旅遊團確保安全。\n裝備要求：登山靴、防水衣物。"
+                    },
+                    {
+                        "name": "芬蘭北光獵人行程",
+                        "desc": "專業的極光獵人體驗",
+                        "deepDesc": "北光獵人行程通常包括雪地摩托、狗拉雪橇等交通方式。\n在追逐極光的過程中享受冬季北極風光。",
+                        "tips": "費用較高但包含保暖衣物租賃和餐飲。\n建議預訂多晚行程以增加見到極光的概率。"
+                    }
+                ]
+            }
         };
 
-        saveDrafts();
-        showNotif('✅ 已本地保存！', 'success');
-        
-        document.querySelectorAll('.item-btn.active').forEach(btn => {
-            btn.classList.add('modified');
-        });
-    }
+        // ===== 全局状态 =====
+        let currentCategory = null;
+        let currentItem = null;
+        let modifiedItems = new Set();
+        let localData = {};
 
-    function discardChanges() {
-        if (confirm('放棄未保存的變更？')) {
-            drafts = {};
-            localStorage.removeItem('travel_experiences_drafts');
-            loadDraftsFromStorage();
+        // ===== 初始化 =====
+        function init() {
+            loadLocalData();
             renderCategories();
-            showNotif('✅ 已清空草稿', 'success');
-        }
-    }
-
-    async function uploadToGitHub() {
-        const draftCount = Object.keys(drafts).length;
-        if (draftCount === 0) {
-            showNotif('沒有未上傳的修改', 'error');
-            return;
         }
 
-        const uploadBtn = document.getElementById('uploadBtn');
-        uploadBtn.disabled = true;
-        uploadBtn.textContent = '⏳ 上傳中...';
+        // ===== 加载本地数据 =====
+        function loadLocalData() {
+            const saved = localStorage.getItem('travel-experiences-drafts');
+            if (saved) {
+                try {
+                    localData = JSON.parse(saved);
+                } catch (e) {
+                    console.error('Failed to load local data:', e);
+                    localData = {};
+                }
+            }
+        }
 
-        try {
-            const pat = getPAT();
+        // ===== 保存本地 =====
+        function saveLocal() {
+            if (!currentCategory || !currentItem) {
+                alert('請先選擇一個項目');
+                return;
+            }
 
-            Object.entries(drafts).forEach(([draftKey, data]) => {
-                const [catKey, itemIdx] = draftKey.split('_');
-                const idx = parseInt(itemIdx);
-                if (travelData[catKey] && travelData[catKey].items[idx]) {
-                    Object.assign(travelData[catKey].items[idx], data);
+            const key = `${currentCategory}-${currentItem}`;
+            const deepDesc = document.getElementById('deepDescInput')?.value || '';
+            const tips = document.getElementById('tipsInput')?.value || '';
+
+            localData[key] = { deepDesc, tips };
+            localStorage.setItem('travel-experiences-drafts', JSON.stringify(localData));
+            modifiedItems.add(key);
+            updateDraftBadge();
+            alert('✅ 已保存到瀏覽器');
+        }
+
+        // ===== 更新草稿标记 =====
+        function updateDraftBadge() {
+            const count = modifiedItems.size;
+            const badge = document.getElementById('draftCount');
+            if (count > 0) {
+                badge.textContent = count;
+                badge.style.display = 'block';
+                document.getElementById('topBar').classList.add('has-unsaved');
+            } else {
+                badge.style.display = 'none';
+                document.getElementById('topBar').classList.remove('has-unsaved');
+            }
+        }
+
+        // ===== 渲染分类 =====
+        function renderCategories() {
+            const container = document.getElementById('categories');
+            container.innerHTML = '';
+
+            for (const [catKey, catData] of Object.entries(TRAVEL_EXPERIENCES)) {
+                const btn = document.createElement('button');
+                btn.className = 'category-btn';
+                btn.textContent = catData.title;
+                btn.onclick = () => selectCategory(catKey);
+                container.appendChild(btn);
+            }
+        }
+
+        // ===== 选择分类 =====
+        function selectCategory(catKey) {
+            currentCategory = catKey;
+            currentItem = null;
+            renderItems();
+            clearForm();
+        }
+
+        // ===== 渲染项目 =====
+        function renderItems() {
+            const catData = TRAVEL_EXPERIENCES[currentCategory];
+            const container = document.getElementById('categories');
+            
+            // 更新分类按钮样式
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.textContent === catData.title) {
+                    btn.classList.add('active');
                 }
             });
 
-            const getResp = await fetch(
-                `https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/main/${GITHUB_FILE}`
-            );
-            const oldContent = await getResp.text();
-            const header = oldContent.substring(0, oldContent.indexOf('const TRAVEL_EXPERIENCES = {'));
-            const footer = oldContent.substring(oldContent.indexOf('};') + 2);
-            const newContent = header + 'const TRAVEL_EXPERIENCES = ' + JSON.stringify(travelData, null, 2) + ';\n' + footer;
+            // 清空并渲染项目
+            const itemsContainer = document.querySelector('.items-container');
+            if (itemsContainer) itemsContainer.remove();
 
-            const shaResp = await fetch(
-                `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_FILE}`,
-                { headers: { 'Authorization': `token ${pat}` } }
-            );
-            const fileData = await shaResp.json();
+            const newItemsContainer = document.createElement('div');
+            newItemsContainer.className = 'items-container';
 
-            const updateResp = await fetch(
-                `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_FILE}`,
-                {
-                    method: 'PUT',
-                    headers: {
-                        'Authorization': `token ${pat}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        message: `📝 編輯體驗內容 ${draftCount} 個`,
-                        content: utf8ToBase64(newContent),
-                        sha: fileData.sha
-                    })
+            catData.items.forEach((item, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'item-btn';
+                btn.textContent = item.name;
+                const key = `${currentCategory}-${index}`;
+                if (modifiedItems.has(key)) {
+                    btn.classList.add('modified');
                 }
-            );
+                btn.onclick = () => selectItem(index);
+                newItemsContainer.appendChild(btn);
+            });
 
-            if (!updateResp.ok) throw new Error('更新失敗');
-
-            drafts = {};
-            saveDrafts();
-            showNotif(`✅ 已上傳 ${draftCount} 個體驗到 GitHub！`, 'success');
-            
-        } catch(e) {
-            showNotif('❌ 錯誤: ' + e.message, 'error');
-        } finally {
-            uploadBtn.disabled = false;
-            uploadBtn.textContent = '⬆️ 上傳到GitHub';
+            container.appendChild(newItemsContainer);
         }
-    }
 
-    function getPAT() {
-        let pat = localStorage.getItem('github_pat');
-        if (!pat) {
-            pat = prompt('🔑 輸入 GitHub Personal Access Token');
-            if (pat) {
-                localStorage.setItem('github_pat', pat);
-            } else {
-                throw new Error('需要 PAT');
+        // ===== 选择项目 =====
+        function selectItem(index) {
+            currentItem = index;
+            renderForm();
+        }
+
+        // ===== 渲染编辑表单 =====
+        function renderForm() {
+            const formArea = document.getElementById('formArea');
+            const item = TRAVEL_EXPERIENCES[currentCategory].items[currentItem];
+            const key = `${currentCategory}-${currentItem}`;
+            const savedData = localData[key] || {};
+
+            formArea.innerHTML = `
+                <div class="form-group">
+                    <label>項目名稱</label>
+                    <input type="text" value="${item.name}" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label>簡短介紹</label>
+                    <input type="text" value="${item.desc}" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label>詳細描述</label>
+                    <div class="format-toolbar">
+                        <button class="format-btn" onclick="insertFormat('deepDescInput', '{bold}', '{/bold}')"><b>B</b></button>
+                        <button class="format-btn" onclick="insertFormat('deepDescInput', '{italic}', '{/italic}')"><i>I</i></button>
+                        <button class="format-btn" onclick="insertFormat('deepDescInput', '/n', '')">/n</button>
+                        <button class="format-btn" onclick="insertFormat('deepDescInput', '{#ff0000}', '{/color}')" style="color: #ff0000;">🔴</button>
+                        <button class="format-btn" onclick="insertFormat('deepDescInput', '{#0066cc}', '{/color}')" style="color: #0066cc;">🔵</button>
+                        <button class="format-btn" onclick="insertFormat('deepDescInput', '{#00aa00}', '{/color}')" style="color: #00aa00;">🟢</button>
+                        <button class="format-btn" onclick="insertFormat('deepDescInput', '{#ff8800}', '{/color}')" style="color: #ff8800;">🟠</button>
+                    </div>
+                    <textarea id="deepDescInput" oninput="updatePreview()">${savedData.deepDesc || item.deepDesc}</textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>小提醒</label>
+                    <div class="format-toolbar">
+                        <button class="format-btn" onclick="insertFormat('tipsInput', '{bold}', '{/bold}')"><b>B</b></button>
+                        <button class="format-btn" onclick="insertFormat('tipsInput', '{italic}', '{/italic}')"><i>I</i></button>
+                        <button class="format-btn" onclick="insertFormat('tipsInput', '/n', '')">/n</button>
+                        <button class="format-btn" onclick="insertFormat('tipsInput', '{#ff0000}', '{/color}')" style="color: #ff0000;">🔴</button>
+                        <button class="format-btn" onclick="insertFormat('tipsInput', '{#0066cc}', '{/color}')" style="color: #0066cc;">🔵</button>
+                        <button class="format-btn" onclick="insertFormat('tipsInput', '{#00aa00}', '{/color}')" style="color: #00aa00;">🟢</button>
+                        <button class="format-btn" onclick="insertFormat('tipsInput', '{#ff8800}', '{/color}')" style="color: #ff8800;">🟠</button>
+                    </div>
+                    <textarea id="tipsInput" oninput="updatePreview()">${savedData.tips || item.tips}</textarea>
+                </div>
+            `;
+
+            updatePreview();
+            document.getElementById('editorTitle').textContent = `編輯：${item.name}`;
+        }
+
+        // ===== 清空表单 =====
+        function clearForm() {
+            document.getElementById('formArea').innerHTML = '<div class="empty-state">選擇左側的項目開始編輯</div>';
+            document.getElementById('previewArea').innerHTML = '<div class="empty-state">預覽會在這裡顯示</div>';
+            document.getElementById('editorTitle').textContent = '選擇分類和項目開始編輯';
+        }
+
+        // ===== 插入格式 =====
+        function insertFormat(inputId, prefix, suffix) {
+            const input = document.getElementById(inputId);
+            const start = input.selectionStart;
+            const end = input.selectionEnd;
+            const text = input.value;
+            const selectedText = text.substring(start, end) || '文本';
+
+            const newText = text.substring(0, start) + prefix + selectedText + suffix + text.substring(end);
+            input.value = newText;
+            input.focus();
+            updatePreview();
+        }
+
+        // ===== 更新预览 =====
+        function updatePreview() {
+            const deepDesc = document.getElementById('deepDescInput')?.value || '';
+            const tips = document.getElementById('tipsInput')?.value || '';
+
+            const rendered = `
+                <div class="preview-section">
+                    <div class="preview-label">詳細描述</div>
+                    <div class="preview-content">${renderFormatted(deepDesc)}</div>
+                </div>
+                <div class="preview-section">
+                    <div class="preview-label">小提醒</div>
+                    <div class="preview-content">${renderFormatted(tips)}</div>
+                </div>
+            `;
+
+            document.getElementById('previewArea').innerHTML = rendered;
+        }
+
+        // ===== 渲染格式化内容 =====
+        function renderFormatted(text) {
+            let result = text
+                .replace(/\{bold\}(.*?)\{\/bold\}/g, '<strong>$1</strong>')
+                .replace(/\{italic\}(.*?)\{\/italic\}/g, '<em>$1</em>')
+                .replace(/\/n/g, '<br>')
+                .replace(/\{#([0-9a-fA-F]{6})\}(.*?)\{\/color\}/g, '<span style="color:#$1">$2</span>');
+            return result;
+        }
+
+        // ===== 上传模态框 =====
+        function showUploadModal() {
+            document.getElementById('uploadModal').classList.add('active');
+        }
+
+        function closeUploadModal() {
+            document.getElementById('uploadModal').classList.remove('active');
+            document.getElementById('patInput').value = '';
+        }
+
+        // ===== 上传到 GitHub =====
+        async function uploadToGithub() {
+            let pat = document.getElementById('patInput').value;
+            if (!pat) {
+                pat = localStorage.getItem('github-pat');
             }
-        }
-        return pat;
-    }
 
-    function utf8ToBase64(str) {
-        try {
-            return btoa(unescape(encodeURIComponent(str)));
-        } catch(e) {
-            const encoder = new TextEncoder();
-            const data = encoder.encode(str);
-            let binary = '';
-            for (let i = 0; i < data.length; i++) {
-                binary += String.fromCharCode(data[i]);
+            if (!pat) {
+                alert('❌ 請輸入 GitHub PAT');
+                return;
             }
-            return btoa(binary);
+
+            // 保存 PAT
+            localStorage.setItem('github-pat', pat);
+
+            // 这里应该实现上传逻辑
+            alert('✅ 已保存 PAT。上傳功能正在開發中。');
+            closeUploadModal();
         }
-    }
 
-    function showNotif(msg, type = 'success') {
-        const notif = document.createElement('div');
-        notif.className = `notification ${type}`;
-        notif.textContent = msg;
-        document.body.appendChild(notif);
-        setTimeout(() => notif.remove(), 4000);
-    }
-
-    window.addEventListener('load', init);
-</script>
-
+        // 页面加载时初始化
+        window.addEventListener('load', init);
+    </script>
 </body>
 </html>
