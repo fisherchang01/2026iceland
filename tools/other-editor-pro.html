@@ -435,7 +435,6 @@
                 </div>
                 <div class="button-group">
                     <button onclick="saveLocal()" class="primary">💾 本地保存</button>
-                    <button onclick="showUploadModal()" class="primary">⬆️ 上傳到 GitHub</button>
                 </div>
             </div>
 
@@ -471,20 +470,7 @@
         </div>
     </div>
 
-    <!-- 上传模态框 -->
-    <div class="modal" id="uploadModal">
-        <div class="modal-content">
-            <h3>輸入 GitHub PAT</h3>
-            <p style="font-size: 11px; color: #999; margin-bottom: 12px;">
-                首次使用請輸入 Personal Access Token
-            </p>
-            <input type="password" id="patInput" placeholder="粘貼你的 GitHub PAT">
-            <div class="modal-footer">
-                <button onclick="closeUploadModal()">取消</button>
-                <button onclick="uploadToGithub()" class="primary">上傳</button>
-            </div>
-        </div>
-    </div>
+
 
     <script>
         // ===== 全局状态 =====
@@ -877,154 +863,7 @@
             }
         }
 
-        // ===== 上传模态框 =====
-        function showUploadModal() {
-            document.getElementById('uploadModal').classList.add('active');
-        }
 
-        function closeUploadModal() {
-            document.getElementById('uploadModal').classList.remove('active');
-            document.getElementById('patInput').value = '';
-        }
-
-        // ===== 上传到 GitHub =====
-        async function uploadToGithub() {
-            let pat = document.getElementById('patInput').value;
-            if (!pat) {
-                pat = localStorage.getItem('github-pat');
-            }
-
-            if (!pat) {
-                alert('❌ 請輸入 GitHub PAT');
-                return;
-            }
-
-            localStorage.setItem('github-pat', pat);
-            closeUploadModal();
-
-            try {
-                console.log('開始上傳過程...');
-                console.log('修改的項目數:', Object.keys(localData).length);
-
-                // 1. 檢查是否有修改
-                if (Object.keys(localData).length === 0) {
-                    alert('ℹ️ 沒有修改要上傳');
-                    return;
-                }
-
-                alert('⬆️ 正在上傳，請稍候...');
-
-                // 2. 獲取原始文件
-                console.log('正在從 GitHub 獲取原始文件...');
-                const fileResponse = await fetch(
-                    'https://api.github.com/repos/fisherchang01/2026iceland/contents/data/other-content.js',
-                    {
-                        headers: { 
-                            'Authorization': `token ${pat}`,
-                            'Accept': 'application/vnd.github.v3.raw'
-                        }
-                    }
-                );
-
-                if (fileResponse.status === 404) {
-                    throw new Error('文件不存在: other-content.js');
-                }
-                if (fileResponse.status === 401) {
-                    throw new Error('PAT 無效或已過期');
-                }
-                if (fileResponse.status === 403) {
-                    throw new Error('權限不足，檢查 PAT 權限');
-                }
-                if (!fileResponse.ok) {
-                    throw new Error(`無法獲取文件: HTTP ${fileResponse.status}`);
-                }
-
-                const originalContent = await fileResponse.text();
-                console.log('✓ 原始文件獲取成功，大小:', originalContent.length, '字節');
-
-                // 3. 獲取文件 SHA
-                const metaResponse = await fetch(
-                    'https://api.github.com/repos/fisherchang01/2026iceland/contents/data/other-content.js',
-                    {
-                        headers: { 
-                            'Authorization': `token ${pat}`
-                        }
-                    }
-                );
-                
-                if (!metaResponse.ok) {
-                    throw new Error('無法獲取文件元數據');
-                }
-
-                const metaData = await metaResponse.json();
-                const fileSha = metaData.sha;
-                console.log('✓ 文件 SHA:', fileSha.substring(0, 8) + '...');
-
-                // 4. 簡化版本：直接記錄修改
-                console.log('正在應用修改...');
-                let modifyCount = 0;
-                for (const [key, value] of Object.entries(localData)) {
-                    console.log(`  ✓ 修改 ${key}: ${value.detail.substring(0, 30)}...`);
-                    modifyCount++;
-                }
-
-                // 5. 上傳修改
-                console.log('正在上傳到 GitHub...');
-                
-                // 使用安全的 Base64 編碼
-                const encoder = new TextEncoder();
-                const data = encoder.encode(originalContent);
-                let binaryString = '';
-                for (let i = 0; i < data.length; i++) {
-                    binaryString += String.fromCharCode(data[i]);
-                }
-                const encodedContent = btoa(binaryString);
-
-                const uploadResponse = await fetch(
-                    'https://api.github.com/repos/fisherchang01/2026iceland/contents/data/other-content.js',
-                    {
-                        method: 'PUT',
-                        headers: {
-                            'Authorization': `token ${pat}`,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            message: `✏️ 編輯器更新 - ${new Date().toLocaleString('zh-Hant')} - ${Object.keys(localData).length} 項修改`,
-                            content: encodedContent,
-                            sha: fileSha,
-                            branch: 'main'
-                        })
-                    }
-                );
-
-                let errorMsg = '';
-                if (!uploadResponse.ok) {
-                    try {
-                        const errorData = await uploadResponse.json();
-                        errorMsg = errorData.message || '未知錯誤';
-                    } catch (e) {
-                        errorMsg = `HTTP ${uploadResponse.status}`;
-                    }
-                    throw new Error(`上傳失敗: ${errorMsg}`);
-                }
-
-                const result = await uploadResponse.json();
-                console.log('✅ 上傳成功!');
-                console.log('Commit SHA:', result.commit.sha);
-                
-                alert(`✅ 成功上傳 ${Object.keys(localData).length} 項修改到 GitHub!`);
-                
-                // 清空本地修改記錄
-                localData = {};
-                modifiedItems.clear();
-                localStorage.setItem('other-editor-modifications', JSON.stringify({}));
-                updateDraftBadge();
-                
-            } catch (error) {
-                console.error('❌ 上傳失敗:', error);
-                alert(`❌ 上傳失敗:\n${error.message}\n\n請檢查:\n1. PAT 是否有效\n2. 網絡連接\n3. 倉庫權限`);
-            }
-        }
 
         // 页面加载时初始化
         window.addEventListener('load', init);
