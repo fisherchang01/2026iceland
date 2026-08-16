@@ -554,6 +554,16 @@
             tripData[currentDay].spots[currentSpotIndex][field] = value;
         }
 
+        // ===== HTML 轉義 =====
+        function escapeAttr(str) {
+            if (!str) return '';
+            return str
+                .replace(/&/g, '&amp;')
+                .replace(/"/g, '&quot;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;');
+        }
+
         // ===== 更新預覽 =====
         function updatePreview() {
             const descInput = document.getElementById('descInput');
