@@ -331,8 +331,19 @@ async function loadFromGitHub() {
 
     const data = await response.json();
     
-    // 第二步：Base64 解碼
-    const content = atob(data.content);
+    // 第二步：正确解码 Base64（修复 UTF-8 问题）
+    // atob() 只能处理 Latin1，需要用 TextDecoder 处理 UTF-8
+    let content;
+    try {
+      const binaryString = atob(data.content);
+      const bytes = new Uint8Array(binaryString.length);
+      for (let i = 0; i < binaryString.length; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+      }
+      content = new TextDecoder('utf-8').decode(bytes);
+    } catch (e) {
+      throw new Error('Base64 解碼失敗: ' + e.message);
+    }
     
     // 第三步：提取 OTHER_HTML（不用 eval，直接字符串操作）
     const startMarker = 'const OTHER_HTML = `';
@@ -342,7 +353,7 @@ async function loadFromGitHub() {
     const endIdx = content.lastIndexOf(endMarker);
     
     if (startIdx === -1 || endIdx === -1) {
-      console.error('文件內容:', content.substring(0, 500));
+      console.error('文件內容前 500 字符:', content.substring(0, 500));
       throw new Error('無法在文件中找到 OTHER_HTML 定義');
     }
     
