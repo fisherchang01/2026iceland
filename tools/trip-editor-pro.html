@@ -509,11 +509,11 @@
                 </div>
 
                 <div class="editor-toolbar">
-                    <button class="toolbar-btn" onclick="insertFormatDesc('{bold}', '{/bold}')"><strong>B</strong></button>
-                    <button class="toolbar-btn" onclick="insertFormatDesc('{italic}', '{/italic}')"><em>I</em></button>
-                    <button class="toolbar-btn" onclick="insertFormatDesc('/n', '')">↵ 換行</button>
+                    <button class="toolbar-btn" onclick="insertFormatDeep('{bold}', '{/bold}')"><strong>B</strong></button>
+                    <button class="toolbar-btn" onclick="insertFormatDeep('{italic}', '{/italic}')"><em>I</em></button>
+                    <button class="toolbar-btn" onclick="insertFormatDeep('/n', '')">↵ 換行</button>
                     <button class="toolbar-btn" style="display:flex; align-items:center; gap:4px; padding: 6px 8px;">
-                        🎨 <input type="color" class="color-picker" value="#ff0000" onchange="insertColorDesc(this.value)">
+                        🎨 <input type="color" class="color-picker" id="colorPicker" value="#ff0000" onchange="insertColorDeep(this.value)">
                     </button>
                 </div>
 
@@ -527,6 +527,16 @@
                         <label>詳細描述 (deepDesc)</label>
                         <textarea id="deepDescInput" oninput="updatePreview()">${escapeAttr(spot.deepDesc || '')}</textarea>
                     </div>
+
+                    <div class="field-group">
+                        <label>衛生間 (toilet)</label>
+                        <input type="text" id="toiletInput" value="${escapeAttr(spot.toilet || '')}" onchange="updateSpotField('toilet', this.value)">
+                    </div>
+
+                    <div class="field-group">
+                        <label>地圖 (map)</label>
+                        <input type="text" id="mapInput" value="${escapeAttr(spot.map || '')}" onchange="updateSpotField('map', this.value)">
+                    </div>
                 </div>
 
                 <div class="editor-footer">
@@ -536,6 +546,12 @@
             `;
 
             updatePreview();
+        }
+
+        // ===== 更新景點字段 =====
+        function updateSpotField(field, value) {
+            if (!currentDay || currentSpotIndex === null) return;
+            tripData[currentDay].spots[currentSpotIndex][field] = value;
         }
 
         // ===== 更新預覽 =====
@@ -561,24 +577,44 @@
             `;
         }
 
-        // ===== 輔助函數 =====
-        function escapeAttr(str) {
-            return (str || '').replace(/"/g, '&quot;').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-        }
-
+        // ===== 插入格式到 desc =====
         function insertFormatDesc(before, after) {
             const input = document.getElementById('descInput');
+            if (!input) return;
             const start = input.selectionStart;
             const end = input.selectionEnd;
             const text = input.value;
             const selected = text.substring(start, end) || '文本';
             input.value = text.substring(0, start) + before + selected + after + text.substring(end);
+            input.focus();
             updatePreview();
         }
 
+        // ===== 插入格式到 deepDesc =====
+        function insertFormatDeep(before, after) {
+            const input = document.getElementById('deepDescInput');
+            if (!input) return;
+            const start = input.selectionStart;
+            const end = input.selectionEnd;
+            const text = input.value;
+            const selected = text.substring(start, end) || '文本';
+            input.value = text.substring(0, start) + before + selected + after + text.substring(end);
+            input.focus();
+            updatePreview();
+        }
+
+        // ===== 应用颜色到 desc =====
         function insertColorDesc(color) {
+            console.log('颜色选择:', color);
             const hex = color.substring(1);
             insertFormatDesc(`{#${hex}}`, '{/color}');
+        }
+
+        // ===== 应用颜色到 deepDesc =====
+        function insertColorDeep(color) {
+            console.log('颜色选择:', color);
+            const hex = color.substring(1);
+            insertFormatDeep(`{#${hex}}`, '{/color}');
         }
 
         function discardChanges() {
@@ -593,11 +629,15 @@
 
             const descInput = document.getElementById('descInput');
             const deepDescInput = document.getElementById('deepDescInput');
+            const toiletInput = document.getElementById('toiletInput');
+            const mapInput = document.getElementById('mapInput');
             const saveBtn = document.getElementById('saveBtn');
 
             const spot = tripData[currentDay].spots[currentSpotIndex];
             spot.desc = descInput.value.trim();
             spot.deepDesc = deepDescInput.value.trim();
+            if (toiletInput) spot.toilet = toiletInput.value.trim();
+            if (mapInput) spot.map = mapInput.value.trim();
 
             saveBtn.disabled = true;
             saveBtn.textContent = '⏳ 保存中...';
