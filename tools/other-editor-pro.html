@@ -539,7 +539,6 @@
 
         const titleInput = draft.title !== undefined ? draft.title : (category.title || '');
         const contentInput = draft.content !== undefined ? draft.content : (category.content || '');
-        const noteInput = draft.note !== undefined ? draft.note : (category.note || '');
 
         document.getElementById('editorContent').innerHTML = `
             <div class="field-group">
@@ -548,7 +547,7 @@
             </div>
 
             <div class="field-group">
-                <label class="field-label">主要內容（支持格式化）</label>
+                <label class="field-label">詳細內容（支持格式化）</label>
                 <div class="field-toolbar">
                     <button class="mini-btn" onclick="insertToField('contentInput', '{bold}', '{/bold}')" title="加粗"><strong>B</strong></button>
                     <button class="mini-btn" onclick="insertToField('contentInput', '{italic}', '{/italic}')" title="斜體"><em>I</em></button>
@@ -559,11 +558,6 @@
                     <button class="color-btn orange" onclick="insertToField('contentInput', '{#ff8800}', '{/color}')" title="橙色">O</button>
                 </div>
                 <textarea id="contentInput" oninput="updateAllPreviews()">${escapeAttr(contentInput)}</textarea>
-            </div>
-
-            <div class="field-group">
-                <label class="field-label">備註（可選）</label>
-                <textarea id="noteInput" oninput="updateAllPreviews()">${escapeAttr(noteInput)}</textarea>
             </div>
         `;
 
@@ -592,7 +586,6 @@
     function updateAllPreviews() {
         const titleInput = document.getElementById('titleInput');
         const contentInput = document.getElementById('contentInput');
-        const noteInput = document.getElementById('noteInput');
 
         if (!contentInput) return;
 
@@ -606,17 +599,8 @@
         if (contentInput.value) {
             html += `
             <div class="preview-section">
-                <div class="preview-section-title">主要內容</div>
+                <div class="preview-section-title">詳細內容</div>
                 <div class="preview-content">${parseMarkup(contentInput.value)}</div>
-            </div>
-            `;
-        }
-
-        if (noteInput && noteInput.value) {
-            html += `
-            <div class="preview-section">
-                <div class="preview-section-title">備註</div>
-                <div class="preview-content">${parseMarkup(noteInput.value)}</div>
             </div>
             `;
         }
@@ -651,13 +635,11 @@
 
         const titleInput = document.getElementById('titleInput');
         const contentInput = document.getElementById('contentInput');
-        const noteInput = document.getElementById('noteInput');
 
         const draftKey = currentCategory;
         drafts[draftKey] = {
             title: titleInput.value.trim(),
-            content: contentInput.value.trim(),
-            note: noteInput.value.trim()
+            content: contentInput.value.trim()
         };
 
         saveDrafts();

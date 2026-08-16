@@ -564,8 +564,7 @@
 
         const nameInput = draft.name !== undefined ? draft.name : (item.name || '');
         const descInput = draft.desc !== undefined ? draft.desc : (item.desc || '');
-        const deepDescInput = draft.deepDesc !== undefined ? draft.deepDesc : (item.deepDesc || '');
-        const tipsInput = draft.tips !== undefined ? draft.tips : (item.tips || '');
+        const contentInput = draft.content !== undefined ? draft.content : (item.content || '');
 
         document.getElementById('editorContent').innerHTML = `
             <div class="field-group">
@@ -575,33 +574,20 @@
 
             <div class="field-group">
                 <label class="field-label">簡短介紹</label>
-                <textarea id="descInput" oninput="updateAllPreviews()">${escapeAttr(descInput)}</textarea>
+                <input type="text" id="descInput" value="${escapeAttr(descInput)}" oninput="updateAllPreviews()">
             </div>
 
             <div class="field-group">
                 <label class="field-label">詳細描述（支持格式化）</label>
                 <div class="field-toolbar">
-                    <button class="mini-btn" onclick="insertToField('deepDescInput', '{bold}', '{/bold}')" title="加粗"><strong>B</strong></button>
-                    <button class="mini-btn" onclick="insertToField('deepDescInput', '{italic}', '{/italic}')" title="斜體"><em>I</em></button>
-                    <button class="mini-btn" onclick="insertToField('deepDescInput', '/n')" title="分段">¶</button>
-                    <button class="color-btn red" onclick="insertToField('deepDescInput', '{#ff6b6b}', '{/color}')" title="紅色">R</button>
-                    <button class="color-btn blue" onclick="insertToField('deepDescInput', '{#667eea}', '{/color}')" title="藍色">B</button>
-                    <button class="color-btn green" onclick="insertToField('deepDescInput', '{#51cf66}', '{/color}')" title="綠色">G</button>
+                    <button class="mini-btn" onclick="insertToField('contentInput', '{bold}', '{/bold}')" title="加粗"><strong>B</strong></button>
+                    <button class="mini-btn" onclick="insertToField('contentInput', '{italic}', '{/italic}')" title="斜體"><em>I</em></button>
+                    <button class="mini-btn" onclick="insertToField('contentInput', '/n')" title="分段">¶</button>
+                    <button class="color-btn red" onclick="insertToField('contentInput', '{#ff6b6b}', '{/color}')" title="紅色">R</button>
+                    <button class="color-btn blue" onclick="insertToField('contentInput', '{#667eea}', '{/color}')" title="藍色">B</button>
+                    <button class="color-btn green" onclick="insertToField('contentInput', '{#51cf66}', '{/color}')" title="綠色">G</button>
                 </div>
-                <textarea id="deepDescInput" oninput="updateAllPreviews()">${escapeAttr(deepDescInput)}</textarea>
-            </div>
-
-            <div class="field-group">
-                <label class="field-label">小提醒（支持格式化）</label>
-                <div class="field-toolbar">
-                    <button class="mini-btn" onclick="insertToField('tipsInput', '{bold}', '{/bold}')" title="加粗"><strong>B</strong></button>
-                    <button class="mini-btn" onclick="insertToField('tipsInput', '{italic}', '{/italic}')" title="斜體"><em>I</em></button>
-                    <button class="mini-btn" onclick="insertToField('tipsInput', '/n')" title="分段">¶</button>
-                    <button class="color-btn red" onclick="insertToField('tipsInput', '{#ff6b6b}', '{/color}')" title="紅色">R</button>
-                    <button class="color-btn blue" onclick="insertToField('tipsInput', '{#667eea}', '{/color}')" title="藍色">B</button>
-                    <button class="color-btn green" onclick="insertToField('tipsInput', '{#51cf66}', '{/color}')" title="綠色">G</button>
-                </div>
-                <textarea id="tipsInput" oninput="updateAllPreviews()">${escapeAttr(tipsInput)}</textarea>
+                <textarea id="contentInput" oninput="updateAllPreviews()">${escapeAttr(contentInput)}</textarea>
             </div>
         `;
 
@@ -630,10 +616,9 @@
     function updateAllPreviews() {
         const nameInput = document.getElementById('nameInput');
         const descInput = document.getElementById('descInput');
-        const deepDescInput = document.getElementById('deepDescInput');
-        const tipsInput = document.getElementById('tipsInput');
+        const contentInput = document.getElementById('contentInput');
 
-        if (!descInput) return;
+        if (!contentInput) return;
 
         let html = `
             <div class="preview-section">
@@ -642,7 +627,7 @@
             </div>
         `;
         
-        if (descInput.value) {
+        if (descInput && descInput.value) {
             html += `
             <div class="preview-section">
                 <div class="preview-section-title">簡短介紹</div>
@@ -651,20 +636,11 @@
             `;
         }
 
-        if (deepDescInput && deepDescInput.value) {
+        if (contentInput && contentInput.value) {
             html += `
             <div class="preview-section">
                 <div class="preview-section-title">詳細描述</div>
-                <div class="preview-content">${parseMarkup(deepDescInput.value)}</div>
-            </div>
-            `;
-        }
-
-        if (tipsInput && tipsInput.value) {
-            html += `
-            <div class="preview-section">
-                <div class="preview-section-title">小提醒</div>
-                <div class="preview-content">${parseMarkup(tipsInput.value)}</div>
+                <div class="preview-content">${parseMarkup(contentInput.value)}</div>
             </div>
             `;
         }
@@ -699,15 +675,13 @@
 
         const nameInput = document.getElementById('nameInput');
         const descInput = document.getElementById('descInput');
-        const deepDescInput = document.getElementById('deepDescInput');
-        const tipsInput = document.getElementById('tipsInput');
+        const contentInput = document.getElementById('contentInput');
 
         const draftKey = `${currentCategory}_${currentItemIndex}`;
         drafts[draftKey] = {
             name: nameInput.value.trim(),
             desc: descInput.value.trim(),
-            deepDesc: deepDescInput.value.trim(),
-            tips: tipsInput.value.trim()
+            content: contentInput.value.trim()
         };
 
         saveDrafts();
