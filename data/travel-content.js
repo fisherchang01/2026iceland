@@ -421,7 +421,7 @@ const TRAVEL_HTML = `
   <div class="page-inner">
 
     <!-- 1. 冰島介紹 -->
-    <div class="travel-collapse" data-cover="iceland_introduction.webp">
+    <div class="travel-collapse" data-cover="item-01.webp">
       <div class="travel-collapse-header" onclick="toggleTravelCollapse(this)">
         <div class="travel-collapse-left">
           <div class="travel-collapse-emoji">🇮🇸</div>
