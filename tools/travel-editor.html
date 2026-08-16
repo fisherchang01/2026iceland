@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>冰島芬蘭之旅 · 體驗內容編輯器</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --primary: #3f6e7a;
+      --accent: #4a8fa3;
+      --bg: #f2ede4;
+      --bg2: #e9e2d3;
+      --card: #ffffff;
+      --text: #2a2f2e;
+      --sub: #6b756f;
+      --border: #ddd3c2;
+      --ok: #3f7a52;
+      --warn: #c0503f;
+    }
+    body {
+      font-family: -apple-system, "Segoe UI", Helvetica, Arial, "PingFang TC", "Microsoft JhengHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    header {
+      background: var(--primary);
+      color: #fff;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    header h1 { font-size: 1.4rem; margin-bottom: 10px; }
+    header p { font-size: 0.9rem; opacity: 0.9; }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      padding: 15px;
+      background: var(--card);
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    input[type="text"], textarea, select {
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 0.95rem;
+    }
+
+    textarea { resize: vertical; min-height: 80px; }
+
+    button {
+      padding: 10px 18px;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    button:hover { opacity: 0.9; }
+    button.secondary {
+      background: #fff;
+      color: var(--primary);
+      border: 1px solid var(--primary);
+    }
+    button.danger {
+      background: var(--warn);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 250px 1fr 1fr;
+      gap: 15px;
+      align-items: start;
+    }
+
+    @media (max-width: 1200px) {
+      .layout { grid-template-columns: 1fr 1fr; }
+      .sidebar-sticky { position: static; }
+    }
+
+    @media (max-width: 768px) {
+      .layout { grid-template-columns: 1fr; }
+    }
+
+    .sidebar-sticky {
+      position: sticky;
+      top: 20px;
+    }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 15px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .panel h3 {
+      font-size: 0.95rem;
+      color: var(--primary);
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .category-list {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .category-item {
+      padding: 10px;
+      margin-bottom: 6px;
+      background: var(--bg);
+      border: 1px solid transparent;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+
+    .category-item:hover {
+      background: var(--bg2);
+    }
+
+    .category-item.active {
+      background: #eef5f4;
+      border-color: var(--primary);
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .item-list {
+      max-height: 350px;
+      overflow-y: auto;
+      margin-top: 10px;
+    }
+
+    .item-row {
+      padding: 8px;
+      margin-bottom: 4px;
+      background: var(--bg);
+      border: 1px solid transparent;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: all 0.2s;
+    }
+
+    .item-row:hover { background: var(--bg2); }
+    .item-row.active {
+      background: #eef5f4;
+      border-color: var(--primary);
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .edit-panel {
+      display: none;
+    }
+
+    .edit-panel.show {
+      display: block;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      color: var(--sub);
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+
+    .form-group input[type="text"],
+    .form-group textarea {
+      width: 100%;
+    }
+
+    .hint {
+      font-size: 0.75rem;
+      color: var(--sub);
+      margin-top: 4px;
+      line-height: 1.4;
+    }
+
+    .preview-panel {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 15px;
+      background: #fff;
+      max-height: 600px;
+      overflow-y: auto;
+    }
+
+    .preview-panel h4 {
+      font-size: 1.1rem;
+      margin-bottom: 10px;
+      color: var(--primary);
+    }
+
+    .preview-panel p {
+      font-size: 0.9rem;
+      line-height: 1.6;
+      margin-bottom: 10px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .status-bar {
+      padding: 10px 15px;
+      background: var(--bg2);
+      border-radius: 6px;
+      font-size: 0.85rem;
+      color: var(--sub);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--sub);
+    }
+
+    .status-dot.ok { background: var(--ok); }
+    .status-dot.warn { background: var(--warn); }
+
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--text);
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+      z-index: 999;
+    }
+
+    .toast.show { opacity: 1; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🏔️ 冰島芬蘭之旅 · 體驗內容編輯器</h1>
+  <p>編輯、預覽、保存至本地，然後推送回 GitHub</p>
+</header>
+
+<div class="container">
+  <!-- 工具欄 -->
+  <div class="toolbar">
+    <button id="btnLoad">讀取 GitHub</button>
+    <button id="btnPreview" class="secondary">預覽</button>
+    <button id="btnSaveDraft" class="secondary">保存草稿</button>
+    <button id="btnUpload">上傳到 GitHub</button>
+    <div style="margin-left: auto;">
+      <input type="password" id="githubPAT" placeholder="GitHub PAT" style="width: 200px; margin-right: 10px;" title="粘貼您的 GitHub Personal Access Token">
+      <span id="patStatus" class="status-bar" style="display: inline-flex;">
+        <span class="status-dot"></span>
+        <span>未認證</span>
+      </span>
+    </div>
+  </div>
+
+  <!-- 主版面 -->
+  <div class="layout">
+    <!-- 左側：分類清單 -->
+    <div class="sidebar-sticky">
+      <div class="panel">
+        <h3>分類</h3>
+        <div class="category-list" id="categoryList"></div>
+      </div>
+    </div>
+
+    <!-- 中間：項目清單 + 編輯表單 -->
+    <div>
+      <div class="panel">
+        <h3>項目清單</h3>
+        <div class="item-list" id="itemList"></div>
+      </div>
+
+      <div class="panel edit-panel" id="editPanel" style="margin-top: 15px;">
+        <h3>編輯內容</h3>
+        
+        <div class="form-group">
+          <label>項目標題</label>
+          <input type="text" id="editTitle" placeholder="項目標題">
+          <div class="hint">例如：「面包碗」、「熱狗堡」</div>
+        </div>
+
+        <div class="form-group">
+          <label>詳細描述（支持標記）</label>
+          <textarea id="editDetail" placeholder="詳細描述，可使用標記..."></textarea>
+          <div class="hint">支持標記：{bold}粗體{/bold}、{italic}斜體{/italic}、/n 換行、{#ff0000}顏色{/color}</div>
+        </div>
+
+        <div style="display: flex; gap: 10px;">
+          <button id="btnSave" style="flex: 1;">保存此項目</button>
+          <button id="btnReset" class="secondary" style="flex: 1;">復原</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 右側：預覽面板 -->
+    <div>
+      <div class="panel">
+        <h3>實時預覽</h3>
+        <div class="preview-panel" id="previewPanel">
+          <p style="color: var(--sub);">選擇一個項目開始編輯...</p>
+        </div>
+      </div>
+      <div class="status-bar" style="margin-top: 15px;">
+        <span class="status-dot ok"></span>
+        <span id="statusText">就緒</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ============ 全局狀態 ============
+const STATE = {
+  categories: [],
+  currentCategory: null,
+  currentItemIndex: null,
+  originalHTML: '',
+  drafts: JSON.parse(localStorage.getItem('travel_drafts') || '{}'),
+  githubToken: localStorage.getItem('github_pat') || '',
+  isDirty: false
+};
+
+// ============ 初始化 ============
+window.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('githubPAT').value = STATE.githubToken;
+  setupEventListeners();
+  updatePATStatus();
+  loadDrafts();
+});
+
+function setupEventListeners() {
+  document.getElementById('btnLoad').addEventListener('click', loadFromGithub);
+  document.getElementById('btnPreview').addEventListener('click', previewContent);
+  document.getElementById('btnSaveDraft').addEventListener('click', saveDraft);
+  document.getElementById('btnUpload').addEventListener('click', uploadToGithub);
+  document.getElementById('btnSave').addEventListener('click', saveCurrentItem);
+  document.getElementById('btnReset').addEventListener('click', resetCurrentItem);
+
+  document.getElementById('githubPAT').addEventListener('change', (e) => {
+    STATE.githubToken = e.target.value;
+    localStorage.setItem('github_pat', STATE.githubToken);
+    updatePATStatus();
+  });
+}
+
+function updatePATStatus() {
+  const status = document.getElementById('patStatus');
+  if (STATE.githubToken) {
+    status.querySelector('.status-dot').classList.add('ok');
+    status.querySelector('span:last-child').textContent = '已認證';
+  } else {
+    status.querySelector('.status-dot').classList.remove('ok');
+    status.querySelector('span:last-child').textContent = '未認證';
+  }
+}
+
+function showToast(msg, duration = 2500) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), duration);
+}
+
+// ============ GitHub 操作 ============
+async function loadFromGithub() {
+  if (!STATE.githubToken) {
+    showToast('❌ 請先輸入 GitHub PAT');
+    return;
+  }
+
+  setStatus('讀取中...', 'warn');
+
+  try {
+    const response = await fetch('https://api.github.com/repos/fisherchang01/2026iceland/contents/data/travel-content.js', {
+      headers: { 'Authorization': `token ${STATE.githubToken}` }
+    });
+
+    if (!response.ok) {
+      throw new Error(`GitHub API 錯誤：${response.status}`);
+    }
+
+    const data = await response.json();
+    const content = atob(data.content);
+
+    // 提取 HTML 字符串
+    const match = content.match(/const TRAVEL_HTML = `([\s\S]*?)`;/);
+    if (!match) {
+      throw new Error('無法從 travel-content.js 中提取 HTML');
+    }
+
+    STATE.originalHTML = match[1];
+    parseContent();
+    renderCategoryList();
+    setStatus('✓ 已載入', 'ok');
+    showToast('✓ 內容已從 GitHub 讀取');
+  } catch (error) {
+    console.error(error);
+    showToast(`❌ 讀取失敗：${error.message}`);
+    setStatus('讀取失敗', 'warn');
+  }
+}
+
+// ============ HTML 解析 ============
+function parseContent() {
+  STATE.categories = [];
+
+  // 正則表達式：提取每個分類
+  const categoryRegex = /<div class="travel-collapse"[^>]*data-cover="([^"]*)"[^>]*>[\s\S]*?<div class="travel-collapse-title">([^<]*)<\/div>[\s\S]*?<div class="travel-collapse-body">([\s\S]*?)<\/div>\s*<\/div>/g;
+
+  let match;
+  while ((match = categoryRegex.exec(STATE.originalHTML)) !== null) {
+    const cover = match[1];
+    const title = match[2].trim();
+    const body = match[3];
+
+    // 從分類標題前面提取 emoji
+    const emojiMatch = STATE.originalHTML.match(new RegExp(`<div class="travel-collapse-emoji">([^<]*)<\/div>.*?${title}`, 's'));
+    const emoji = emojiMatch ? emojiMatch[1] : '📌';
+
+    // 解析該分類下的項目
+    const items = [];
+    const itemRegex = /<div class="item-card[^>]*>[\s\S]*?<h4 class="item-card-title">([^<]*)<\/h4>[\s\S]*?<div class="item-detail">([\s\S]*?)<\/div>\s*<\/div>/g;
+
+    let itemMatch;
+    while ((itemMatch = itemRegex.exec(body)) !== null) {
+      items.push({
+        title: itemMatch[1].trim() || '（未命名）',
+        detail: itemMatch[2].trim(),
+        originalHTML: itemMatch[0]
+      });
+    }
+
+    STATE.categories.push({
+      emoji: emoji,
+      title: title,
+      cover: cover,
+      items: items
+    });
+  }
+
+  console.log('解析完成，共', STATE.categories.length, '個分類');
+}
+
+// ============ UI 渲染 ============
+function renderCategoryList() {
+  const list = document.getElementById('categoryList');
+  list.innerHTML = '';
+
+  STATE.categories.forEach((cat, idx) => {
+    const div = document.createElement('div');
+    div.className = `category-item ${idx === 0 ? 'active' : ''}`;
+    div.textContent = `${cat.emoji} ${cat.title} (${cat.items.length})`;
+    div.addEventListener('click', () => selectCategory(idx));
+    list.appendChild(div);
+  });
+
+  if (STATE.categories.length > 0) {
+    selectCategory(0);
+  }
+}
+
+function selectCategory(idx) {
+  STATE.currentCategory = idx;
+  STATE.currentItemIndex = null;
+
+  // 更新分類選中樣式
+  document.querySelectorAll('.category-item').forEach((el, i) => {
+    el.classList.toggle('active', i === idx);
+  });
+
+  renderItemList();
+}
+
+function renderItemList() {
+  const list = document.getElementById('itemList');
+  list.innerHTML = '';
+
+  if (STATE.currentCategory === null) return;
+
+  const category = STATE.categories[STATE.currentCategory];
+  category.items.forEach((item, idx) => {
+    const hasDraft = STATE.drafts[`${STATE.currentCategory}_${idx}`];
+    const div = document.createElement('div');
+    div.className = `item-row ${hasDraft ? 'has-draft' : ''}`;
+    div.textContent = `${hasDraft ? '● ' : ''}${item.title}`;
+    div.addEventListener('click', () => selectItem(idx));
+    list.appendChild(div);
+  });
+}
+
+function selectItem(idx) {
+  STATE.currentItemIndex = idx;
+
+  // 更新選中樣式
+  document.querySelectorAll('.item-row').forEach((el, i) => {
+    el.classList.toggle('active', i === idx);
+  });
+
+  loadItemToForm();
+  renderPreview();
+  document.getElementById('editPanel').classList.add('show');
+}
+
+function loadItemToForm() {
+  const cat = STATE.categories[STATE.currentCategory];
+  const item = cat.items[STATE.currentItemIndex];
+
+  const draft = STATE.drafts[`${STATE.currentCategory}_${STATE.currentItemIndex}`];
+
+  document.getElementById('editTitle').value = draft?.title || item.title;
+  document.getElementById('editDetail').value = draft?.detail || item.detail;
+}
+
+function renderPreview() {
+  const cat = STATE.categories[STATE.currentCategory];
+  const item = cat.items[STATE.currentItemIndex];
+
+  const draft = STATE.drafts[`${STATE.currentCategory}_${STATE.currentItemIndex}`];
+  const title = draft?.title || item.title;
+  const detail = draft?.detail || item.detail;
+
+  const preview = document.getElementById('previewPanel');
+  preview.innerHTML = `
+    <h4>${title}</h4>
+    <p>${detail}</p>
+  `;
+}
+
+// ============ 編輯操作 ============
+function saveCurrentItem() {
+  const title = document.getElementById('editTitle').value.trim();
+  const detail = document.getElementById('editDetail').value.trim();
+
+  if (!title) {
+    showToast('❌ 標題不能為空');
+    return;
+  }
+
+  const key = `${STATE.currentCategory}_${STATE.currentItemIndex}`;
+  STATE.drafts[key] = { title, detail };
+
+  saveDraftToLocalStorage();
+  renderItemList();
+  renderPreview();
+  showToast('✓ 項目已保存到草稿');
+  setStatus('有未上傳的草稿', 'warn');
+  STATE.isDirty = true;
+}
+
+function resetCurrentItem() {
+  loadItemToForm();
+  renderPreview();
+  showToast('已復原');
+}
+
+function saveDraft() {
+  saveDraftToLocalStorage();
+  showToast('✓ 草稿已保存到本地');
+}
+
+function saveDraftToLocalStorage() {
+  localStorage.setItem('travel_drafts', JSON.stringify(STATE.drafts));
+}
+
+function loadDrafts() {
+  STATE.drafts = JSON.parse(localStorage.getItem('travel_drafts') || '{}');
+  if (Object.keys(STATE.drafts).length > 0) {
+    setStatus('檢測到本地草稿', 'warn');
+  }
+}
+
+// ============ GitHub 上傳 ============
+async function uploadToGithub() {
+  if (!STATE.githubToken) {
+    showToast('❌ 請先輸入 GitHub PAT');
+    return;
+  }
+
+  if (Object.keys(STATE.drafts).length === 0) {
+    showToast('❌ 沒有草稿需要上傳');
+    return;
+  }
+
+  setStatus('上傳中...', 'warn');
+
+  try {
+    // 重建 HTML
+    let newHTML = STATE.originalHTML;
+
+    for (const key in STATE.drafts) {
+      const draft = STATE.drafts[key];
+      const [catIdx, itemIdx] = key.split('_').map(Number);
+      const item = STATE.categories[catIdx].items[itemIdx];
+
+      // 簡單替換（假設項目已存在）
+      const oldTitle = item.title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const newTitleHTML = `<h4 class="item-card-title">${draft.title}</h4>`;
+      newHTML = newHTML.replace(
+        new RegExp(`<h4 class="item-card-title">${oldTitle}</h4>`),
+        newTitleHTML
+      );
+
+      const newDetailHTML = `<div class="item-detail">${draft.detail}</div>`;
+      newHTML = newHTML.replace(
+        new RegExp(`<div class="item-detail">${item.detail.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}</div>`),
+        newDetailHTML
+      );
+    }
+
+    const newContent = `// 「體驗」頁完整正式版：六個分類全部套用已確認的北歐旅行手札視覺。
+// 保留分類標籤，內容依旅途中實際查找順序重新編排。
+const TRAVEL_HTML = \`
+${newHTML}
+\`;
+`;
+
+    const base64Content = btoa(unescape(encodeURIComponent(newContent)));
+
+    // 獲取當前文件的 SHA
+    const getResponse = await fetch('https://api.github.com/repos/fisherchang01/2026iceland/contents/data/travel-content.js', {
+      headers: { 'Authorization': `token ${STATE.githubToken}` }
+    });
+    const fileData = await getResponse.json();
+
+    // 上傳更新
+    const uploadResponse = await fetch('https://api.github.com/repos/fisherchang01/2026iceland/contents/data/travel-content.js', {
+      method: 'PUT',
+      headers: {
+        'Authorization': `token ${STATE.githubToken}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        message: '編輯器：更新體驗內容',
+        content: base64Content,
+        sha: fileData.sha
+      })
+    });
+
+    if (!uploadResponse.ok) {
+      throw new Error(`上傳失敗：${uploadResponse.status}`);
+    }
+
+    STATE.drafts = {};
+    saveDraftToLocalStorage();
+    STATE.isDirty = false;
+    setStatus('✓ 已上傳', 'ok');
+    showToast('✓ 內容已成功上傳到 GitHub');
+  } catch (error) {
+    console.error(error);
+    showToast(`❌ 上傳失敗：${error.message}`);
+    setStatus('上傳失敗', 'warn');
+  }
+}
+
+function previewContent() {
+  showToast('✓ 在右側面板預覽');
+}
+
+function setStatus(msg, type = 'ok') {
+  const statusBar = document.getElementById('statusText');
+  statusBar.textContent = msg;
+  document.getElementById('patStatus').querySelector('.status-dot').className = `status-dot ${type}`;
+}
+</script>
+
+</body>
+</html>
