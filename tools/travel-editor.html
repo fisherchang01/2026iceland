@@ -439,26 +439,41 @@ async function loadFromGithub() {
 function parseContent() {
   STATE.categories = [];
 
-  // 改進的正則表達式：更寬鬆地匹配分類結構
-  const categoryRegex = /<div class="travel-collapse"[^>]*data-cover="([^"]*)"[^>]*>[\s\S]*?<div class="travel-collapse-emoji">([^<]*)<\/div>[\s\S]*?<div class="travel-collapse-title">([^<]*)<\/div>[\s\S]*?<div class="travel-collapse-body">([\s\S]*?)<\/div>\s*<\/div>/g;
+  // 創建一個臨時容器來解析HTML
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(STATE.originalHTML, 'text/html');
 
-  let match;
-  while ((match = categoryRegex.exec(STATE.originalHTML)) !== null) {
-    const cover = match[1];
-    const emoji = match[2].trim();
-    const title = match[3].trim();
-    const body = match[4];
+  // 直接使用DOM API查找所有travel-collapse元素
+  const collapses = doc.querySelectorAll('div.travel-collapse');
 
-    // 解析該分類下的項目
+  collapses.forEach(collapse => {
+    // 提取封面圖片
+    const cover = collapse.getAttribute('data-cover') || '';
+
+    // 提取emoji
+    const emojiEl = collapse.querySelector('.travel-collapse-emoji');
+    const emoji = emojiEl ? emojiEl.textContent.trim() : '📌';
+
+    // 提取標題
+    const titleEl = collapse.querySelector('.travel-collapse-title');
+    const title = titleEl ? titleEl.textContent.trim() : '(未命名)';
+
+    // 提取所有項目
     const items = [];
-    const itemRegex = /<div class="item-card[^>]*>[\s\S]*?<h4 class="item-card-title">([^<]*)<\/h4>[\s\S]*?<div class="item-detail">([\s\S]*?)<\/div>\s*<\/div>/g;
+    const bodyEl = collapse.querySelector('.travel-collapse-body');
+    if (bodyEl) {
+      const cardElements = bodyEl.querySelectorAll('div.item-card');
+      cardElements.forEach(card => {
+        const titleNode = card.querySelector('.item-card-title');
+        const detailNode = card.querySelector('.item-detail');
 
-    let itemMatch;
-    while ((itemMatch = itemRegex.exec(body)) !== null) {
-      items.push({
-        title: itemMatch[1].trim() || '（未命名）',
-        detail: itemMatch[2].trim(),
-        originalHTML: itemMatch[0]
+        if (titleNode && detailNode) {
+          items.push({
+            title: titleNode.textContent.trim() || '（未命名）',
+            detail: detailNode.innerHTML.trim(),
+            originalHTML: card.outerHTML
+          });
+        }
       });
     }
 
@@ -468,9 +483,9 @@ function parseContent() {
       cover: cover,
       items: items
     });
-  }
+  });
 
-  console.log('解析完成，共', STATE.categories.length, '個分類');
+  console.log('解析完成，共', STATE.categories.length, '個分類，總項目數:', STATE.categories.reduce((sum, cat) => sum + cat.items.length, 0));
 }
 
 // ============ UI 渲染 ============
