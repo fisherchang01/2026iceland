@@ -478,43 +478,50 @@ async function uploadToGitHub() {
 function parseContent() {
   STATE.categories = [];
 
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(STATE.originalHTML, 'text/html');
+  // 不用 DOMParser，直接用正则表达式从原始 HTML 字符串中提取
+  // 这样可以保留完整的 HTML 结构
 
-  const collapses = doc.querySelectorAll('div.travel-collapse');
+  // 按分类分块
+  const collapsePattern = /<div class="travel-collapse"[^>]*?data-cover="([^"]*)"[^>]*?>[\s\S]*?<\/div>\s*<\/div>\s*<\/div>/g;
+  let collapseMatch;
 
-  collapses.forEach(collapse => {
-    const cover = collapse.getAttribute('data-cover') || '';
-    const emojiEl = collapse.querySelector('.travel-collapse-emoji');
-    const titleEl = collapse.querySelector('.travel-collapse-title');
-    const bodyEl = collapse.querySelector('.travel-collapse-body');
+  while ((collapseMatch = collapsePattern.exec(STATE.originalHTML)) !== null) {
+    const blockHTML = collapseMatch[0];
+    const cover = collapseMatch[1] || '';
 
-    const emoji = emojiEl ? emojiEl.textContent.trim() : '📌';
-    const title = titleEl ? titleEl.textContent.trim() : '(未命名)';
+    // 提取emoji
+    const emojiMatch = /<div class="travel-collapse-emoji">(.+?)<\/div>/.exec(blockHTML);
+    const emoji = emojiMatch ? emojiMatch[1].trim() : '📌';
 
+    // 提取标题
+    const titleMatch = /<div class="travel-collapse-title">(.+?)<\/div>/.exec(blockHTML);
+    const title = titleMatch ? titleMatch[1].trim() : '(未命名)';
+
+    // 提取所有项目卡片
     const items = [];
-    if (bodyEl) {
-      const cards = bodyEl.querySelectorAll('div.item-card');
-      cards.forEach(card => {
-        const titleNode = card.querySelector('.item-card-title');
-        const detailNode = card.querySelector('.item-detail');
-        
-        if (titleNode && detailNode) {
-          // 关键：保留原始 innerHTML，包括所有 HTML 标签和格式
-          const rawHTML = detailNode.innerHTML;
-          
-          items.push({
-            title: titleNode.textContent.trim(),
-            detail: rawHTML  // 保存原始 HTML，不做任何处理
-          });
-        }
+    const cardPattern = /<div class="item-card[\s\w-]*">[\s\S]*?<h4 class="item-card-title">(.+?)<\/h4>[\s\S]*?<div class="item-detail">([\s\S]*?)<\/div>[\s\S]*?<\/div>/g;
+    let cardMatch;
+
+    while ((cardMatch = cardPattern.exec(blockHTML)) !== null) {
+      const itemTitle = cardMatch[1].trim();
+      const itemDetail = cardMatch[2];  // 保留原始 HTML，包括 <p> <img> 等
+
+      items.push({
+        title: itemTitle,
+        detail: itemDetail
       });
     }
 
     STATE.categories.push({ emoji, title, cover, items });
-  });
+  }
 
   console.log('✓ 解析完成:', STATE.categories.length, '個分類');
+  console.log('  首个分类项目数:', STATE.categories[0]?.items.length || 0);
+  if (STATE.categories[0]?.items[0]) {
+    console.log('  首项详情长度:', STATE.categories[0].items[0].detail.length);
+    console.log('  首项包含<p>:', STATE.categories[0].items[0].detail.includes('<p>'));
+    console.log('  首项包含<img>:', STATE.categories[0].items[0].detail.includes('<img'));
+  }
 }
 
 // ==================== UI 渲染 ====================
