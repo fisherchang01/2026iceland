@@ -358,7 +358,7 @@
         <span style="font-weight: 600; color: var(--primary); font-size: 0.9rem;">📋 項目</span>
         <span id="itemListToggle" style="color: var(--sub); font-size: 1.2rem;">▼</span>
       </div>
-      <div id="itemListPanel" style="max-height: 200px; overflow-y: auto; display: block;"></div>
+      <div id="itemListPanel" class="item-list" style="max-height: 200px; overflow-y: auto; display: block;"></div>
     </div>
   </div>
 
@@ -680,6 +680,8 @@ function updatePreview() {
 function renderCustomMarkup(text) {
   if (!text) return '';
   
+  console.log('🎨 renderCustomMarkup 输入:', text.substring(0, 100));
+  
   let html = text;
   
   // 处理颜色标记 {#ff0000}...{/color} → <span style="color: #ff0000">...</span>
@@ -694,6 +696,8 @@ function renderCustomMarkup(text) {
   
   // 处理换行符 /n → <br>
   html = html.replace(/\/n/g, '<br>');
+  
+  console.log('🎨 renderCustomMarkup 输出:', html.substring(0, 100));
   
   return html;
 }
