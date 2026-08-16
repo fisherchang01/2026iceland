@@ -546,7 +546,7 @@
                     <button class="toolbar-btn" onclick="insertMarkup('desc', '/n', '')">↵ 換行</button>
                     <button class="toolbar-btn color-btn">
                         顏色 <input type="color" class="color-picker" id="colorPicker" value="#ff0000" 
-                                   onchange="insertMarkup('desc', '{#' + this.value.substring(1) + '}', '{/color}')">
+                                   onchange="applyColor()">
                     </button>
                 </div>
 
@@ -605,8 +605,12 @@
             return html;
         }
 
-        // 插入標記
-        function insertMarkup(field, before, after) {
+        // 应用颜色格式
+        function applyColor() {
+            const colorPicker = document.getElementById('colorPicker');
+            const color = colorPicker.value.substring(1); // 移除 #
+            insertMarkup('desc', `{#${color}}`, '{/color}');
+        }
             const fieldId = field === 'desc' ? 'descField' : 'deepDescField';
             const textarea = document.getElementById(fieldId);
             const start = textarea.selectionStart;
@@ -763,7 +767,7 @@
                     },
                     body: JSON.stringify({
                         message: `✏️ 編輯景點: ${tripData[currentDay].spots[currentSpotIndex].name}`,
-                        content: btoa(newContent),
+                        content: btoa(unescape(encodeURIComponent(newContent))),
                         sha: sha
                     })
                 }

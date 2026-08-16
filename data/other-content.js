@@ -115,21 +115,10 @@ const OTHER_HTML = `
       <div style="padding: 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; margin-bottom: 12px; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);">
         <div style="display: flex; align-items: center; justify-content: space-between;">
           <div>
-            <div style="font-family: var(--font-display); font-size: var(--fs-base); font-weight: 600; color: white; margin-bottom: 4px;">⭐ 行程編輯器 Pro（推薦）</div>
-            <div style="font-size: var(--fs-xs); color: rgba(255,255,255,0.85); line-height: 1.4;">一站式編輯：選景點 → 編輯 → 直接保存 GitHub</div>
+            <div style="font-family: var(--font-display); font-size: var(--fs-base); font-weight: 600; color: white; margin-bottom: 4px;">⭐ 行程編輯器 Pro</div>
+            <div style="font-size: var(--fs-xs); color: rgba(255,255,255,0.85); line-height: 1.4;">選擇景點 → 編輯內容 → 直接保存 GitHub，一站式完成行程編輯</div>
           </div>
-          <button class="tool-open-btn" onclick="window.open('./tools/trip-editor-pro.html', 'trip-editor-pro', 'width=1400,height=900,resizable=yes')" style="margin: 0; white-space: nowrap; background: white; color: #667eea; font-weight: 700;">開啟 Pro</button>
-        </div>
-      </div>
-
-      <!-- 基础編輯器 -->
-      <div style="padding: 16px; background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%); border-radius: 12px; border-left: 4px solid #4a90e2;">
-        <div style="display: flex; align-items: center; justify-content: space-between;">
-          <div>
-            <div style="font-family: var(--font-display); font-size: var(--fs-base); font-weight: 600; color: #333; margin-bottom: 4px;">✏️ 編輯行程細節（基礎版）</div>
-            <div style="font-size: var(--fs-xs); color: #666; line-height: 1.4;">文本格式化、顏色標記、換行 - 適合快速微調</div>
-          </div>
-          <button class="tool-open-btn" onclick="window.open('./tools/trip-details-editor.html', 'trip-editor', 'width=900,height=800,resizable=yes')" style="margin: 0; white-space: nowrap;">開啟基礎</button>
+          <button class="tool-open-btn" onclick="window.open('./tools/trip-editor-pro.html', 'trip-editor-pro', 'width=1400,height=900,resizable=yes')" style="margin: 0; white-space: nowrap; background: white; color: #667eea; font-weight: 700;">開啟編輯器</button>
         </div>
       </div>
     </div>
