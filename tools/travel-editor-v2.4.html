@@ -178,8 +178,8 @@
 
     .item-button {
       padding: 8px 10px;
-      background: var(--bg);
-      border: 1px solid var(--border);
+      background: #f5f1e8;
+      border: 1px solid #e0d7c8;
       border-radius: 5px;
       cursor: pointer;
       text-align: left;
@@ -188,9 +188,12 @@
       text-overflow: ellipsis;
       white-space: nowrap;
       overflow: hidden;
+      color: #2a2f2e;
+      font-weight: 500;
     }
     .item-button:hover {
-      background: var(--bg2);
+      background: #ede5da;
+      border-color: #d0c5b5;
     }
     .item-button.active {
       background: var(--accent);
@@ -319,14 +322,14 @@
 
   <!-- 中：編輯區 -->
   <div class="panel-center">
-    <div class="panel-content" id="editContainer" style="display: none;">
+    <div class="panel-content" id="editContainer">
       <!-- 項目選擇 -->
       <div class="edit-section">
         <div class="panel-header" style="margin: -12px -12px 8px -12px;">項目清單</div>
-        <div id="itemList" class="item-list" style="max-height: 80px; overflow-y: auto;"></div>
+        <div id="itemList" class="item-list" style="max-height: 100px; overflow-y: auto;"></div>
       </div>
 
-      <!-- 編輯工具 -->
+      <!-- 編輯工具（總是顯示） -->
       <div class="edit-section">
         <div class="tools-label">格式工具</div>
         <div class="tools-row">
@@ -356,10 +359,6 @@
         <button onclick="saveItem()" style="flex: 1;">保存此項目</button>
         <button onclick="resetEdit()" class="secondary" style="flex: 1;">復原</button>
       </div>
-    </div>
-
-    <div id="loadingMsg" style="padding: 20px; text-align: center; color: var(--sub);">
-      選擇一個分類和項目開始編輯...
     </div>
   </div>
 
@@ -412,6 +411,9 @@ async function loadFromGitHub() {
   }
 
   STATE.pat = pat;
+  // 保存PAT到localStorage
+  localStorage.setItem('travel_editor_pat', pat);
+  
   showStatus('加載中...', 'loading');
 
   try {
@@ -428,8 +430,8 @@ async function loadFromGitHub() {
     parseContent();
     renderUI();
 
-    showStatus('✓ 已加載 ' + STATE.categories.length + ' 個分類', 'success');
-    showToast('✓ 內容已加載');
+    showStatus('✓ 已加載 ' + STATE.categories.length + ' 個分類（PAT 已保存）', 'success');
+    showToast('✓ 內容已加載，PAT 已保存');
 
   } catch (error) {
     console.error(error);
@@ -519,6 +521,11 @@ function renderItems() {
   const cat = STATE.categories[STATE.currentCategoryIdx];
   list.innerHTML = '';
 
+  if (cat.items.length === 0) {
+    list.innerHTML = '<div style="padding: 10px; text-align: center; color: var(--sub);">此分類無項目</div>';
+    return;
+  }
+
   cat.items.forEach((item, idx) => {
     const btn = document.createElement('button');
     btn.className = 'item-button';
@@ -528,9 +535,10 @@ function renderItems() {
     list.appendChild(btn);
   });
 
-  document.getElementById('editContainer').style.display = 'none';
-  document.getElementById('loadingMsg').style.display = 'block';
-  document.getElementById('previewPanel').textContent = '選擇一個項目...';
+  // 如果有項目，自動選擇第一個
+  if (cat.items.length > 0) {
+    selectItem(0);
+  }
 }
 
 function selectItem(idx) {
@@ -538,12 +546,10 @@ function selectItem(idx) {
   const cat = STATE.categories[STATE.currentCategoryIdx];
   const item = cat.items[idx];
 
-  document.getElementById('editContainer').style.display = 'block';
-  document.getElementById('loadingMsg').style.display = 'none';
   document.getElementById('editTitle').value = item.title;
   document.getElementById('editDetail').value = item.detail;
 
-  document.getElementById('previewPanel').innerHTML = item.detail;
+  document.getElementById('previewPanel').innerHTML = item.detail || '（無內容）';
 
   document.querySelectorAll('.item-button').forEach((btn, i) => {
     btn.classList.toggle('active', i === idx);
@@ -584,7 +590,13 @@ function resetEdit() {
   }
 }
 
+// ==================== 初始化 ====================
 window.addEventListener('load', () => {
+  // 從 localStorage 恢復 PAT
+  const savedPAT = localStorage.getItem('travel_editor_pat');
+  if (savedPAT) {
+    document.getElementById('patInput').value = savedPAT;
+  }
   showStatus('準備就緒');
 });
 </script>
