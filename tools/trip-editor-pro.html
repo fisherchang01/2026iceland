@@ -491,11 +491,11 @@
                 </div>
 
                 <div class="editor-toolbar">
-                    <button class="toolbar-btn" onclick="insertFormat('{bold}', '{/bold}')"><strong>B</strong></button>
-                    <button class="toolbar-btn" onclick="insertFormat('{italic}', '{/italic}')"><em>I</em></button>
-                    <button class="toolbar-btn" onclick="insertFormat('/n')">↵ 換行</button>
+                    <button class="toolbar-btn" onclick="smartInsert('{bold}', '{/bold}')"><strong>B</strong></button>
+                    <button class="toolbar-btn" onclick="smartInsert('{italic}', '{/italic}')"><em>I</em></button>
+                    <button class="toolbar-btn" onclick="smartInsert('/n')">↵ 換行</button>
                     <button class="toolbar-btn" style="display:flex; align-items:center; gap:4px; padding: 6px 8px;">
-                        🎨 <input type="color" class="color-picker" id="colorPicker" value="#ff0000" onchange="applyColor()">
+                        🎨 <input type="color" class="color-picker" id="colorPicker" value="#ff0000" onchange="smartColor(this.value)">
                     </button>
                 </div>
 
@@ -540,13 +540,30 @@
             updateAllPreviews();
         }
 
-        // ===== 插入格式 =====
-        function insertFormat(before, after = '') {
-            // 優先在 deepDesc，否則在 desc
-            let target = document.getElementById('deepDescInput');
-            if (!target.value || !target.selectionStart) {
-                target = document.getElementById('descInput');
+        // ===== 智能插入 - 根据焦点字段 =====
+        function smartInsert(before, after = '') {
+            // 检测当前焦点的字段
+            const activeElement = document.activeElement;
+            let target = null;
+
+            if (activeElement && activeElement.id) {
+                if (activeElement.id === 'descInput') {
+                    target = activeElement;
+                } else if (activeElement.id === 'deepDescInput') {
+                    target = activeElement;
+                } else if (activeElement.id === 'tipsInput') {
+                    target = activeElement;
+                } else if (activeElement.id === 'parkingInput') {
+                    target = activeElement;
+                }
             }
+
+            // 如果没有焦点字段，默认使用 deepDesc
+            if (!target) {
+                target = document.getElementById('deepDescInput');
+            }
+
+            if (!target) return;
 
             const start = target.selectionStart;
             const end = target.selectionEnd;
@@ -563,11 +580,11 @@
             updateAllPreviews();
         }
 
-        // ===== 應用顏色 =====
-        function applyColor() {
-            const colorPicker = document.getElementById('colorPicker');
-            const hex = colorPicker.value.substring(1);
-            insertFormat(`{#${hex}}`, '{/color}');
+        // ===== 應用顏色 - 智能版 =====
+        function smartColor(color) {
+            console.log('應用顏色:', color);
+            const hex = color.substring(1);
+            smartInsert(`{#${hex}}`, '{/color}');
         }
 
         // ===== 更新所有預覽 =====
