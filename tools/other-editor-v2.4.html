@@ -498,9 +498,12 @@ function parseContent() {
         const detailNode = card.querySelector('.item-detail');
         
         if (titleNode && detailNode) {
+          // 关键：保留原始 innerHTML，包括所有 HTML 标签和格式
+          const rawHTML = detailNode.innerHTML;
+          
           items.push({
             title: titleNode.textContent.trim(),
-            detail: detailNode.innerHTML.trim()
+            detail: rawHTML  // 保存原始 HTML，不做任何处理
           });
         }
       });
@@ -508,6 +511,8 @@ function parseContent() {
 
     STATE.categories.push({ emoji, title, cover, items });
   });
+
+  console.log('✓ 解析完成:', STATE.categories.length, '個分類');
 }
 
 // ==================== UI 渲染 ====================
@@ -574,13 +579,13 @@ function selectItem(idx) {
   const cat = STATE.categories[STATE.currentCategoryIdx];
   const item = cat.items[idx];
 
-  // 编辑区显示原始HTML（包括标签）
+  // textarea 显示原始 HTML 源码
   document.getElementById('editTitle').value = item.title;
-  // 保持原始HTML，这样用户看到的是完整的HTML源码
-  document.getElementById('editDetail').value = item.detail;
+  document.getElementById('editDetail').value = item.detail;  // 显示原始 HTML
 
-  // 预览区显示渲染后的HTML（保留所有格式）
-  document.getElementById('previewPanel').innerHTML = item.detail || '（無內容）';
+  // 预览区用 innerHTML 渲染（这样才能显示分段、图片、格式等）
+  const previewPanel = document.getElementById('previewPanel');
+  previewPanel.innerHTML = item.detail || '（無內容）';
 
   document.querySelectorAll('.item-button').forEach((btn, i) => {
     btn.classList.toggle('active', i === idx);
@@ -611,7 +616,7 @@ function saveItem() {
   item.title = document.getElementById('editTitle').value;
   item.detail = document.getElementById('editDetail').value;
 
-  // 立即更新预览
+  // 保存后立即用 innerHTML 更新预览，这样才能显示分段、图片等
   document.getElementById('previewPanel').innerHTML = item.detail || '（無內容）';
 
   showToast('✓ 已保存');
@@ -626,6 +631,7 @@ function resetEdit() {
 // 实时预览
 function updatePreview() {
   const content = document.getElementById('editDetail').value;
+  // 用 innerHTML 渲染，这样才能显示 HTML 格式、分段、图片等
   document.getElementById('previewPanel').innerHTML = content || '（無內容）';
 }
 
