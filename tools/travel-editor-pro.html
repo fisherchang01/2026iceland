@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>體驗編輯器 Pro v1.0 | 2026 冰島芬蘭之旅</title>
+    <title>體驗編輯器 Pro | 2026 冰島芬蘭之旅</title>
     <style>
         * {
             margin: 0;
@@ -435,7 +435,7 @@
     // ========== 配置 ==========
     const GITHUB_OWNER = 'fisherchang01';
     const GITHUB_REPO = '2026iceland';
-    const GITHUB_FILE = 'data/travel-experiences.js';
+    const GITHUB_FILE = 'data/travel-data.js';
 
     // ========== 全局變數 ==========
     let travelData = {};
@@ -461,19 +461,19 @@
         if (!resp.ok) throw new Error('無法讀取 ' + GITHUB_FILE);
         
         const content = await resp.text();
-        const match = content.match(/const TRAVEL_EXPERIENCES = ({[\s\S]*?});/);
+        const match = content.match(/const TRAVEL_DATA = ({[\s\S]*?});/);
         if (!match) throw new Error('無法解析數據結構');
         
         eval(`travelData = ${match[1]}`);
     }
 
     function loadDraftsFromStorage() {
-        const stored = localStorage.getItem('travel_experiences_drafts');
+        const stored = localStorage.getItem('travel_data_drafts');
         drafts = stored ? JSON.parse(stored) : {};
     }
 
     function saveDrafts() {
-        localStorage.setItem('travel_experiences_drafts', JSON.stringify(drafts));
+        localStorage.setItem('travel_data_drafts', JSON.stringify(drafts));
         updateBadge();
     }
 
@@ -718,7 +718,7 @@
     function discardChanges() {
         if (confirm('放棄未保存的變更？')) {
             drafts = {};
-            localStorage.removeItem('travel_experiences_drafts');
+            localStorage.removeItem('travel_data_drafts');
             loadDraftsFromStorage();
             renderCategories();
             showNotif('✅ 已清空草稿', 'success');
@@ -753,9 +753,9 @@
                 `https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/main/${GITHUB_FILE}`
             );
             const oldContent = await getResp.text();
-            const header = oldContent.substring(0, oldContent.indexOf('const TRAVEL_EXPERIENCES = {'));
+            const header = oldContent.substring(0, oldContent.indexOf('const TRAVEL_DATA = {'));
             const footer = oldContent.substring(oldContent.indexOf('};') + 2);
-            const newContent = header + 'const TRAVEL_EXPERIENCES = ' + JSON.stringify(travelData, null, 2) + ';\n' + footer;
+            const newContent = header + 'const TRAVEL_DATA = ' + JSON.stringify(travelData, null, 2) + ';\n' + footer;
 
             // 獲取 SHA
             const shaResp = await fetch(
@@ -774,7 +774,7 @@
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        message: `📝 編輯體驗內容：${draftCount} 個項目 | Pro v1.0`,
+                        message: `📝 編輯體驗內容：${draftCount} 個項目 | travel-data.js`,
                         content: utf8ToBase64(newContent),
                         sha: fileData.sha
                     })
@@ -785,7 +785,8 @@
 
             // 清空草稿
             drafts = {};
-            saveDrafts();
+            localStorage.removeItem('travel_data_drafts');
+            loadDraftsFromStorage();
             
             showNotif(`✅ 已上傳 ${draftCount} 個項目到 GitHub！`, 'success');
             renderCategories();
