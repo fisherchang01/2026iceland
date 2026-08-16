@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🛠️ 工具編輯器 Pro</title>
+    <title>工具編輯器 Pro v1.0 | 2026 冰島芬蘭之旅</title>
     <style>
         * {
             margin: 0;
@@ -12,20 +12,24 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'PingFang TC', 'Microsoft JhengHei', sans-serif;
             background: #f5f5f5;
             height: 100vh;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
 
+        /* ========== 主佈局（三欄） ========== */
         .layout {
             display: grid;
             grid-template-columns: 220px 1fr 340px;
-            height: 100vh;
+            height: calc(100vh - 60px);
             gap: 1px;
             background: #ddd;
         }
 
+        /* ========== 左側邊欄 ========== */
         .sidebar {
             background: white;
             overflow-y: auto;
@@ -82,8 +86,10 @@
         .items-container {
             padding-left: 12px;
             margin-top: 4px;
+            border-left: 2px solid #e5e5e5;
         }
 
+        /* ========== 中間編輯區 ========== */
         .editor {
             background: white;
             display: flex;
@@ -176,14 +182,6 @@
             border: 1px solid #e5e5e5;
         }
 
-        .toolbar-label {
-            font-size: 9px;
-            color: #999;
-            width: 100%;
-            margin-bottom: 2px;
-            font-weight: 600;
-        }
-
         textarea, input[type="text"] {
             padding: 8px 10px;
             border: 1px solid #d0d0d0;
@@ -228,21 +226,22 @@
             font-size: 9px;
             font-weight: 700;
             color: white;
+            transition: all 0.2s;
         }
 
         .color-btn.red {
-            background: #ff0000;
+            background: #ff6b6b;
             border-color: #cc0000;
         }
 
         .color-btn.blue {
-            background: #0066cc;
-            border-color: #0052a3;
+            background: #315f67;
+            border-color: #1a3a43;
         }
 
         .color-btn.green {
-            background: #00aa00;
-            border-color: #008800;
+            background: #51cf66;
+            border-color: #37b24d;
         }
 
         .color-btn.orange {
@@ -255,119 +254,209 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
+        .btn-save {
+            padding: 6px 12px;
+            background: #315f67;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-save:hover {
+            background: #1f3b47;
+        }
+
+        .btn-upload {
+            padding: 6px 12px;
+            background: #51cf66;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-upload:hover {
+            background: #40c057;
+        }
+
+        .btn-upload:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .btn-discard {
+            padding: 6px 12px;
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-discard:hover {
+            background: #ff5252;
+        }
+
+        /* ========== 右側預覽區 ========== */
+        .preview-panel {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px;
+            background: white;
+            white-space: pre-wrap;
+            word-break: break-word;
+            font-size: 12px;
+            line-height: 1.5;
+            color: #333;
+        }
+
+        .preview-section {
+            margin-bottom: 16px;
+        }
+
+        .preview-section-title {
+            font-weight: 700;
+            color: #315f67;
+            margin-bottom: 6px;
+            font-size: 11px;
+            text-transform: uppercase;
+        }
+
+        .preview-content {
+            padding: 8px;
+            background: #f9f9f9;
+            border-radius: 4px;
+            border-left: 3px solid #315f67;
+        }
+
+        /* ========== 通知 ========== */
         .notification {
             position: fixed;
             top: 80px;
             right: 20px;
             padding: 12px 16px;
-            border-radius: 6px;
-            font-size: 13px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
             z-index: 1000;
-            animation: slideIn 0.3s ease;
+            animation: slideIn 0.3s ease-out;
         }
 
         .notification.success {
-            background: #4caf50;
+            background: #51cf66;
             color: white;
         }
 
         .notification.error {
-            background: #f44336;
+            background: #ff6b6b;
             color: white;
         }
 
         @keyframes slideIn {
-            from { transform: translateX(400px); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
         }
 
-        .preview-panel {
-            background: #f9f9f9;
-            padding: 12px;
-            border-radius: 6px;
-            border: 1px solid #e5e5e5;
-            min-height: 120px;
-            font-size: 13px;
-            line-height: 1.6;
-            overflow-y: auto;
-            white-space: pre-wrap;
-            word-wrap: break-word;
+        /* ========== 底部導航欄（Phase 1 必需功能） ========== */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: white;
+            border-top: 1px solid #e5e5e5;
+            display: flex;
+            gap: 0;
+            padding: 0;
+            z-index: 1000;
+            box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
         }
 
-        .preview-panel strong {
-            font-weight: 700;
+        .nav-btn {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 600;
+            color: #999;
+            transition: all 0.2s;
+            border-bottom: 3px solid transparent;
+            text-decoration: none;
+        }
+
+        .nav-btn:hover {
             color: #315f67;
+            background: #f9f9f9;
         }
 
-        .preview-panel em {
-            font-style: italic;
-            color: #666;
+        .nav-btn.active {
+            color: #315f67;
+            border-bottom-color: #315f67;
+            background: #f0f4f4;
         }
 
-        button.btn-save {
-            background: #4caf50;
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 4px;
-            font-size: 11px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
+        .nav-icon {
+            font-size: 18px;
         }
 
-        button.btn-save:hover {
-            background: #45a049;
-        }
+        /* ========== 響應式佈局 ========== */
+        @media (max-width: 768px) {
+            .layout {
+                grid-template-columns: 150px 1fr;
+            }
 
-        button.btn-upload {
-            background: #2196F3;
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 4px;
-            font-size: 11px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
+            .layout > div:last-child {
+                display: none;
+            }
 
-        button.btn-upload:hover {
-            background: #0b7dda;
-        }
+            .editor-top-bar {
+                right: 0;
+            }
 
-        button.btn-upload:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
+            .sidebar {
+                padding: 8px;
+            }
 
-        button.btn-discard {
-            background: #f44336;
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 4px;
-            font-size: 11px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        button.btn-discard:hover {
-            background: #da190b;
+            .editor-content {
+                padding: 12px;
+            }
         }
     </style>
 </head>
 <body>
 
+<!-- 主佈局：三欄 -->
 <div class="layout">
-    <!-- 左侧边栏：工具分类 -->
+    <!-- 左側邊欄：分類 -->
     <div class="sidebar">
-        <div class="sidebar-title">🛠️ 工具分類</div>
+        <div class="sidebar-title">📂 工具分類</div>
         <div id="categoriesList"></div>
     </div>
 
-    <!-- 中间编辑区 -->
+    <!-- 中間編輯區 -->
     <div class="editor">
         <div class="editor-top-bar" id="topBar" style="display: none;">
             <div class="draft-badge" id="draftBadge"></div>
@@ -379,23 +468,50 @@
         </div>
 
         <div class="editor-header" id="editorHeader">
-            <h2>選擇工具分類開始編輯</h2>
+            <h2>👈 選擇工具類別開始編輯</h2>
         </div>
 
         <div class="editor-content" id="editorContent">
-            <div style="text-align: center; color: #999; padding: 40px;">
-                <p>👈 從左側選擇工具分類</p>
+            <div style="text-align: center; color: #999; padding: 40px 20px;">
+                <p style="font-size: 14px; margin-bottom: 10px;">👈 從左側選擇工具分類</p>
+                <p style="font-size: 12px;">然後編輯該分類的內容</p>
             </div>
         </div>
     </div>
 
-    <!-- 右侧预览区 -->
+    <!-- 右側預覽區 -->
     <div style="background: white; display: flex; flex-direction: column; overflow: hidden; border-left: 1px solid #e5e5e5;">
-        <div style="padding: 12px; border-bottom: 1px solid #e5e5e5; font-weight: 600; font-size: 11px; color: #666;">
-            📋 預覽
+        <div style="padding: 12px; border-bottom: 1px solid #e5e5e5; font-weight: 700; font-size: 11px; color: #666; text-transform: uppercase; letter-spacing: 0.5px;">
+            ✨ 實時預覽
         </div>
-        <div class="preview-panel" id="previewContent"></div>
+        <div class="preview-panel" id="previewContent">
+            <p style="color: #999; text-align: center; padding: 20px;">選擇分類開始預覽</p>
+        </div>
     </div>
+</div>
+
+<!-- 底部導航欄（Phase 1 必需） -->
+<div class="bottom-nav">
+    <a href="../../index.html?tab=itinerary" class="nav-btn" id="nav-trip">
+        <span class="nav-icon">✈️</span>
+        <span>行程</span>
+    </a>
+    <a href="./travel-editor-pro.html" class="nav-btn" id="nav-travel">
+        <span class="nav-icon">🏔️</span>
+        <span>體驗</span>
+    </a>
+    <button class="nav-btn active" id="nav-tools">
+        <span class="nav-icon">🔧</span>
+        <span>工具</span>
+    </button>
+    <a href="../../index.html?tab=budget" class="nav-btn" id="nav-budget">
+        <span class="nav-icon">💰</span>
+        <span>費用</span>
+    </a>
+    <a href="../../index.html?tab=preferences" class="nav-btn" id="nav-prefs">
+        <span class="nav-icon">⚙️</span>
+        <span>偏好</span>
+    </a>
 </div>
 
 <script>
@@ -404,21 +520,10 @@
     const GITHUB_REPO = '2026iceland';
     const GITHUB_FILE = 'data/other-tools.js';
 
-    // ========== 工具分类配置（基于既有项目） ==========
-    const TOOLS_STRUCTURE = {
-        'iceland_tax_refund': { emoji: '🧾', title: '冰島退稅' },
-        'finland_tax_refund': { emoji: '💶', title: '芬蘭退稅' },
-        'aurora_forecast': { emoji: '🌌', title: '極光機率' },
-        'aurora_photography': { emoji: '📷', title: '拍攝極光' },
-        'iceland_fuel': { emoji: '⛽', title: '冰島加油' },
-        'finnish_sauna': { emoji: '🧖', title: '洗浴文化' }
-    };
-
-    // ========== 全局变量 ==========
+    // ========== 全局變數 ==========
     let toolsData = {};
     let drafts = {};
     let currentCategory = null;
-    let currentItemIndex = null;
 
     // ========== 初始化 ==========
     async function init() {
@@ -429,6 +534,7 @@
             renderCategories();
         } catch (e) {
             showNotif('❌ 讀取數據失敗: ' + e.message, 'error');
+            console.error(e);
         }
     }
 
@@ -468,15 +574,19 @@
         }
     }
 
-    // ========== 渲染界面 ==========
+    // ========== 邊欄渲染 ==========
     function renderCategories() {
         const container = document.getElementById('categoriesList');
         container.innerHTML = '';
 
-        Object.entries(TOOLS_STRUCTURE).forEach(([catKey, { emoji, title }]) => {
+        Object.entries(toolsData).forEach(([catKey, category]) => {
             const btn = document.createElement('button');
             btn.className = 'category-btn';
-            btn.textContent = `${emoji} ${title}`;
+            const draftKey = catKey;
+            if (drafts[draftKey]) {
+                btn.classList.add('modified');
+            }
+            btn.textContent = category.title;
             btn.onclick = () => selectCategory(catKey);
             container.appendChild(btn);
         });
@@ -486,21 +596,19 @@
 
     function selectCategory(catKey) {
         currentCategory = catKey;
-        currentItemIndex = 0; // 工具类只有一个主项
 
         document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
         event.target.classList.add('active');
 
-        const { emoji, title } = TOOLS_STRUCTURE[catKey];
-        document.getElementById('editorHeader').innerHTML = `<h2>${emoji} ${title}</h2>`;
+        const category = toolsData[catKey];
+        document.getElementById('editorHeader').innerHTML = `<h2>${category.title}</h2>`;
 
         renderEditor(catKey);
     }
 
+    // ========== 編輯器渲染 ==========
     function renderEditor(catKey) {
         const category = toolsData[catKey];
-        if (!category) return;
-
         const draftKey = catKey;
         const draft = drafts[draftKey] || {};
 
@@ -515,15 +623,14 @@
             </div>
 
             <div class="field-group">
-                <label class="field-label">內容（支持格式化）</label>
+                <label class="field-label">主要內容（支持格式化）</label>
                 <div class="field-toolbar">
-                    <span class="toolbar-label">格式工具：</span>
                     <button class="mini-btn" onclick="insertToField('contentInput', '{bold}', '{/bold}')" title="加粗"><strong>B</strong></button>
                     <button class="mini-btn" onclick="insertToField('contentInput', '{italic}', '{/italic}')" title="斜體"><em>I</em></button>
                     <button class="mini-btn" onclick="insertToField('contentInput', '/n')" title="分段">¶</button>
-                    <button class="color-btn red" onclick="insertToField('contentInput', '{#ff0000}', '{/color}')" title="紅色">R</button>
-                    <button class="color-btn blue" onclick="insertToField('contentInput', '{#0066cc}', '{/color}')" title="藍色">B</button>
-                    <button class="color-btn green" onclick="insertToField('contentInput', '{#00aa00}', '{/color}')" title="綠色">G</button>
+                    <button class="color-btn red" onclick="insertToField('contentInput', '{#ff6b6b}', '{/color}')" title="紅色">R</button>
+                    <button class="color-btn blue" onclick="insertToField('contentInput', '{#315f67}', '{/color}')" title="藍色">B</button>
+                    <button class="color-btn green" onclick="insertToField('contentInput', '{#51cf66}', '{/color}')" title="綠色">G</button>
                     <button class="color-btn orange" onclick="insertToField('contentInput', '{#ff8800}', '{/color}')" title="橙色">O</button>
                 </div>
                 <textarea id="contentInput" oninput="updateAllPreviews()">${escapeAttr(contentInput)}</textarea>
@@ -539,6 +646,7 @@
         document.getElementById('topBar').style.display = 'flex';
     }
 
+    // ========== 文本工具函數 ==========
     function insertToField(fieldId, before, after = '') {
         const field = document.getElementById(fieldId);
         const start = field.selectionStart;
@@ -563,14 +671,29 @@
 
         if (!contentInput) return;
 
-        let html = `<strong>標題：</strong> ${titleInput ? titleInput.value : ''}\n\n`;
+        let html = `
+            <div class="preview-section">
+                <div class="preview-section-title">📝 標題</div>
+                <div class="preview-content">${titleInput ? titleInput.value : '(未設置)'}</div>
+            </div>
+        `;
         
         if (contentInput.value) {
-            html += `<strong>內容：</strong>\n${parseMarkup(contentInput.value)}\n`;
+            html += `
+            <div class="preview-section">
+                <div class="preview-section-title">主要內容</div>
+                <div class="preview-content">${parseMarkup(contentInput.value)}</div>
+            </div>
+            `;
         }
 
         if (noteInput && noteInput.value) {
-            html += `\n<strong>備註：</strong>\n${parseMarkup(noteInput.value)}`;
+            html += `
+            <div class="preview-section">
+                <div class="preview-section-title">備註</div>
+                <div class="preview-content">${parseMarkup(noteInput.value)}</div>
+            </div>
+            `;
         }
 
         document.getElementById('previewContent').innerHTML = html;
@@ -582,7 +705,7 @@
             .replace(/&/g, '&amp;')
             .replace(/</g, '&lt;')
             .replace(/>/g, '&gt;')
-            .replace(/\/n/g, '\n')
+            .replace(/\/n/g, '<br>')
             .replace(/\{#([0-9a-fA-F]{6})\}([^{]*?)\{\/color\}/g, '<span style="color: #$1;">$2</span>')
             .replace(/\{bold\}([^{]*?)\{\/bold\}/g, '<strong>$1</strong>')
             .replace(/\{italic\}([^{]*?)\{\/italic\}/g, '<em>$1</em>');
@@ -597,6 +720,7 @@
             .replace(/>/g, '&gt;');
     }
 
+    // ========== 保存和上傳 ==========
     function saveLocally() {
         if (currentCategory === null) return;
 
@@ -613,13 +737,7 @@
 
         saveDrafts();
         showNotif('✅ 已本地保存！', 'success');
-        
-        // 更新侧边栏标记
-        document.querySelectorAll('.category-btn.active').forEach(btn => {
-            if (!btn.textContent.includes('●')) {
-                btn.classList.add('modified');
-            }
-        });
+        renderCategories();
     }
 
     function discardChanges() {
@@ -653,13 +771,13 @@
                 }
             });
 
-            // 讀取舊內容並構建新內容
+            // 獲取舊內容並構建新內容
             const getResp = await fetch(
                 `https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/main/${GITHUB_FILE}`
             );
             const oldContent = await getResp.text();
             const header = oldContent.substring(0, oldContent.indexOf('const OTHER_TOOLS = {'));
-            const footer = oldContent.substring(oldContent.lastIndexOf('};') + 2);
+            const footer = oldContent.substring(oldContent.indexOf('};') + 2);
             const newContent = header + 'const OTHER_TOOLS = ' + JSON.stringify(toolsData, null, 2) + ';\n' + footer;
 
             // 獲取 SHA
@@ -679,7 +797,7 @@
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        message: `📝 編輯工具內容 ${draftCount} 個`,
+                        message: `📝 編輯工具內容：${draftCount} 個分類 | Pro v1.0`,
                         content: utf8ToBase64(newContent),
                         sha: fileData.sha
                     })
@@ -690,7 +808,8 @@
 
             drafts = {};
             saveDrafts();
-            showNotif(`✅ 已上傳 ${draftCount} 個工具到 GitHub！`, 'success');
+            showNotif(`✅ 已上傳 ${draftCount} 個分類到 GitHub！`, 'success');
+            renderCategories();
             
         } catch(e) {
             showNotif('❌ 錯誤: ' + e.message, 'error');
@@ -703,7 +822,7 @@
     function getPAT() {
         let pat = localStorage.getItem('github_pat');
         if (!pat) {
-            pat = prompt('🔑 輸入 GitHub Personal Access Token');
+            pat = prompt('🔑 輸入 GitHub Personal Access Token\n\n(需要 repo 權限)');
             if (pat) {
                 localStorage.setItem('github_pat', pat);
             } else {
@@ -735,6 +854,7 @@
         setTimeout(() => notif.remove(), 4000);
     }
 
+    // ========== 啟動 ==========
     window.addEventListener('load', init);
 </script>
 
