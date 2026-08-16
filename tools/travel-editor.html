@@ -439,18 +439,15 @@ async function loadFromGithub() {
 function parseContent() {
   STATE.categories = [];
 
-  // 正則表達式：提取每個分類
-  const categoryRegex = /<div class="travel-collapse"[^>]*data-cover="([^"]*)"[^>]*>[\s\S]*?<div class="travel-collapse-title">([^<]*)<\/div>[\s\S]*?<div class="travel-collapse-body">([\s\S]*?)<\/div>\s*<\/div>/g;
+  // 改進的正則表達式：更寬鬆地匹配分類結構
+  const categoryRegex = /<div class="travel-collapse"[^>]*data-cover="([^"]*)"[^>]*>[\s\S]*?<div class="travel-collapse-emoji">([^<]*)<\/div>[\s\S]*?<div class="travel-collapse-title">([^<]*)<\/div>[\s\S]*?<div class="travel-collapse-body">([\s\S]*?)<\/div>\s*<\/div>/g;
 
   let match;
   while ((match = categoryRegex.exec(STATE.originalHTML)) !== null) {
     const cover = match[1];
-    const title = match[2].trim();
-    const body = match[3];
-
-    // 從分類標題前面提取 emoji
-    const emojiMatch = STATE.originalHTML.match(new RegExp(`<div class="travel-collapse-emoji">([^<]*)<\/div>.*?${title}`, 's'));
-    const emoji = emojiMatch ? emojiMatch[1] : '📌';
+    const emoji = match[2].trim();
+    const title = match[3].trim();
+    const body = match[4];
 
     // 解析該分類下的項目
     const items = [];
