@@ -18,19 +18,19 @@
             overflow: hidden;
         }
 
-        .container {
+        .layout {
             display: grid;
-            grid-template-columns: 280px 1fr;
+            grid-template-columns: 250px 1fr 300px;
             height: 100vh;
+            gap: 1px;
+            background: #ddd;
         }
 
-        /* ===== 侧边栏 ===== */
+        /* ===== 左邊：景點列表 ===== */
         .sidebar {
             background: white;
-            border-right: 1px solid #e5e5e5;
             overflow-y: auto;
-            padding: 16px;
-            box-shadow: 2px 0 4px rgba(0, 0, 0, 0.05);
+            padding: 12px;
         }
 
         .sidebar-title {
@@ -38,21 +38,22 @@
             font-weight: 700;
             color: #999;
             text-transform: uppercase;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             letter-spacing: 0.5px;
         }
 
-        .day-btn, .spot-btn {
+        .day-btn {
             display: block;
             width: 100%;
-            padding: 10px 12px;
-            margin-bottom: 6px;
+            padding: 8px 10px;
+            margin-bottom: 4px;
             border: 1px solid #e5e5e5;
             background: white;
             border-radius: 4px;
             cursor: pointer;
             text-align: left;
-            font-size: 12px;
+            font-size: 11px;
+            font-weight: 500;
             color: #333;
             transition: all 0.2s;
             white-space: nowrap;
@@ -60,80 +61,89 @@
             text-overflow: ellipsis;
         }
 
-        .day-btn:hover, .spot-btn:hover {
+        .day-btn:hover {
             border-color: #667eea;
             background: #f5f7ff;
         }
 
-        .day-btn.active, .spot-btn.active {
+        .day-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .spot-btn {
+            display: block;
+            width: 100%;
+            padding: 8px 10px;
+            margin-bottom: 3px;
+            border: 1px solid #e5e5e5;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+            text-align: left;
+            font-size: 11px;
+            color: #555;
+            transition: all 0.2s;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .spot-btn:hover {
+            border-color: #667eea;
+            background: #f5f7ff;
+        }
+
+        .spot-btn.active {
             background: #667eea;
             color: white;
             border-color: #667eea;
             font-weight: 600;
         }
 
-        /* ===== 编辑区 ===== */
-        .editor-main {
+        /* ===== 中間：編輯器 ===== */
+        .editor {
+            background: white;
             display: flex;
             flex-direction: column;
-            background: white;
             overflow: hidden;
         }
 
         .editor-header {
-            padding: 16px 24px;
+            padding: 12px 16px;
             border-bottom: 1px solid #e5e5e5;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
             flex-shrink: 0;
         }
 
         .editor-header h2 {
-            font-size: 20px;
+            font-size: 18px;
             color: #333;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
 
         .spot-icon {
-            font-size: 32px;
-        }
-
-        .status-badge {
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 600;
-        }
-
-        .status-badge.saved {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .status-badge.unsaved {
-            background: #fff3cd;
-            color: #856404;
+            font-size: 28px;
         }
 
         .editor-toolbar {
-            padding: 12px 24px;
+            padding: 10px 16px;
             border-bottom: 1px solid #e5e5e5;
             display: flex;
-            gap: 8px;
+            gap: 6px;
             flex-wrap: wrap;
             flex-shrink: 0;
         }
 
         .toolbar-btn {
-            padding: 8px 12px;
+            padding: 6px 10px;
             border: 1px solid #d0d0d0;
             background: white;
             border-radius: 4px;
             cursor: pointer;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 500;
             transition: all 0.2s;
         }
@@ -144,141 +154,89 @@
         }
 
         .color-picker {
-            width: 28px;
-            height: 28px;
+            width: 24px;
+            height: 24px;
             border: 1px solid #d0d0d0;
             cursor: pointer;
+            padding: 2px;
         }
 
         .editor-content {
             flex: 1;
             overflow-y: auto;
-            padding: 24px;
+            padding: 16px;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 12px;
         }
 
         .field-group {
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 6px;
         }
 
         .field-group label {
-            font-size: 12px;
-            font-weight: 600;
-            color: #555;
+            font-size: 11px;
+            font-weight: 700;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        /* 简短介绍区域 - 单行 */
-        .field-group.desc-field input {
-            padding: 10px 12px;
+        /* desc - 單行 */
+        .field-group.desc input {
+            padding: 8px 10px;
             border: 1px solid #d0d0d0;
             border-radius: 4px;
-            font-size: 13px;
-            font-family: 'Courier New', monospace;
-            transition: border-color 0.2s;
+            font-size: 12px;
+            font-family: monospace;
         }
 
-        .field-group.desc-field input:focus {
+        .field-group.desc input:focus {
             outline: none;
             border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
         }
 
-        /* 详细描述区域 - 5行可滚动 */
-        .field-group.deep-desc-field {
+        /* deepDesc - 5 行 textarea */
+        .field-group.deepdesc {
             flex: 1;
             min-height: 0;
         }
 
-        .field-group.deep-desc-field textarea {
+        .field-group.deepdesc textarea {
             flex: 1;
-            padding: 12px;
+            padding: 8px 10px;
             border: 1px solid #d0d0d0;
             border-radius: 4px;
             font-size: 12px;
-            font-family: 'Courier New', monospace;
+            font-family: monospace;
             resize: none;
-            height: 150px;
-            transition: border-color 0.2s;
+            min-height: 120px;
         }
 
-        .field-group.deep-desc-field textarea:focus {
+        .field-group.deepdesc textarea:focus {
             outline: none;
             border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        /* 其他字段 */
-        .field-group input,
-        .field-group textarea {
-            padding: 10px 12px;
-            border: 1px solid #d0d0d0;
-            border-radius: 4px;
-            font-size: 12px;
-            font-family: 'Courier New', monospace;
-        }
-
-        .field-group input:focus,
-        .field-group textarea:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        /* 标签字段 */
-        .tags-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
-        .tag {
-            background: #e3e7ff;
-            color: #667eea;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .tag button {
-            background: none;
-            border: none;
-            color: inherit;
-            cursor: pointer;
-            font-size: 14px;
-            padding: 0;
-        }
-
-        .tag input {
-            flex: 1;
-            background: none;
-            border: none;
-            padding: 0;
-            font-size: 12px;
-            min-width: 100px;
+            box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
         }
 
         .editor-footer {
-            padding: 16px 24px;
+            padding: 10px 16px;
             border-top: 1px solid #e5e5e5;
             display: flex;
-            gap: 12px;
+            gap: 10px;
             justify-content: flex-end;
             flex-shrink: 0;
         }
 
         .btn {
-            padding: 10px 16px;
+            padding: 8px 14px;
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
             transition: all 0.2s;
         }
@@ -302,22 +260,64 @@
             color: #333;
         }
 
+        .btn-secondary:hover {
+            background: #d0d0d0;
+        }
+
+        /* ===== 右邊：實時預覽 ===== */
+        .preview-panel {
+            background: #f9f9f9;
+            border-left: 1px solid #e5e5e5;
+            padding: 16px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .preview-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .preview-box {
+            background: white;
+            padding: 12px;
+            border-radius: 4px;
+            border: 1px solid #e5e5e5;
+            font-size: 12px;
+            line-height: 1.6;
+            color: #333;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .preview-box em {
+            color: #999;
+            font-style: italic;
+        }
+
         .empty-state {
             text-align: center;
-            padding: 60px 20px;
+            padding: 40px 20px;
             color: #999;
+            font-size: 12px;
         }
 
         .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
             padding: 12px 16px;
             border-radius: 4px;
             font-size: 12px;
-            margin-bottom: 12px;
-        }
-
-        .notification.success {
             background: #d4edda;
             color: #155724;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            z-index: 999;
         }
 
         .notification.error {
@@ -325,55 +325,42 @@
             color: #721c24;
         }
 
-        .spinner {
-            display: inline-block;
-            width: 14px;
-            height: 14px;
-            border: 2px solid #f3f3f3;
-            border-top: 2px solid #667eea;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-right: 6px;
-        }
+        @media (max-width: 1200px) {
+            .layout {
+                grid-template-columns: 200px 1fr;
+            }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* nextStop JSON 编辑 */
-        .json-editor {
-            background: #f9f9f9;
-            padding: 12px;
-            border-radius: 4px;
-            font-size: 11px;
-            border: 1px solid #e5e5e5;
-            font-family: monospace;
-            white-space: pre-wrap;
-            word-break: break-all;
+            .preview-panel {
+                display: none;
+            }
         }
 
         @media (max-width: 768px) {
-            .container {
+            .layout {
                 grid-template-columns: 1fr;
             }
 
             .sidebar {
-                max-height: 200px;
-                border-right: none;
-                border-bottom: 1px solid #e5e5e5;
+                max-height: 150px;
+                border-bottom: 1px solid #ddd;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- 侧边栏 -->
+    <div class="layout">
+        <!-- 左邊：景點列表 -->
         <div class="sidebar" id="sidebar"></div>
 
-        <!-- 编辑器 -->
-        <div class="editor-main" id="editorMain">
+        <!-- 中間：編輯器 -->
+        <div class="editor" id="editor">
             <div class="empty-state">請在左側選擇一個景點開始編輯</div>
+        </div>
+
+        <!-- 右邊：預覽 -->
+        <div class="preview-panel" id="previewPanel">
+            <div class="preview-title">📝 實時預覽</div>
+            <div id="previewContent" style="color: #999; font-size: 12px;">（選擇景點查看預覽）</div>
         </div>
     </div>
 
@@ -383,13 +370,12 @@
         const GITHUB_REPO = '2026iceland';
         const GITHUB_FILE = 'data/trip-details.js';
 
-        // ===== 状态 =====
+        // ===== 狀態 =====
         let tripData = null;
         let currentDay = null;
         let currentSpotIndex = null;
-        let hasChanges = false;
 
-        // ===== UTF-8 Base64 编码 =====
+        // ===== UTF-8 Base64 編碼 =====
         function utf8ToBase64(str) {
             try {
                 return btoa(unescape(encodeURIComponent(str)));
@@ -404,13 +390,25 @@
             }
         }
 
+        // ===== 標記解析 =====
+        function parseMarkup(str) {
+            if (!str) return '<em>（空）</em>';
+            let html = str
+                .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                .replace(/\/n/g, '<br>')
+                .replace(/\{#([0-9a-fA-F]{6})\}([^{]*?)\{\/color\}/g, '<span style="color: #$1;">$2</span>')
+                .replace(/\{bold\}([^{]*?)\{\/bold\}/g, '<strong>$1</strong>')
+                .replace(/\{italic\}([^{]*?)\{\/italic\}/g, '<em>$1</em>');
+            return html;
+        }
+
         // ===== 初始化 =====
         async function init() {
             await loadTripData();
             renderSidebar();
         }
 
-        // ===== 加载数据 =====
+        // ===== 加載數據 =====
         async function loadTripData() {
             try {
                 const response = await fetch(
@@ -418,19 +416,19 @@
                 );
                 const content = await response.text();
                 const match = content.match(/const TRIP = ({[\s\S]*?});/);
-                if (!match) throw new Error('无法解析数据');
+                if (!match) throw new Error('無法解析數據');
                 eval(`tripData = ${match[1]}`);
             } catch(e) {
-                console.error('加载失败:', e);
+                console.error('加載失敗:', e);
+                showNotif('加載失敗: ' + e.message, 'error');
             }
         }
 
-        // ===== 渲染侧边栏 =====
+        // ===== 渲染側邊欄 =====
         function renderSidebar() {
             const sidebar = document.getElementById('sidebar');
             sidebar.innerHTML = '';
 
-            // 日期列表
             const daysSection = document.createElement('div');
             daysSection.innerHTML = '<div class="sidebar-title">📅 日期</div>';
 
@@ -445,13 +443,12 @@
 
             sidebar.appendChild(daysSection);
 
-            // 景点列表容器
             const spotsSection = document.createElement('div');
             spotsSection.id = 'spotsSection';
             sidebar.appendChild(spotsSection);
         }
 
-        // ===== 选择日期 =====
+        // ===== 選擇日期 =====
         function selectDay(dayKey) {
             currentDay = dayKey;
             currentSpotIndex = null;
@@ -461,9 +458,10 @@
             });
 
             renderSpots();
+            clearEditor();
         }
 
-        // ===== 渲染景点列表 =====
+        // ===== 渲染景點列表 =====
         function renderSpots() {
             const section = document.getElementById('spotsSection');
             section.innerHTML = `<div class="sidebar-title">🏔️ 景點</div>`;
@@ -481,7 +479,7 @@
             });
         }
 
-        // ===== 选择景点 =====
+        // ===== 選擇景點 =====
         function selectSpot(idx) {
             currentSpotIndex = idx;
 
@@ -492,85 +490,80 @@
             renderEditor();
         }
 
-        // ===== 渲染编辑器 =====
+        // ===== 清空編輯器 =====
+        function clearEditor() {
+            const editor = document.getElementById('editor');
+            editor.innerHTML = '<div class="empty-state">請選擇一個景點開始編輯</div>';
+            updatePreview('', '');
+        }
+
+        // ===== 渲染編輯器 =====
         function renderEditor() {
             const day = tripData[currentDay];
             const spot = day.spots[currentSpotIndex];
-            const main = document.getElementById('editorMain');
+            const editor = document.getElementById('editor');
 
-            const tagsHtml = Array.isArray(spot.tags) ? spot.tags.map(t => 
-                `<span class="tag">${t} <button onclick="removeTag(${currentSpotIndex}, '${t}')">×</button></span>`
-            ).join('') : '';
-
-            const nextStopJson = spot.nextStop ? JSON.stringify(spot.nextStop, null, 2) : '{}';
-
-            main.innerHTML = `
+            editor.innerHTML = `
                 <div class="editor-header">
                     <h2><span class="spot-icon">${spot.icon}</span>${spot.name}</h2>
-                    <span class="status-badge saved" id="badge">✅ 已保存</span>
                 </div>
 
                 <div class="editor-toolbar">
                     <button class="toolbar-btn" onclick="insertFormatDesc('{bold}', '{/bold}')"><strong>B</strong></button>
                     <button class="toolbar-btn" onclick="insertFormatDesc('{italic}', '{/italic}')"><em>I</em></button>
-                    <button class="toolbar-btn" onclick="insertFormatDesc('/n', '')">↵ 换行</button>
-                    <button class="toolbar-btn" style="display:flex; align-items:center; gap:6px;">
+                    <button class="toolbar-btn" onclick="insertFormatDesc('/n', '')">↵ 換行</button>
+                    <button class="toolbar-btn" style="display:flex; align-items:center; gap:4px; padding: 6px 8px;">
                         🎨 <input type="color" class="color-picker" value="#ff0000" onchange="insertColorDesc(this.value)">
                     </button>
                 </div>
 
                 <div class="editor-content">
-                    <div class="field-group desc-field">
-                        <label>简短介绍 (desc)</label>
-                        <input type="text" id="descInput" value="${escapeAttr(spot.desc || '')}" onchange="markChanged()">
+                    <div class="field-group desc">
+                        <label>簡短介紹 (desc)</label>
+                        <input type="text" id="descInput" value="${escapeAttr(spot.desc || '')}" oninput="updatePreview()">
                     </div>
 
-                    <div class="field-group deep-desc-field">
-                        <label>详细描述 (deepDesc)</label>
-                        <textarea id="deepDescInput" onchange="markChanged()">${escapeAttr(spot.deepDesc || '')}</textarea>
-                    </div>
-
-                    <div class="field-group">
-                        <label>标签 (tags)</label>
-                        <div class="tags-container" id="tagsContainer">${tagsHtml}</div>
-                        <input type="text" id="newTagInput" placeholder="输入后按 Enter 添加" onkeypress="addTagIfEnter(event)">
-                    </div>
-
-                    <div class="field-group">
-                        <label>卫生间信息 (toilet)</label>
-                        <input type="text" value="${escapeAttr(spot.toilet || '')}" onchange="updateField('toilet', this.value)">
-                    </div>
-
-                    <div class="field-group">
-                        <label>地图 (map)</label>
-                        <input type="text" value="${escapeAttr(spot.map || '')}" onchange="updateField('map', this.value)">
-                    </div>
-
-                    <div class="field-group">
-                        <label>下一站 (nextStop) - JSON 格式</label>
-                        <textarea style="height: 120px;" onchange="updateNextStop(this.value)">${nextStopJson}</textarea>
+                    <div class="field-group deepdesc">
+                        <label>詳細描述 (deepDesc)</label>
+                        <textarea id="deepDescInput" oninput="updatePreview()">${escapeAttr(spot.deepDesc || '')}</textarea>
                     </div>
                 </div>
 
                 <div class="editor-footer">
-                    <button class="btn btn-secondary" onclick="discardChanges()">放弃</button>
+                    <button class="btn btn-secondary" onclick="discardChanges()">放棄</button>
                     <button class="btn btn-primary" id="saveBtn" onclick="saveToGitHub()">💾 保存</button>
+                </div>
+            `;
+
+            updatePreview();
+        }
+
+        // ===== 更新預覽 =====
+        function updatePreview() {
+            const descInput = document.getElementById('descInput');
+            const deepDescInput = document.getElementById('deepDescInput');
+            
+            if (!descInput || !deepDescInput) return;
+
+            const previewContent = document.getElementById('previewContent');
+            previewContent.innerHTML = `
+                <div class="preview-box">
+                    <div style="margin-bottom: 10px;">
+                        <div style="font-size: 10px; color: #999; margin-bottom: 4px;">簡短介紹</div>
+                        ${parseMarkup(descInput.value)}
+                    </div>
+                </div>
+
+                <div class="preview-box">
+                    <div style="font-size: 10px; color: #999; margin-bottom: 4px;">詳細描述</div>
+                    ${parseMarkup(deepDescInput.value)}
                 </div>
             `;
         }
 
-        // ===== 辅助函数 =====
+        // ===== 輔助函數 =====
         function escapeAttr(str) {
-            return (str || '').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-        }
-
-        function markChanged() {
-            hasChanges = true;
-            const badge = document.getElementById('badge');
-            if (badge) {
-                badge.className = 'status-badge unsaved';
-                badge.textContent = '✏️ 未保存';
-            }
+            return (str || '').replace(/"/g, '&quot;').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
         }
 
         function insertFormatDesc(before, after) {
@@ -580,7 +573,7 @@
             const text = input.value;
             const selected = text.substring(start, end) || '文本';
             input.value = text.substring(0, start) + before + selected + after + text.substring(end);
-            markChanged();
+            updatePreview();
         }
 
         function insertColorDesc(color) {
@@ -588,47 +581,10 @@
             insertFormatDesc(`{#${hex}}`, '{/color}');
         }
 
-        function addTagIfEnter(e) {
-            if (e.key !== 'Enter') return;
-            e.preventDefault();
-            const input = e.target;
-            const tag = input.value.trim();
-            if (!tag) return;
-
-            const spot = tripData[currentDay].spots[currentSpotIndex];
-            if (!Array.isArray(spot.tags)) spot.tags = [];
-            if (!spot.tags.includes(tag)) {
-                spot.tags.push(tag);
-                markChanged();
-                input.value = '';
+        function discardChanges() {
+            if (confirm('放棄未保存的變更？')) {
                 renderEditor();
             }
-        }
-
-        function removeTag(spotIdx, tag) {
-            const spot = tripData[currentDay].spots[spotIdx];
-            spot.tags = spot.tags.filter(t => t !== tag);
-            markChanged();
-            renderEditor();
-        }
-
-        function updateField(field, value) {
-            tripData[currentDay].spots[currentSpotIndex][field] = value;
-            markChanged();
-        }
-
-        function updateNextStop(json) {
-            try {
-                tripData[currentDay].spots[currentSpotIndex].nextStop = JSON.parse(json);
-                markChanged();
-            } catch(e) {
-                console.error('JSON 错误:', e);
-            }
-        }
-
-        function discardChanges() {
-            if (hasChanges && !confirm('放弃未保存的变更？')) return;
-            renderEditor();
         }
 
         // ===== 保存到 GitHub =====
@@ -639,33 +595,31 @@
             const deepDescInput = document.getElementById('deepDescInput');
             const saveBtn = document.getElementById('saveBtn');
 
-            // 更新 spot 数据
             const spot = tripData[currentDay].spots[currentSpotIndex];
             spot.desc = descInput.value.trim();
             spot.deepDesc = deepDescInput.value.trim();
 
-            // 保存按钮状态
             saveBtn.disabled = true;
-            saveBtn.innerHTML = '<span class="spinner"></span>保存中...';
+            saveBtn.textContent = '⏳ 保存中...';
 
             try {
                 const pat = getPAT();
-                
-                // 生成新的 JS 代码
-                const response = await fetch(
+
+                // 獲取最新的文件
+                const getResp = await fetch(
                     `https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/main/${GITHUB_FILE}`
                 );
-                const oldContent = await response.text();
+                const oldContent = await getResp.text();
                 const header = oldContent.substring(0, oldContent.indexOf('const TRIP = {'));
                 const footer = oldContent.substring(oldContent.indexOf('};') + 2);
                 const newContent = header + 'const TRIP = ' + JSON.stringify(tripData, null, 2) + ';\n' + footer;
 
-                // 获取文件 SHA
-                const getResp = await fetch(
+                // 獲取 SHA
+                const shaResp = await fetch(
                     `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_FILE}`,
                     { headers: { 'Authorization': `token ${pat}` } }
                 );
-                const fileData = await getResp.json();
+                const fileData = await shaResp.json();
 
                 // 更新文件
                 const updateResp = await fetch(
@@ -677,48 +631,47 @@
                             'Content-Type': 'application/json'
                         },
                         body: JSON.stringify({
-                            message: `✏️ 编辑景点: ${spot.name}`,
+                            message: `✏️ 編輯景點: ${spot.name}`,
                             content: utf8ToBase64(newContent),
                             sha: fileData.sha
                         })
                     }
                 );
 
-                if (!updateResp.ok) throw new Error('更新失败');
+                if (!updateResp.ok) throw new Error('更新失敗');
 
-                showNotif('✅ 已保存到 GitHub！', 'success');
-                hasChanges = false;
-                document.getElementById('badge').className = 'status-badge saved';
-                document.getElementById('badge').textContent = '✅ 已保存';
+                showNotif('✅ 已保存到 GitHub！網站將在 30 秒內更新', 'success');
 
             } catch(e) {
-                showNotif('❌ 错误: ' + e.message, 'error');
+                showNotif('❌ 錯誤: ' + e.message, 'error');
             } finally {
                 saveBtn.disabled = false;
-                saveBtn.innerHTML = '💾 保存';
+                saveBtn.textContent = '💾 保存';
             }
         }
 
         function getPAT() {
             let pat = localStorage.getItem('github_pat');
             if (!pat) {
-                pat = prompt('输入 GitHub Personal Access Token\n(https://github.com/settings/tokens)');
-                if (pat) localStorage.setItem('github_pat', pat);
-                else throw new Error('需要 PAT');
+                pat = prompt('🔑 輸入 GitHub Personal Access Token\n(https://github.com/settings/tokens → Generate new token → repo)');
+                if (pat) {
+                    localStorage.setItem('github_pat', pat);
+                } else {
+                    throw new Error('需要 PAT');
+                }
             }
             return pat;
         }
 
-        function showNotif(msg, type) {
-            const main = document.getElementById('editorMain');
+        function showNotif(msg, type = 'success') {
             const notif = document.createElement('div');
             notif.className = `notification ${type}`;
             notif.textContent = msg;
-            main.prepend(notif);
+            document.body.appendChild(notif);
             setTimeout(() => notif.remove(), 4000);
         }
 
-        // 启动
+        // 啟動
         window.addEventListener('load', init);
     </script>
 </body>
