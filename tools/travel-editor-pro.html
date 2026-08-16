@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🏔️ 體驗編輯器 Pro - 簡化版</title>
+    <title>🏔️ 體驗編輯器 Pro - 導入真實網站數據</title>
     <style>
         * {
             margin: 0;
@@ -230,46 +230,33 @@
         }
 
         textarea {
-            min-height: 180px;
+            min-height: 120px;
             font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
             font-size: 11px;
-            line-height: 1.6;
+            line-height: 1.5;
         }
 
         .format-toolbar {
             display: flex;
-            gap: 6px;
-            margin-bottom: 10px;
+            gap: 4px;
+            margin-bottom: 8px;
             flex-wrap: wrap;
-            padding: 10px;
-            background: linear-gradient(180deg, #fafafa, #f5f5f5);
+            padding: 8px;
+            background: #f9f9f9;
             border: 1px solid #e5e5e5;
             border-radius: 4px;
         }
 
-        .format-btn-group {
-            display: flex;
-            gap: 3px;
-            border-right: 1px solid #ddd;
-            padding-right: 6px;
-        }
-
-        .format-btn-group:last-child {
-            border-right: none;
-            padding-right: 0;
-        }
-
         .format-btn {
-            padding: 6px 9px;
+            padding: 6px 8px;
             border: 1px solid #ddd;
             background: white;
             border-radius: 3px;
             cursor: pointer;
-            font-size: 11px;
-            font-weight: 600;
+            font-size: 10px;
+            font-weight: 700;
             transition: all 0.2s;
             min-width: 32px;
-            text-align: center;
         }
 
         .format-btn:hover {
@@ -278,9 +265,30 @@
             border-color: #667eea;
         }
 
-        .format-btn.color-btn {
-            min-width: auto;
-            padding: 6px 12px;
+        .preview {
+            background: #f9f9f9;
+            padding: 12px;
+            border: 1px solid #e5e5e5;
+            border-radius: 4px;
+            font-size: 12px;
+            line-height: 1.6;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .preview-label {
+            font-size: 10px;
+            font-weight: 700;
+            color: #999;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+            letter-spacing: 0.5px;
+        }
+
+        .preview-content {
+            color: #333;
+            white-space: pre-wrap;
+            word-break: break-word;
         }
 
         .right-panel {
@@ -311,44 +319,22 @@
             color: #333;
         }
 
-        .preview {
-            background: #f9f9f9;
+        .error-message {
+            background: #ffe5e5;
+            color: #d32f2f;
             padding: 12px;
-            border: 1px solid #e5e5e5;
             border-radius: 4px;
+            margin-bottom: 12px;
             font-size: 12px;
-            line-height: 1.6;
-            white-space: pre-wrap;
-            word-break: break-word;
-            max-height: 500px;
-            overflow-y: auto;
         }
 
-        .preview-label {
-            font-size: 10px;
-            font-weight: 700;
-            color: #999;
-            text-transform: uppercase;
-            margin-bottom: 6px;
-            letter-spacing: 0.5px;
-        }
-
-        .format-hint {
-            font-size: 10px;
-            color: #999;
-            background: #f5f5f5;
-            padding: 8px;
+        .success-message {
+            background: #e5ffe5;
+            color: #1b8a1b;
+            padding: 12px;
             border-radius: 4px;
-            margin-bottom: 10px;
-            line-height: 1.5;
-        }
-
-        .format-hint code {
-            background: white;
-            padding: 2px 4px;
-            border-radius: 2px;
-            font-family: monospace;
-            font-size: 9px;
+            margin-bottom: 12px;
+            font-size: 12px;
         }
 
         .modal {
@@ -395,11 +381,6 @@
             gap: 8px;
             justify-content: flex-end;
         }
-
-        /* 颜色预览 */
-        .color-red { color: #ff6b6b; }
-        .color-blue { color: #0066cc; }
-        .color-green { color: #00aa00; }
     </style>
 </head>
 <body>
@@ -434,18 +415,9 @@
 
         <!-- 右侧预览 -->
         <div class="right-panel">
-            <div class="right-panel-title">📝 項目詳情預覽</div>
-            <div id="previewArea">
-                <div class="preview" id="preview" style="display: none;"></div>
-                <div class="format-hint" style="display: none;" id="formatHint">
-                    <strong>格式化指南：</strong><br>
-                    <code>{bold}文字{/bold}</code> 粗體<br>
-                    <code>{italic}文字{/italic}</code> 斜體<br>
-                    <code>{#ff6b6b}紅{/color}</code><br>
-                    <code>{#0066cc}藍{/color}</code><br>
-                    <code>{#00aa00}綠{/color}</code><br>
-                    <code>/n</code> 換行
-                </div>
+            <div class="right-panel-title">ℹ️ 資訊</div>
+            <div id="statusArea">
+                <div class="loading-state">加載中...</div>
             </div>
         </div>
     </div>
@@ -467,7 +439,7 @@
 
     <script>
         // ===== 全局状态 =====
-        let travelData = {};
+        let travelData = {}; // 从网站导入的真实数据
         let currentCategory = null;
         let currentItem = null;
         let modifiedItems = new Set();
@@ -497,9 +469,11 @@
         // ===== 从网站导入真实数据 =====
         async function importWebsiteData() {
             try {
+                // 获取网站的 travel-content.js
                 const response = await fetch('https://raw.githubusercontent.com/fisherchang01/2026iceland/main/data/travel-content.js');
                 const jsContent = await response.text();
 
+                // 提取 HTML 内容
                 const htmlMatch = jsContent.match(/const TRAVEL_HTML = `([\s\S]*)`/);
                 if (!htmlMatch) {
                     throw new Error('无法提取 TRAVEL_HTML');
@@ -509,12 +483,15 @@
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(htmlContent, 'text/html');
 
+                // 解析所有分类
                 const collapses = doc.querySelectorAll('.travel-collapse');
+                console.log(`找到 ${collapses.length} 个分类`);
 
                 collapses.forEach((collapse, index) => {
                     const emoji = collapse.querySelector('.travel-collapse-emoji')?.textContent || '📌';
                     const title = collapse.querySelector('.travel-collapse-title')?.textContent || '';
                     const sub = collapse.querySelector('.travel-collapse-sub')?.textContent || '';
+                    const cover = collapse.getAttribute('data-cover') || '';
 
                     const items = [];
                     const itemCards = collapse.querySelectorAll('.item-card');
@@ -530,20 +507,24 @@
                         });
                     });
 
+                    // 使用 index 作为 key，因为分类没有 ID
                     const catKey = `cat_${index}`;
                     travelData[catKey] = {
                         emoji,
                         title,
                         sub,
+                        cover,
                         items
                     };
+
+                    console.log(`分类 ${index}: ${title} (${items.length} 项)`);
                 });
 
                 console.log('✅ 数据导入成功！');
                 return true;
             } catch (error) {
                 console.error('❌ 导入失败:', error);
-                document.getElementById('editorContent').innerHTML = `<div class="error-message">❌ 导入失败：${error.message}</div>`;
+                document.getElementById('editorContent').innerHTML = `<div class="error-message">❌ 导入网站数据失败：${error.message}</div>`;
                 return false;
             }
         }
@@ -554,8 +535,22 @@
             const itemCount = Object.values(travelData).reduce((sum, cat) => sum + cat.items.length, 0);
             const modCount = modifiedItems.size;
 
-            document.getElementById('formatHint').style.display = 'block';
-            document.getElementById('preview').style.display = 'none';
+            document.getElementById('statusArea').innerHTML = `
+                <div class="status-info">
+                    <strong>✅ 數據已導入</strong><br>
+                    分類數: ${catCount}<br>
+                    項目總數: ${itemCount}<br>
+                    已修改: ${modCount}
+                </div>
+                <div style="font-size: 11px; color: #666; line-height: 1.6;">
+                    <p>📌 <strong>使用方式：</strong></p>
+                    <p>1. 左側選擇分類</p>
+                    <p>2. 選擇要編輯的項目</p>
+                    <p>3. 在中間編輯項目詳情</p>
+                    <p>4. 點擊「💾 本地保存」</p>
+                    <p>5. 點擊「⬆️ 上傳到 GitHub」</p>
+                </div>
+            `;
         }
 
         // ===== 渲染分类 =====
@@ -588,7 +583,9 @@
         // ===== 渲染项目 =====
         function renderItems() {
             const catData = travelData[currentCategory];
+            const container = document.getElementById('categories').parentElement;
             
+            // 更新分类按钮样式
             document.querySelectorAll('.category-btn').forEach(btn => {
                 btn.classList.remove('active');
                 if (btn.textContent.includes(catData.title)) {
@@ -596,6 +593,7 @@
                 }
             });
 
+            // 清空并渲染项目
             const itemsContainer = document.querySelector('.items-container');
             if (itemsContainer) itemsContainer.remove();
 
@@ -646,88 +644,16 @@
                 </div>
 
                 <div class="form-group">
-                    <label>格式化工具</label>
-                    <div class="format-toolbar">
-                        <div class="format-btn-group">
-                            <button class="format-btn" title="粗體" onclick="insertFormat('{bold}', '{/bold}')"><b>B</b></button>
-                            <button class="format-btn" title="斜體" onclick="insertFormat('{italic}', '{/italic}')"><i>I</i></button>
-                        </div>
-                        <div class="format-btn-group">
-                            <button class="format-btn" title="換行" onclick="insertText('\\n')">↵</button>
-                        </div>
-                        <div class="format-btn-group">
-                            <button class="format-btn color-btn" title="紅色" onclick="insertColor('#ff6b6b')" style="color: #ff6b6b;">🔴</button>
-                            <button class="format-btn color-btn" title="藍色" onclick="insertColor('#0066cc')" style="color: #0066cc;">🔵</button>
-                            <button class="format-btn color-btn" title="綠色" onclick="insertColor('#00aa00')" style="color: #00aa00;">🟢</button>
-                        </div>
-                        <div class="format-btn-group">
-                            <button class="format-btn" title="清空" onclick="clearTextarea()">🗑️</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-group">
                     <label>項目詳情</label>
+                    <div class="format-toolbar">
+                        <button class="format-btn" onclick="insertText('detailInput', '\\n')">換行</button>
+                        <button class="format-btn" onclick="insertText('detailInput', '\\n\\n')">分段</button>
+                    </div>
                     <textarea id="detailInput" oninput="updatePreview()">${savedData.detail || item.rawDetail}</textarea>
                 </div>
             `;
 
             updatePreview();
-        }
-
-        // ===== 插入格式 =====
-        function insertFormat(openTag, closeTag) {
-            const input = document.getElementById('detailInput');
-            const start = input.selectionStart;
-            const end = input.selectionEnd;
-            const value = input.value;
-            const selectedText = value.substring(start, end);
-
-            if (selectedText) {
-                const newText = openTag + selectedText + closeTag;
-                input.value = value.substring(0, start) + newText + value.substring(end);
-            } else {
-                input.value = value.substring(0, start) + openTag + closeTag + value.substring(start);
-            }
-            input.focus();
-            updatePreview();
-        }
-
-        // ===== 插入颜色 =====
-        function insertColor(color) {
-            const input = document.getElementById('detailInput');
-            const start = input.selectionStart;
-            const end = input.selectionEnd;
-            const value = input.value;
-            const selectedText = value.substring(start, end);
-
-            if (selectedText) {
-                const colorTag = `{${color}}${selectedText}{/color}`;
-                input.value = value.substring(0, start) + colorTag + value.substring(end);
-            } else {
-                const colorTag = `{${color}}文字{/color}`;
-                input.value = value.substring(0, start) + colorTag + value.substring(start);
-            }
-            input.focus();
-            updatePreview();
-        }
-
-        // ===== 插入文本 =====
-        function insertText(text) {
-            const input = document.getElementById('detailInput');
-            const start = input.selectionStart;
-            const value = input.value;
-            input.value = value.substring(0, start) + text + value.substring(start);
-            input.focus();
-            updatePreview();
-        }
-
-        // ===== 清空文本框 =====
-        function clearTextarea() {
-            if (confirm('確定要清空所有文本嗎？')) {
-                document.getElementById('detailInput').value = '';
-                updatePreview();
-            }
         }
 
         // ===== 清空表单 =====
@@ -737,39 +663,37 @@
             document.getElementById('editorSub').textContent = '';
         }
 
+        // ===== 插入文本 =====
+        function insertText(inputId, text) {
+            const input = document.getElementById(inputId);
+            const start = input.selectionStart;
+            const end = input.selectionEnd;
+            const value = input.value;
+            input.value = value.substring(0, start) + text + value.substring(end);
+            input.focus();
+            updatePreview();
+        }
+
         // ===== 更新预览 =====
         function updatePreview() {
             const detail = document.getElementById('detailInput')?.value || '';
-            
-            // 解析格式化代码
-            let displayText = detail;
-            
-            // 处理换行
-            displayText = displayText.replace(/\/n/g, '\n');
-            
-            // 处理粗体
-            displayText = displayText.replace(/\{bold\}([\s\S]*?)\{\/bold\}/g, '<b>$1</b>');
-            
-            // 处理斜体
-            displayText = displayText.replace(/\{italic\}([\s\S]*?)\{\/italic\}/g, '<i>$1</i>');
-            
-            // 处理颜色
-            displayText = displayText.replace(/\{#ff6b6b\}([\s\S]*?)\{\/color\}/g, '<span style="color: #ff6b6b;">$1</span>');
-            displayText = displayText.replace(/\{#0066cc\}([\s\S]*?)\{\/color\}/g, '<span style="color: #0066cc;">$1</span>');
-            displayText = displayText.replace(/\{#00aa00\}([\s\S]*?)\{\/color\}/g, '<span style="color: #00aa00;">$1</span>');
-            
-            const previewArea = document.getElementById('previewArea');
-            const previewDiv = document.getElementById('preview');
-            const formatHint = document.getElementById('formatHint');
-            
-            if (detail.trim()) {
-                previewDiv.innerHTML = displayText;
-                previewDiv.style.display = 'block';
-                formatHint.style.display = 'none';
-            } else {
-                previewDiv.style.display = 'none';
-                formatHint.style.display = 'block';
-            }
+            const preview = `
+                <div class="preview-label">項目詳情預覽</div>
+                <div class="preview-content">${escapeHtml(detail)}</div>
+            `;
+            document.getElementById('statusArea').innerHTML = preview;
+        }
+
+        // ===== 转义 HTML =====
+        function escapeHtml(text) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, m => map[m]);
         }
 
         // ===== 保存本地 =====
@@ -786,6 +710,7 @@
             localStorage.setItem('travel-editor-modifications', JSON.stringify(localData));
             modifiedItems.add(key);
             updateDraftBadge();
+            updateStatus();
             alert('✅ 已保存到瀏覽器');
         }
 
