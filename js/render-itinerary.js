@@ -151,7 +151,7 @@ function buildSpotCardHtml(s, onclickExpr) {
   var scheduleHtml = scheduleParts.length ? '<div class="spot-card-meta">' + scheduleParts.join(' · ') + '</div>' : '';
   var thumbHtml = buildSpotThumbRowHtml(s, onclickExpr, clickable);
   // v12：拿掉「景点介绍」這個標籤文字，只留內文本身；行數限制從兩行改成三行。
-  var summaryHtml = s.desc ? '<div class="spot-card-intro"><p>' + s.desc + '</p></div>' : '';
+  var summaryHtml = s.desc ? '<div class="spot-card-intro"><p>' + parseMarkup(s.desc) + '</p></div>' : '';
   // v12：拿掉右側箭頭按鈕，改成點擊整個「標題＋內容」區域就直接開詳情層。
   var copyClickAttr = clickable ? ' onclick="' + onclickExpr + '"' : '';
   var optionalBadge = s.isOptional ? '<span class="spot-optional-badge">备选</span>' : '';
@@ -488,10 +488,24 @@ function lightboxNext(e) {
 // 條列式段落格式化：deepDesc/tips 內容用「\n」分段，一級用「一、二、三」，二級用「(1)(2)(3)」，
 // 每行各自包成一個 <p class="outline-p">，靠 CSS 的 margin 做出「段落間 0.5 行距」的視覺效果。
 // 單純一句話（沒有換行）的內容會直接退化成一個 <p>，不會多包版面。
+function parseMarkup(str) {
+  if (!str) return '';
+  // 转义 HTML
+  str = str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  
+  // 处理标记
+  str = str.replace(/\/n/g, '<br>'); // 换行
+  str = str.replace(/\{#([0-9a-fA-F]{6})\}([^{]*?)\{\/color\}/g, '<span style="color: #$1;">$2</span>'); // 颜色
+  str = str.replace(/\{bold\}([^{]*?)\{\/bold\}/g, '<strong>$1</strong>'); // 粗体
+  str = str.replace(/\{italic\}([^{]*?)\{\/italic\}/g, '<em>$1</em>'); // 斜体
+  
+  return str;
+}
+
 function formatOutlineText(str) {
   if (!str) return '';
   return str.split('\n').filter(function(line){ return line.trim().length; })
-    .map(function(line){ return '<p class="outline-p">' + line + '</p>'; })
+    .map(function(line){ return '<p class="outline-p">' + parseMarkup(line) + '</p>'; })
     .join('');
 }
 
@@ -604,7 +618,7 @@ function renderSpotDetail(s, d) {
   document.getElementById('spotDetail').innerHTML =
     buildSpotImageHtml(s) +
     factsHtml +
-    (s.desc ? '<div class="info-card"><div class="card-label">景点介绍</div><p>' + s.desc + '</p></div>' : '') +
+    (s.desc ? '<div class="info-card"><div class="card-label">景点介绍</div><p>' + parseMarkup(s.desc) + '</p></div>' : '') +
     (s.deepDesc ? '<div class="info-card"><div class="card-label">深度介绍</div>' + formatOutlineText(s.deepDesc) + '</div>' : '') +
     (s.tips ? '<div class="tips-card"><div class="card-label">小提醒</div>' + formatOutlineText(s.tips) + '</div>' : '') +
     parkingHtml +
