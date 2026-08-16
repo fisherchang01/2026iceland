@@ -26,7 +26,6 @@
             background: #ddd;
         }
 
-        /* ===== 左邊：景點列表 ===== */
         .sidebar {
             background: white;
             overflow-y: auto;
@@ -73,7 +72,6 @@
             font-weight: 600;
         }
 
-        /* ===== 中間：編輯器 ===== */
         .editor {
             background: white;
             display: flex;
@@ -99,46 +97,13 @@
             font-size: 28px;
         }
 
-        .editor-toolbar {
-            padding: 10px 16px;
-            border-bottom: 1px solid #e5e5e5;
-            display: flex;
-            gap: 6px;
-            flex-wrap: wrap;
-            flex-shrink: 0;
-        }
-
-        .toolbar-btn {
-            padding: 6px 10px;
-            border: 1px solid #d0d0d0;
-            background: white;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 12px;
-            font-weight: 500;
-            transition: all 0.2s;
-        }
-
-        .toolbar-btn:hover {
-            background: #f5f5f5;
-            border-color: #999;
-        }
-
-        .color-picker {
-            width: 24px;
-            height: 24px;
-            border: 1px solid #d0d0d0;
-            cursor: pointer;
-            padding: 2px;
-        }
-
         .editor-content {
             flex: 1;
             overflow-y: auto;
             padding: 16px;
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 16px;
         }
 
         .field-group {
@@ -147,12 +112,47 @@
             gap: 6px;
         }
 
-        .field-group label {
+        .field-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .field-label {
             font-size: 11px;
             font-weight: 700;
             color: #666;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+        }
+
+        .field-toolbar {
+            display: flex;
+            gap: 4px;
+        }
+
+        .mini-btn {
+            padding: 4px 8px;
+            border: 1px solid #d0d0d0;
+            background: white;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .mini-btn:hover {
+            background: #f5f5f5;
+            border-color: #999;
+        }
+
+        .color-input {
+            width: 20px;
+            height: 20px;
+            border: 1px solid #d0d0d0;
+            cursor: pointer;
+            padding: 1px;
         }
 
         .field-group input,
@@ -171,24 +171,20 @@
             box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
         }
 
-        /* desc - 單行 */
         .field-group.desc input {
             height: 32px;
         }
 
-        /* deepDesc - 4 行 */
         .field-group.deepdesc textarea {
             min-height: 100px;
             resize: vertical;
         }
 
-        /* tips - 3 行 */
         .field-group.tips textarea {
             min-height: 80px;
             resize: vertical;
         }
 
-        /* parking - 3 行 */
         .field-group.parking textarea {
             min-height: 80px;
             resize: vertical;
@@ -236,7 +232,6 @@
             background: #d0d0d0;
         }
 
-        /* ===== 右邊：實時預覽 ===== */
         .preview-panel {
             background: #f9f9f9;
             border-left: 1px solid #e5e5e5;
@@ -278,11 +273,6 @@
             word-break: break-word;
         }
 
-        .preview-content em {
-            color: #999;
-            font-style: italic;
-        }
-
         .empty-state {
             text-align: center;
             padding: 40px 20px;
@@ -307,29 +297,14 @@
             background: #f8d7da;
             color: #721c24;
         }
-
-        @media (max-width: 1200px) {
-            .layout {
-                grid-template-columns: 200px 1fr;
-            }
-
-            .preview-panel {
-                display: none;
-            }
-        }
     </style>
 </head>
 <body>
     <div class="layout">
-        <!-- 左邊：景點列表 -->
         <div class="sidebar" id="sidebar"></div>
-
-        <!-- 中間：編輯器 -->
         <div class="editor" id="editor">
             <div class="empty-state">請在左側選擇一個景點開始編輯</div>
         </div>
-
-        <!-- 右邊：預覽 -->
         <div class="preview-panel" id="previewPanel">
             <div class="preview-title">📝 實時預覽</div>
             <div id="previewContent" style="color: #999; font-size: 12px;">（選擇景點查看預覽）</div>
@@ -337,17 +312,14 @@
     </div>
 
     <script>
-        // ===== 配置 =====
         const GITHUB_OWNER = 'fisherchang01';
         const GITHUB_REPO = '2026iceland';
         const GITHUB_FILE = 'data/trip-details.js';
 
-        // ===== 狀態 =====
         let tripData = null;
         let currentDay = null;
         let currentSpotIndex = null;
 
-        // ===== UTF-8 Base64 編碼 =====
         function utf8ToBase64(str) {
             try {
                 return btoa(unescape(encodeURIComponent(str)));
@@ -362,7 +334,6 @@
             }
         }
 
-        // ===== 標記解析 =====
         function parseMarkup(str) {
             if (!str) return '<em>（空）</em>';
             let html = str
@@ -374,7 +345,6 @@
             return html;
         }
 
-        // ===== HTML 轉義 =====
         function escapeAttr(str) {
             if (!str) return '';
             return str
@@ -384,13 +354,37 @@
                 .replace(/>/g, '&gt;');
         }
 
-        // ===== 初始化 =====
+        // 直接插入到指定字段
+        function insertToField(fieldId, before, after = '') {
+            const field = document.getElementById(fieldId);
+            if (!field) return;
+
+            const start = field.selectionStart;
+            const end = field.selectionEnd;
+            const text = field.value;
+            const selected = text.substring(start, end);
+
+            if (selected) {
+                field.value = text.substring(0, start) + before + selected + after + text.substring(end);
+            } else {
+                field.value = text.substring(0, start) + before + after + text.substring(end);
+            }
+
+            field.focus();
+            updateAllPreviews();
+        }
+
+        // 应用颜色到指定字段
+        function applyColorToField(fieldId, color) {
+            const hex = color.substring(1);
+            insertToField(fieldId, `{#${hex}}`, '{/color}');
+        }
+
         async function init() {
             await loadTripData();
             renderSidebar();
         }
 
-        // ===== 加載數據 =====
         async function loadTripData() {
             try {
                 const response = await fetch(
@@ -406,7 +400,6 @@
             }
         }
 
-        // ===== 渲染側邊欄 =====
         function renderSidebar() {
             const sidebar = document.getElementById('sidebar');
             sidebar.innerHTML = '';
@@ -414,7 +407,7 @@
             const daysSection = document.createElement('div');
             daysSection.innerHTML = '<div class="sidebar-title">📅 日期</div>';
 
-            Object.keys(tripData).forEach((dayKey, idx) => {
+            Object.keys(tripData).forEach((dayKey) => {
                 const day = tripData[dayKey];
                 const btn = document.createElement('button');
                 btn.className = 'day-btn';
@@ -430,7 +423,6 @@
             sidebar.appendChild(spotsSection);
         }
 
-        // ===== 選擇日期 =====
         function selectDay(dayKey) {
             currentDay = dayKey;
             currentSpotIndex = null;
@@ -443,7 +435,6 @@
             clearEditor();
         }
 
-        // ===== 渲染景點列表 =====
         function renderSpots() {
             const section = document.getElementById('spotsSection');
             section.innerHTML = `<div class="sidebar-title">🏔️ 景點</div>`;
@@ -461,25 +452,20 @@
             });
         }
 
-        // ===== 選擇景點 =====
         function selectSpot(idx) {
             currentSpotIndex = idx;
-
             document.querySelectorAll('.spot-btn').forEach((btn, i) => {
                 btn.classList.toggle('active', i === idx);
             });
-
             renderEditor();
         }
 
-        // ===== 清空編輯器 =====
         function clearEditor() {
             const editor = document.getElementById('editor');
             editor.innerHTML = '<div class="empty-state">請選擇一個景點開始編輯</div>';
             document.getElementById('previewContent').innerHTML = '（選擇景點查看預覽）';
         }
 
-        // ===== 渲染編輯器 =====
         function renderEditor() {
             const day = tripData[currentDay];
             const spot = day.spots[currentSpotIndex];
@@ -490,43 +476,66 @@
                     <h2><span class="spot-icon">${spot.icon}</span>${spot.name}</h2>
                 </div>
 
-                <div class="editor-toolbar">
-                    <button class="toolbar-btn" onclick="smartInsert('{bold}', '{/bold}')"><strong>B</strong></button>
-                    <button class="toolbar-btn" onclick="smartInsert('{italic}', '{/italic}')"><em>I</em></button>
-                    <button class="toolbar-btn" onclick="smartInsert('/n')">↵ 換行</button>
-                    <button class="toolbar-btn" style="display:flex; align-items:center; gap:4px; padding: 6px 8px;">
-                        🎨 <input type="color" class="color-picker" id="colorPicker" value="#ff0000" onchange="smartColor(this.value)">
-                    </button>
-                </div>
-
                 <div class="editor-content">
                     <div class="field-group desc">
-                        <label>簡短介紹 (desc)</label>
+                        <div class="field-header">
+                            <label class="field-label">簡短介紹 (desc)</label>
+                            <div class="field-toolbar">
+                                <button class="mini-btn" onclick="insertToField('descInput', '{bold}', '{/bold}')"><strong>B</strong></button>
+                                <button class="mini-btn" onclick="insertToField('descInput', '{italic}', '{/italic}')"><em>I</em></button>
+                                <button class="mini-btn" onclick="insertToField('descInput', '/n')">↵</button>
+                                <input type="color" class="color-input" value="#ff0000" onchange="applyColorToField('descInput', this.value)">
+                            </div>
+                        </div>
                         <input type="text" id="descInput" value="${escapeAttr(spot.desc || '')}" oninput="updateAllPreviews()">
                     </div>
 
                     <div class="field-group deepdesc">
-                        <label>詳細描述 (deepDesc)</label>
+                        <div class="field-header">
+                            <label class="field-label">詳細描述 (deepDesc)</label>
+                            <div class="field-toolbar">
+                                <button class="mini-btn" onclick="insertToField('deepDescInput', '{bold}', '{/bold}')"><strong>B</strong></button>
+                                <button class="mini-btn" onclick="insertToField('deepDescInput', '{italic}', '{/italic}')"><em>I</em></button>
+                                <button class="mini-btn" onclick="insertToField('deepDescInput', '/n')">↵</button>
+                                <input type="color" class="color-input" value="#ff0000" onchange="applyColorToField('deepDescInput', this.value)">
+                            </div>
+                        </div>
                         <textarea id="deepDescInput" oninput="updateAllPreviews()">${escapeAttr(spot.deepDesc || '')}</textarea>
                     </div>
 
                     <div class="field-group tips">
-                        <label>小提醒 (tips)</label>
+                        <div class="field-header">
+                            <label class="field-label">小提醒 (tips)</label>
+                            <div class="field-toolbar">
+                                <button class="mini-btn" onclick="insertToField('tipsInput', '{bold}', '{/bold}')"><strong>B</strong></button>
+                                <button class="mini-btn" onclick="insertToField('tipsInput', '{italic}', '{/italic}')"><em>I</em></button>
+                                <button class="mini-btn" onclick="insertToField('tipsInput', '/n')">↵</button>
+                                <input type="color" class="color-input" value="#ff0000" onchange="applyColorToField('tipsInput', this.value)">
+                            </div>
+                        </div>
                         <textarea id="tipsInput" oninput="updateAllPreviews()">${escapeAttr(spot.tips || '')}</textarea>
                     </div>
 
                     <div class="field-group parking">
-                        <label>停車及廁所 (parking)</label>
+                        <div class="field-header">
+                            <label class="field-label">停車及廁所 (parking)</label>
+                            <div class="field-toolbar">
+                                <button class="mini-btn" onclick="insertToField('parkingInput', '{bold}', '{/bold}')"><strong>B</strong></button>
+                                <button class="mini-btn" onclick="insertToField('parkingInput', '{italic}', '{/italic}')"><em>I</em></button>
+                                <button class="mini-btn" onclick="insertToField('parkingInput', '/n')">↵</button>
+                                <input type="color" class="color-input" value="#ff0000" onchange="applyColorToField('parkingInput', this.value)">
+                            </div>
+                        </div>
                         <textarea id="parkingInput" oninput="updateAllPreviews()">${escapeAttr(spot.parking || '')}</textarea>
                     </div>
 
                     <div class="field-group">
-                        <label>衛生間 (toilet)</label>
+                        <label class="field-label">衛生間 (toilet)</label>
                         <input type="text" id="toiletInput" value="${escapeAttr(spot.toilet || '')}" oninput="updateAllPreviews()">
                     </div>
 
                     <div class="field-group">
-                        <label>地圖 (map)</label>
+                        <label class="field-label">地圖 (map)</label>
                         <input type="text" id="mapInput" value="${escapeAttr(spot.map || '')}" oninput="updateAllPreviews()">
                     </div>
                 </div>
@@ -540,54 +549,6 @@
             updateAllPreviews();
         }
 
-        // ===== 智能插入 - 根据焦点字段 =====
-        function smartInsert(before, after = '') {
-            // 检测当前焦点的字段
-            const activeElement = document.activeElement;
-            let target = null;
-
-            if (activeElement && activeElement.id) {
-                if (activeElement.id === 'descInput') {
-                    target = activeElement;
-                } else if (activeElement.id === 'deepDescInput') {
-                    target = activeElement;
-                } else if (activeElement.id === 'tipsInput') {
-                    target = activeElement;
-                } else if (activeElement.id === 'parkingInput') {
-                    target = activeElement;
-                }
-            }
-
-            // 如果没有焦点字段，默认使用 deepDesc
-            if (!target) {
-                target = document.getElementById('deepDescInput');
-            }
-
-            if (!target) return;
-
-            const start = target.selectionStart;
-            const end = target.selectionEnd;
-            const text = target.value;
-            const selected = text.substring(start, end);
-            
-            if (selected) {
-                target.value = text.substring(0, start) + before + selected + after + text.substring(end);
-            } else {
-                target.value = text.substring(0, start) + before + after + text.substring(end);
-            }
-            
-            target.focus();
-            updateAllPreviews();
-        }
-
-        // ===== 應用顏色 - 智能版 =====
-        function smartColor(color) {
-            console.log('應用顏色:', color);
-            const hex = color.substring(1);
-            smartInsert(`{#${hex}}`, '{/color}');
-        }
-
-        // ===== 更新所有預覽 =====
         function updateAllPreviews() {
             const descInput = document.getElementById('descInput');
             const deepDescInput = document.getElementById('deepDescInput');
@@ -633,14 +594,12 @@
             document.getElementById('previewContent').innerHTML = html;
         }
 
-        // ===== 放棄變更 =====
         function discardChanges() {
             if (confirm('放棄未保存的變更？')) {
                 renderEditor();
             }
         }
 
-        // ===== 保存到 GitHub =====
         async function saveToGitHub() {
             if (!currentDay || currentSpotIndex === null) return;
 
@@ -708,7 +667,6 @@
             }
         }
 
-        // ===== 取得 PAT =====
         function getPAT() {
             let pat = localStorage.getItem('github_pat');
             if (!pat) {
@@ -722,7 +680,6 @@
             return pat;
         }
 
-        // ===== 通知 =====
         function showNotif(msg, type = 'success') {
             const notif = document.createElement('div');
             notif.className = `notification ${type}`;
@@ -731,7 +688,6 @@
             setTimeout(() => notif.remove(), 4000);
         }
 
-        // ===== 啟動 =====
         window.addEventListener('load', init);
     </script>
 </body>
