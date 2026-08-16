@@ -420,7 +420,42 @@ const TRAVEL_HTML = `
 <div class="page" id="page-travel">
   <div class="page-inner">
 
-    <!-- 1. 超市食物 -->
+    <!-- 1. 冰島介紹 -->
+    <div class="travel-collapse" data-cover="iceland_introduction.webp">
+      <div class="travel-collapse-header" onclick="toggleTravelCollapse(this)">
+        <div class="travel-collapse-left">
+          <div class="travel-collapse-emoji">🇮🇸</div>
+          <div>
+            <div class="travel-collapse-title">冰島介紹</div>
+            <div class="travel-collapse-sub">冰島風景、自然、人文及體驗的14張精選照片集。</div>
+          </div>
+        </div>
+        <div class="travel-collapse-arrow">›</div>
+      </div>
+      <div class="travel-collapse-body">
+        <div class="item-card item-sm">
+          <h4 class="item-card-title"></h4>
+          <div class="item-detail">
+            <img src="images/catalog/item-01.webp" alt="">
+            <img src="images/catalog/item-02.webp" alt="">
+            <img src="images/catalog/item-03.webp" alt="">
+            <img src="images/catalog/item-04.webp" alt="">
+            <img src="images/catalog/item-05.webp" alt="">
+            <img src="images/catalog/item-06.webp" alt="">
+            <img src="images/catalog/item-07.webp" alt="">
+            <img src="images/catalog/item-08.webp" alt="">
+            <img src="images/catalog/item-09.webp" alt="">
+            <img src="images/catalog/item-10.webp" alt="">
+            <img src="images/catalog/item-11.webp" alt="">
+            <img src="images/catalog/item-12.webp" alt="">
+            <img src="images/catalog/item-13.webp" alt="">
+            <img src="images/catalog/item-14.webp" alt="">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. 超市食物 -->
     <div class="travel-collapse" data-cover="supermarket_food.webp">
       <div class="travel-collapse-header" onclick="toggleTravelCollapse(this)">
         <div class="travel-collapse-left">
@@ -444,7 +479,6 @@ const TRAVEL_HTML = `
 (3)	這款優格最經典的吃法是用無糖原味Skyr 作為基底，加上糖及新鮮水果一同享用。Skyr 優格也有推出焦糖布丁、巧克力及香草⋯⋯等等口味，值得一試！
 
 (4)愛吃優格的人千萬不要錯過冰島 Ísey 的 Skyr，質地比一般優格更綿密濃稠，接近希臘優格的稠度，而且 Ísey 的 Skyr 有超多種口味，低糖、低脂、蛋白質含量又高。</p>
-              <img src="images/catalog/item-01.webp" alt="">
             </div>
           </div>
           <div class="item-card item-sm">
@@ -453,7 +487,6 @@ const TRAVEL_HTML = `
               <p>(1)擠壓條裝的管狀魚子醬（常見 Mills 品牌），搭配吐司或餅乾非常方便便宜，一條約20元人民幣，因為攜帶方便又便宜，可以買著搭配吐司、餅乾一起吃，是來冰島旅遊節省餐費的好幫手，我們是覺得原味（黑色字）的比較好吃。
 
 (2)冰島人喜歡用鱈魚子醬抹麵包。這種魚子醬叫Kaviar，包裝有點像牙膏。我自己覺得挺好吃，不過調味有點鹹，不能塗太多。再夾點蔬菜弄成三文治也行，我們在冰島的午餐都是這樣解決的。</p>
-              <img src="images/catalog/item-02.webp" alt="">
             </div>
           </div>
         </div>
@@ -463,7 +496,6 @@ const TRAVEL_HTML = `
             <h4 class="item-card-title">Ora魚子醬</h4>
             <div class="item-detail">
               <p>這種玻璃罐裝的Ora魚子醬也很推薦，這是冰島有名的罐頭品牌，用來搭麵包、義大利麵也很絕配，滿滿100克Ora魚子醬才賣30元人民幣，完全是來冰島才能享受到的高貴不貴的平價美食。</p>
-              <img src="images/catalog/item-03.webp" alt="">
             </div>
           </div>
           <div class="item-card item-sm">
@@ -472,7 +504,6 @@ const TRAVEL_HTML = `
               <p>冰島以純淨的自然環境著名，冰川水被認為是全世界最乾淨的水，不只是口感上優質之外的礦物質也很豐富，瓶身通常會有極光、冰山等等較特別的設計，很適合帶回家收藏。
 
 被譽為「全世界最好喝的水」Icelandic Glacial，不僅是世上第一瓶碳中和瓶裝水，瓶身還美到像藝術品！</p>
-              <img src="images/catalog/item-04.png" alt="">
             </div>
           </div>
         </div>
@@ -484,10 +515,6 @@ const TRAVEL_HTML = `
               <p>(1)作為維京人後代的冰島居民承襲了祖先愛喝酒的基因，所生產的Einstok 啤酒品質極高，榮登世界前50強啤酒。這個冰島精釀啤酒使用最靠近北極圈的純凈冰山水，釀造出口感滑順、清爽的高品質啤酒，非常適合夏天時飲用。整體來說，Einstok家的啤酒非常適合女性享用，淡雅又清爽，是追劇、烤肉或吃宵夜必備！
 
 (2)Einstok推出的口味中最經典的是白啤酒，同時具有花香、麥香及柑橘香，另外也有帶有熱帶水果香氣或是莓果滋味的品項。</p>
-              <div class="item-row">
-                <img src="images/catalog/item-05.png" alt="">
-                <img src="images/catalog/item-06.png" alt="">
-              </div>
             </div>
           </div>
           <div class="item-card item-sm">
@@ -496,14 +523,13 @@ const TRAVEL_HTML = `
               <p>(1)冰島的可口可樂被許多人譽為世界上最好喝的，主要原因在於它使用純淨無污染的冰島水源，天然軟水讓口感更順滑細緻
 
 (2)很多人會問我：冰島可口可樂真的比較好喝嗎？老實說我沒有明顯喝出差別 🤣。自 2017 年起，玻璃瓶裝和鋁罐裝改由瑞典生產，只有寶特瓶裝仍在冰島本地製造、使用當地水源，想體驗道地風味就選寶特瓶，並認明商品編號 569 開頭才是冰島製的。就讓大家自己來驗證這個都市傳說是不是真的囉。</p>
-              <img src="images/catalog/item-07.webp" alt="">
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- 2. 超市购物 -->
+    <!-- 3. 超市购物 -->
     <div class="travel-collapse" data-cover="supermarket_shopping.webp">
       <div class="travel-collapse-header" onclick="toggleTravelCollapse(this)">
         <div class="travel-collapse-left">
@@ -574,7 +600,7 @@ const TRAVEL_HTML = `
       </div>
     </div>
 
-    <!-- 3. 商店购物 -->
+    <!-- 4. 商店购物 -->
     <div class="travel-collapse" data-cover="store_shopping.webp">
       <div class="travel-collapse-header" onclick="toggleTravelCollapse(this)">
         <div class="travel-collapse-left">
@@ -591,7 +617,7 @@ const TRAVEL_HTML = `
       </div>
     </div>
 
-    <!-- 4. 冰岛超市 -->
+    <!-- 5. 冰岛超市 -->
     <div class="travel-collapse" data-cover="iceland_supermarket.webp">
       <div class="travel-collapse-header" onclick="toggleTravelCollapse(this)">
         <div class="travel-collapse-left">
@@ -608,7 +634,7 @@ const TRAVEL_HTML = `
       </div>
     </div>
 
-    <!-- 5. 芬兰购物 -->
+    <!-- 6. 芬兰购物 -->
     <div class="travel-collapse" data-cover="finland_shopping.webp">
       <div class="travel-collapse-header" onclick="toggleTravelCollapse(this)">
         <div class="travel-collapse-left">
@@ -625,7 +651,7 @@ const TRAVEL_HTML = `
       </div>
     </div>
 
-    <!-- 6. 雷市美食 -->
+    <!-- 7. 雷市美食 -->
     <div class="travel-collapse" data-cover="reykjavik_food.webp">
       <div class="travel-collapse-header" onclick="toggleTravelCollapse(this)">
         <div class="travel-collapse-left">
@@ -692,7 +718,7 @@ const TRAVEL_HTML = `
       </div>
     </div>
 
-    <!-- 7. 冰岛美食 -->
+    <!-- 8. 冰岛美食 -->
     <div class="travel-collapse" data-cover="iceland_food.webp">
       <div class="travel-collapse-header" onclick="toggleTravelCollapse(this)">
         <div class="travel-collapse-left">
@@ -709,7 +735,7 @@ const TRAVEL_HTML = `
       </div>
     </div>
 
-    <!-- 8. 芬兰美食 -->
+    <!-- 9. 芬兰美食 -->
     <div class="travel-collapse" data-cover="finland_food.webp">
       <div class="travel-collapse-header" onclick="toggleTravelCollapse(this)">
         <div class="travel-collapse-left">
@@ -726,7 +752,7 @@ const TRAVEL_HTML = `
       </div>
     </div>
 
-    <!-- 9. 世界遗产 -->
+    <!-- 10. 世界遗产 -->
     <div class="travel-collapse" data-cover="world_heritage.webp">
       <div class="travel-collapse-header" onclick="toggleTravelCollapse(this)">
         <div class="travel-collapse-left">
@@ -743,7 +769,7 @@ const TRAVEL_HTML = `
       </div>
     </div>
 
-    <!-- 10. 花儿少年 -->
+    <!-- 11. 花儿少年 -->
     <div class="travel-collapse" data-cover="flowers_youth.webp">
       <div class="travel-collapse-header" onclick="toggleTravelCollapse(this)">
         <div class="travel-collapse-left">

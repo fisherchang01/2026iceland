@@ -10,8 +10,8 @@
 const CATALOG_PAGE_META = window.CATALOG_PAGE_META = {
   travel: {
     overview: '体验总览', pageId: 'page-travel',
-    labels: ['超市食物', '超市购物', '商店购物', '冰岛超市', '芬兰购物', '雷市美食', '冰岛美食', '芬兰美食', '世界遗产', '花儿少年'],
-    sizes:  ['2x4',     '2x4',     '2x2',     '2x2',     '2x2',     '2x2',     '2x2',     '2x2',     '2x2',     '2x4']
+    labels: ['冰島介紹', '超市食物', '超市购物', '商店购物', '冰岛超市', '芬兰购物', '雷市美食', '冰岛美食', '芬兰美食', '世界遗产', '花儿少年'],
+    sizes:  ['2x4',     '2x4',     '2x4',     '2x2',     '2x2',     '2x2',     '2x2',     '2x2',     '2x2',     '2x2',     '2x4']
   },
   other: {
     overview: '工具总览', pageId: 'page-other',
