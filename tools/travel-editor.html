@@ -345,20 +345,23 @@
   <!-- 左：分類列表 -->
   <div class="panel-left">
     <div class="panel-header">分類</div>
-    <div class="panel-content" id="categoryList" style="text-align: center; color: var(--sub);">
+    <div class="panel-content" id="categoryList" style="text-align: center; color: var(--sub); margin-bottom: 12px;">
       點擊「讀取 GitHub」加載內容...
+    </div>
+
+    <!-- 項目清單（收縮展開） -->
+    <div style="border-top: 1px solid var(--border); padding-top: 12px; margin-top: 12px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; cursor: pointer;" onclick="document.getElementById('itemListPanel').style.display = document.getElementById('itemListPanel').style.display === 'none' ? 'block' : 'none';">
+        <span style="font-weight: 600; color: var(--primary);">📋 項目</span>
+        <span id="itemListToggle" style="color: var(--sub);">▼</span>
+      </div>
+      <div id="itemListPanel" class="item-list" style="max-height: 150px; overflow-y: auto;"></div>
     </div>
   </div>
 
   <!-- 中：編輯區 -->
   <div class="panel-center">
     <div class="panel-content" id="editContainer">
-      <!-- 項目選擇 -->
-      <div class="edit-section">
-        <div class="panel-header" style="margin: -12px -12px 8px -12px;">項目清單</div>
-        <div id="itemList" class="item-list" style="max-height: 100px; overflow-y: auto;"></div>
-      </div>
-
       <!-- 編輯工具（總是顯示） -->
       <div class="edit-section">
         <div class="tools-label">格式工具</div>
@@ -582,14 +585,14 @@ function selectCategory(idx) {
 }
 
 function renderItems() {
-  const list = document.getElementById('itemList');
+  const list = document.getElementById('itemListPanel');  // 改为左栏的 itemListPanel
   if (STATE.currentCategoryIdx === null) return;
 
   const cat = STATE.categories[STATE.currentCategoryIdx];
   list.innerHTML = '';
 
   if (cat.items.length === 0) {
-    list.innerHTML = '<div style="padding: 10px; text-align: center; color: var(--sub);">此分類無項目</div>';
+    list.innerHTML = '<div style="padding: 10px; text-align: center; color: var(--sub); font-size: 0.8rem;">此分類無項目</div>';
     return;
   }
 
