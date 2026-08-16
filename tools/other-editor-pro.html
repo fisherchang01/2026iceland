@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>工具內容編輯器 Pro</title>
+    <title>🛠️ 工具編輯器 Pro</title>
     <style>
         * {
             margin: 0;
@@ -20,7 +20,7 @@
 
         .layout {
             display: grid;
-            grid-template-columns: 250px 1fr 320px;
+            grid-template-columns: 220px 1fr 340px;
             height: 100vh;
             gap: 1px;
             background: #ddd;
@@ -30,10 +30,11 @@
             background: white;
             overflow-y: auto;
             padding: 12px;
+            border-right: 1px solid #e5e5e5;
         }
 
         .sidebar-title {
-            font-size: 11px;
+            font-size: 10px;
             font-weight: 700;
             color: #999;
             text-transform: uppercase;
@@ -45,7 +46,7 @@
             display: block;
             width: 100%;
             padding: 8px 10px;
-            margin-bottom: 4px;
+            margin-bottom: 3px;
             border: 1px solid #e5e5e5;
             background: white;
             border-radius: 4px;
@@ -94,16 +95,16 @@
         .editor-top-bar {
             position: fixed;
             top: 0;
-            left: 251px;
-            right: 321px;
+            left: 221px;
+            right: 341px;
             height: 50px;
             background: white;
             border-bottom: 2px solid #315f67;
             display: flex;
-            gap: 10px;
-            justify-content: flex-end;
+            gap: 8px;
+            justify-content: space-between;
             align-items: center;
-            padding: 8px 16px;
+            padding: 8px 12px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             z-index: 100;
         }
@@ -124,6 +125,12 @@
             text-align: center;
         }
 
+        .button-group {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
         .editor-header {
             padding: 12px 16px;
             border-bottom: 1px solid #e5e5e5;
@@ -132,7 +139,7 @@
         }
 
         .editor-header h2 {
-            font-size: 18px;
+            font-size: 16px;
             color: #333;
         }
 
@@ -142,7 +149,7 @@
             padding: 16px;
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 14px;
         }
 
         .field-group {
@@ -152,25 +159,100 @@
         }
 
         .field-label {
-            font-size: 11px;
+            font-size: 10px;
             font-weight: 700;
             color: #666;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
+        .field-toolbar {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+            padding: 6px;
+            background: #f9f9f9;
+            border-radius: 4px;
+            border: 1px solid #e5e5e5;
+        }
+
+        .toolbar-label {
+            font-size: 9px;
+            color: #999;
+            width: 100%;
+            margin-bottom: 2px;
+            font-weight: 600;
+        }
+
         textarea, input[type="text"] {
             padding: 8px 10px;
             border: 1px solid #d0d0d0;
             border-radius: 4px;
-            font-family: inherit;
-            font-size: 13px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
             resize: vertical;
+            line-height: 1.5;
         }
 
         textarea {
-            min-height: 80px;
-            line-height: 1.5;
+            min-height: 100px;
+        }
+
+        .mini-btn {
+            padding: 4px 8px;
+            border: 1px solid #d0d0d0;
+            background: white;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 10px;
+            font-weight: 600;
+            transition: all 0.2s;
+            color: #333;
+        }
+
+        .mini-btn:hover {
+            background: #f5f5f5;
+            border-color: #999;
+        }
+
+        .color-btn {
+            width: 18px;
+            height: 18px;
+            border: 1px solid #d0d0d0;
+            border-radius: 3px;
+            cursor: pointer;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 9px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .color-btn.red {
+            background: #ff0000;
+            border-color: #cc0000;
+        }
+
+        .color-btn.blue {
+            background: #0066cc;
+            border-color: #0052a3;
+        }
+
+        .color-btn.green {
+            background: #00aa00;
+            border-color: #008800;
+        }
+
+        .color-btn.orange {
+            background: #ff8800;
+            border-color: #cc6600;
+        }
+
+        .color-btn:hover {
+            transform: scale(1.15);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
         .notification {
@@ -204,51 +286,74 @@
             padding: 12px;
             border-radius: 6px;
             border: 1px solid #e5e5e5;
-            min-height: 100px;
-            font-size: 12px;
+            min-height: 120px;
+            font-size: 13px;
             line-height: 1.6;
             overflow-y: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
         }
 
-        button {
-            padding: 8px 14px;
+        .preview-panel strong {
+            font-weight: 700;
+            color: #315f67;
+        }
+
+        .preview-panel em {
+            font-style: italic;
+            color: #666;
+        }
+
+        button.btn-save {
+            background: #4caf50;
+            color: white;
             border: none;
+            padding: 8px 12px;
             border-radius: 4px;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
         }
 
-        .btn-save {
-            background: #4caf50;
-            color: white;
-        }
-
-        .btn-save:hover {
+        button.btn-save:hover {
             background: #45a049;
         }
 
-        .btn-upload {
+        button.btn-upload {
             background: #2196F3;
             color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
         }
 
-        .btn-upload:hover {
+        button.btn-upload:hover {
             background: #0b7dda;
         }
 
-        .btn-upload:disabled {
+        button.btn-upload:disabled {
             opacity: 0.5;
             cursor: not-allowed;
         }
 
-        .btn-discard {
+        button.btn-discard {
             background: #f44336;
             color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
         }
 
-        .btn-discard:hover {
+        button.btn-discard:hover {
             background: #da190b;
         }
     </style>
@@ -256,9 +361,9 @@
 <body>
 
 <div class="layout">
-    <!-- 左侧边栏：分类和项目 -->
-    <div class="sidebar" id="sidebar">
-        <div class="sidebar-title">分類</div>
+    <!-- 左侧边栏：工具分类 -->
+    <div class="sidebar">
+        <div class="sidebar-title">🛠️ 工具分類</div>
         <div id="categoriesList"></div>
     </div>
 
@@ -266,26 +371,28 @@
     <div class="editor">
         <div class="editor-top-bar" id="topBar" style="display: none;">
             <div class="draft-badge" id="draftBadge"></div>
-            <button class="btn-discard" onclick="discardChanges()">❌ 放棄變更</button>
-            <button class="btn-save" onclick="saveLocally()">💾 本地保存</button>
-            <button class="btn-upload" id="uploadBtn" onclick="uploadToGitHub()">⬆️ 上傳到GitHub</button>
+            <div class="button-group">
+                <button class="btn-discard" onclick="discardChanges()">❌ 放棄</button>
+                <button class="btn-save" onclick="saveLocally()">💾 保存</button>
+                <button class="btn-upload" id="uploadBtn" onclick="uploadToGitHub()">⬆️ 上傳</button>
+            </div>
         </div>
 
         <div class="editor-header" id="editorHeader">
-            <h2>選擇分類開始編輯</h2>
+            <h2>選擇工具分類開始編輯</h2>
         </div>
 
         <div class="editor-content" id="editorContent">
             <div style="text-align: center; color: #999; padding: 40px;">
-                <p>👈 從左側選擇工具分類和項目</p>
+                <p>👈 從左側選擇工具分類</p>
             </div>
         </div>
     </div>
 
     <!-- 右侧预览区 -->
-    <div style="background: white; display: flex; flex-direction: column; overflow: hidden;">
-        <div style="padding: 12px; border-bottom: 1px solid #e5e5e5; font-weight: 600; font-size: 12px;">
-            預覽
+    <div style="background: white; display: flex; flex-direction: column; overflow: hidden; border-left: 1px solid #e5e5e5;">
+        <div style="padding: 12px; border-bottom: 1px solid #e5e5e5; font-weight: 600; font-size: 11px; color: #666;">
+            📋 預覽
         </div>
         <div class="preview-panel" id="previewContent"></div>
     </div>
@@ -296,6 +403,16 @@
     const GITHUB_OWNER = 'fisherchang01';
     const GITHUB_REPO = '2026iceland';
     const GITHUB_FILE = 'data/other-tools.js';
+
+    // ========== 工具分类配置（基于既有项目） ==========
+    const TOOLS_STRUCTURE = {
+        'iceland_tax_refund': { emoji: '🧾', title: '冰島退稅' },
+        'finland_tax_refund': { emoji: '💶', title: '芬蘭退稅' },
+        'aurora_forecast': { emoji: '🌌', title: '極光機率' },
+        'aurora_photography': { emoji: '📷', title: '拍攝極光' },
+        'iceland_fuel': { emoji: '⛽', title: '冰島加油' },
+        'finnish_sauna': { emoji: '🧖', title: '洗浴文化' }
+    };
 
     // ========== 全局变量 ==========
     let toolsData = {};
@@ -316,7 +433,6 @@
     }
 
     async function loadToolsData() {
-        // 从GitHub加载最新的工具数据
         const resp = await fetch(`https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/main/${GITHUB_FILE}`);
         if (!resp.ok) throw new Error('無法讀取 ' + GITHUB_FILE);
         
@@ -328,12 +444,12 @@
     }
 
     function loadDraftsFromStorage() {
-        const stored = localStorage.getItem('other_drafts');
+        const stored = localStorage.getItem('other_tools_drafts');
         drafts = stored ? JSON.parse(stored) : {};
     }
 
     function saveDrafts() {
-        localStorage.setItem('other_drafts', JSON.stringify(drafts));
+        localStorage.setItem('other_tools_drafts', JSON.stringify(drafts));
         updateBadge();
     }
 
@@ -343,7 +459,7 @@
         const topBar = document.getElementById('topBar');
         
         if (count > 0) {
-            badge.textContent = count;
+            badge.textContent = `${count} 個草稿`;
             topBar.style.display = 'flex';
             topBar.classList.add('has-unsaved');
         } else {
@@ -357,10 +473,10 @@
         const container = document.getElementById('categoriesList');
         container.innerHTML = '';
 
-        Object.entries(toolsData).forEach(([catKey, category]) => {
+        Object.entries(TOOLS_STRUCTURE).forEach(([catKey, { emoji, title }]) => {
             const btn = document.createElement('button');
             btn.className = 'category-btn';
-            btn.textContent = category.title;
+            btn.textContent = `${emoji} ${title}`;
             btn.onclick = () => selectCategory(catKey);
             container.appendChild(btn);
         });
@@ -370,82 +486,74 @@
 
     function selectCategory(catKey) {
         currentCategory = catKey;
-        currentItemIndex = null;
+        currentItemIndex = 0; // 工具类只有一个主项
 
         document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
         event.target.classList.add('active');
 
-        const category = toolsData[catKey];
-        const itemsContainer = document.querySelector('.items-container');
-        
-        if (!itemsContainer) {
-            const container = document.createElement('div');
-            container.className = 'items-container';
-            event.target.parentNode.appendChild(container);
-        } else {
-            itemsContainer.innerHTML = '';
-        }
+        const { emoji, title } = TOOLS_STRUCTURE[catKey];
+        document.getElementById('editorHeader').innerHTML = `<h2>${emoji} ${title}</h2>`;
 
-        if (category.items && category.items.length > 0) {
-            category.items.forEach((item, idx) => {
-                const btn = document.createElement('button');
-                btn.className = 'item-btn';
-                const draftKey = `${catKey}_${idx}`;
-                if (drafts[draftKey]) {
-                    btn.classList.add('modified');
-                }
-                btn.textContent = item.title || `項目 ${idx + 1}`;
-                btn.onclick = () => selectItem(catKey, idx);
-                
-                const container = document.querySelector('.items-container') || event.target.parentNode;
-                container.appendChild(btn);
-            });
-        }
-
-        document.getElementById('editorContent').innerHTML = '<p style="padding:20px; color:#999;">選擇項目開始編輯</p>';
+        renderEditor(catKey);
     }
 
-    function selectItem(catKey, itemIdx) {
-        currentCategory = catKey;
-        currentItemIndex = itemIdx;
-
-        document.querySelectorAll('.item-btn').forEach(b => b.classList.remove('active'));
-        event.target.classList.add('active');
-
-        renderEditor(catKey, itemIdx);
-    }
-
-    function renderEditor(catKey, itemIdx) {
+    function renderEditor(catKey) {
         const category = toolsData[catKey];
-        const item = category.items[itemIdx];
-        const draftKey = `${catKey}_${itemIdx}`;
+        if (!category) return;
+
+        const draftKey = catKey;
         const draft = drafts[draftKey] || {};
 
-        document.getElementById('editorHeader').innerHTML = `<h2>${category.title} - ${item.title || '項目'}</h2>`;
-
-        const titleInput = draft.title !== undefined ? draft.title : (item.title || '');
-        const contentInput = draft.content !== undefined ? draft.content : (item.content || '');
-        const noteInput = draft.note !== undefined ? draft.note : (item.note || '');
+        const titleInput = draft.title !== undefined ? draft.title : (category.title || '');
+        const contentInput = draft.content !== undefined ? draft.content : (category.content || '');
+        const noteInput = draft.note !== undefined ? draft.note : (category.note || '');
 
         document.getElementById('editorContent').innerHTML = `
             <div class="field-group">
-                <label class="field-label">標題 (title)</label>
+                <label class="field-label">標題</label>
                 <input type="text" id="titleInput" value="${escapeAttr(titleInput)}" oninput="updateAllPreviews()">
             </div>
 
             <div class="field-group">
-                <label class="field-label">內容 (content)</label>
+                <label class="field-label">內容（支持格式化）</label>
+                <div class="field-toolbar">
+                    <span class="toolbar-label">格式工具：</span>
+                    <button class="mini-btn" onclick="insertToField('contentInput', '{bold}', '{/bold}')" title="加粗"><strong>B</strong></button>
+                    <button class="mini-btn" onclick="insertToField('contentInput', '{italic}', '{/italic}')" title="斜體"><em>I</em></button>
+                    <button class="mini-btn" onclick="insertToField('contentInput', '/n')" title="分段">¶</button>
+                    <button class="color-btn red" onclick="insertToField('contentInput', '{#ff0000}', '{/color}')" title="紅色">R</button>
+                    <button class="color-btn blue" onclick="insertToField('contentInput', '{#0066cc}', '{/color}')" title="藍色">B</button>
+                    <button class="color-btn green" onclick="insertToField('contentInput', '{#00aa00}', '{/color}')" title="綠色">G</button>
+                    <button class="color-btn orange" onclick="insertToField('contentInput', '{#ff8800}', '{/color}')" title="橙色">O</button>
+                </div>
                 <textarea id="contentInput" oninput="updateAllPreviews()">${escapeAttr(contentInput)}</textarea>
             </div>
 
             <div class="field-group">
-                <label class="field-label">備註 (note)</label>
+                <label class="field-label">備註（可選）</label>
                 <textarea id="noteInput" oninput="updateAllPreviews()">${escapeAttr(noteInput)}</textarea>
             </div>
         `;
 
         updateAllPreviews();
         document.getElementById('topBar').style.display = 'flex';
+    }
+
+    function insertToField(fieldId, before, after = '') {
+        const field = document.getElementById(fieldId);
+        const start = field.selectionStart;
+        const end = field.selectionEnd;
+        const text = field.value;
+        const selectedText = text.substring(start, end);
+        
+        const newText = text.substring(0, start) + before + selectedText + after + text.substring(end);
+        field.value = newText;
+        
+        field.focus();
+        field.selectionStart = start + before.length;
+        field.selectionEnd = start + before.length + selectedText.length;
+        
+        updateAllPreviews();
     }
 
     function updateAllPreviews() {
@@ -455,17 +563,29 @@
 
         if (!contentInput) return;
 
-        let html = `<strong>標題：</strong> ${titleInput ? titleInput.value : ''}<br><br>`;
+        let html = `<strong>標題：</strong> ${titleInput ? titleInput.value : ''}\n\n`;
         
         if (contentInput.value) {
-            html += `<strong>內容：</strong><br>${contentInput.value.replace(/\n/g, '<br>')}<br><br>`;
+            html += `<strong>內容：</strong>\n${parseMarkup(contentInput.value)}\n`;
         }
 
         if (noteInput && noteInput.value) {
-            html += `<strong>備註：</strong><br>${noteInput.value.replace(/\n/g, '<br>')}`;
+            html += `\n<strong>備註：</strong>\n${parseMarkup(noteInput.value)}`;
         }
 
         document.getElementById('previewContent').innerHTML = html;
+    }
+
+    function parseMarkup(text) {
+        if (!text) return '';
+        return text
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/\/n/g, '\n')
+            .replace(/\{#([0-9a-fA-F]{6})\}([^{]*?)\{\/color\}/g, '<span style="color: #$1;">$2</span>')
+            .replace(/\{bold\}([^{]*?)\{\/bold\}/g, '<strong>$1</strong>')
+            .replace(/\{italic\}([^{]*?)\{\/italic\}/g, '<em>$1</em>');
     }
 
     function escapeAttr(str) {
@@ -478,13 +598,13 @@
     }
 
     function saveLocally() {
-        if (currentCategory === null || currentItemIndex === null) return;
+        if (currentCategory === null) return;
 
         const titleInput = document.getElementById('titleInput');
         const contentInput = document.getElementById('contentInput');
         const noteInput = document.getElementById('noteInput');
 
-        const draftKey = `${currentCategory}_${currentItemIndex}`;
+        const draftKey = currentCategory;
         drafts[draftKey] = {
             title: titleInput.value.trim(),
             content: contentInput.value.trim(),
@@ -494,16 +614,18 @@
         saveDrafts();
         showNotif('✅ 已本地保存！', 'success');
         
-        // 更新侧边栏修改标记
-        document.querySelectorAll('.item-btn.active').forEach(btn => {
-            btn.classList.add('modified');
+        // 更新侧边栏标记
+        document.querySelectorAll('.category-btn.active').forEach(btn => {
+            if (!btn.textContent.includes('●')) {
+                btn.classList.add('modified');
+            }
         });
     }
 
     function discardChanges() {
         if (confirm('放棄未保存的變更？')) {
             drafts = {};
-            localStorage.removeItem('other_drafts');
+            localStorage.removeItem('other_tools_drafts');
             loadDraftsFromStorage();
             renderCategories();
             showNotif('✅ 已清空草稿', 'success');
@@ -525,11 +647,9 @@
             const pat = getPAT();
 
             // 應用所有草稿
-            Object.entries(drafts).forEach(([draftKey, data]) => {
-                const [catKey, itemIdx] = draftKey.split('_');
-                const idx = parseInt(itemIdx);
-                if (toolsData[catKey] && toolsData[catKey].items[idx]) {
-                    Object.assign(toolsData[catKey].items[idx], data);
+            Object.entries(drafts).forEach(([catKey, data]) => {
+                if (toolsData[catKey]) {
+                    Object.assign(toolsData[catKey], data);
                 }
             });
 
@@ -559,7 +679,7 @@
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        message: `📝 批量編輯 ${draftCount} 個工具項目`,
+                        message: `📝 編輯工具內容 ${draftCount} 個`,
                         content: utf8ToBase64(newContent),
                         sha: fileData.sha
                     })
@@ -570,7 +690,7 @@
 
             drafts = {};
             saveDrafts();
-            showNotif(`✅ 已上傳 ${draftCount} 個項目到 GitHub！`, 'success');
+            showNotif(`✅ 已上傳 ${draftCount} 個工具到 GitHub！`, 'success');
             
         } catch(e) {
             showNotif('❌ 錯誤: ' + e.message, 'error');
