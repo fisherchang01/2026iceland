@@ -226,8 +226,13 @@
       resize: vertical;
     }
     .form-group textarea {
-      min-height: 120px;
-      line-height: 1.5;
+      min-height: 150px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      font-family: 'Courier New', monospace;
+      font-size: 0.8rem;
+      padding: 10px;
     }
 
     .tools-row {
@@ -251,9 +256,32 @@
       border-radius: 5px;
       min-height: 80px;
       font-size: 0.85rem;
-      line-height: 1.6;
+      line-height: 1.7;
       word-break: break-word;
       overflow-y: auto;
+      max-height: 100%;
+    }
+
+    .preview-panel p {
+      margin-bottom: 10px;
+      line-height: 1.6;
+    }
+
+    .preview-panel img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 4px;
+      margin: 8px 0;
+    }
+
+    .preview-panel strong {
+      font-weight: 700;
+      color: #e74c3c;
+    }
+
+    .preview-panel em {
+      font-style: italic;
+      color: #3498db;
     }
 
     .status-bar {
@@ -351,7 +379,7 @@
       <!-- 詳細描述 -->
       <div class="form-group">
         <label>詳細描述（支持標記）</label>
-        <textarea id="editDetail" placeholder="詳細描述，支持 {bold}粗體{/bold}、/n 換行、顏色等"></textarea>
+        <textarea id="editDetail" placeholder="詳細描述，支持 {bold}粗體{/bold}、/n 換行、顏色等" oninput="updatePreview()"></textarea>
       </div>
 
       <!-- 保存按鈕 -->
@@ -546,9 +574,12 @@ function selectItem(idx) {
   const cat = STATE.categories[STATE.currentCategoryIdx];
   const item = cat.items[idx];
 
+  // 编辑区显示原始HTML（包括标签）
   document.getElementById('editTitle').value = item.title;
+  // 保持原始HTML，这样用户看到的是完整的HTML源码
   document.getElementById('editDetail').value = item.detail;
 
+  // 预览区显示渲染后的HTML（保留所有格式）
   document.getElementById('previewPanel').innerHTML = item.detail || '（無內容）';
 
   document.querySelectorAll('.item-button').forEach((btn, i) => {
@@ -580,14 +611,22 @@ function saveItem() {
   item.title = document.getElementById('editTitle').value;
   item.detail = document.getElementById('editDetail').value;
 
+  // 立即更新预览
+  document.getElementById('previewPanel').innerHTML = item.detail || '（無內容）';
+
   showToast('✓ 已保存');
-  selectItem(STATE.currentItemIdx);
 }
 
 function resetEdit() {
   if (STATE.currentItemIdx !== null) {
     selectItem(STATE.currentItemIdx);
   }
+}
+
+// 实时预览
+function updatePreview() {
+  const content = document.getElementById('editDetail').value;
+  document.getElementById('previewPanel').innerHTML = content || '（無內容）';
 }
 
 // ==================== 初始化 ====================
