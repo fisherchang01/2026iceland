@@ -445,13 +445,18 @@
         }
 
         .form-group textarea,
-        .form-group input {
+        .form-group input,
+        .form-group select {
             width: 100%;
             padding: 8px 10px;
             border: 1px solid #bdc3c7;
             border-radius: 4px;
             font-size: 13px;
             font-family: 'Monaco', 'Courier New', monospace;
+        }
+
+        .form-group select {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto;
         }
 
         .form-group textarea {
@@ -543,21 +548,21 @@
 
         <!-- 組件庫 -->
         <div class="components-panel">
-            <div class="components-title">📦 添加區塊</div>
-            <button class="component-btn" onclick="addBlock('text')">
-                📄 文字區塊
+            <div class="components-title">📦 拖拽添加區塊</div>
+            <button class="component-btn" draggable="true" ondragstart="dragStart(event, 'text')" onclick="addBlock('text')">
+                📄 文字區塊（可拖拽）
             </button>
-            <button class="component-btn" onclick="addBlock('image')">
-                🖼️ 圖片區塊
+            <button class="component-btn" draggable="true" ondragstart="dragStart(event, 'image')" onclick="addBlock('image')">
+                🖼️ 圖片區塊（可拖拽）
             </button>
-            <button class="component-btn" onclick="addBlock('divider')">
-                ─ 分隔線
+            <button class="component-btn" draggable="true" ondragstart="dragStart(event, 'divider')" onclick="addBlock('divider')">
+                ─ 分隔線（可拖拽）
             </button>
         </div>
 
         <!-- 區塊編輯區 -->
-        <div class="blocks-container empty" id="blocksContainer">
-            <div>選擇項目開始編輯</div>
+        <div class="blocks-container empty" id="blocksContainer" ondragover="dragOver(event)" ondrop="dropBlock(event)" ondragleave="dragLeave(event)">
+            <div>選擇項目後，可拖拽組件到此區域添加</div>
         </div>
     </div>
 
@@ -594,8 +599,9 @@
     // ========== 初始化 ==========
     window.addEventListener('load', () => {
         loadDrafts();
-        loadTravelData();
-        renderCategories();
+        loadTravelData().then(() => {
+            renderCategories();
+        });
     });
 
     // ========== 數據管理 ==========
@@ -610,9 +616,11 @@
             
             // 安全評估數據
             eval(`travelData = ${match[1]}`);
-            showNotif('✅ 數據加載成功', 'success');
+            showNotif('✅ 數據加載成功（' + Object.keys(travelData).length + ' 個分類）', 'success');
+            return true;
         } catch (err) {
             showNotif('❌ 數據加載失敗：' + err.message, 'error');
+            return false;
         }
     }
 
@@ -811,8 +819,16 @@
         if (block.type === 'text') {
             bodyHtml = `
                 <div class="form-group">
-                    <label>文字內容</label>
-                    <textarea id="blockContent">${escapeHtml(block.content)}</textarea>
+                    <label>文字內容（支持格式化）</label>
+                    <div class="field-toolbar" style="margin-bottom: 8px; display: flex; gap: 6px; flex-wrap: wrap;">
+                        <button class="mini-btn" onclick="insertToTextarea('blockContent', '{bold}', '{/bold}')" title="加粗" style="padding: 6px 12px; background: #fff; border: 1px solid #ddd; border-radius: 4px; cursor: pointer;"><strong>B</strong></button>
+                        <button class="mini-btn" onclick="insertToTextarea('blockContent', '{italic}', '{/italic}')" title="斜體" style="padding: 6px 12px; background: #fff; border: 1px solid #ddd; border-radius: 4px; cursor: pointer;"><em>I</em></button>
+                        <button class="mini-btn" onclick="insertToTextarea('blockContent', '/n')" title="分段" style="padding: 6px 12px; background: #fff; border: 1px solid #ddd; border-radius: 4px; cursor: pointer;">¶</button>
+                        <button class="mini-btn" onclick="insertToTextarea('blockContent', '{#ff6b6b}', '{/color}')" title="紅色" style="padding: 6px 12px; background: #fadbd8; border: 1px solid #e74c3c; border-radius: 4px; cursor: pointer; color: #c0392b;">R</button>
+                        <button class="mini-btn" onclick="insertToTextarea('blockContent', '{#3498db}', '{/color}')" title="藍色" style="padding: 6px 12px; background: #d6eaf8; border: 1px solid #3498db; border-radius: 4px; cursor: pointer; color: #2c3e50;">B</button>
+                        <button class="mini-btn" onclick="insertToTextarea('blockContent', '{#51cf66}', '{/color}')" title="綠色" style="padding: 6px 12px; background: #d4edda; border: 1px solid #51cf66; border-radius: 4px; cursor: pointer; color: #155724;">G</button>
+                    </div>
+                    <textarea id="blockContent" style="font-family: monospace;">${escapeHtml(block.content)}</textarea>
                 </div>
             `;
         } else if (block.type === 'image') {
@@ -1016,6 +1032,81 @@ if (typeof module !== 'undefined' && module.exports) {
             renderEditor();
             showNotif('✅ 已清空草稿', 'success');
         }
+    }
+
+    // ========== 拖拽函數 ==========
+    let draggedBlockType = null;
+
+    function dragStart(event, blockType) {
+        draggedBlockType = blockType;
+        event.dataTransfer.effectAllowed = 'copy';
+        event.dataTransfer.setData('blockType', blockType);
+    }
+
+    function dragOver(event) {
+        event.preventDefault();
+        event.dataTransfer.dropEffect = 'copy';
+        const container = document.getElementById('blocksContainer');
+        container.style.background = '#e8f4f8';
+        container.style.borderColor = '#3498db';
+    }
+
+    function dragLeave(event) {
+        const container = document.getElementById('blocksContainer');
+        container.style.background = '#fafafa';
+        container.style.borderColor = '#bdc3c7';
+    }
+
+    function dropBlock(event) {
+        event.preventDefault();
+        const blockType = event.dataTransfer.getData('blockType') || draggedBlockType;
+        dragLeave(event);
+        
+        if (!currentCategory || currentItem === null) {
+            showNotif('❌ 請先選擇項目', 'error');
+            return;
+        }
+
+        const draftKey = `${currentCategory}_${currentItem}`;
+        if (!drafts[draftKey]) {
+            drafts[draftKey] = { blocks: [] };
+        }
+
+        const newBlock = { type: blockType };
+        if (blockType === 'text') newBlock.content = '';
+        if (blockType === 'image') {
+            newBlock.imageUrl = '';
+            newBlock.caption = '';
+            newBlock.layout = 'small';
+        }
+
+        drafts[draftKey].blocks.push(newBlock);
+        saveDrafts();
+        renderEditor();
+        showNotif(`✅ 已添加區塊`, 'success');
+    }
+
+    // ========== 文字格式化函數 ==========
+    function insertToTextarea(textareaId, prefix, suffix = '') {
+        const textarea = document.getElementById(textareaId);
+        if (!textarea) return;
+
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const selectedText = textarea.value.substring(start, end);
+        const before = textarea.value.substring(0, start);
+        const after = textarea.value.substring(end);
+
+        if (selectedText) {
+            textarea.value = before + prefix + selectedText + suffix + after;
+        } else {
+            textarea.value = before + prefix + suffix + after;
+            textarea.selectionStart = start + prefix.length;
+            textarea.selectionEnd = start + prefix.length;
+        }
+
+        textarea.focus();
+        updateAllPreviews();
     }
 
     // ========== 工具函數 ==========
