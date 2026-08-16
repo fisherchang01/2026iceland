@@ -265,6 +265,8 @@
     .preview-panel p {
       margin-bottom: 10px;
       line-height: 1.6;
+      white-space: pre-wrap;
+      word-wrap: break-word;
     }
 
     .preview-panel img {
@@ -582,6 +584,14 @@ function selectItem(idx) {
   // textarea 显示原始 HTML 源码
   document.getElementById('editTitle').value = item.title;
   document.getElementById('editDetail').value = item.detail;  // 显示原始 HTML
+
+  // 调试：显示实际长度
+  console.log('📝 项目详情信息：');
+  console.log('  标题:', item.title);
+  console.log('  HTML长度:', item.detail.length, '字符');
+  console.log('  首100字:', item.detail.substring(0, 100));
+  console.log('  包含\\n:', item.detail.includes('\n'));
+  console.log('  包含<p>:', item.detail.includes('<p>'));
 
   // 预览区用 innerHTML 渲染（这样才能显示分段、图片、格式等）
   const previewPanel = document.getElementById('previewPanel');
