@@ -72,6 +72,12 @@
             font-weight: 600;
         }
 
+        .spot-btn.modified::after {
+            content: ' ●';
+            color: #ff6b6b;
+            font-weight: 700;
+        }
+
         .editor {
             background: white;
             display: flex;
@@ -80,7 +86,6 @@
             position: relative;
         }
 
-        /* 固定在编辑器顶部的按钮栏 */
         .editor-top-bar {
             position: fixed;
             top: 0;
@@ -96,6 +101,22 @@
             padding: 8px 16px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             z-index: 100;
+        }
+
+        .editor-top-bar.has-unsaved {
+            border-bottom-color: #ff6b6b;
+            background: #fffbfb;
+        }
+
+        .draft-badge {
+            background: #ff6b6b;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 700;
+            min-width: 30px;
+            text-align: center;
         }
 
         .editor-header {
@@ -275,6 +296,15 @@
             background: #d0d0d0;
         }
 
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
         .preview-panel {
             background: #f9f9f9;
             border-left: 1px solid #e5e5e5;
@@ -355,10 +385,12 @@
         </div>
     </div>
 
-    <!-- 固定在顶部的按钮栏 -->
+    <!-- 顶部按钮栏 -->
     <div class="editor-top-bar" id="topBar" style="display: none;">
+        <div id="draftBadge" class="draft-badge" style="display: none;">0 個草稿</div>
         <button class="btn btn-secondary" onclick="discardChanges()">放棄</button>
-        <button class="btn btn-primary" id="saveBtn" onclick="saveToGitHub()">💾 保存</button>
+        <button class="btn btn-primary" onclick="saveLocally()">💾 本地保存</button>
+        <button class="btn btn-success" id="uploadBtn" onclick="uploadToGitHub()" style="display: none;">⬆️ 上傳到GitHub</button>
     </div>
 
     <script>
@@ -369,6 +401,7 @@
         let tripData = null;
         let currentDay = null;
         let currentSpotIndex = null;
+        let drafts = {}; // { 'day1_0': {...}, 'day2_1': {...} }
 
         function utf8ToBase64(str) {
             try {
@@ -430,7 +463,9 @@
 
         async function init() {
             await loadTripData();
+            loadDrafts();
             renderSidebar();
+            updateDraftBadge();
         }
 
         async function loadTripData() {
@@ -445,6 +480,33 @@
             } catch(e) {
                 console.error('加載失敗:', e);
                 showNotif('加載失敗: ' + e.message, 'error');
+            }
+        }
+
+        function loadDrafts() {
+            const saved = localStorage.getItem('trip_drafts');
+            drafts = saved ? JSON.parse(saved) : {};
+        }
+
+        function saveDrafts() {
+            localStorage.setItem('trip_drafts', JSON.stringify(drafts));
+            updateDraftBadge();
+        }
+
+        function updateDraftBadge() {
+            const count = Object.keys(drafts).length;
+            const badge = document.getElementById('draftBadge');
+            const uploadBtn = document.getElementById('uploadBtn');
+            
+            if (count > 0) {
+                badge.textContent = `${count} 個草稿`;
+                badge.style.display = 'block';
+                uploadBtn.style.display = 'block';
+                document.getElementById('topBar').classList.add('has-unsaved');
+            } else {
+                badge.style.display = 'none';
+                uploadBtn.style.display = 'none';
+                document.getElementById('topBar').classList.remove('has-unsaved');
             }
         }
 
@@ -493,6 +555,10 @@
             day.spots.forEach((spot, idx) => {
                 const btn = document.createElement('button');
                 btn.className = 'spot-btn';
+                const draftKey = `${currentDay}_${idx}`;
+                if (drafts[draftKey]) {
+                    btn.classList.add('modified');
+                }
                 btn.textContent = `${spot.icon} ${spot.name}`;
                 btn.title = spot.name;
                 btn.onclick = () => selectSpot(idx);
@@ -518,6 +584,9 @@
         function renderEditor() {
             const day = tripData[currentDay];
             const spot = day.spots[currentSpotIndex];
+            const draftKey = `${currentDay}_${currentSpotIndex}`;
+            const draft = drafts[draftKey] || {};
+
             const editor = document.getElementById('editor');
 
             editor.innerHTML = `
@@ -538,7 +607,7 @@
                                 <button class="color-btn green" onclick="applyColorToField('descInput', '#00aa00')" title="綠色">G</button>
                             </div>
                         </div>
-                        <input type="text" id="descInput" value="${escapeAttr(spot.desc || '')}" oninput="updateAllPreviews()">
+                        <input type="text" id="descInput" value="${escapeAttr(draft.desc !== undefined ? draft.desc : (spot.desc || ''))}" oninput="updateAllPreviews()">
                     </div>
 
                     <div class="field-group deepdesc">
@@ -553,7 +622,7 @@
                                 <button class="color-btn green" onclick="applyColorToField('deepDescInput', '#00aa00')" title="綠色">G</button>
                             </div>
                         </div>
-                        <textarea id="deepDescInput" oninput="updateAllPreviews()">${escapeAttr(spot.deepDesc || '')}</textarea>
+                        <textarea id="deepDescInput" oninput="updateAllPreviews()">${escapeAttr(draft.deepDesc !== undefined ? draft.deepDesc : (spot.deepDesc || ''))}</textarea>
                     </div>
 
                     <div class="field-group tips">
@@ -568,7 +637,7 @@
                                 <button class="color-btn green" onclick="applyColorToField('tipsInput', '#00aa00')" title="綠色">G</button>
                             </div>
                         </div>
-                        <textarea id="tipsInput" oninput="updateAllPreviews()">${escapeAttr(spot.tips || '')}</textarea>
+                        <textarea id="tipsInput" oninput="updateAllPreviews()">${escapeAttr(draft.tips !== undefined ? draft.tips : (spot.tips || ''))}</textarea>
                     </div>
 
                     <div class="field-group parking">
@@ -583,24 +652,22 @@
                                 <button class="color-btn green" onclick="applyColorToField('parkingInput', '#00aa00')" title="綠色">G</button>
                             </div>
                         </div>
-                        <textarea id="parkingInput" oninput="updateAllPreviews()">${escapeAttr(spot.parking || '')}</textarea>
+                        <textarea id="parkingInput" oninput="updateAllPreviews()">${escapeAttr(draft.parking !== undefined ? draft.parking : (spot.parking || ''))}</textarea>
                     </div>
 
                     <div class="field-group">
                         <label class="field-label">衛生間 (toilet)</label>
-                        <input type="text" id="toiletInput" value="${escapeAttr(spot.toilet || '')}" oninput="updateAllPreviews()">
+                        <input type="text" id="toiletInput" value="${escapeAttr(draft.toilet !== undefined ? draft.toilet : (spot.toilet || ''))}" oninput="updateAllPreviews()">
                     </div>
 
                     <div class="field-group">
                         <label class="field-label">地圖 (map)</label>
-                        <input type="text" id="mapInput" value="${escapeAttr(spot.map || '')}" oninput="updateAllPreviews()">
+                        <input type="text" id="mapInput" value="${escapeAttr(draft.map !== undefined ? draft.map : (spot.map || ''))}" oninput="updateAllPreviews()">
                     </div>
                 </div>
             `;
 
             updateAllPreviews();
-            
-            // 显示顶部按钮栏
             document.getElementById('topBar').style.display = 'flex';
         }
 
@@ -655,7 +722,7 @@
             }
         }
 
-        async function saveToGitHub() {
+        function saveLocally() {
             if (!currentDay || currentSpotIndex === null) return;
 
             const descInput = document.getElementById('descInput');
@@ -664,22 +731,46 @@
             const parkingInput = document.getElementById('parkingInput');
             const toiletInput = document.getElementById('toiletInput');
             const mapInput = document.getElementById('mapInput');
-            const saveBtn = document.getElementById('saveBtn');
 
-            const spot = tripData[currentDay].spots[currentSpotIndex];
-            spot.desc = descInput.value.trim();
-            spot.deepDesc = deepDescInput.value.trim();
-            spot.tips = tipsInput.value.trim();
-            spot.parking = parkingInput.value.trim();
-            spot.toilet = toiletInput.value.trim();
-            spot.map = mapInput.value.trim();
+            const draftKey = `${currentDay}_${currentSpotIndex}`;
+            drafts[draftKey] = {
+                desc: descInput.value.trim(),
+                deepDesc: deepDescInput.value.trim(),
+                tips: tipsInput.value.trim(),
+                parking: parkingInput.value.trim(),
+                toilet: toiletInput.value.trim(),
+                map: mapInput.value.trim()
+            };
 
-            saveBtn.disabled = true;
-            saveBtn.textContent = '⏳ 保存中...';
+            saveDrafts();
+            showNotif('✅ 已本地保存！', 'success');
+            renderSpots(); // 更新侧边栏显示修改标记
+        }
+
+        async function uploadToGitHub() {
+            const draftCount = Object.keys(drafts).length;
+            if (draftCount === 0) {
+                showNotif('沒有未上傳的修改', 'error');
+                return;
+            }
+
+            const uploadBtn = document.getElementById('uploadBtn');
+            uploadBtn.disabled = true;
+            uploadBtn.textContent = '⏳ 上傳中...';
 
             try {
                 const pat = getPAT();
 
+                // 應用所有草稿到 tripData
+                Object.entries(drafts).forEach(([draftKey, data]) => {
+                    const [dayKey, spotIdx] = draftKey.split('_');
+                    const idx = parseInt(spotIdx);
+                    if (tripData[dayKey] && tripData[dayKey].spots[idx]) {
+                        Object.assign(tripData[dayKey].spots[idx], data);
+                    }
+                });
+
+                // 獲取舊內容並構建新內容
                 const getResp = await fetch(
                     `https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/main/${GITHUB_FILE}`
                 );
@@ -688,12 +779,14 @@
                 const footer = oldContent.substring(oldContent.indexOf('};') + 2);
                 const newContent = header + 'const TRIP = ' + JSON.stringify(tripData, null, 2) + ';\n' + footer;
 
+                // 獲取 SHA
                 const shaResp = await fetch(
                     `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_FILE}`,
                     { headers: { 'Authorization': `token ${pat}` } }
                 );
                 const fileData = await shaResp.json();
 
+                // 上傳
                 const updateResp = await fetch(
                     `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_FILE}`,
                     {
@@ -703,7 +796,7 @@
                             'Content-Type': 'application/json'
                         },
                         body: JSON.stringify({
-                            message: `✏️ 編輯景點: ${spot.name}`,
+                            message: `📝 批量編輯 ${draftCount} 個景點`,
                             content: utf8ToBase64(newContent),
                             sha: fileData.sha
                         })
@@ -712,13 +805,18 @@
 
                 if (!updateResp.ok) throw new Error('更新失敗');
 
-                showNotif('✅ 已保存到 GitHub！', 'success');
-
+                // 清空草稿
+                drafts = {};
+                saveDrafts();
+                
+                showNotif(`✅ 已上傳 ${draftCount} 個景點到 GitHub！`, 'success');
+                renderSpots(); // 更新侧边栏
+                
             } catch(e) {
                 showNotif('❌ 錯誤: ' + e.message, 'error');
             } finally {
-                saveBtn.disabled = false;
-                saveBtn.textContent = '💾 保存';
+                uploadBtn.disabled = false;
+                uploadBtn.textContent = '⬆️ 上傳到GitHub';
             }
         }
 
