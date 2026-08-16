@@ -354,11 +354,11 @@
 
     <!-- 項目清單（收縮展開） -->
     <div style="border-top: 1px solid var(--border); padding-top: 12px; margin-top: 12px;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; cursor: pointer;" onclick="document.getElementById('itemListPanel').style.display = document.getElementById('itemListPanel').style.display === 'none' ? 'block' : 'none';">
-        <span style="font-weight: 600; color: var(--primary);">📋 項目</span>
-        <span id="itemListToggle" style="color: var(--sub);">▼</span>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; cursor: pointer; padding: 6px 0;" onclick="document.getElementById('itemListPanel').style.display = document.getElementById('itemListPanel').style.display === 'none' ? 'block' : 'none';">
+        <span style="font-weight: 600; color: var(--primary); font-size: 0.9rem;">📋 項目</span>
+        <span id="itemListToggle" style="color: var(--sub); font-size: 1.2rem;">▼</span>
       </div>
-      <div id="itemListPanel" class="item-list" style="max-height: 150px; overflow-y: auto;"></div>
+      <div id="itemListPanel" style="max-height: 200px; overflow-y: auto; display: block;"></div>
     </div>
   </div>
 
@@ -588,7 +588,7 @@ function selectCategory(idx) {
 }
 
 function renderItems() {
-  const list = document.getElementById('itemListPanel');  // 改为左栏的 itemListPanel
+  const list = document.getElementById('itemListPanel');
   if (STATE.currentCategoryIdx === null) return;
 
   const cat = STATE.categories[STATE.currentCategoryIdx];
@@ -603,7 +603,6 @@ function renderItems() {
     const btn = document.createElement('button');
     btn.className = 'item-button';
     btn.textContent = item.title;
-    btn.style.marginBottom = '4px';
     btn.onclick = () => selectItem(idx);
     list.appendChild(btn);
   });
@@ -681,20 +680,22 @@ function updatePreview() {
 function renderCustomMarkup(text) {
   if (!text) return '';
   
-  // 处理换行符 /n → <br>
-  text = text.replace(/\/n/g, '<br>');
+  let html = text;
   
   // 处理颜色标记 {#ff0000}...{/color} → <span style="color: #ff0000">...</span>
-  text = text.replace(/\{#([0-9a-fA-F]{6})\}([\s\S]*?)\{\/color\}/g, 
+  html = html.replace(/\{#([0-9a-fA-F]{6})\}([\s\S]*?)\{\/color\}/g, 
     '<span style="color: #$1; font-weight: 500;">$2</span>');
   
   // 处理粗体 {bold}...{/bold} → <strong>...</strong>
-  text = text.replace(/\{bold\}([\s\S]*?)\{\/bold\}/g, '<strong style="font-weight: 700;">$1</strong>');
+  html = html.replace(/\{bold\}([\s\S]*?)\{\/bold\}/g, '<strong style="font-weight: 700;">$1</strong>');
   
   // 处理斜体 {italic}...{/italic} → <em>...</em>
-  text = text.replace(/\{italic\}([\s\S]*?)\{\/italic\}/g, '<em style="font-style: italic; color: #0066cc;">$1</em>');
+  html = html.replace(/\{italic\}([\s\S]*?)\{\/italic\}/g, '<em style="font-style: italic; color: #0066cc;">$1</em>');
   
-  return text;
+  // 处理换行符 /n → <br>
+  html = html.replace(/\/n/g, '<br>');
+  
+  return html;
 }
 
 // ==================== 初始化 ====================
