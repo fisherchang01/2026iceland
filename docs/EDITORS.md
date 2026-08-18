@@ -1,0 +1,213 @@
+# 編輯器使用指南
+
+> 對應版本：**v1.0-stable**（2026-08-18）
+> 本文取代已刪除的 `EDITORS_QUICK_START.md`、`PHASE_1_EDITOR_GUIDE.md`、`TRIP_EDITOR_PRO_GUIDE.md`。
+
+---
+
+## 1. 三個編輯器
+
+| 編輯器 | 網址 | 編輯對象 | 資料變數 |
+|---|---|---|---|
+| 行程編輯器 | `/tools/trip-editor-pro.html` | `data/trip-details.js` | `TRIP` |
+| 體驗編輯器 | `/tools/travel-editor-pro.html` | `data/travel-content.js` | `TRAVEL_CONTENT` |
+| 工具編輯器 | `/tools/other-editor-pro.html` | `data/other-content.js` | `OTHER_CONTENT` |
+
+入口頁：`/tools/`（也可從網站「工具」頁籤最下方的三張彩色卡片開啟）
+
+> ⚠️ **每個編輯器只寫自己那一個資料檔。** 歷史上曾發生「編輯器寫的檔案跟網站讀的檔案不是同一個」的問題（編輯器寫 `travel-content.json`、網站讀 `travel-content.js`），造成「編了、上傳成功了、網站卻沒變」。上表的對應關係是硬約定，改動前務必確認。
+
+體驗編輯器與工具編輯器是**同一套程式**，只有頂部的設定常數不同：
+
+```js
+const GITHUB_FILE = 'data/travel-content.js';   // 或 data/other-content.js
+const VAR_NAME    = 'TRAVEL_CONTENT';           // 或 OTHER_CONTENT
+const DRAFT_KEY   = 'travel_content_drafts';    // 或 other_content_drafts
+const LABEL       = '體驗內容';                  // 或 工具內容
+```
+
+修 bug 時記得**兩個檔案要同步改**。
+
+---
+
+## 2. 準備 GitHub PAT
+
+1. GitHub → Settings → Developer settings → Personal access tokens
+2. 產生新 token，勾選 `repo` 權限
+3. 複製 token（**只會顯示一次**）
+
+第一次上傳時編輯器會跳出輸入框，貼上後存在瀏覽器 `localStorage.github_pat`，之後不用再輸入。
+
+> ⚠️ PAT 存在瀏覽器本機。不要在公用電腦使用；不慎外洩時到 GitHub 撤銷該 token 即可。
+
+---
+
+## 3. 體驗／工具編輯器操作流程
+
+### 介面
+
+```
+┌──────────────┬────────────────────────────┬──────────────────┐
+│ 分類清單      │ 分類欄位 + 項目/Block 編輯   │ 即時預覽          │
+│              │                            │                  │
+│ 🇮🇸 冰島介紹   │ emoji / title / sub        │ （渲染後的樣子）   │
+│ 🧀 超市食物 ● │ cover（圖片挑選器）         │                  │
+│ 🛒 超市购物   │ size（2x4 / 2x2）           │                  │
+│ ...          │ ────────────────────       │                  │
+│ + 新增分類    │ 項目 #1                     │                  │
+│              │   name / layout             │                  │
+│              │   [小標題][文字][圖片] blocks │                  │
+│              │ 項目 #2 ...                 │                  │
+└──────────────┴────────────────────────────┴──────────────────┘
+              [放棄] [💾 本地保存] [⬆️ 上傳到 GitHub]
+```
+
+分類名稱後面的 **●** 表示該分類有未上傳的草稿。
+
+### 標準流程
+
+1. **（若要加圖）先把圖片上傳到 GitHub `images/catalog/`** — 編輯器沒有上傳圖片的能力，它只寫資料檔
+2. 開啟編輯器，左欄選分類
+3. 編輯欄位、新增／刪除／搬移項目與 block
+4. **💾 本地保存** — 存進 `localStorage`，關掉瀏覽器也不會遺失
+5. **⬆️ 上傳到 GitHub** — 通過 Guard 檢查後，跳出 diff 摘要確認視窗
+6. 確認上傳 → GitHub Pages 約 1–2 分鐘後生效
+
+### Block 編輯
+
+每個項目由若干 block 組成，**順序即版面順序**：
+
+| Block | 編輯方式 |
+|---|---|
+| 小標題（heading） | 單行輸入框 → 渲染成 `<h4>` |
+| 文字（text） | 多行 textarea，附標記工具列 → 渲染成 `<p>` |
+| 圖片（img） | 圖片挑選器 → 渲染成 `<img>` |
+| raw | **唯讀**，逃生艙，需要時只能手動改資料檔 |
+
+每個 block 都可以上下搬移與刪除。
+
+### 文字標記
+
+| 標記 | 效果 |
+|---|---|
+| `/n` | 換行 |
+| `{bold}文字{/bold}` | **粗體** |
+| `{italic}文字{/italic}` | *斜體* |
+| `{#RRGGBB}文字{/color}` | 指定顏色 |
+
+三個編輯器共用同一套標記。渲染端的實作：`js/render-travel.js` 的 `parseMarkup()`（體驗／工具）、`js/render-itinerary.js`（行程）。
+
+> ⚠️ 渲染順序是**先 HTML-escape 再套用標記轉換**，因此內容裡的 `<`、`>`、`&` 會被安全處理，不會造成 XSS，也不會破壞標記本身。
+
+### 圖片挑選器
+
+- 讀取 GitHub API 列出 `images/catalog/` 全部圖片（未帶 PAT 時每小時 60 次上限）
+- 已被使用的圖片有「已用」角標；可勾選「只看未使用」篩選
+- 清單有快取，**上傳新圖後要按「🔄 重新整理清單」**才看得到
+- API 失敗時會退回手動輸入檔名
+
+> 圖片挑選器故意顯示**全部**圖片而非只顯示未使用的——同一張圖常需要重複使用（例如同時是分類封面與內文圖），而且目前幾乎所有圖都已被引用，只顯示未使用會讓清單幾乎空白。
+
+### 新增分類
+
+點左欄「+ 新增分類」，輸入：
+
+- **key**：唯一識別碼，**只能用英數與底線**，建立後不可更改（它同時是草稿的儲存鍵）
+- **title**：分類標題
+
+新分類預設 `emoji: 🆕`、`size: 2x2`、`cover: ''`、`items: []`。**記得補上 cover**，否則總覽卡片會顯示 emoji 佔位。
+
+新增分類不需要另外去改 `data/catalog-config.js`——那裡的 `labels`／`sizes` 已改為從資料自動推導。
+
+### 上傳前 Guard
+
+上傳一定會先跑以下檢查，任一不過就中止：
+
+1. 資料可序列化為 JSON
+2. `categories` 是陣列且至少 1 個
+3. 每個分類都有非空的 `key` 與 `title`，且 `key` 不重複
+4. 分類數不得少於載入時的數量（真要刪需二次確認）
+5. 檔案 header 中確實找得到 `const {VAR_NAME}`
+6. 顯示 diff 摘要（分類 / 項目 / 圖片 數量前後對照）供人工確認
+
+這套 Guard 是為了防止 2026-08-18 事件重演——當時編輯器一次上傳把資料檔從 29,792 字砍到 15,489 字，連同頁面骨架與 13KB CSS 一起銷毀，整個「體驗」頁籤直接失效。
+
+---
+
+## 4. 行程編輯器
+
+`tools/trip-editor-pro.html`，編輯 `data/trip-details.js` 的 `TRIP` 物件。
+
+介面：左欄選日期 → 選景點 → 中欄編輯欄位 → 右欄即時預覽。
+
+可編輯欄位：`desc`（簡短介紹）、`deepDesc`（詳細描述）、`tips`、`parking`、`toilet`、`map`。
+
+草稿鍵格式 `{dayKey}_{spotIndex}`，例如 `day1_0`。
+
+支援與體驗編輯器相同的四種文字標記。
+
+> ⚠️ 景點照片不由編輯器管理。要加照片需手動：把同名檔案分別放進 `images/spots/thumb/` 與 `images/spots/medium/`，再在 `data/trip-details.js` 的 `images` 陣列補上檔名。
+
+---
+
+## 5. 上傳機制（給要修編輯器的人看）
+
+三個編輯器共用同一套「解析 → 改資料 → 重組檔案 → PUT」流程：
+
+```js
+// 1. 讀原始檔
+const oldContent = await (await fetch(
+  `https://raw.githubusercontent.com/${OWNER}/${REPO}/main/${GITHUB_FILE}`)).text();
+
+// 2. 切出 header / footer
+const marker   = `const ${VAR_NAME} = `;
+const startIdx = oldContent.indexOf(marker);
+const header   = oldContent.substring(0, startIdx);
+const endIdx   = oldContent.lastIndexOf('};');      // ⚠️ 必須是 lastIndexOf
+const footer   = oldContent.substring(endIdx + 2);
+
+// 3. 重組
+const newContent = header + marker + JSON.stringify(data, null, 2) + ';\n' + footer;
+
+// 4. 取 sha 後 PUT
+```
+
+### 兩個必踩的坑
+
+**坑 1：`lastIndexOf('};')` 不是 `indexOf('};')`**
+資料是巢狀物件，`indexOf` 會從中間第一個 `};` 切斷，造成大量資料重複與語法錯誤。
+`trip-editor-pro.html` 目前用的是 `indexOf`，只因為 `trip-details.js` 整份剛好只有一個 `};` 才沒出事——這是運氣不是設計，日後若該檔結構改變就會爆。
+
+**坑 2：中文編碼**
+必須用 `utf8ToBase64()`（`btoa(unescape(encodeURIComponent(str)))`，並備妥 `TextEncoder` fallback），不能直接 `btoa()`，否則中文內容會壞。
+
+---
+
+## 6. 常見問題
+
+**Q：上傳成功了，網站卻沒更新？**
+
+依序檢查：
+1. GitHub Pages 部署需要 1–2 分鐘，先等一下
+2. 硬重新整理（Ctrl+Shift+R / 手機用無痕視窗）
+3. 若手機 PWA 仍是舊的 → Service Worker 快取問題。`sw.js` 對 `data/*.js` 應為 network-first；若曾改回 cache-first，編輯器上傳的內容永遠不會生效（因為 `sw.js` 本身沒變，舊 Service Worker 不會重新安裝）
+4. 到 GitHub 直接看 `data/*.js` 的最新 commit，確認內容真的變了
+
+**Q：草稿不見了？**
+草稿存在該瀏覽器的 `localStorage`，換瀏覽器、換裝置、清除瀏覽資料都會遺失。長內容建議編完就上傳。
+
+**Q：不小心刪錯東西上傳了？**
+每次上傳都是一個 commit，直接 `git revert` 或在 GitHub 網頁上還原該檔案的前一版即可。
+
+**Q：可以兩個人同時編輯嗎？**
+不行。編輯器是「讀整份 → 改 → 寫整份」，後上傳的會覆蓋先上傳的。
+
+---
+
+## 7. PAT 推送流程（手動改檔時）
+
+```bash
+git remote set-url origin https://<PAT>@github.com/fisherchang01/2026iceland.git
+git push
+git remote set-url origin https://github.com/fisherchang01/2026iceland.git   # 立刻還原
+```

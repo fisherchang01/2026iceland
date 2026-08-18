@@ -213,44 +213,34 @@
     <p>需要 GitHub Personal Access Token（PAT）才能使用編輯功能。</p>
   </div>
 
-  <!-- 第二階段編輯器（新） -->
+  <!-- 三個編輯器 -->
   <div class="section">
-    <h2 class="section-title">🎨 內容編輯器（第二階段 - Phase 2.1 優化版）</h2>
+    <h2 class="section-title">📝 內容編輯器</h2>
 
     <div class="info-box" style="border-left-color: #27ae60; background: #f0fdf4;">
-      <p><strong>✨ Phase 2.1 新增：</strong>全新版面設計！工具欄固定頂部、編輯區最大化到 70%、預覽區可拖拽調整大小！</p>
+      <p><strong>三個編輯器各自對應一個資料檔</strong>，改完直接推送 GitHub，不需要本地開發環境。
+      操作方式與注意事項見下方的<a href="../docs/EDITORS.md">編輯器使用指南</a>。</p>
     </div>
 
-    <!-- 已刪除過時的 Phase 2.1 編輯器（v3） -->
-  </div>
-
-  <!-- 舊版本編輯器 -->
-  <div class="section">
-    <h2 class="section-title">📝 內容編輯器（第二階段 - 原始版本）</h2>
-
     <div class="tools-grid">
-      <!-- 已刪除過時的 Phase 2 編輯器（v2） -->
-
-      <!-- 體驗編輯器（Phase 1） -->
+      <!-- 體驗編輯器 -->
       <a href="./travel-editor-pro.html" class="tool-card">
         <div class="tool-icon">🏔️</div>
         <div class="tool-title">體驗內容編輯器</div>
-        <p class="tool-desc">編輯和更新體驗頁面的所有內容，包括美食、購物、世界遺產等 10 個分類。</p>
+        <p class="tool-desc">編輯「體驗」頁籤的分類與項目，包括介紹、美食、購物、世界遺產等。</p>
         <div class="tool-meta">
-          <span class="meta-item">📂 10 個分類</span>
-          <span class="meta-item">📝 ~17 項目</span>
+          <span class="meta-item">📄 data/travel-content.js</span>
         </div>
         <button class="cta-button">打開編輯器 →</button>
       </a>
 
-      <!-- 其他編輯器 -->
+      <!-- 工具編輯器 -->
       <a href="./other-editor-pro.html" class="tool-card">
         <div class="tool-icon">🛠️</div>
-        <div class="tool-title">其他內容編輯器</div>
-        <p class="tool-desc">編輯實用信息頁面的內容，包括退稅、極光攝影、加油站等 6 個分類。</p>
+        <div class="tool-title">工具內容編輯器</div>
+        <p class="tool-desc">編輯「工具」頁籤的分類與項目，包括退稅、極光機率與拍攝、加油、洗浴文化等。</p>
         <div class="tool-meta">
-          <span class="meta-item">📂 6 個分類</span>
-          <span class="meta-item">📝 ~12 項目</span>
+          <span class="meta-item">📄 data/other-content.js</span>
         </div>
         <button class="cta-button">打開編輯器 →</button>
       </a>
@@ -259,39 +249,46 @@
       <a href="./trip-editor-pro.html" class="tool-card">
         <div class="tool-icon">✈️</div>
         <div class="tool-title">行程編輯器</div>
-        <p class="tool-desc">編輯冰島和芬蘭的每日行程內容，包括景點介紹、停車位置、遊玩貼士等。</p>
+        <p class="tool-desc">編輯每日行程的景點介紹、停車與廁所資訊、遊玩貼士等。</p>
         <div class="tool-meta">
-          <span class="meta-item">📅 8 天行程</span>
-          <span class="meta-item">📍 70+ 景點</span>
+          <span class="meta-item">📄 data/trip-details.js</span>
         </div>
         <button class="cta-button">打開編輯器 →</button>
       </a>
     </div>
   </div>
 
-  <!-- 使用指南 -->
+  <!-- 文件 -->
   <div class="section">
-    <h2 class="section-title">📚 快速開始指南</h2>
+    <h2 class="section-title">📚 文件</h2>
 
     <div class="tools-grid">
       <div class="tool-card" style="cursor: default; background: #f9f9f9;">
-        <div class="tool-icon">⚡</div>
-        <div class="tool-title">30 秒快速上手</div>
-        <p class="tool-desc">最快速地了解如何使用編輯器進行基本操作。適合急於上手的用戶。</p>
-        <div class="tool-meta">
-          <span class="meta-item">⏱️ 5 分鐘閱讀</span>
-        </div>
-        <a href="../docs/EDITORS_QUICK_START.md" class="cta-button">查看文檔 →</a>
+        <div class="tool-icon">📖</div>
+        <div class="tool-title">編輯器使用指南</div>
+        <p class="tool-desc">三個編輯器的操作流程、Block 編輯、文字標記、圖片挑選器、上傳 Guard 與常見問題。</p>
+        <a href="../docs/EDITORS.md" class="cta-button">查看文檔 →</a>
       </div>
 
       <div class="tool-card" style="cursor: default; background: #f9f9f9;">
-        <div class="tool-icon">📖</div>
-        <div class="tool-title">完整使用指南</div>
-        <p class="tool-desc">詳細的功能說明、常見問題解答和故障排查步驟。適合深入了解的用戶。</p>
-        <div class="tool-meta">
-          <span class="meta-item">⏱️ 20 分鐘閱讀</span>
-        </div>
-        <a href="../docs/PHASE_1_EDITOR_GUIDE.md" class="cta-button">查看文檔 →</a>
+        <div class="tool-icon">🏗️</div>
+        <div class="tool-title">架構總覽</div>
+        <p class="tool-desc">整站怎麼組起來、載入順序、DOM 契約、四條鐵律與不可動區。改程式前必讀。</p>
+        <a href="../docs/ARCHITECTURE.md" class="cta-button">查看文檔 →</a>
+      </div>
+
+      <div class="tool-card" style="cursor: default; background: #f9f9f9;">
+        <div class="tool-icon">🗂️</div>
+        <div class="tool-title">資料 Schema</div>
+        <p class="tool-desc">每個資料檔的欄位定義，含體驗／工具頁的 categories、items、blocks 結構。</p>
+        <a href="../docs/DATA-SCHEMA.md" class="cta-button">查看文檔 →</a>
+      </div>
+
+      <div class="tool-card" style="cursor: default; background: #f9f9f9;">
+        <div class="tool-icon">🖼️</div>
+        <div class="tool-title">圖片規格</div>
+        <p class="tool-desc">資料夾分工、各用途的比例與建議尺寸、命名規則與加圖流程。</p>
+        <a href="../docs/IMAGES.md" class="cta-button">查看文檔 →</a>
       </div>
     </div>
   </div>
@@ -301,16 +298,17 @@
     <h2 class="section-title">🚀 典型工作流</h2>
 
     <div class="info-box">
-      <p><strong>步驟 1：準備</strong> - 前往 GitHub Settings → Developer settings → Personal access tokens 生成新 token（勾選 repo 權限）</p>
-      <p><strong>步驟 2：打開編輯器</strong> - 選擇上面的編輯器之一</p>
-      <p><strong>步驟 3：認證</strong> - 在右上角粘貼 GitHub PAT</p>
-      <p><strong>步驟 4：讀取內容</strong> - 點擊「讀取 GitHub」按鈕加載網站內容</p>
-      <p><strong>步驟 5：編輯</strong> - 選擇分類、選擇項目、編輯文本、點擊「保存此項目」</p>
-      <p><strong>步驟 6：上傳</strong> - 所有編輯完成後，點擊「上傳到 GitHub」推送修改</p>
+      <p><strong>步驟 0：先傳圖片</strong> - 若這次要加圖，先把圖片上傳到 GitHub 的 <code>images/catalog/</code>（編輯器只寫資料檔，不能上傳圖片）</p>
+      <p><strong>步驟 1：準備 PAT</strong> - GitHub Settings → Developer settings → Personal access tokens，生成新 token（勾選 repo 權限）。第一次上傳時編輯器會跳出輸入框，之後存在瀏覽器不用再輸入</p>
+      <p><strong>步驟 2：打開編輯器</strong> - 選擇上面的編輯器之一，會自動讀取 GitHub 上的最新內容</p>
+      <p><strong>步驟 3：編輯</strong> - 左欄選分類 → 中欄改欄位、增刪搬移項目與 block → 右欄看即時預覽</p>
+      <p><strong>步驟 4：本地保存</strong> - 點「💾 本地保存」存進瀏覽器草稿，關掉也不會遺失</p>
+      <p><strong>步驟 5：上傳</strong> - 點「⬆️ 上傳到 GitHub」，通過 Guard 檢查後會跳出 diff 摘要供確認</p>
     </div>
 
     <div class="info-box" style="border-left-color: #ffc107; background: #fffef0;">
-      <p><strong>⏱️ 重要提示：</strong>GitHub Pages 部署需要 1-2 分鐘。如果修改後網站沒有立即更新，請硬刷浏览器（Ctrl+Shift+R 或 Cmd+Shift+R）。</p>
+      <p><strong>⏱️ 重要提示：</strong>GitHub Pages 部署需要 1–2 分鐘。若修改後網站沒有立即更新，請硬重新整理（Ctrl+Shift+R / Cmd+Shift+R）。手機上請用 PWA 或無痕視窗確認。</p>
+      <p><strong>⚠️ 不要同時兩個人編輯：</strong>編輯器是「讀整份 → 改 → 寫整份」，後上傳的會覆蓋先上傳的。</p>
     </div>
   </div>
 
@@ -320,18 +318,18 @@
 
     <div class="info-box">
       <p>✓ <strong>零部署成本</strong> - 無需本地開發環境，直接在瀏覽器中使用</p>
-      <p>✓ <strong>實時預覽</strong> - 右側面板即時顯示編輯效果</p>
-      <p>✓ <strong>本地草稿</strong> - 自動保存到瀏覽器本地，隨時恢復</p>
-      <p>✓ <strong>GitHub 集成</strong> - 一鍵上傳，無需命令行</p>
-      <p>✓ <strong>離線操作</strong> - 編輯時無需網絡連接（上傳時需要）</p>
-      <p>✓ <strong>標記支持</strong> - 支持粗體、斜體、換行、彩色文字等格式</p>
-      <p>✓ <strong>中文界面</strong> - 完全中文 UI，使用零難度</p>
-      <p>✓ <strong>響應式設計</strong> - 支持桌面、平板、手機使用</p>
+      <p>✓ <strong>即時預覽</strong> - 右側面板即時顯示編輯效果</p>
+      <p>✓ <strong>Block 編輯</strong> - 小標題、文字、圖片可自由排序，順序即版面順序</p>
+      <p>✓ <strong>圖片挑選器</strong> - 直接從 <code>images/catalog/</code> 選圖，標示哪些已被使用</p>
+      <p>✓ <strong>本地草稿</strong> - 存在瀏覽器，關掉也不會遺失；有未上傳修改的分類會標上 ●</p>
+      <p>✓ <strong>上傳 Guard</strong> - 五道檢查加 diff 摘要確認，防止一次上傳把資料清空</p>
+      <p>✓ <strong>文字標記</strong> - 支援粗體、斜體、換行、指定顏色</p>
+      <p>✓ <strong>GitHub 整合</strong> - 一鍵上傳，無需命令列</p>
     </div>
   </div>
 
   <footer>
-    <p>🏔️ 冰島芬蘭之旅 · 2026 年 8 月 | 編輯器版本 1.0</p>
+    <p>🏔️ 冰島芬蘭之旅 · v1.0-stable（2026-08-18）</p>
   </footer>
 </div>
 
