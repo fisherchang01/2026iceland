@@ -133,6 +133,7 @@
         background: #eef; color: #556; letter-spacing: .5px;
     }
     .block-type-badge.raw { background: #f5e6c8; color: #8a6d1a; }
+    .block-type-badge.heading { background: #dcefe0; color: #2c6b3f; }
     .block-row textarea {
         width: 100%; min-height: 150px; padding: 8px 10px; border: 1px solid #d0d0d0;
         border-radius: 4px; font-size: 12px; font-family: monospace; resize: vertical;
@@ -600,6 +601,7 @@
                 <div class="add-block-bar">
                     <button class="btn btn-secondary btn-mini" onclick="addBlock(${idx},'text')">+ 文字段</button>
                     <button class="btn btn-secondary btn-mini" onclick="addBlock(${idx},'img')">+ 圖片</button>
+                    <button class="btn btn-secondary btn-mini" onclick="addBlock(${idx},'heading')">+ 小標題</button>
                 </div>
             `;
             container.appendChild(box);
@@ -684,8 +686,21 @@
                         </div>
                     </div>
                 `;
+            } else if (block.type === 'heading') {
+                const headingFieldId = `blockHeading_${itemIdx}_${bIdx}`;
+                row.innerHTML = `
+                    <div class="block-row-head">
+                        <span class="block-type-badge heading">小標題</span>
+                        <div class="item-block-actions">
+                            <button class="btn btn-secondary btn-mini" onclick="moveBlock(${itemIdx},${bIdx},-1)">↑</button>
+                            <button class="btn btn-secondary btn-mini" onclick="moveBlock(${itemIdx},${bIdx},1)">↓</button>
+                            <button class="btn btn-danger btn-mini" onclick="deleteBlock(${itemIdx},${bIdx})">刪除</button>
+                        </div>
+                    </div>
+                    <input type="text" id="${headingFieldId}" value="${escapeAttr(block.value || '')}" placeholder="小標題文字（渲染為 &lt;h4&gt;）" oninput="onBlockTextInput(${itemIdx},${bIdx},this.value)">
+                `;
             } else {
-                // raw：唯讀
+                // raw：唯讀（逃生艙，工具頁的客製區塊會用到）
                 row.innerHTML = `
                     <div class="block-row-head">
                         <span class="block-type-badge raw">客製區塊 raw</span>
@@ -709,6 +724,7 @@
             if (!item.blocks) item.blocks = [];
             if (type === 'text') item.blocks.push({ type: 'text', value: '' });
             else if (type === 'img') item.blocks.push({ type: 'img', src: '' });
+            else if (type === 'heading') item.blocks.push({ type: 'heading', value: '' });
         });
     }
 
@@ -882,6 +898,8 @@
                 } else if (b.type === 'img') {
                     const src = b.src ? `https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/main/${IMAGE_DIR}${b.src}` : '';
                     html += `<img src="${src}" onerror="this.style.opacity=0.2">`;
+                } else if (b.type === 'heading') {
+                    html += `<h4>${escapeAttr(b.value)}</h4>`;
                 } else if (b.type === 'raw') {
                     html += b.html || '';
                 }

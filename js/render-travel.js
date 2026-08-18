@@ -36,8 +36,11 @@
     if (block.type === 'img') {
       return '<img src="images/catalog/' + escapeHtml(block.src) + '" alt="">';
     }
+    if (block.type === 'heading') {
+      return '<h4>' + escapeHtml(block.value) + '</h4>';
+    }
     if (block.type === 'raw') {
-      return block.html; // 客製區塊，不 escape
+      return block.html; // 客製區塊，不 escape（逃生艙，工具頁會用到）
     }
     return '';
   }
