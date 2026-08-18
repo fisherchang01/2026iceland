@@ -775,8 +775,15 @@
                     `https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/main/${GITHUB_FILE}`
                 );
                 const oldContent = await getResp.text();
-                const header = oldContent.substring(0, oldContent.indexOf('const TRIP = {'));
-                const footer = oldContent.substring(oldContent.indexOf('};') + 2);
+                const startIdx = oldContent.indexOf('const TRIP = {');
+                if (startIdx < 0) throw new Error('找不到 const TRIP 標記，中止上傳');
+                const header = oldContent.substring(0, startIdx);
+                // ⚠️ 必須是 lastIndexOf：TRIP 是巢狀物件，用 indexOf 會從中間第一個 '};'
+                // 切斷，造成大量資料重複與語法錯誤。目前僥倖沒出事只是因為 trip-details.js
+                // 整份剛好只有一個 '};'，那是運氣不是設計。
+                const endIdx = oldContent.lastIndexOf('};');
+                if (endIdx < startIdx) throw new Error('檔案結構異常，中止上傳');
+                const footer = oldContent.substring(endIdx + 2);
                 const newContent = header + 'const TRIP = ' + JSON.stringify(tripData, null, 2) + ';\n' + footer;
 
                 // 獲取 SHA

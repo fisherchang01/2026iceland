@@ -1,12 +1,19 @@
 // 「体验／工具」的分类名称与辨识图片属于旅程内容，不放在核心互动程式中。
 //
-// v24：总览页卡片尺寸系统，只有兩種規格，都需要一張封面照片：
+// ⚠️ v1.0-stable 起：labels 與 sizes 已改為 getter，直接從 data/travel-content.js
+//    的 TRAVEL_CONTENT 與 data/other-content.js 的 OTHER_CONTENT 動態推導。
+//    要新增／刪除分類、調整順序或改卡片尺寸，一律改那兩個資料檔（或用編輯器），
+//    這裡「不需要」也「不應該」再手動維護平行陣列。
+//    前提：index.html 中本檔必須排在 travel-content.js、other-content.js 之後。
+//
+// 总览页卡片尺寸系统，只有兩種規格，都需要一張封面照片（寫在各分類的 cover 欄位）：
 //   '2x4'：整行滿版、較高（比例 2.2:1）
 //   '2x2'：半行方形卡，兩張並排（比例 1:1）
-// 封面照片統一寫在每個分類 <div class="travel-collapse" data-cover="...">，
-// 由 Fisher 自行指定一張能代表整個分類的情境照（跟第二層項目卡的封面來源不同，
+// 封面照片由 Fisher 自行指定一張能代表整個分類的情境照（跟第二層項目卡的封面來源不同，
 // 第二層是自動取項目詳情第一張圖，這裡因為代表的是一整個分類、比較抽象，用手動指定的方式）。
-// sizes 陣列順序跟 labels 一一對應，Fisher 可以直接改這個陣列調整每個分類要大卡還小卡。
+//
+// CATALOG_IMAGE_MAP 目前只剩「品牌名稱 → favicon URL」的 fallback 對應；
+// 指向不存在本地檔案的舊資料已於 v1.0-stable 移除，新增前請先確認檔案真的存在。
 const CATALOG_PAGE_META = window.CATALOG_PAGE_META = {
   travel: {
     overview: '体验总览', pageId: 'page-travel',

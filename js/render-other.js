@@ -30,7 +30,7 @@
     '        <div style="display: flex; align-items: center; justify-content: space-between;">\n' +
     '          <div>\n' +
     '            <div style="font-family: var(--font-display); font-size: var(--fs-base); font-weight: 600; color: white; margin-bottom: 4px;">🏔️ 體驗內容編輯器</div>\n' +
-    '            <div style="font-size: var(--fs-xs); color: rgba(255,255,255,0.85); line-height: 1.4;">編輯美食、購物、世界遺產等體驗頁面內容（10 個分類）</div>\n' +
+    '            <div style="font-size: var(--fs-xs); color: rgba(255,255,255,0.85); line-height: 1.4;">編輯美食、購物、世界遺產等體驗頁面內容</div>\n' +
     '          </div>\n' +
     '          <button class="tool-open-btn" onclick="window.open(\'./tools/travel-editor-pro.html\', \'travel-editor-pro\', \'width=1400,height=900,resizable=yes\')" style="margin: 0; white-space: nowrap; background: white; color: #f5576c; font-weight: 700;">開啟編輯器</button>\n' +
     '        </div>\n' +
@@ -41,7 +41,7 @@
     '        <div style="display: flex; align-items: center; justify-content: space-between;">\n' +
     '          <div>\n' +
     '            <div style="font-family: var(--font-display); font-size: var(--fs-base); font-weight: 600; color: white; margin-bottom: 4px;">🛠️ 其他內容編輯器</div>\n' +
-    '            <div style="font-size: var(--fs-xs); color: rgba(255,255,255,0.85); line-height: 1.4;">編輯退稅、極光、加油等實用工具頁面內容（6 個分類）</div>\n' +
+    '            <div style="font-size: var(--fs-xs); color: rgba(255,255,255,0.85); line-height: 1.4;">編輯退稅、極光、加油等實用工具頁面內容</div>\n' +
     '          </div>\n' +
     '          <button class="tool-open-btn" onclick="window.open(\'./tools/other-editor-pro.html\', \'other-editor-pro\', \'width=1400,height=900,resizable=yes\')" style="margin: 0; white-space: nowrap; background: white; color: #00f2fe; font-weight: 700;">開啟編輯器</button>\n' +
     '        </div>\n' +
