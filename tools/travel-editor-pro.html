@@ -169,9 +169,14 @@
     }
     .modal-box h3 { font-size: 14px; }
     .modal-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
-    .modal-grid img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 4px; cursor: pointer; border: 2px solid transparent; }
+    .modal-grid .thumb-wrap { position: relative; }
+    .modal-grid img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 4px; cursor: pointer; border: 2px solid transparent; display: block; }
     .modal-grid img:hover { border-color: #667eea; }
     .modal-grid .fname { font-size: 9px; color: #666; text-align: center; word-break: break-all; }
+    .used-badge {
+        position: absolute; top: 3px; right: 3px; background: rgba(80,80,80,.85); color: white;
+        font-size: 9px; font-weight: 700; padding: 1px 5px; border-radius: 8px; pointer-events: none;
+    }
     .modal-actions { display: flex; justify-content: flex-end; gap: 8px; }
     .modal-manual { display: flex; gap: 6px; }
     .modal-manual input { flex: 1; padding: 6px 8px; border: 1px solid #d0d0d0; border-radius: 4px; }
@@ -201,8 +206,16 @@
 <!-- 圖片挑選器 Modal -->
 <div class="modal-overlay" id="imgModal">
     <div class="modal-box">
-        <h3>選擇圖片（images/catalog/）</h3>
-        <div id="imgModalStatus" style="font-size:11px;color:#999;">載入中...</div>
+        <h3>
+            選擇圖片（images/catalog/）
+            <button class="btn btn-secondary btn-mini" onclick="refreshImageList()" style="margin-left:8px;">🔄 重新整理清單</button>
+        </h3>
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div id="imgModalStatus" style="font-size:11px;color:#999;">載入中...</div>
+            <label style="font-size:11px;color:#666;display:flex;align-items:center;gap:4px;cursor:pointer;">
+                <input type="checkbox" id="imgOnlyUnused" onchange="renderImgGrid(imageListCache)"> 只看未使用
+            </label>
+        </div>
         <div class="modal-grid" id="imgModalGrid"></div>
         <div class="modal-manual" id="imgModalManual" style="display:none;">
             <input type="text" id="imgManualInput" placeholder="手動輸入檔名（例如 item-01.webp）">
@@ -755,12 +768,41 @@
         document.getElementById('imgModalGrid').innerHTML = '';
         document.getElementById('imgModalManual').style.display = 'none';
         document.getElementById('imgModalStatus').textContent = '載入中...';
+        document.getElementById('imgOnlyUnused').checked = false;
         loadImageList();
     }
 
     function closeImgModal() {
         document.getElementById('imgModal').classList.remove('open');
         imgModalTargetSetter = null;
+    }
+
+    function refreshImageList() {
+        imageListCache = null;
+        document.getElementById('imgModalStatus').textContent = '重新載入中...';
+        loadImageList();
+    }
+
+    // B-1：掃描目前記憶體中的資料（含未上傳的草稿，透過 buildFinalData() 取得草稿覆蓋後的有效狀態）
+    // 找出所有正在被使用的圖片檔名：分類封面、img block、raw block（用正規式從 HTML 裡抓 images/catalog/xxx）
+    function computeUsedImages() {
+        const used = new Set();
+        if (!travelData) return used;
+        const effective = buildFinalData();
+        effective.categories.forEach(cat => {
+            if (cat.cover) used.add(cat.cover);
+            (cat.items || []).forEach(it => {
+                (it.blocks || []).forEach(b => {
+                    if (b.type === 'img' && b.src) {
+                        used.add(b.src);
+                    } else if (b.type === 'raw' && b.html) {
+                        const matches = b.html.match(/images\/catalog\/([^"'\s)]+)/g) || [];
+                        matches.forEach(m => used.add(m.replace('images/catalog/', '')));
+                    }
+                });
+            });
+        });
+        return used;
     }
 
     async function loadImageList() {
@@ -783,21 +825,34 @@
     }
 
     function renderImgGrid(files) {
-        document.getElementById('imgModalStatus').textContent = `共 ${files.length} 張圖片，點選即套用`;
+        if (!files) return;
+        const used = computeUsedImages();
+        const onlyUnused = document.getElementById('imgOnlyUnused').checked;
+        const unusedCount = files.filter(f => !used.has(f)).length;
+        document.getElementById('imgModalStatus').textContent =
+            `共 ${files.length} 張圖片（其中 ${unusedCount} 張尚未使用），點選即套用`;
         const grid = document.getElementById('imgModalGrid');
         grid.innerHTML = '';
-        files.forEach(name => {
+        const displayFiles = onlyUnused ? files.filter(f => !used.has(f)) : files;
+        displayFiles.forEach(name => {
             const wrap = document.createElement('div');
+            wrap.className = 'thumb-wrap';
             const img = document.createElement('img');
             img.src = `https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/main/${IMAGE_DIR}${name}`;
             img.onclick = () => {
                 if (imgModalTargetSetter) imgModalTargetSetter(name);
                 closeImgModal();
             };
+            wrap.appendChild(img);
+            if (used.has(name)) {
+                const badge = document.createElement('div');
+                badge.className = 'used-badge';
+                badge.textContent = '已用';
+                wrap.appendChild(badge);
+            }
             const fname = document.createElement('div');
             fname.className = 'fname';
             fname.textContent = name;
-            wrap.appendChild(img);
             wrap.appendChild(fname);
             grid.appendChild(wrap);
         });
