@@ -21,20 +21,11 @@ const CATALOG_PAGE_META = window.CATALOG_PAGE_META = {
 };
 
 const CATALOG_IMAGE_MAP = window.CATALOG_IMAGE_MAP = [
-  ['Bónus', 'images/catalog/bonus.png'],
-  ['小猪超市', 'images/catalog/bonus.png'],
-  ['Krónan', 'images/catalog/kronan.jpg'],
-  ['Omnom', 'images/catalog/omnom.jpg'],
-  ['Nói Síríus', 'images/catalog/noi-sirius.jpg'],
-  ['Freyja', 'images/catalog/freyja.jpg'],
-  ['Hraun', 'images/catalog/hraun.jpg'],
   ['Lakkrís', 'https://www.google.com/s2/favicons?sz=256&domain_url=https://lakkris.is/'],
-  ['Saltverk', 'images/catalog/saltverk.jpg'],
   ['Blue Lagoon', 'https://www.google.com/s2/favicons?sz=256&domain_url=https://www.bluelagoon.com/'],
   ['66°North', 'https://www.google.com/s2/favicons?sz=256&domain_url=https://www.66north.com/'],
   ['Fazer', 'https://www.google.com/s2/favicons?sz=256&domain_url=https://www.fazer.com/'],
   ['Paulig', 'https://www.google.com/s2/favicons?sz=256&domain_url=https://www.paulig.com/'],
-  ['Nordqvist', 'images/catalog/nordqvist.jpg'],
   ['Turun Sinappi', 'https://www.google.com/s2/favicons?sz=256&domain_url=https://www.turunsinappi.fi/'],
   ['Nettó', 'https://www.google.com/s2/favicons?sz=256&domain_url=https://netto.is/'],
   ['Hagkaup', 'https://www.google.com/s2/favicons?sz=256&domain_url=https://www.hagkaup.is/'],
