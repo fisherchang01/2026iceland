@@ -439,9 +439,12 @@
 
     // ========== 全局變數 ==========
     let travelData = {};
+    let originalTravelData = {};  // 保存原始HTML用於比較
+    let originalHTMLString = '';  // 保存原始HTML字符串
     let drafts = {};
     let currentCategory = null;
     let currentItemIndex = null;
+    let modifiedCategories = new Set();  // 追蹤哪些類別被改動
 
     // ========== 初始化 ==========
     async function init() {
@@ -509,12 +512,14 @@
     
     function parseHTMLTravelData(content) {
         travelData = {};
+        originalTravelData = {};
         
-        // 提取 HTML 内容（在 backtick 之间）
+        // 保存原始HTML字符串（用於日後比較）
         const htmlMatch = content.match(/const TRAVEL_HTML = `([\s\S]*?)`;/);
         if (!htmlMatch) throw new Error('無法找到 TRAVEL_HTML');
         
-        const html = htmlMatch[1];
+        originalHTMLString = htmlMatch[1];
+        const html = originalHTMLString;
         
         // 创建临时容器来解析 HTML
         const tempDiv = document.createElement('div');
@@ -570,17 +575,106 @@
                 }
             });
             
-            if (items.length > 0) {
-                travelData[categoryKey] = {
-                    title: categoryTitle,
-                    items: items
-                };
-            }
+            // 🔑 改動：即使沒有項目，也要保存類別
+            travelData[categoryKey] = {
+                title: categoryTitle,
+                items: items,
+                hasContent: items.length > 0  // 標記是否有內容
+            };
+            
+            // 保存原始HTML用於比較
+            originalTravelData[categoryKey] = JSON.parse(JSON.stringify(travelData[categoryKey]));
         });
         
         if (Object.keys(travelData).length === 0) {
-            throw new Error('無法解析任何分類或項目');
+            throw new Error('無法解析任何分類');
         }
+    }
+    
+    function generateHTMLContentSelective(oldContent, travelData, modifiedCategories) {
+        // 🔑 選擇性生成 HTML：只更新改動的類別，保留其他類別的原始HTML
+        
+        // 提取原始HTML內容
+        const htmlMatch = oldContent.match(/const TRAVEL_HTML = `([\s\S]*?)`;/);
+        if (!htmlMatch) return generateHTMLContent(travelData);  // 備用
+        
+        const originalHTML = htmlMatch[1];
+        
+        // 創建臨時容器解析原始HTML
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = originalHTML;
+        
+        // 找到所有的travel-collapse分類
+        const collapses = tempDiv.querySelectorAll('.travel-collapse');
+        const categoryHTMLMap = new Map();  // 保存每個分類的原始HTML
+        
+        collapses.forEach((collapseEl) => {
+            const titleEl = collapseEl.querySelector('.travel-collapse-title');
+            if (!titleEl) return;
+            
+            const categoryTitle = titleEl.textContent.trim();
+            const categoryKey = categoryTitleToKey(categoryTitle);
+            
+            // 保存這個分類的完整HTML
+            categoryHTMLMap.set(categoryKey, collapseEl.outerHTML);
+        });
+        
+        // 生成新內容：遍歷travelData，對於改動的類別生成新HTML，其他保留原始
+        let html = 'const TRAVEL_HTML = `\n<style id="travel-editorial-style">\n  /* 保留原有 CSS 樣式 */\n  :is(#page-travel,#page-other) {\n    --paper: #fbf8f1;\n    --paper-deep: #eee7da;\n    --paper-line: #d8cdbd;\n    --forest: #3f6542;\n    --forest-deep: #294a31;\n    --ink: #27312d;\n    --muted-ink: #68736d;\n  }\n</style>\n\n<div class="travel-container">\n';
+        
+        Object.entries(travelData).forEach(([categoryKey, category]) => {
+            if (modifiedCategories.has(categoryKey)) {
+                // 如果這個類別被改動，生成新HTML
+                html += `  <div class="travel-collapse">\n`;
+                html += `    <h3 class="travel-collapse-title">${escapeHTML(category.title)}</h3>\n`;
+                html += `    <div class="travel-collapse-body">\n`;
+                
+                const items = category.items || [];
+                for (let i = 0; i < items.length; i += 2) {
+                    html += `      <div class="item-row">\n`;
+                    const item1 = items[i];
+                    html += generateItemHTML(item1);
+                    
+                    if (i + 1 < items.length) {
+                        const item2 = items[i + 1];
+                        html += generateItemHTML(item2);
+                    }
+                    html += `      </div>\n`;
+                }
+                
+                html += `    </div>\n`;
+                html += `  </div>\n`;
+            } else if (categoryHTMLMap.has(categoryKey)) {
+                // 如果沒有改動，保留原始HTML（包括所有圖片和標籤）
+                html += categoryHTMLMap.get(categoryKey) + '\n';
+            } else {
+                // 新的類別（沒有原始HTML）
+                html += `  <div class="travel-collapse">\n`;
+                html += `    <h3 class="travel-collapse-title">${escapeHTML(category.title)}</h3>\n`;
+                html += `    <div class="travel-collapse-body">\n`;
+                
+                const items = category.items || [];
+                for (let i = 0; i < items.length; i += 2) {
+                    html += `      <div class="item-row">\n`;
+                    const item1 = items[i];
+                    html += generateItemHTML(item1);
+                    
+                    if (i + 1 < items.length) {
+                        const item2 = items[i + 1];
+                        html += generateItemHTML(item2);
+                    }
+                    html += `      </div>\n`;
+                }
+                
+                html += `    </div>\n`;
+                html += `  </div>\n`;
+            }
+        });
+        
+        html += `</div>\n`;
+        html += '`';
+        
+        return html;
     }
     
     function generateHTMLContent(travelData) {
@@ -677,13 +771,36 @@
         const container = document.getElementById('categoriesList');
         container.innerHTML = '';
 
+        // 顯示所有類別（包括空類別）
         Object.entries(travelData).forEach(([catKey, category]) => {
             const btn = document.createElement('button');
             btn.className = 'category-btn';
-            btn.textContent = category.title;
+            
+            // 如果類別被修改，添加標記
+            let displayText = category.title;
+            if (modifiedCategories.has(catKey)) {
+                displayText += ' ●';  // 紅點標記
+            }
+            
+            // 如果類別沒有項目，添加灰色標記
+            if (!category.hasContent && category.items.length === 0) {
+                displayText += ' (空)';
+            }
+            
+            btn.textContent = displayText;
             btn.onclick = () => selectCategory(catKey);
             container.appendChild(btn);
         });
+        
+        // 新增類別按鈕
+        const addCategoryBtn = document.createElement('button');
+        addCategoryBtn.className = 'category-btn';
+        addCategoryBtn.textContent = '+ 新增類別';
+        addCategoryBtn.onclick = () => addNewCategory();
+        addCategoryBtn.style.marginTop = '10px';
+        addCategoryBtn.style.background = '#f0f7ff';
+        addCategoryBtn.style.color = '#667eea';
+        container.appendChild(addCategoryBtn);
 
         updateBadge();
     }
@@ -721,6 +838,32 @@
         }
 
         document.getElementById('editorContent').innerHTML = '<p style="padding:20px; color:#999;">選擇項目開始編輯</p>';
+    }
+
+    function addNewCategory() {
+        const categoryName = prompt('輸入新類別名稱（例：冰島美食）:');
+        if (!categoryName || categoryName.trim() === '') return;
+        
+        const categoryKey = categoryName.toLowerCase().replace(/\s+/g, '_');
+        
+        if (travelData[categoryKey]) {
+            showNotif('⚠️ 類別已存在', 'warning');
+            return;
+        }
+        
+        // 新增類別
+        travelData[categoryKey] = {
+            title: categoryName,
+            items: [],
+            hasContent: false  // 新類別沒有內容
+        };
+        
+        // 標記為已修改
+        modifiedCategories.add(categoryKey);
+        
+        renderCategories();
+        selectCategory(categoryKey);
+        showNotif(`✅ 新增類別「${categoryName}」成功`, 'success');
     }
 
     function selectItem(catKey, itemIdx) {
@@ -863,6 +1006,9 @@
             desc: descInput.value.trim(),
             content: contentInput.value.trim()
         };
+        
+        // 標記這個類別為已修改（用於選擇性上傳）
+        modifiedCategories.add(currentCategory);
 
         saveDrafts();
         showNotif('✅ 已本地保存！', 'success');
@@ -881,7 +1027,9 @@
 
     async function uploadToGitHub() {
         const draftCount = Object.keys(drafts).length;
-        if (draftCount === 0) {
+        const newCategoryCount = modifiedCategories.size;
+        
+        if (draftCount === 0 && newCategoryCount === 0) {
             showNotif('沒有未上傳的修改', 'error');
             return;
         }
@@ -893,12 +1041,13 @@
         try {
             const pat = getPAT();
 
-            // 應用所有草稿到 travelData
+            // 第一步：應用所有草稿到 travelData（僅改動的項目）
             Object.entries(drafts).forEach(([draftKey, data]) => {
                 const [catKey, itemIdx] = draftKey.split('_');
                 const idx = parseInt(itemIdx);
                 if (travelData[catKey] && travelData[catKey].items[idx]) {
                     Object.assign(travelData[catKey].items[idx], data);
+                    modifiedCategories.add(catKey);  // 標記這個類別為改動
                 }
             });
 
@@ -908,8 +1057,8 @@
             );
             const oldContent = await getResp.text();
             
-            // 生成 HTML 格式的內容
-            const newHTMLContent = generateHTMLContent(travelData);
+            // 第二步：選擇性生成 HTML（只更新改動的類別，保留其他）
+            const newHTMLContent = generateHTMLContentSelective(oldContent, travelData, modifiedCategories);
             
             // 保留 header（在 TRAVEL_HTML 之前的部分）
             const headerMatch = oldContent.match(/^([\s\S]*?)const TRAVEL_HTML = `/);
@@ -949,10 +1098,11 @@
 
             // 清空草稿
             drafts = {};
+            modifiedCategories.clear();  // 清空改動標記
             localStorage.removeItem('travel_data_drafts');
             loadDraftsFromStorage();
             
-            showNotif(`✅ 已上傳 ${draftCount} 個項目到 GitHub！`, 'success');
+            showNotif(`✅ 已上傳 ${draftCount + newCategoryCount} 個更新到 GitHub！`, 'success');
             renderCategories();
             
         } catch(e) {
