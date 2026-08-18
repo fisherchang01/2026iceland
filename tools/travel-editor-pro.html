@@ -606,7 +606,8 @@
         
         // 找到所有的travel-collapse分類
         const collapses = tempDiv.querySelectorAll('.travel-collapse');
-        const categoryHTMLMap = new Map();  // 保存每個分類的原始HTML
+        const categoryHTMLMap = new Map();  // 保存每個分類的完整元素
+        const categoryHeaderMap = new Map();  // 保存每個分類的header HTML
         
         collapses.forEach((collapseEl) => {
             const titleEl = collapseEl.querySelector('.travel-collapse-title');
@@ -615,20 +616,45 @@
             const categoryTitle = titleEl.textContent.trim();
             const categoryKey = categoryTitleToKey(categoryTitle);
             
-            // 保存這個分類的完整HTML
-            categoryHTMLMap.set(categoryKey, collapseEl.outerHTML);
+            // 保存這個分類的完整元素
+            categoryHTMLMap.set(categoryKey, collapseEl.cloneNode(true));
+            
+            // 提取 header 部分（用於改動類別時重用）
+            const headerEl = collapseEl.querySelector('.travel-collapse-header');
+            if (headerEl) {
+                categoryHeaderMap.set(categoryKey, headerEl.outerHTML);
+            }
         });
         
         // 生成新內容：遍歷travelData，對於改動的類別生成新HTML，其他保留原始
         let html = 'const TRAVEL_HTML = `\n<style id="travel-editorial-style">\n  /* 保留原有 CSS 樣式 */\n  :is(#page-travel,#page-other) {\n    --paper: #fbf8f1;\n    --paper-deep: #eee7da;\n    --paper-line: #d8cdbd;\n    --forest: #3f6542;\n    --forest-deep: #294a31;\n    --ink: #27312d;\n    --muted-ink: #68736d;\n  }\n</style>\n\n<div class="travel-container">\n';
         
         Object.entries(travelData).forEach(([categoryKey, category]) => {
-            if (modifiedCategories.has(categoryKey)) {
-                // 如果這個類別被改動，生成新HTML
-                html += `  <div class="travel-collapse">\n`;
-                html += `    <h3 class="travel-collapse-title">${escapeHTML(category.title)}</h3>\n`;
-                html += `    <div class="travel-collapse-body">\n`;
+            if (modifiedCategories.has(categoryKey) && categoryHTMLMap.has(categoryKey)) {
+                // 如果這個類別被改動，但有原始HTML，則重用原始的header結構
+                const originalEl = categoryHTMLMap.get(categoryKey);
                 
+                // 提取原始的travel-collapse容器屬性（如data-cover）
+                const dataCover = originalEl.getAttribute('data-cover');
+                const originalHeader = categoryHeaderMap.get(categoryKey) || '';
+                
+                html += `  <div class="travel-collapse"${dataCover ? ` data-cover="${dataCover}"` : ''}>\n`;
+                
+                // 保留原始的header（如果存在）
+                if (originalHeader) {
+                    html += originalHeader + '\n';
+                } else {
+                    // 如果沒有原始header，生成新的簡單header
+                    html += `    <div class="travel-collapse-header" onclick="toggleTravelCollapse(this)">\n`;
+                    html += `      <div class="travel-collapse-left">\n`;
+                    html += `        <div class="travel-collapse-title">${escapeHTML(category.title)}</div>\n`;
+                    html += `      </div>\n`;
+                    html += `      <div class="travel-collapse-arrow">›</div>\n`;
+                    html += `    </div>\n`;
+                }
+                
+                // 生成新的body內容（只有item cards）
+                html += `    <div class="travel-collapse-body">\n`;
                 const items = category.items || [];
                 for (let i = 0; i < items.length; i += 2) {
                     html += `      <div class="item-row">\n`;
@@ -641,16 +667,22 @@
                     }
                     html += `      </div>\n`;
                 }
-                
                 html += `    </div>\n`;
                 html += `  </div>\n`;
+                
             } else if (categoryHTMLMap.has(categoryKey)) {
-                // 如果沒有改動，保留原始HTML（包括所有圖片和標籤）
-                html += categoryHTMLMap.get(categoryKey) + '\n';
+                // 如果沒有改動，保留原始HTML 100%（包括所有結構、屬性、圖片、emoji等）
+                const originalEl = categoryHTMLMap.get(categoryKey);
+                html += originalEl.outerHTML + '\n';
             } else {
                 // 新的類別（沒有原始HTML）
                 html += `  <div class="travel-collapse">\n`;
-                html += `    <h3 class="travel-collapse-title">${escapeHTML(category.title)}</h3>\n`;
+                html += `    <div class="travel-collapse-header" onclick="toggleTravelCollapse(this)">\n`;
+                html += `      <div class="travel-collapse-left">\n`;
+                html += `        <div class="travel-collapse-title">${escapeHTML(category.title)}</div>\n`;
+                html += `      </div>\n`;
+                html += `      <div class="travel-collapse-arrow">›</div>\n`;
+                html += `    </div>\n`;
                 html += `    <div class="travel-collapse-body">\n`;
                 
                 const items = category.items || [];
