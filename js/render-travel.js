@@ -56,23 +56,36 @@
     );
   }
 
-  // §6.2：同一個 travel-collapse-body 內，items 數量 >= 2 時，每兩個 item 包一個 item-row；
-  // 只有 1 個 item 時，直接放在 body 下不包 item-row。
+  // §6.2（修訂）：item-lg 為整行滿版，不得包進 .item-row；
+  // 只有連續的 item-sm 才兩兩配對進 .item-row。
+  // 落單的 sm 維持原設計（直接放在 body 下，全寬 1:1），與 848f202 版「冰島介紹」行為一致。
   function renderItems(items) {
     if (!items || items.length === 0) return '';
-    if (items.length === 1) {
-      return renderItemCard(items[0]);
-    }
     var out = [];
-    for (var i = 0; i < items.length; i += 2) {
-      var pair = items.slice(i, i + 2);
-      if (pair.length === 2) {
-        out.push('<div class="item-row">\n' + pair.map(renderItemCard).join('\n') + '\n</div>');
-      } else {
-        // 奇數個時，最後一個落單項目不包 item-row
-        out.push(renderItemCard(pair[0]));
+    var buffer = [];   // 暫存連續的 sm
+
+    function flush() {
+      for (var i = 0; i < buffer.length; i += 2) {
+        var pair = buffer.slice(i, i + 2);
+        if (pair.length === 2) {
+          out.push('<div class="item-row">\n' + pair.map(renderItemCard).join('\n') + '\n</div>');
+        } else {
+          out.push(renderItemCard(pair[0]));
+        }
       }
+      buffer = [];
     }
+
+    items.forEach(function (item) {
+      if (item.layout === 'lg') {
+        flush();
+        out.push(renderItemCard(item));   // lg 獨佔整行
+      } else {
+        buffer.push(item);
+      }
+    });
+    flush();
+
     return out.join('\n\n');
   }
 
