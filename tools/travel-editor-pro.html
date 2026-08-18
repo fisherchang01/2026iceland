@@ -478,6 +478,35 @@
         throw new Error('無法解析數據結構，文件格式不符合預期');
     }
     
+    // ========== 輔助函數 (必須在 parseHTMLTravelData 之前定義) ==========
+    
+    function categoryTitleToKey(title) {
+        // 將中文標題轉為英文 key
+        const titleMap = {
+            '冰島介紹': 'iceland_intro',
+            '超市食物': 'supermarket_food',
+            '超市購物': 'supermarket_shopping',
+            '商店購物': 'shop_shopping',
+            '冰島超市': 'iceland_supermarket',
+            '芬蘭購物': 'finland_shopping',
+            '雷克雅維克美食': 'reykjavik_food',
+            '冰島美食': 'iceland_food',
+            '芬蘭美食': 'finland_food',
+            '世界遺產': 'world_heritage',
+            '花兒少年': 'flowers_youth'
+        };
+        return titleMap[title] || title.toLowerCase().replace(/\s+/g, '_');
+    }
+    
+    function extractFirstLine(content) {
+        // 提取第一行（第一個句子或段落的開頭）
+        const lines = content.split(/[\n(（]/);
+        if (lines.length > 0) {
+            return lines[0].trim().substring(0, 60);
+        }
+        return content.substring(0, 60);
+    }
+    
     function parseHTMLTravelData(content) {
         travelData = {};
         
