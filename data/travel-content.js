@@ -157,7 +157,7 @@ const TRAVEL_CONTENT = {
             },
             {
               "type": "img",
-              "src": "aurora_forecast.webp"
+              "src": "注音与拼音对照.jpg"
             },
             {
               "type": "text",
@@ -415,4 +415,5 @@ const TRAVEL_CONTENT = {
     }
   ]
 };
+
 
