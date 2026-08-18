@@ -487,32 +487,59 @@
         
         const html = htmlMatch[1];
         
-        // 解析每個分類（travel-collapse）
-        const categoryRegex = /<div class="travel-collapse"[\s\S]*?<h3[^>]*>([^<]+)<\/h3>[\s\S]*?<div class="travel-collapse-body">([\s\S]*?)<\/div>\s*<\/div>/g;
-        let categoryMatch;
+        // 创建临时容器来解析 HTML
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = html;
         
-        while ((categoryMatch = categoryRegex.exec(html)) !== null) {
-            const categoryTitle = categoryMatch[1].trim();
-            const categoryBody = categoryMatch[2];
+        // 找到所有的 travel-collapse 分类
+        const collapses = tempDiv.querySelectorAll('.travel-collapse');
+        
+        if (collapses.length === 0) {
+            throw new Error('無法找到任何 travel-collapse 分類');
+        }
+        
+        collapses.forEach((collapseEl) => {
+            // 获取分类标题
+            const titleEl = collapseEl.querySelector('.travel-collapse-title');
+            if (!titleEl) return;
             
-            // 轉換分類標題為 key
-            let categoryKey = categoryTitleToKey(categoryTitle);
+            const categoryTitle = titleEl.textContent.trim();
+            const categoryKey = categoryTitleToKey(categoryTitle);
             
-            // 解析該分類下的所有項目
+            // 获取分类体
+            const bodyEl = collapseEl.querySelector('.travel-collapse-body');
+            if (!bodyEl) return;
+            
+            // 解析该分类下的所有项目
             const items = [];
-            const itemRegex = /<div class="item-card[^"]*"[\s\S]*?<h4[^>]*>([^<]+)<\/h4>[\s\S]*?<div class="item-detail">[\s\S]*?<p>([\s\S]*?)<\/p>/g;
-            let itemMatch;
+            const cards = bodyEl.querySelectorAll('.item-card');
             
-            while ((itemMatch = itemRegex.exec(categoryBody)) !== null) {
-                const title = itemMatch[1].trim();
-                const content = itemMatch[2].trim();
+            cards.forEach((card) => {
+                const titleEl = card.querySelector('.item-card-title');
+                const detailEl = card.querySelector('.item-detail');
                 
-                items.push({
-                    name: title,
-                    desc: extractFirstLine(content),
-                    content: cleanHTMLContent(content)
-                });
-            }
+                if (titleEl && detailEl) {
+                    const title = titleEl.textContent.trim();
+                    let content = '';
+                    
+                    // 获取 item-detail 中的纯文本内容
+                    const pEl = detailEl.querySelector('p');
+                    if (pEl) {
+                        content = pEl.textContent.trim();
+                    } else {
+                        // 如果没有 <p>，获取所有文本
+                        content = detailEl.textContent.trim();
+                    }
+                    
+                    if (content) {
+                        items.push({
+                            name: title,
+                            desc: extractFirstLine(content),
+                            content: content
+                        });
+                    }
+                }
+            });
             
             if (items.length > 0) {
                 travelData[categoryKey] = {
@@ -520,7 +547,7 @@
                     items: items
                 };
             }
-        }
+        });
         
         if (Object.keys(travelData).length === 0) {
             throw new Error('無法解析任何分類或項目');
