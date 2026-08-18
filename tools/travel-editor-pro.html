@@ -85,8 +85,11 @@
     }
 
     .item-block {
-        border: 1px solid #e5e5e5; border-radius: 6px; padding: 10px; margin-bottom: 10px; background: #fafafa;
+        border: 1px solid #d8d8d8; border-radius: 6px; padding: 10px; margin-bottom: 14px;
+        box-shadow: 0 1px 3px rgba(0,0,0,.05);
     }
+    .item-block:nth-of-type(odd) { background: #f4f6fc; border-left: 4px solid #a9b4ef; }
+    .item-block:nth-of-type(even) { background: #fdf9f0; border-left: 4px solid #e8cf9a; }
     .item-block-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
     .item-block-title { font-size: 12px; font-weight: 700; color: #444; }
     .item-block-actions { display: flex; gap: 4px; }
@@ -130,7 +133,10 @@
         background: #eef; color: #556; letter-spacing: .5px;
     }
     .block-type-badge.raw { background: #f5e6c8; color: #8a6d1a; }
-    .block-row textarea { width: 100%; min-height: 50px; }
+    .block-row textarea {
+        width: 100%; min-height: 150px; padding: 8px 10px; border: 1px solid #d0d0d0;
+        border-radius: 4px; font-size: 12px; font-family: monospace; resize: vertical;
+    }
     .block-img-preview { display: flex; align-items: center; gap: 8px; }
     .block-img-preview img { width: 56px; height: 56px; object-fit: cover; border-radius: 4px; border: 1px solid #ddd; }
     .raw-block-note { font-size: 11px; color: #8a6d1a; font-style: italic; }
@@ -367,7 +373,8 @@
             if (key === currentKey) btn.classList.add('active');
             if (drafts[key]) btn.classList.add('modified');
             if (!cat.items || cat.items.length === 0) btn.classList.add('empty-cat');
-            btn.innerHTML = `${cat.emoji || ''} ${escapeAttr(cat.title || '(未命名)')}<div class="cat-meta">${(cat.items || []).length} 個項目 · ${cat.size || '2x2'}</div>`;
+            btn.dataset.key = key;
+            btn.innerHTML = `<span class="cat-label">${cat.emoji || ''} ${escapeAttr(cat.title || '(未命名)')}</span><div class="cat-meta">${(cat.items || []).length} 個項目 · ${cat.size || '2x2'}</div>`;
             btn.onclick = () => selectCategory(key);
             sidebar.appendChild(btn);
         });
@@ -435,6 +442,43 @@
         renderEditor();
     }
 
+    // 輕量更新：只改資料 + localStorage + 側欄／預覽的局部更新，
+    // 不重繪輸入欄位本身的 DOM，避免打字或按標記按鈕時游標、捲動位置被重置。
+    // 用於「連續輸入」的欄位（分類 emoji/title/sub、項目 name、文字段內容）；
+    // 結構性變動（新增/刪除/搬移項目或 block、分類 CRUD）仍走 mutateCurrentCategory 整體重繪。
+    function updateDraftField(mutator) {
+        if (!drafts[currentKey]) {
+            drafts[currentKey] = JSON.parse(JSON.stringify(getCategory(currentKey)));
+        }
+        mutator(drafts[currentKey]);
+        localStorage.setItem(DRAFT_KEY, JSON.stringify(drafts));
+        updateDraftBadge();
+        refreshSidebarEntry(currentKey);
+        updateFullPreview();
+    }
+
+    function refreshSidebarEntry(key) {
+        const cat = getCategory(key);
+        if (!cat) return;
+        const btn = document.querySelector(`.cat-btn[data-key="${CSS.escape(key)}"]`);
+        if (!btn) return;
+        btn.classList.toggle('modified', !!drafts[key]);
+        btn.classList.toggle('empty-cat', !(cat.items && cat.items.length));
+        const label = btn.querySelector('.cat-label');
+        if (label) label.textContent = `${cat.emoji || ''} ${cat.title || '(未命名)'}`;
+        const meta = btn.querySelector('.cat-meta');
+        if (meta) meta.textContent = `${(cat.items || []).length} 個項目 · ${cat.size || '2x2'}`;
+    }
+
+    function updateHeaderLive() {
+        const cat = getCategory(currentKey);
+        if (!cat) return;
+        const emojiEl = document.getElementById('hdr_emoji');
+        const titleEl = document.getElementById('hdr_title');
+        if (emojiEl) emojiEl.textContent = cat.emoji || '';
+        if (titleEl) titleEl.textContent = cat.title || '';
+    }
+
     function renderEditor() {
         const cat = getCategory(currentKey);
         if (!cat) { clearEditor(); return; }
@@ -442,7 +486,7 @@
         const editor = document.getElementById('editor');
         editor.innerHTML = `
             <div class="editor-header">
-                <h2><span>${cat.emoji || ''}</span> ${escapeAttr(cat.title || '')}
+                <h2><span id="hdr_emoji">${cat.emoji || ''}</span> <span id="hdr_title">${escapeAttr(cat.title || '')}</span>
                     <button class="btn btn-danger btn-mini" style="margin-left:auto" onclick="deleteCategory('${currentKey}')">刪除分類</button>
                 </h2>
             </div>
@@ -492,12 +536,13 @@
     }
 
     function onFieldInput() {
-        mutateCurrentCategory(cat => {
+        updateDraftField(cat => {
             cat.emoji = document.getElementById('f_emoji').value;
             cat.title = document.getElementById('f_title').value;
             cat.sub = document.getElementById('f_sub').value;
             cat.size = document.getElementById('f_size').value;
         });
+        updateHeaderLive();
     }
 
     function setCoverImage(filename) {
@@ -569,7 +614,7 @@
     }
 
     function onItemFieldInput(idx, field, value) {
-        mutateCurrentCategory(cat => { cat.items[idx][field] = value; });
+        updateDraftField(cat => { cat.items[idx][field] = value; });
     }
 
     // ---- Block CRUD（項目詳情內的逐塊編輯：文字／圖片／raw）----
@@ -602,7 +647,7 @@
                         <button class="color-btn blue" onclick="applyColorMarkup('${fieldId}','#0066cc',${itemIdx},${bIdx})" title="藍色">B</button>
                         <button class="color-btn green" onclick="applyColorMarkup('${fieldId}','#00aa00',${itemIdx},${bIdx})" title="綠色">G</button>
                     </div>
-                    <textarea id="${fieldId}" oninput="onBlockTextInput(${itemIdx},${bIdx},this.value)">${escapeAttr(block.value || '')}</textarea>
+                    <textarea id="${fieldId}" rows="6" oninput="onBlockTextInput(${itemIdx},${bIdx},this.value)">${escapeAttr(block.value || '')}</textarea>
                 `;
             } else if (block.type === 'img') {
                 const src = block.src ? `https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/main/${IMAGE_DIR}${block.src}` : '';
@@ -667,12 +712,14 @@
     }
 
     function onBlockTextInput(itemIdx, bIdx, value) {
-        mutateCurrentCategory(cat => { cat.items[itemIdx].blocks[bIdx].value = value; });
+        updateDraftField(cat => { cat.items[itemIdx].blocks[bIdx].value = value; });
     }
 
     // 文字標記格式（§8.6）：/n 換行、{bold}/{italic}/{#RRGGBB} color。
     // 插入邏輯與 trip-editor-pro.html 的 insertToField() 一致：以游標選取範圍為準，
     // 有選取文字時前後包住，沒有選取時在游標處插入空白標記。
+    // onBlockTextInput 現在只做輕量資料更新（不重繪 DOM），所以這裡可以直接在原本的
+    // textarea 節點上設定游標位置，插入後游標會停在剛插入內容之後，不會被搬到別處。
     function insertMarkup(fieldId, before, after, itemIdx, bIdx) {
         const field = document.getElementById(fieldId);
         if (!field) return;
@@ -680,25 +727,12 @@
         const end = field.selectionEnd;
         const text = field.value;
         const selected = text.substring(start, end);
-        let newValue;
-        if (selected) {
-            newValue = text.substring(0, start) + before + selected + after + text.substring(end);
-        } else {
-            newValue = text.substring(0, start) + before + after + text.substring(end);
-        }
+        const newValue = text.substring(0, start) + before + selected + after + text.substring(end);
         field.value = newValue;
+        const cursorPos = start + before.length + selected.length + after.length;
         field.focus();
+        field.setSelectionRange(cursorPos, cursorPos);
         onBlockTextInput(itemIdx, bIdx, newValue);
-        // mutateCurrentCategory 會整個重繪 editor，textarea 會被替換，
-        // 這裡重新取得新的 DOM 節點並還原游標位置，避免每次按按鈕都要重新點選欄位。
-        requestAnimationFrame(() => {
-            const refreshed = document.getElementById(fieldId);
-            if (refreshed) {
-                refreshed.focus();
-                const pos = start + before.length + selected.length;
-                refreshed.setSelectionRange(pos, pos);
-            }
-        });
     }
 
     function applyColorMarkup(fieldId, hexColor, itemIdx, bIdx) {
