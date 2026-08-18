@@ -142,32 +142,6 @@ const TRAVEL_CONTENT = {
               "value": "(1)冰島的可口可樂被許多人譽為世界上最好喝的，主要原因在於它使用純淨無污染的冰島水源，天然軟水讓口感更順滑細緻\n\n(2)很多人會問我：冰島可口可樂真的比較好喝嗎？老實說我沒有明顯喝出差別 🤣。{#ff0000}自 2017 年起，玻璃瓶裝和鋁罐裝改由瑞典生產，只有寶特瓶裝仍在冰島本地製造、使用當地水源，想體驗道地風味就選寶特瓶，並認明商品編號 569 開頭才是冰島製的。{/color}就讓大家自己來驗證這個都市傳說是不是真的囉。"
             }
           ]
-        },
-        {
-          "name": "測試",
-          "layout": "sm",
-          "blocks": [
-            {
-              "type": "text",
-              "value": "測試1\n{bold}{#ff0000}測試2{/color}{/bold}\n\n測試3"
-            },
-            {
-              "type": "img",
-              "src": "finland_tax_refund.webp"
-            },
-            {
-              "type": "img",
-              "src": "注音与拼音对照.jpg"
-            },
-            {
-              "type": "text",
-              "value": "哈哈哈\n{#ff0000}咖咖咖{/color}\n\n\n哈哈哈\n{bold}咖咖咖{/bold}\n\n哈哈哈\n咖咖咖"
-            },
-            {
-              "type": "img",
-              "src": "aurora_photography.webp"
-            }
-          ]
         }
       ]
     },

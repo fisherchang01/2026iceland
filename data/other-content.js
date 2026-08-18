@@ -73,38 +73,6 @@ const OTHER_CONTENT = {
           ]
         }
       ]
-    },
-    {
-      "key": "測試工具11",
-      "emoji": "🆕",
-      "title": "A工具",
-      "sub": "abc",
-      "cover": "",
-      "size": "2x2",
-      "items": [
-        {
-          "name": "aaaa",
-          "layout": "sm",
-          "blocks": [
-            {
-              "type": "text",
-              "value": "BBBB\nAAAA\n\n看起{#ff0000}來不錯{/color}"
-            },
-            {
-              "type": "img",
-              "src": "world_heritage.webp"
-            },
-            {
-              "type": "text",
-              "value": "啊咖\n\n怎{#ff0000}麼{/color}了"
-            },
-            {
-              "type": "img",
-              "src": "注音与拼音对照.jpg"
-            }
-          ]
-        }
-      ]
     }
   ]
 };
