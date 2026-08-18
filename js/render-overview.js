@@ -180,7 +180,37 @@ function renderOverview() {
 }
 
 function mountTabContent() {
-  document.getElementById('mount-travel').outerHTML = TRAVEL_HTML;
-  document.getElementById('mount-budget').outerHTML = BUDGET_HTML;
-  document.getElementById('mount-other').outerHTML = OTHER_HTML;
+  // 🛡️ 防御性檢查：如果變數還不存在，等待後重試
+  if (typeof TRAVEL_HTML === 'undefined') {
+    console.warn('⏳ TRAVEL_HTML 尚未準備好，100ms 後重試...');
+    setTimeout(() => {
+      try {
+        mountTabContent();
+      } catch (e) {
+        console.error('❌ mountTabContent 重試失敗:', e);
+      }
+    }, 100);
+    return;
+  }
+  
+  try {
+    const travelEl = document.getElementById('mount-travel');
+    if (travelEl) travelEl.outerHTML = TRAVEL_HTML;
+  } catch (e) {
+    console.error('❌ 掛載體驗頁內容失敗:', e);
+  }
+  
+  try {
+    const budgetEl = document.getElementById('mount-budget');
+    if (budgetEl) budgetEl.outerHTML = BUDGET_HTML;
+  } catch (e) {
+    console.error('❌ 掛載費用頁內容失敗:', e);
+  }
+  
+  try {
+    const otherEl = document.getElementById('mount-other');
+    if (otherEl) otherEl.outerHTML = OTHER_HTML;
+  } catch (e) {
+    console.error('❌ 掛載工具頁內容失敗:', e);
+  }
 }

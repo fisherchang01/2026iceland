@@ -25,13 +25,30 @@ async function loadTravelData() {
     const travelData = await response.json();
     console.log(`✅ 讀取 data/travel-content.json 成功，${travelData.categories.length} 個分類`);
 
-    // 用 render-travel.js 生成 HTML
-    const travelHTMLScript = renderTravelContent(travelData);
+    // 用 render-travel.js 生成 HTML（renderTravelContent 返回純 HTML 字符串）
+    const html = renderTravelContent(travelData);
     
-    // 評估生成的 HTML（這樣可以定義 TRAVEL_HTML 全局變數）
-    eval(travelHTMLScript);
-    
-    console.log('✅ HTML 生成成功');
+    // 🔑 關鍵：設置全局 window.TRAVEL_HTML，以便其他腳本（如 render-overview.js）可以訪問
+    if (html) {
+      window.TRAVEL_HTML = html;
+      console.log('✅ HTML 生成成功，已設置為全局變數 window.TRAVEL_HTML');
+      
+      // 如果 mountTabContent 已經定義，馬上調用（如果 init.js 還沒執行）
+      // 或者等待 init.js 自己調用（更正常的流程）
+      if (typeof mountTabContent === 'function') {
+        // 稍微延遲執行，確保其他 DOM 結構已準備好
+        setTimeout(() => {
+          try {
+            mountTabContent();
+            console.log('✅ 體驗頁面內容已掛載');
+          } catch (e) {
+            console.error('❌ mountTabContent 執行失敗:', e);
+          }
+        }, 100);
+      }
+    } else {
+      console.error('❌ renderTravelContent 返回空值');
+    }
 
   } catch (error) {
     console.error('❌ loadTravelData 錯誤:', error);

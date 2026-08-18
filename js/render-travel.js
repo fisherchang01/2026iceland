@@ -6,6 +6,11 @@
  * 編輯器只改 data/travel-content.json
  */
 
+/**
+ * renderTravelContent(travelData)
+ * 返回HTML內容（去掉外層的const和反引號）
+ * 呼叫方可以設置 window.TRAVEL_HTML = html
+ */
 function renderTravelContent(travelData) {
   if (!travelData || !travelData.categories) {
     console.error('❌ 無效的 travelData 結構');
@@ -77,7 +82,8 @@ function renderTravelContent(travelData) {
 
   html += `</div>`;
   
-  return `const TRAVEL_HTML = \`\n${html}\n\`;`;
+  // 直接返回 HTML 內容（不包含 const TRAVEL_HTML = `...` 的包裝）
+  return html;
 }
 
 function renderItemCard(item) {
