@@ -57,7 +57,55 @@ const OTHER_CONTENT = {
       "sub": "认识各国桑拿、温泉与洗浴习俗",
       "cover": "finnish_sauna.webp",
       "size": "2x2",
-      "items": []
+      "items": [
+        {
+          "name": "芬蘭洗浴",
+          "layout": "sm",
+          "blocks": [
+            {
+              "type": "text",
+              "value": "哈哈哈阿\n哈哈哈阿哈哈哈阿哈哈哈阿哈哈哈阿哈哈哈阿哈哈哈阿哈哈哈阿哈哈哈阿哈哈哈阿哈哈哈阿哈哈哈阿哈哈哈阿哈哈哈阿哈哈哈阿哈哈哈阿哈哈哈阿哈哈哈阿哈哈哈阿哈哈哈阿\n\n\n哈哈哈阿哈哈哈阿哈哈哈阿哈哈哈阿哈哈哈阿哈哈哈阿哈哈哈阿哈哈哈阿哈哈哈阿哈哈哈阿哈哈哈阿哈哈哈阿哈哈哈阿哈哈哈阿哈哈哈阿哈哈哈阿哈哈哈阿{#ff0000}哈哈哈阿哈哈哈{/color}阿哈哈哈阿哈哈哈阿哈哈哈阿哈哈哈阿哈哈哈阿哈哈哈阿哈哈哈阿哈哈哈阿"
+            },
+            {
+              "type": "img",
+              "src": "supermarket_shopping.webp"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "測試工具11",
+      "emoji": "🆕",
+      "title": "A工具",
+      "sub": "abc",
+      "cover": "",
+      "size": "2x2",
+      "items": [
+        {
+          "name": "aaaa",
+          "layout": "sm",
+          "blocks": [
+            {
+              "type": "text",
+              "value": "BBBB\nAAAA\n\n看起{#ff0000}來不錯{/color}"
+            },
+            {
+              "type": "img",
+              "src": "world_heritage.webp"
+            },
+            {
+              "type": "text",
+              "value": "啊咖\n\n怎{#ff0000}麼{/color}了"
+            },
+            {
+              "type": "img",
+              "src": "注音与拼音对照.jpg"
+            }
+          ]
+        }
+      ]
     }
   ]
 };
+
