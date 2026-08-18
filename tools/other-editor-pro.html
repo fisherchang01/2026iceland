@@ -401,8 +401,13 @@
     }
 
     function addCategory() {
-        const key = prompt('輸入分類 key（英數，唯一，一旦建立不得更改）：');
+        const key = prompt('輸入分類 key（僅限英數與底線，唯一，一旦建立不得更改）：');
         if (!key) return;
+        // key 同時是 localStorage 草稿的儲存鍵與資料檔的穩定識別碼，限制字元避免中文／空白造成問題。
+        if (!/^[A-Za-z0-9_]+$/.test(key)) {
+            showNotif('key 只能使用英文字母、數字與底線', 'error');
+            return;
+        }
         if (allCategoryKeysInOrder().includes(key)) {
             showNotif('key 已存在，請換一個', 'error');
             return;
@@ -995,10 +1000,17 @@
 
         const before = countStats(otherData);
         const after = countStats(finalData);
+
+        // 警告級檢查：cover 為空不阻擋上傳，但總覽頁會退回 emoji 佔位，先提醒一聲。
+        const noCover = finalData.categories.filter(c => !c.cover).map(c => c.title || c.key);
+        const coverWarn = noCover.length
+            ? `<div style="margin-top:8px;color:#b8860b;">⚠️ 以下分類尚未設定封面圖，總覽頁會顯示 emoji 佔位：<br>${noCover.join('、')}</div>`
+            : '';
+
         document.getElementById('diffSummary').innerHTML =
             `分類 ${before.categories} → ${after.categories}<br>` +
             `項目 ${before.items} → ${after.items}<br>` +
-            `圖片 ${before.imgs} → ${after.imgs}`;
+            `圖片 ${before.imgs} → ${after.imgs}` + coverWarn;
         window.__pendingUploadData = finalData;
         document.getElementById('uploadModal').classList.add('open');
     }
