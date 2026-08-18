@@ -4,7 +4,7 @@ const DAY_CACHE = CACHE_PREFIX + 'current-days-2026-07-26-aurora-link-v5';
 
 // 僅預先快取程式、資料與 App 圖示；不預載照片大圖、所有路線圖或 PDF。
 const SHELL_ASSETS = [
-  './', './index.html', './manifest.webmanifest', './css/style.css',
+  './', './index.html', './manifest.webmanifest', './css/style.css', './css/catalog-editorial.css',
   './images/app-icon-192.png', './images/app-icon-512.png',
   './data/trip-config.js', './data/budget-config.js', './data/firebase-settings.js', './data/catalog-config.js',
   './data/trip-days.js', './data/trip-details.js', './data/travel-content.js',
