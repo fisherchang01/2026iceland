@@ -214,7 +214,7 @@
         <div style="display:flex;justify-content:space-between;align-items:center;">
             <div id="imgModalStatus" style="font-size:11px;color:#999;">載入中...</div>
             <label style="font-size:11px;color:#666;display:flex;align-items:center;gap:4px;cursor:pointer;">
-                <input type="checkbox" id="imgOnlyUnused" onchange="renderImgGrid(imageListCache)"> 只看未使用
+                <input type="checkbox" id="imgShowUsed" onchange="renderImgGrid(imageListCache)"> 一併顯示已使用
             </label>
         </div>
         <div class="modal-grid" id="imgModalGrid"></div>
@@ -452,13 +452,37 @@
         updateDraftBadge();
     }
 
-    function mutateCurrentCategory(mutator) {
+    // renderEditor() 會整段重建 .editor-content 的 DOM，捲動位置因此歸零 —— 這就是新增／搬移
+    // 項目或 block 時「畫面跳回頂端」的原因。這裡在重繪前後保留捲動位置，並可選擇把剛動過的
+    // 欄位捲進可視範圍、給予焦點，讓新增之後可以直接接著打字。
+    function mutateCurrentCategory(mutator, focusTargetId) {
+        const scroller = document.querySelector('.editor-content');
+        const prevScroll = scroller ? scroller.scrollTop : 0;
         const cat = JSON.parse(JSON.stringify(getCategory(currentKey))); // deep clone
         mutator(cat);
         drafts[currentKey] = cat;
         saveDrafts();
         renderSidebar();
         renderEditor();
+        restoreEditorView(prevScroll, focusTargetId);
+    }
+
+    function restoreEditorView(prevScroll, focusTargetId) {
+        const scroller = document.querySelector('.editor-content');
+        if (!scroller) return;
+        scroller.scrollTop = prevScroll;          // 先回到原本看的位置
+        if (!focusTargetId) return;               // 刪除之類的操作只還原捲動，不搶焦點
+        const el = document.getElementById(focusTargetId);
+        if (!el) return;                          // 搬移到邊界時目標不存在，直接略過
+        const focusable = (el.tagName === 'TEXTAREA' || el.tagName === 'INPUT')
+            ? el : el.querySelector('textarea, input');
+        if (focusable) focusable.focus({ preventScroll: true });
+        // 只有當目標不在可視範圍時才捲動，避免每次操作畫面都跳一下
+        const box = el.getBoundingClientRect();
+        const sBox = scroller.getBoundingClientRect();
+        if (box.top < sBox.top + 8 || box.bottom > sBox.bottom - 8) {
+            el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+        }
     }
 
     // 輕量更新：只改資料 + localStorage + 側欄／預覽的局部更新，
@@ -577,6 +601,7 @@
         (cat.items || []).forEach((item, idx) => {
             const box = document.createElement('div');
             box.className = 'item-block';
+            box.id = `itemBox_${idx}`;               // 供 restoreEditorView() 定位
             box.innerHTML = `
                 <div class="item-block-header">
                     <div class="item-block-title">項目 #${idx + 1}</div>
@@ -589,7 +614,7 @@
                 <div class="field-row">
                     <div class="field-group">
                         <label class="field-label">名稱 (name)</label>
-                        <input type="text" value="${escapeAttr(item.name || '')}" oninput="onItemFieldInput(${idx},'name',this.value)">
+                        <input type="text" id="itemName_${idx}" value="${escapeAttr(item.name || '')}" oninput="onItemFieldInput(${idx},'name',this.value)">
                     </div>
                     <div class="field-group" style="max-width:100px;">
                         <label class="field-label">layout</label>
@@ -615,10 +640,12 @@
     }
 
     function addItem() {
+        const cur = getCategory(currentKey);
+        const newIdx = (cur && cur.items) ? cur.items.length : 0;
         mutateCurrentCategory(cat => {
             if (!cat.items) cat.items = [];
             cat.items.push({ name: '', layout: 'sm', blocks: [] });
-        });
+        }, `itemName_${newIdx}`);
     }
 
     function deleteItem(idx) {
@@ -633,7 +660,7 @@
             const tmp = cat.items[idx];
             cat.items[idx] = cat.items[j];
             cat.items[j] = tmp;
-        });
+        }, `itemBox_${idx + dir}`);
     }
 
     function onItemFieldInput(idx, field, value) {
@@ -651,6 +678,7 @@
         (item.blocks || []).forEach((block, bIdx) => {
             const row = document.createElement('div');
             row.className = 'block-row';
+            row.id = `blockRow_${itemIdx}_${bIdx}`;   // 供 restoreEditorView() 定位
             if (block.type === 'text') {
                 const fieldId = `blockText_${itemIdx}_${bIdx}`;
                 row.innerHTML = `
@@ -724,13 +752,18 @@
     }
 
     function addBlock(itemIdx, type) {
+        const cur = getCategory(currentKey);
+        const bIdx = ((cur.items[itemIdx] || {}).blocks || []).length;
+        const focusId = type === 'text' ? `blockText_${itemIdx}_${bIdx}`
+            : type === 'heading' ? `blockHeading_${itemIdx}_${bIdx}`
+            : `blockRow_${itemIdx}_${bIdx}`;   // 圖片沒有輸入欄位，捲到該區塊即可
         mutateCurrentCategory(cat => {
             const item = cat.items[itemIdx];
             if (!item.blocks) item.blocks = [];
             if (type === 'text') item.blocks.push({ type: 'text', value: '' });
             else if (type === 'img') item.blocks.push({ type: 'img', src: '' });
             else if (type === 'heading') item.blocks.push({ type: 'heading', value: '' });
-        });
+        }, focusId);
     }
 
     function deleteBlock(itemIdx, bIdx) {
@@ -745,7 +778,7 @@
             const tmp = blocks[bIdx];
             blocks[bIdx] = blocks[j];
             blocks[j] = tmp;
-        });
+        }, `blockRow_${itemIdx}_${bIdx + dir}`);
     }
 
     function onBlockTextInput(itemIdx, bIdx, value) {
@@ -778,7 +811,8 @@
     }
 
     function setBlockImage(itemIdx, bIdx, filename) {
-        mutateCurrentCategory(cat => { cat.items[itemIdx].blocks[bIdx].src = filename; });
+        mutateCurrentCategory(cat => { cat.items[itemIdx].blocks[bIdx].src = filename; },
+            `blockRow_${itemIdx}_${bIdx}`);
     }
 
     // ---------- 圖片挑選器 ----------
@@ -789,7 +823,9 @@
         document.getElementById('imgModalGrid').innerHTML = '';
         document.getElementById('imgModalManual').style.display = 'none';
         document.getElementById('imgModalStatus').textContent = '載入中...';
-        document.getElementById('imgOnlyUnused').checked = false;
+        // 預設只列出尚未被使用的圖片（剛上傳的新照片會直接出現在最前面的視野裡）；
+        // 需要重複使用同一張圖時，勾選「一併顯示已使用」即可看到全部。
+        document.getElementById('imgShowUsed').checked = false;
         loadImageList();
     }
 
@@ -848,13 +884,22 @@
     function renderImgGrid(files) {
         if (!files) return;
         const used = computeUsedImages();
-        const onlyUnused = document.getElementById('imgOnlyUnused').checked;
+        const showUsed = document.getElementById('imgShowUsed').checked;
         const unusedCount = files.filter(f => !used.has(f)).length;
         document.getElementById('imgModalStatus').textContent =
-            `共 ${files.length} 張圖片（其中 ${unusedCount} 張尚未使用），點選即套用`;
+            `共 ${files.length} 張圖片，${unusedCount} 張尚未使用` +
+            (showUsed ? '（目前顯示全部）' : '（目前只顯示未使用）') + '，點選即套用';
         const grid = document.getElementById('imgModalGrid');
         grid.innerHTML = '';
-        const displayFiles = onlyUnused ? files.filter(f => !used.has(f)) : files;
+        const displayFiles = showUsed ? files : files.filter(f => !used.has(f));
+        if (displayFiles.length === 0) {
+            const empty = document.createElement('div');
+            empty.style.cssText = 'grid-column:1/-1;padding:24px 12px;text-align:center;font-size:12px;color:#888;line-height:1.7;';
+            empty.innerHTML = '目前所有圖片都已經被使用了。<br>要重複挑選同一張圖，請勾選上方的「一併顯示已使用」。';
+            grid.appendChild(empty);
+            document.getElementById('imgModalManual').style.display = 'flex';
+            return;
+        }
         displayFiles.forEach(name => {
             const wrap = document.createElement('div');
             wrap.className = 'thumb-wrap';
