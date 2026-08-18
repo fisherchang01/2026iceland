@@ -103,6 +103,22 @@
     .btn-danger:hover { background: #e85555; }
     .btn-mini { padding: 3px 7px; font-size: 10px; }
 
+    .markup-toolbar { display: flex; gap: 4px; }
+    .mini-btn {
+        padding: 4px 8px; border: 1px solid #d0d0d0; background: white; border-radius: 3px;
+        cursor: pointer; font-size: 11px; font-weight: 500; transition: all .2s;
+    }
+    .mini-btn:hover { background: #f5f5f5; border-color: #999; }
+    .color-btn {
+        padding: 4px 6px; border: 1px solid #d0d0d0; background: white; border-radius: 3px;
+        cursor: pointer; font-size: 10px; font-weight: 700; color: white; width: 20px; height: 20px;
+        display: flex; align-items: center; justify-content: center; transition: all .2s;
+    }
+    .color-btn.red { background: #ff0000; border-color: #cc0000; }
+    .color-btn.blue { background: #0066cc; border-color: #0052a3; }
+    .color-btn.green { background: #00aa00; border-color: #008800; }
+    .color-btn:hover { transform: scale(1.1); box-shadow: 0 2px 4px rgba(0,0,0,.2); }
+
     .blocks-list { display: flex; flex-direction: column; gap: 8px; }
     .block-row {
         border: 1px solid #e0e0e0; border-radius: 4px; padding: 8px; background: white;
@@ -568,6 +584,7 @@
             const row = document.createElement('div');
             row.className = 'block-row';
             if (block.type === 'text') {
+                const fieldId = `blockText_${itemIdx}_${bIdx}`;
                 row.innerHTML = `
                     <div class="block-row-head">
                         <span class="block-type-badge">文字</span>
@@ -577,7 +594,15 @@
                             <button class="btn btn-danger btn-mini" onclick="deleteBlock(${itemIdx},${bIdx})">刪除</button>
                         </div>
                     </div>
-                    <textarea oninput="onBlockTextInput(${itemIdx},${bIdx},this.value)">${escapeAttr(block.value || '')}</textarea>
+                    <div class="markup-toolbar">
+                        <button class="mini-btn" onclick="insertMarkup('${fieldId}','{bold}','{/bold}',${itemIdx},${bIdx})" title="粗體"><strong>B</strong></button>
+                        <button class="mini-btn" onclick="insertMarkup('${fieldId}','{italic}','{/italic}',${itemIdx},${bIdx})" title="斜體"><em>I</em></button>
+                        <button class="mini-btn" onclick="insertMarkup('${fieldId}','/n','',${itemIdx},${bIdx})" title="換行">↵</button>
+                        <button class="color-btn red" onclick="applyColorMarkup('${fieldId}','#ff0000',${itemIdx},${bIdx})" title="紅色">R</button>
+                        <button class="color-btn blue" onclick="applyColorMarkup('${fieldId}','#0066cc',${itemIdx},${bIdx})" title="藍色">B</button>
+                        <button class="color-btn green" onclick="applyColorMarkup('${fieldId}','#00aa00',${itemIdx},${bIdx})" title="綠色">G</button>
+                    </div>
+                    <textarea id="${fieldId}" oninput="onBlockTextInput(${itemIdx},${bIdx},this.value)">${escapeAttr(block.value || '')}</textarea>
                 `;
             } else if (block.type === 'img') {
                 const src = block.src ? `https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/main/${IMAGE_DIR}${block.src}` : '';
@@ -643,6 +668,42 @@
 
     function onBlockTextInput(itemIdx, bIdx, value) {
         mutateCurrentCategory(cat => { cat.items[itemIdx].blocks[bIdx].value = value; });
+    }
+
+    // 文字標記格式（§8.6）：/n 換行、{bold}/{italic}/{#RRGGBB} color。
+    // 插入邏輯與 trip-editor-pro.html 的 insertToField() 一致：以游標選取範圍為準，
+    // 有選取文字時前後包住，沒有選取時在游標處插入空白標記。
+    function insertMarkup(fieldId, before, after, itemIdx, bIdx) {
+        const field = document.getElementById(fieldId);
+        if (!field) return;
+        const start = field.selectionStart;
+        const end = field.selectionEnd;
+        const text = field.value;
+        const selected = text.substring(start, end);
+        let newValue;
+        if (selected) {
+            newValue = text.substring(0, start) + before + selected + after + text.substring(end);
+        } else {
+            newValue = text.substring(0, start) + before + after + text.substring(end);
+        }
+        field.value = newValue;
+        field.focus();
+        onBlockTextInput(itemIdx, bIdx, newValue);
+        // mutateCurrentCategory 會整個重繪 editor，textarea 會被替換，
+        // 這裡重新取得新的 DOM 節點並還原游標位置，避免每次按按鈕都要重新點選欄位。
+        requestAnimationFrame(() => {
+            const refreshed = document.getElementById(fieldId);
+            if (refreshed) {
+                refreshed.focus();
+                const pos = start + before.length + selected.length;
+                refreshed.setSelectionRange(pos, pos);
+            }
+        });
+    }
+
+    function applyColorMarkup(fieldId, hexColor, itemIdx, bIdx) {
+        const hex = hexColor.replace('#', '');
+        insertMarkup(fieldId, `{#${hex}}`, '{/color}', itemIdx, bIdx);
     }
 
     function setBlockImage(itemIdx, bIdx, filename) {
@@ -860,8 +921,10 @@
             if (endIdx < startIdx) throw new Error('檔案結構異常，中止上傳');
             const footer = oldContent.substring(endIdx + 2);
 
-            // guard 5：header 非空且包含變數宣告的註解／宣告本身應存在於原檔
+            // guard 5：header 非空，且確認舊檔案本身確實包含 const TRAVEL_CONTENT 宣告
+            // （雙重防呆：即使前面 indexOf(marker) 已隱含此條件，仍依規格書字面要求明確檢查一次）
             if (header.trim().length === 0) throw new Error('header 異常，中止上傳');
+            if (oldContent.indexOf(`const ${VAR_NAME}`) === -1) throw new Error('舊檔案缺少 const ' + VAR_NAME + ' 宣告，中止上傳');
 
             const newContent = header + marker + JSON.stringify(finalData, null, 2) + ';\n' + footer;
 
