@@ -113,16 +113,18 @@
   }
 
   // 通用渲染器：data 需含 { categories: [...] }，pageId 為外層 <div class="page" id="...">
-  // extraHtml（選填）：插在 categories 之前的固定骨架 HTML（例如工具頁的編輯器入口卡片），
-  // 不屬於資料，純粹是 UI，字串原樣輸出、不 escape。體驗頁呼叫時不傳這個參數，向下相容。
-  function renderCatalogPage(data, pageId, extraHtml) {
+  // extraBefore（選填）：插在 categories 之前的固定骨架 HTML；extraAfter（選填）：插在 categories 之後。
+  // 兩者都不屬於資料，純粹是 UI，字串原樣輸出、不 escape。體驗頁呼叫時都不傳，向下相容。
+  function renderCatalogPage(data, pageId, extraBefore, extraAfter) {
     var categoriesHtml = (data.categories || []).map(renderCategory).join('\n\n');
-    var extra = extraHtml ? (extraHtml + '\n\n') : '';
+    var before = extraBefore ? (extraBefore + '\n\n') : '';
+    var after = extraAfter ? ('\n\n' + extraAfter) : '';
     return (
       '<div class="page" id="' + pageId + '">\n' +
       '  <div class="page-inner">\n\n' +
-      extra +
-      categoriesHtml + '\n\n' +
+      before +
+      categoriesHtml +
+      after + '\n\n' +
       '  </div>\n' +
       '</div>'
     );

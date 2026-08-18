@@ -49,7 +49,11 @@
     '    </div>';
 
   function renderOtherHTML() {
-    return window.renderCatalogPage(OTHER_CONTENT, 'page-other', TOOL_EDITOR_SECTION_HTML);
+    // 編輯器入口卡片只要出現在「工具總覽」頁最下方，個別分類詳情頁不需要。
+    // 放在 categories 之後（extraAfter），並靠 CSS 用 catalog-nav.js 既有的
+    // .catalog-show-overview class（總覽模式時會加到 #page-other 上）控制顯示/隱藏，
+    // 不需要更動 catalog-nav.js。
+    return window.renderCatalogPage(OTHER_CONTENT, 'page-other', null, TOOL_EDITOR_SECTION_HTML);
   }
 
   window.renderOtherHTML = renderOtherHTML;

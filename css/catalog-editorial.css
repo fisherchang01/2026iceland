@@ -63,6 +63,13 @@
   :is(#page-travel,#page-other) .catalog-pill-overview::after { display: none; }
 
   :is(#page-travel,#page-other).catalog-show-overview .catalog-overview-heading { display: none; }
+
+  /* 編輯器入口卡片（工具頁專屬）只在總覽模式顯示，個別分類詳情頁隱藏。
+     catalog-nav.js 選到總覽時會替 #page-other 加上 .catalog-show-overview，
+     這裡純粹用既有的 class hook 控制顯示/隱藏，不用改 catalog-nav.js。 */
+  #page-other .tool-editor-section { display: none; }
+  #page-other.catalog-show-overview .tool-editor-section { display: block; margin-top: 20px; }
+
   :is(#page-travel,#page-other) .catalog-overview { margin-bottom: 10px; }
   :is(#page-travel,#page-other) .catalog-overview-grid {
     grid-template-columns: repeat(2, minmax(0,1fr));
