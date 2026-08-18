@@ -10,6 +10,7 @@ const SHELL_ASSETS = [
   './data/trip-days.js', './data/trip-details.js', './data/travel-content.js',
   './data/budget-content.js', './data/other-content.js', './data/docs-content.js', './data/trip-schema.js',
   './js/nav.js', './js/catalog-nav.js', './js/spot-icons.js', './js/render-itinerary.js', './js/budget.js',
+  './js/render-travel.js',
   './js/render-overview.js', './js/render-docs.js', './js/init.js', './js/firebase-config.js'
 ];
 

@@ -180,22 +180,9 @@ function renderOverview() {
 }
 
 function mountTabContent() {
-  // 🛡️ 防御性檢查：如果變數還不存在，等待後重試
-  if (typeof TRAVEL_HTML === 'undefined') {
-    console.warn('⏳ TRAVEL_HTML 尚未準備好，100ms 後重試...');
-    setTimeout(() => {
-      try {
-        mountTabContent();
-      } catch (e) {
-        console.error('❌ mountTabContent 重試失敗:', e);
-      }
-    }, 100);
-    return;
-  }
-  
   try {
     const travelEl = document.getElementById('mount-travel');
-    if (travelEl) travelEl.outerHTML = TRAVEL_HTML;
+    if (travelEl) travelEl.outerHTML = renderTravelHTML();
   } catch (e) {
     console.error('❌ 掛載體驗頁內容失敗:', e);
   }
