@@ -1,6 +1,8 @@
 const CACHE_PREFIX = 'trip-' + self.registration.scope.replace(/[^a-z0-9]+/gi, '-').toLowerCase();
-const SHELL_CACHE = CACHE_PREFIX + 'shell-2026-07-26-aurora-link-v5';
-const DAY_CACHE = CACHE_PREFIX + 'current-days-2026-07-26-aurora-link-v5';
+// 改動 js/ 或 css/ 之後，務必把下面兩個版本字串往上調，否則舊快取不會被清掉。
+// 只改 data/ 的內容不需要動這裡（data/*.js 走 network-first，線上一定拿得到最新版）。
+const SHELL_CACHE = CACHE_PREFIX + 'shell-2026-08-18-catalog-data-v1';
+const DAY_CACHE = CACHE_PREFIX + 'current-days-2026-08-18-catalog-data-v1';
 
 // 僅預先快取程式、資料與 App 圖示；不預載照片大圖、所有路線圖或 PDF。
 const SHELL_ASSETS = [
@@ -12,7 +14,8 @@ const SHELL_ASSETS = [
   './js/nav.js', './js/catalog-nav.js', './js/spot-icons.js', './js/render-itinerary.js', './js/budget.js',
   './js/render-travel.js',
   './js/render-other.js',
-  './js/render-overview.js', './js/render-docs.js', './js/init.js', './js/firebase-config.js'
+  './js/render-overview.js', './js/render-docs.js', './js/render-aurora.js',
+  './js/init.js', './js/firebase-config.js'
 ];
 
 self.addEventListener('install', function(event) {
@@ -52,6 +55,20 @@ self.addEventListener('fetch', function(event) {
     return;
   }
 
+  // data/*.js 走 network-first：這些檔案會被 tools/ 底下的編輯器直接改寫，
+  // 但 sw.js 本身不會跟著變，舊的 Service Worker 也就不會重新安裝。
+  // 若這裡也用 cache-first，編輯器上傳後手機／PWA 會永遠停在舊內容。
+  // 線上一律取最新版並回寫快取，離線時才退回快取。
+  if (url.pathname.indexOf('/data/') !== -1) {
+    event.respondWith(fetch(event.request).then(function(response) {
+      var copy = response.clone();
+      caches.open(SHELL_CACHE).then(function(cache){ cache.put(event.request, copy); });
+      return response;
+    }).catch(function(){ return caches.match(event.request); }));
+    return;
+  }
+
+  // 其餘 shell 資源維持 cache-first（版本更新靠上方 SHELL_CACHE 字串）。
   event.respondWith(caches.match(event.request).then(function(cached) {
     if (cached) return cached;
     return fetch(event.request);
