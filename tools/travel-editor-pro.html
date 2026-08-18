@@ -435,7 +435,7 @@
     // ========== 配置 ==========
     const GITHUB_OWNER = 'fisherchang01';
     const GITHUB_REPO = '2026iceland';
-    const GITHUB_FILE = 'data/travel-data.js';
+    const GITHUB_FILE = 'data/travel-content.js';  // ✅ 改為指向網站使用的文件
 
     // ========== 全局變數 ==========
     let travelData = {};
@@ -462,29 +462,133 @@
         
         const content = await resp.text();
         
-        // 嘗試匹配 JSON 格式 (TRAVEL_DATA)
+        // 嘗試匹配 JSON 格式
         let match = content.match(/const TRAVEL_DATA = ({[\s\S]*?});/);
         if (match) {
             eval(`travelData = ${match[1]}`);
             return;
         }
         
-        // 如果是 HTML 格式，提示用戶
-        if (content.includes('const TRAVEL_HTML') || content.includes('const TRAVEL_CONTENT')) {
-            throw new Error(`
-編輯器無法編輯 HTML 格式的內容。
-當前文件是 ${GITHUB_FILE}，包含 HTML 字符串格式。
-
-建議方案：
-1. 使用在線編輯器（travel-editor-v3.html）
-2. 手動編輯 GitHub 上的 ${GITHUB_FILE} 文件
-3. 或聯繫管理員將內容轉換為可編輯格式
-
-請查看 tools/index.html 了解其他編輯器選項。
-            `.trim());
+        // 嘗試匹配 HTML 格式（travel-content.js）
+        if (content.includes('const TRAVEL_HTML') || content.includes('item-card-title')) {
+            parseHTMLTravelData(content);
+            return;
         }
         
         throw new Error('無法解析數據結構，文件格式不符合預期');
+    }
+    
+    function parseHTMLTravelData(content) {
+        travelData = {};
+        
+        // 提取 HTML 内容（在 backtick 之间）
+        const htmlMatch = content.match(/const TRAVEL_HTML = `([\s\S]*?)`;/);
+        if (!htmlMatch) throw new Error('無法找到 TRAVEL_HTML');
+        
+        const html = htmlMatch[1];
+        
+        // 解析每個分類（travel-collapse）
+        const categoryRegex = /<div class="travel-collapse"[\s\S]*?<h3[^>]*>([^<]+)<\/h3>[\s\S]*?<div class="travel-collapse-body">([\s\S]*?)<\/div>\s*<\/div>/g;
+        let categoryMatch;
+        
+        while ((categoryMatch = categoryRegex.exec(html)) !== null) {
+            const categoryTitle = categoryMatch[1].trim();
+            const categoryBody = categoryMatch[2];
+            
+            // 轉換分類標題為 key
+            let categoryKey = categoryTitleToKey(categoryTitle);
+            
+            // 解析該分類下的所有項目
+            const items = [];
+            const itemRegex = /<div class="item-card[^"]*"[\s\S]*?<h4[^>]*>([^<]+)<\/h4>[\s\S]*?<div class="item-detail">[\s\S]*?<p>([\s\S]*?)<\/p>/g;
+            let itemMatch;
+            
+            while ((itemMatch = itemRegex.exec(categoryBody)) !== null) {
+                const title = itemMatch[1].trim();
+                const content = itemMatch[2].trim();
+                
+                items.push({
+                    name: title,
+                    desc: extractFirstLine(content),
+                    content: cleanHTMLContent(content)
+                });
+            }
+            
+            if (items.length > 0) {
+                travelData[categoryKey] = {
+                    title: categoryTitle,
+                    items: items
+                };
+            }
+        }
+        
+        if (Object.keys(travelData).length === 0) {
+            throw new Error('無法解析任何分類或項目');
+        }
+    }
+    
+    function generateHTMLContent(travelData) {
+        // 生成完整的 HTML 格式内容
+        let html = 'const TRAVEL_HTML = `\n<style id="travel-editorial-style">\n  /* 保留原有 CSS 樣式 */\n  :is(#page-travel,#page-other) {\n    --paper: #fbf8f1;\n    --paper-deep: #eee7da;\n    --paper-line: #d8cdbd;\n    --forest: #3f6542;\n    --forest-deep: #294a31;\n    --ink: #27312d;\n    --muted-ink: #68736d;\n  }\n</style>\n\n<div class="travel-container">\n';
+
+        // 遍历每个分类
+        Object.entries(travelData).forEach(([categoryKey, category]) => {
+            html += `  <div class="travel-collapse">\n`;
+            html += `    <h3 class="travel-collapse-title">${escapeHTML(category.title)}</h3>\n`;
+            html += `    <div class="travel-collapse-body">\n`;
+            
+            // 每行显示2个项目
+            const items = category.items || [];
+            for (let i = 0; i < items.length; i += 2) {
+                html += `      <div class="item-row">\n`;
+                
+                // 第一个项目
+                const item1 = items[i];
+                html += generateItemHTML(item1);
+                
+                // 第二个项目（如果存在）
+                if (i + 1 < items.length) {
+                    const item2 = items[i + 1];
+                    html += generateItemHTML(item2);
+                }
+                
+                html += `      </div>\n`;
+            }
+            
+            html += `    </div>\n`;
+            html += `  </div>\n`;
+        });
+
+        html += `</div>\n`;
+        html += '`';
+        
+        return html;
+    }
+    
+    function generateItemHTML(item) {
+        let html = `        <div class="item-card item-sm">\n`;
+        html += `          <h4 class="item-card-title">${escapeHTML(item.name)}</h4>\n`;
+        html += `          <div class="item-detail">\n`;
+        
+        // 保留原有内容的段落格式
+        const content = item.content || '';
+        html += `            <p>${content}</p>\n`;
+        
+        html += `          </div>\n`;
+        html += `        </div>\n`;
+        
+        return html;
+    }
+    
+    function escapeHTML(text) {
+        const map = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        };
+        return text.replace(/[&<>"']/g, m => map[m]);
     }
 
     function loadDraftsFromStorage() {
@@ -747,9 +851,19 @@
                 `https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/main/${GITHUB_FILE}`
             );
             const oldContent = await getResp.text();
-            const header = oldContent.substring(0, oldContent.indexOf('const TRAVEL_DATA = {'));
-            const footer = oldContent.substring(oldContent.indexOf('};') + 2);
-            const newContent = header + 'const TRAVEL_DATA = ' + JSON.stringify(travelData, null, 2) + ';\n' + footer;
+            
+            // 生成 HTML 格式的內容
+            const newHTMLContent = generateHTMLContent(travelData);
+            
+            // 保留 header（在 TRAVEL_HTML 之前的部分）
+            const headerMatch = oldContent.match(/^([\s\S]*?)const TRAVEL_HTML = `/);
+            const header = headerMatch ? headerMatch[1] : '';
+            
+            // 保留 footer（在 TRAVEL_HTML 之後的部分）
+            const footerMatch = oldContent.match(/`;[\s\S]*$/);
+            const footer = footerMatch ? footerMatch[0].substring(2) : ';';
+            
+            const newContent = header + newHTMLContent + footer;
 
             // 獲取 SHA
             const shaResp = await fetch(
@@ -768,7 +882,7 @@
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        message: `📝 編輯體驗內容：${draftCount} 個項目 | travel-data.js`,
+                        message: `📝 編輯體驗內容：${draftCount} 個項目 | travel-content.js`,
                         content: utf8ToBase64(newContent),
                         sha: fileData.sha
                     })
