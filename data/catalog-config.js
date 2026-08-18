@@ -15,8 +15,8 @@ const CATALOG_PAGE_META = window.CATALOG_PAGE_META = {
   },
   other: {
     overview: '工具总览', pageId: 'page-other',
-    labels: ['冰岛退税', '芬兰退税', '极光机率', '拍摄极光', '冰岛加油', '洗浴文化'],
-    sizes:  ['2x2',      '2x2',      '2x2',      '2x2',      '2x2',      '2x2']
+    get labels() { return OTHER_CONTENT.categories.map(c => c.title); },
+    get sizes()  { return OTHER_CONTENT.categories.map(c => c.size || '2x2'); }
   }
 };
 

@@ -196,7 +196,7 @@ function mountTabContent() {
   
   try {
     const otherEl = document.getElementById('mount-other');
-    if (otherEl) otherEl.outerHTML = OTHER_HTML;
+    if (otherEl) otherEl.outerHTML = renderOtherHTML();
   } catch (e) {
     console.error('❌ 掛載工具頁內容失敗:', e);
   }
