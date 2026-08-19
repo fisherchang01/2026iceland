@@ -305,6 +305,247 @@
             background: #218838;
         }
 
+        .btn-danger {
+            background: #ffe5e5;
+            color: #c0392b;
+        }
+
+        .btn-danger:hover {
+            background: #ffcccc;
+        }
+
+        .btn-mini {
+            padding: 4px 8px;
+            font-size: 11px;
+        }
+
+        /* ===== 階段 D：block 編輯器 ===== */
+        .blocks-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .blocks-empty {
+            font-size: 12px;
+            color: #999;
+            padding: 10px;
+            background: #f9f9f9;
+            border-radius: 4px;
+            border: 1px dashed #ddd;
+        }
+
+        .block-row {
+            border: 1px solid #e5e5e5;
+            border-radius: 6px;
+            padding: 10px;
+            background: #fafafa;
+            cursor: grab;
+        }
+
+        .block-row.dragging {
+            opacity: 0.4;
+        }
+
+        .block-row-head {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .block-drag-handle {
+            color: #aaa;
+            font-size: 14px;
+            cursor: grab;
+        }
+
+        .block-type-badge {
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 10px;
+            background: #e5e5ff;
+            color: #4444aa;
+        }
+
+        .block-type-badge.heading {
+            background: #ffe5c0;
+            color: #a06a10;
+        }
+
+        .item-block-actions {
+            margin-left: auto;
+            display: flex;
+            gap: 4px;
+        }
+
+        .markup-toolbar {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 6px;
+        }
+
+        .block-row textarea,
+        .block-row input[type="text"] {
+            width: 100%;
+            padding: 6px 8px;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
+            font-size: 12px;
+            font-family: monospace;
+        }
+
+        .block-img-preview {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .block-img-preview img {
+            width: 80px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 4px;
+            background: #eee;
+        }
+
+        .block-add-row {
+            display: flex;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        /* ===== 階段 D：照片池面板 ===== */
+        .photo-panel-sub {
+            font-size: 11px;
+            color: #888;
+            margin: 4px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .photo-pool-header { margin-top: 12px; }
+
+        .pool-toggle {
+            display: flex;
+            gap: 4px;
+        }
+
+        .pool-toggle-btn {
+            padding: 3px 8px;
+            font-size: 10px;
+            border: 1px solid #d0d0d0;
+            background: white;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        .pool-toggle-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .photo-thumb-row {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding: 4px 0;
+        }
+
+        .photo-thumb-row.wrap {
+            flex-wrap: wrap;
+            overflow-x: visible;
+            max-height: 260px;
+            overflow-y: auto;
+        }
+
+        .thumb-wrap {
+            position: relative;
+            width: 84px;
+            flex-shrink: 0;
+            text-align: center;
+        }
+
+        .thumb-wrap img {
+            width: 84px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 4px;
+            background: #eee;
+            display: block;
+        }
+
+        .carousel-thumb {
+            cursor: grab;
+        }
+
+        .carousel-thumb.dragging {
+            opacity: 0.4;
+        }
+
+        .thumb-wrap .fname {
+            font-size: 9px;
+            color: #888;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .thumb-remove-btn {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            border: none;
+            background: #ff6b6b;
+            color: white;
+            font-size: 11px;
+            line-height: 1;
+            cursor: pointer;
+        }
+
+        .thumb-actions {
+            display: flex;
+            gap: 2px;
+            justify-content: center;
+            margin-top: 2px;
+        }
+
+        .thumb-actions .btn-mini {
+            padding: 2px 4px;
+            font-size: 9px;
+        }
+
+        .photo-pool-status {
+            font-size: 11px;
+            color: #888;
+            padding: 8px;
+        }
+
+        .photo-pool-status.error {
+            color: #c0392b;
+        }
+
+        .manual-img-row {
+            display: flex;
+            gap: 6px;
+            padding: 8px;
+            align-items: center;
+        }
+
+        .manual-img-row input {
+            flex: 1;
+            padding: 5px 8px;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
+            font-size: 11px;
+        }
+
         .preview-panel {
             background: #f9f9f9;
             border-left: 1px solid #e5e5e5;
@@ -401,7 +642,16 @@
         let tripData = null;
         let currentDay = null;
         let currentSpotIndex = null;
-        let drafts = {}; // { 'day1_0': {...}, 'day2_1': {...} }
+        let drafts = {}; // { 'day1_kefairport': {...} }
+
+        // 階段 D：深度介紹 block 編輯器與照片池面板的編輯狀態。
+        // 跟 desc/deepDesc/note/map 一樣，只在切換景點或按「本地保存」時才寫回 drafts，
+        // 編輯過程中都是這兩個陣列的複本，不直接改 tripData。
+        let currentDeepBlocks = [];
+        let currentSpotImages = [];
+        let photoPoolFilter = 'spot'; // 'spot' | 'unused' | 'all'
+        let photoPoolCache = null;    // images/spots/medium/ 目錄列表快取（跨景點共用，同一個目錄）
+        const SPOT_IMAGE_DIR = 'images/spots/medium/';
 
         function utf8ToBase64(str) {
             try {
@@ -459,6 +709,386 @@
         function applyColorToField(fieldId, hexColor) {
             const hex = hexColor.replace('#', '');
             insertToField(fieldId, `{#${hex}}`, '{/color}');
+        }
+
+        // ===== 階段 D：深度介紹 block 編輯器 =====
+
+        function renderBlocksList() {
+            const list = document.getElementById('blocksList');
+            if (!list) return;
+            list.innerHTML = '';
+            if (!currentDeepBlocks.length) {
+                const empty = document.createElement('div');
+                empty.className = 'blocks-empty';
+                empty.textContent = '尚未轉成圖文混排，目前顯示的是上方 deepDesc 純文字。';
+                list.appendChild(empty);
+                return;
+            }
+            currentDeepBlocks.forEach((block, bIdx) => {
+                const row = document.createElement('div');
+                row.className = 'block-row';
+                row.id = `blockRow_${bIdx}`;
+                row.draggable = true;
+                row.dataset.idx = bIdx;
+                row.addEventListener('dragstart', onBlockDragStart);
+                row.addEventListener('dragover', onBlockDragOver);
+                row.addEventListener('drop', onBlockDrop);
+                row.addEventListener('dragend', onBlockDragEnd);
+
+                if (block.type === 'text') {
+                    const fieldId = `blockText_${bIdx}`;
+                    row.innerHTML = `
+                        <div class="block-row-head">
+                            <span class="block-drag-handle" title="拖曳排序">⠿</span>
+                            <span class="block-type-badge">文字</span>
+                            <div class="item-block-actions">
+                                <button class="btn btn-secondary btn-mini" onclick="moveBlock(${bIdx},-1)">↑</button>
+                                <button class="btn btn-secondary btn-mini" onclick="moveBlock(${bIdx},1)">↓</button>
+                                <button class="btn btn-danger btn-mini" onclick="deleteBlock(${bIdx})">刪除</button>
+                            </div>
+                        </div>
+                        <div class="markup-toolbar">
+                            <button class="mini-btn" onclick="insertToBlockField('${fieldId}','{bold}','{/bold}',${bIdx})"><strong>B</strong></button>
+                            <button class="mini-btn" onclick="insertToBlockField('${fieldId}','{italic}','{/italic}',${bIdx})"><em>I</em></button>
+                            <button class="mini-btn" onclick="insertToBlockField('${fieldId}','/n','',${bIdx})">↵</button>
+                            <button class="color-btn red" onclick="applyColorToBlockField('${fieldId}','#ff0000',${bIdx})" title="紅色">R</button>
+                            <button class="color-btn blue" onclick="applyColorToBlockField('${fieldId}','#0066cc',${bIdx})" title="藍色">B</button>
+                            <button class="color-btn green" onclick="applyColorToBlockField('${fieldId}','#00aa00',${bIdx})" title="綠色">G</button>
+                        </div>
+                        <textarea id="${fieldId}" rows="5" oninput="onBlockTextInput(${bIdx},this.value)">${escapeAttr(block.value || '')}</textarea>
+                    `;
+                } else if (block.type === 'heading') {
+                    const fieldId = `blockHeading_${bIdx}`;
+                    row.innerHTML = `
+                        <div class="block-row-head">
+                            <span class="block-drag-handle" title="拖曳排序">⠿</span>
+                            <span class="block-type-badge heading">小標題</span>
+                            <div class="item-block-actions">
+                                <button class="btn btn-secondary btn-mini" onclick="moveBlock(${bIdx},-1)">↑</button>
+                                <button class="btn btn-secondary btn-mini" onclick="moveBlock(${bIdx},1)">↓</button>
+                                <button class="btn btn-danger btn-mini" onclick="deleteBlock(${bIdx})">刪除</button>
+                            </div>
+                        </div>
+                        <input type="text" id="${fieldId}" value="${escapeAttr(block.value || '')}" placeholder="小標題文字（渲染為 &lt;h4&gt;）" oninput="onBlockTextInput(${bIdx},this.value)">
+                    `;
+                } else if (block.type === 'img') {
+                    const src = block.src ? `https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/main/${SPOT_IMAGE_DIR}${block.src}` : '';
+                    row.innerHTML = `
+                        <div class="block-row-head">
+                            <span class="block-drag-handle" title="拖曳排序">⠿</span>
+                            <span class="block-type-badge">圖片</span>
+                            <div class="item-block-actions">
+                                <button class="btn btn-secondary btn-mini" onclick="moveBlock(${bIdx},-1)">↑</button>
+                                <button class="btn btn-secondary btn-mini" onclick="moveBlock(${bIdx},1)">↓</button>
+                                <button class="btn btn-danger btn-mini" onclick="deleteBlock(${bIdx})">刪除</button>
+                            </div>
+                        </div>
+                        <div class="block-img-preview">
+                            <img src="${src}" onerror="this.style.opacity=0.2">
+                            <div style="font-size:11px;color:#666;">${escapeAttr(block.src || '（尚未指定，請從下方照片池點「＋內文」插入圖片）')}</div>
+                        </div>
+                    `;
+                }
+                list.appendChild(row);
+            });
+        }
+
+        function addBlock(type) {
+            if (type === 'text') currentDeepBlocks.push({ type: 'text', value: '' });
+            else if (type === 'heading') currentDeepBlocks.push({ type: 'heading', value: '' });
+            else if (type === 'img') currentDeepBlocks.push({ type: 'img', src: '' });
+            renderBlocksList();
+            const bIdx = currentDeepBlocks.length - 1;
+            const focusId = type === 'text' ? `blockText_${bIdx}` : type === 'heading' ? `blockHeading_${bIdx}` : null;
+            const el = focusId ? document.getElementById(focusId) : document.getElementById(`blockRow_${bIdx}`);
+            if (el) el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+            if (focusId) { const f = document.getElementById(focusId); if (f) f.focus({ preventScroll: true }); }
+        }
+
+        function deleteBlock(bIdx) {
+            currentDeepBlocks.splice(bIdx, 1);
+            renderBlocksList();
+        }
+
+        function moveBlock(bIdx, dir) {
+            const j = bIdx + dir;
+            if (j < 0 || j >= currentDeepBlocks.length) return;
+            const tmp = currentDeepBlocks[bIdx];
+            currentDeepBlocks[bIdx] = currentDeepBlocks[j];
+            currentDeepBlocks[j] = tmp;
+            renderBlocksList();
+            const el = document.getElementById(`blockRow_${j}`);
+            if (el) el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        }
+
+        function onBlockTextInput(bIdx, value) {
+            currentDeepBlocks[bIdx].value = value;
+        }
+
+        // 文字標記格式，插入邏輯跟 insertToField() 一樣以游標選取範圍為準，
+        // 但這裡不整段重繪 blocksList，直接在原本的欄位上設回游標位置，
+        // 插入後游標會停在剛插入內容之後，不會跳到頂端。
+        function insertToBlockField(fieldId, before, after, bIdx) {
+            const field = document.getElementById(fieldId);
+            if (!field) return;
+            const start = field.selectionStart;
+            const end = field.selectionEnd;
+            const text = field.value;
+            const selected = text.substring(start, end);
+            const newValue = text.substring(0, start) + before + selected + after + text.substring(end);
+            field.value = newValue;
+            const cursorPos = start + before.length + selected.length + after.length;
+            field.focus();
+            field.setSelectionRange(cursorPos, cursorPos);
+            onBlockTextInput(bIdx, newValue);
+        }
+
+        function applyColorToBlockField(fieldId, hexColor, bIdx) {
+            const hex = hexColor.replace('#', '');
+            insertToBlockField(fieldId, `{#${hex}}`, '{/color}', bIdx);
+        }
+
+        // HTML5 原生拖曳排序（主要在電腦上編輯，已確認決策）；上方 ▲▼ 按鈕保留當備援，
+        // 因為原生拖曳在某些瀏覽器縮放比例下判定會怪。
+        let dragSrcIdx = null;
+        function onBlockDragStart(e) {
+            dragSrcIdx = Number(e.currentTarget.dataset.idx);
+            e.currentTarget.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+        }
+        function onBlockDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+        }
+        function onBlockDrop(e) {
+            e.preventDefault();
+            const targetIdx = Number(e.currentTarget.dataset.idx);
+            if (dragSrcIdx === null || targetIdx === dragSrcIdx) return;
+            const moved = currentDeepBlocks.splice(dragSrcIdx, 1)[0];
+            currentDeepBlocks.splice(targetIdx, 0, moved);
+            dragSrcIdx = null;
+            renderBlocksList();
+        }
+        function onBlockDragEnd(e) {
+            e.currentTarget.classList.remove('dragging');
+            dragSrcIdx = null;
+        }
+
+        // 「轉成圖文混排」：deepDesc 按真實換行字元 \n 逐行拆開，每個非空行變成一個 text block
+        // （已確認決策：每行一個 block）。deepDesc 欄位保留不刪。字面字串 /n（段落內軟換行）
+        // 原封不動留在 block 的 value 裡，不做任何 normalize，交給渲染時的 parseMarkup() 處理。
+        // 單向操作：轉換後如果想放棄，用「清除圖文混排」按鈕。
+        function convertDeepDescToBlocks() {
+            if (currentDeepBlocks.length) {
+                if (!confirm('目前已經有圖文混排內容，重新轉換會覆蓋掉，確定要繼續？')) return;
+            }
+            const deepDescInput = document.getElementById('deepDescInput');
+            const text = deepDescInput ? deepDescInput.value : '';
+            const lines = text.split('\n').filter(line => line !== '');
+            currentDeepBlocks = lines.map(line => ({ type: 'text', value: line }));
+            renderBlocksList();
+            showNotif(`✅ 已拆成 ${lines.length} 個文字段落，可插入圖片後儲存`, 'success');
+        }
+
+        function clearDeepBlocks() {
+            if (!currentDeepBlocks.length) return;
+            if (!confirm('確定要清除圖文混排？deepDesc 純文字不會受影響。')) return;
+            currentDeepBlocks = [];
+            renderBlocksList();
+        }
+
+        // ===== 階段 D：照片池面板 =====
+
+        function computeSpotPhotoPool(spotId, files) {
+            const re = new RegExp(`^${spotId}-\\d{2}\\.`);
+            return files.filter(f => re.test(f));
+        }
+
+        // 「未使用」＝ images/spots/medium/ 裡沒有被任何景點的 images[] 或 deepBlocks img 引用者。
+        // 掃描對象是「有效狀態」：套用所有草稿之後的 tripData（未存檔的當前編輯中景點用記憶體裡
+        // 的 currentSpotImages/currentDeepBlocks，其餘景點看有沒有對應草稿，沒有就用原始資料）。
+        function computeUsedImagesGlobal() {
+            const used = new Set();
+            const addFromSpot = (spot, overrideImages, overrideBlocks) => {
+                const imgs = overrideImages !== undefined ? overrideImages : (spot.images || []);
+                imgs.forEach(f => used.add(f));
+                const blocks = overrideBlocks !== undefined ? overrideBlocks : (spot.deepBlocks || []);
+                blocks.forEach(b => { if (b.type === 'img' && b.src) used.add(b.src); });
+            };
+            Object.keys(tripData).forEach(dayKey => {
+                const day = tripData[dayKey];
+                (day.spots || []).forEach(spot => {
+                    const isCurrent = dayKey === currentDay && spot.id === (tripData[currentDay].spots[currentSpotIndex] || {}).id;
+                    if (isCurrent) {
+                        addFromSpot(spot, currentSpotImages, currentDeepBlocks);
+                        return;
+                    }
+                    const draftKey = `${dayKey}_${spot.id}`;
+                    const draft = drafts[draftKey];
+                    addFromSpot(spot, draft && draft.images, draft && draft.deepBlocks);
+                });
+                (day.areas || []).forEach(area => {
+                    (area.spots || []).forEach(spot => addFromSpot(spot));
+                });
+            });
+            return used;
+        }
+
+        async function loadPhotoPoolList() {
+            if (photoPoolCache) return photoPoolCache;
+            const r = await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${SPOT_IMAGE_DIR.replace(/\/$/, '')}`);
+            if (!r.ok) throw new Error('API 讀取失敗（可能達到每小時 60 次上限）');
+            const files = (await r.json())
+                .filter(f => /\.(webp|png|jpe?g)$/i.test(f.name))
+                .map(f => f.name);
+            photoPoolCache = files;
+            return files;
+        }
+
+        function refreshPhotoPool() {
+            photoPoolCache = null;
+            renderPhotoPanel();
+        }
+
+        function setPhotoPoolFilter(filter) {
+            photoPoolFilter = filter;
+            renderPhotoPanel();
+        }
+
+        function imgUrl(filename) {
+            return `https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/main/${SPOT_IMAGE_DIR}${filename}`;
+        }
+
+        async function renderPhotoPanel() {
+            renderCarouselThumbs();
+            document.querySelectorAll('.pool-toggle-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.filter === photoPoolFilter);
+            });
+            const poolEl = document.getElementById('poolThumbs');
+            if (!poolEl) return;
+            poolEl.innerHTML = '<div class="photo-pool-status">載入中...</div>';
+
+            const spot = tripData[currentDay].spots[currentSpotIndex];
+            let files;
+            try {
+                files = await loadPhotoPoolList();
+            } catch (e) {
+                poolEl.innerHTML = `<div class="photo-pool-status error">${escapeAttr(e.message)}（可改用下方手動輸入檔名）
+                    <div class="manual-img-row"><input type="text" id="manualImgInput" placeholder="檔名，如 kefairport-05.webp">
+                    <button class="btn btn-secondary btn-mini" onclick="manualAddToCarousel()">↑輪播</button>
+                    <button class="btn btn-secondary btn-mini" onclick="manualAddToBlocks()">＋內文</button></div>`;
+                return;
+            }
+
+            let displayFiles;
+            if (photoPoolFilter === 'spot') {
+                const pool = computeSpotPhotoPool(spot.id, files);
+                displayFiles = pool.filter(f => !currentSpotImages.includes(f));
+            } else if (photoPoolFilter === 'unused') {
+                const used = computeUsedImagesGlobal();
+                displayFiles = files.filter(f => !used.has(f));
+            } else {
+                displayFiles = files;
+            }
+
+            if (!displayFiles.length) {
+                const msg = photoPoolFilter === 'spot'
+                    ? '此景點的照片尚未上傳到 images/spots/medium/，可切換到「未使用」或「全部」挑選，或用下方手動輸入檔名。'
+                    : '目前沒有符合條件的照片。';
+                poolEl.innerHTML = `<div class="photo-pool-status">${msg}</div>
+                    <div class="manual-img-row"><input type="text" id="manualImgInput" placeholder="檔名，如 kefairport-05.webp">
+                    <button class="btn btn-secondary btn-mini" onclick="manualAddToCarousel()">↑輪播</button>
+                    <button class="btn btn-secondary btn-mini" onclick="manualAddToBlocks()">＋內文</button></div>`;
+                return;
+            }
+
+            poolEl.innerHTML = '';
+            displayFiles.forEach(name => {
+                const wrap = document.createElement('div');
+                wrap.className = 'thumb-wrap';
+                wrap.innerHTML = `
+                    <img src="${imgUrl(name)}" onerror="this.style.opacity=0.2">
+                    <div class="fname">${escapeAttr(name)}</div>
+                    <div class="thumb-actions">
+                        <button class="btn btn-secondary btn-mini" onclick="addImageToCarousel('${name}')">↑輪播</button>
+                        <button class="btn btn-secondary btn-mini" onclick="addImageToDeepBlocks('${name}')">＋內文</button>
+                    </div>
+                `;
+                poolEl.appendChild(wrap);
+            });
+        }
+
+        function renderCarouselThumbs() {
+            const el = document.getElementById('carouselThumbs');
+            if (!el) return;
+            if (!currentSpotImages.length) {
+                el.innerHTML = '<div class="photo-pool-status">輪播目前是空的</div>';
+                return;
+            }
+            el.innerHTML = '';
+            currentSpotImages.forEach((name, idx) => {
+                const wrap = document.createElement('div');
+                wrap.className = 'thumb-wrap carousel-thumb';
+                wrap.draggable = true;
+                wrap.dataset.idx = idx;
+                wrap.innerHTML = `
+                    <img src="${imgUrl(name)}" onerror="this.style.opacity=0.2">
+                    <div class="fname">${escapeAttr(name)}</div>
+                    <button class="thumb-remove-btn" onclick="removeImageFromCarousel(${idx})" title="移回待選區">×</button>
+                `;
+                wrap.addEventListener('dragstart', onCarouselDragStart);
+                wrap.addEventListener('dragover', onCarouselDragOver);
+                wrap.addEventListener('drop', onCarouselDrop);
+                wrap.addEventListener('dragend', onCarouselDragEnd);
+                el.appendChild(wrap);
+            });
+        }
+
+        let carouselDragSrcIdx = null;
+        function onCarouselDragStart(e) {
+            carouselDragSrcIdx = Number(e.currentTarget.dataset.idx);
+            e.currentTarget.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+        }
+        function onCarouselDragOver(e) { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; }
+        function onCarouselDrop(e) {
+            e.preventDefault();
+            const targetIdx = Number(e.currentTarget.dataset.idx);
+            if (carouselDragSrcIdx === null || targetIdx === carouselDragSrcIdx) return;
+            const moved = currentSpotImages.splice(carouselDragSrcIdx, 1)[0];
+            currentSpotImages.splice(targetIdx, 0, moved);
+            carouselDragSrcIdx = null;
+            renderCarouselThumbs();
+        }
+        function onCarouselDragEnd(e) {
+            e.currentTarget.classList.remove('dragging');
+            carouselDragSrcIdx = null;
+        }
+
+        function addImageToCarousel(name) {
+            currentSpotImages.push(name);
+            renderPhotoPanel();
+        }
+        function removeImageFromCarousel(idx) {
+            currentSpotImages.splice(idx, 1);
+            renderPhotoPanel();
+        }
+        function addImageToDeepBlocks(name) {
+            currentDeepBlocks.push({ type: 'img', src: name });
+            renderBlocksList();
+            showNotif('✅ 已加入深度介紹最後，可拖曳到想要的位置', 'success');
+        }
+        function manualAddToCarousel() {
+            const input = document.getElementById('manualImgInput');
+            const val = input && input.value.trim();
+            if (!val) return;
+            addImageToCarousel(val);
+        }
+        function manualAddToBlocks() {
+            const input = document.getElementById('manualImgInput');
+            const val = input && input.value.trim();
+            if (!val) return;
+            addImageToDeepBlocks(val);
         }
 
         async function init() {
@@ -602,6 +1232,12 @@
             const draftKey = `${currentDay}_${spot.id}`;
             const draft = drafts[draftKey] || {};
 
+            // 深度介紹 block 與輪播圖片的編輯狀態：draft 有值用 draft，否則用原始資料的複本
+            // （深拷貝，避免直接改到 tripData / spot 本身）。
+            currentDeepBlocks = JSON.parse(JSON.stringify(draft.deepBlocks !== undefined ? draft.deepBlocks : (spot.deepBlocks || [])));
+            currentSpotImages = JSON.parse(JSON.stringify(draft.images !== undefined ? draft.images : (spot.images || [])));
+            photoPoolFilter = 'spot';
+
             const editor = document.getElementById('editor');
 
             editor.innerHTML = `
@@ -638,6 +1274,41 @@
                             </div>
                         </div>
                         <textarea id="deepDescInput" oninput="updateAllPreviews()">${escapeAttr(draft.deepDesc !== undefined ? draft.deepDesc : (spot.deepDesc || ''))}</textarea>
+                        <div class="field-hint">deepDesc 是純文字備援，轉成圖文混排後仍保留、不會被刪除</div>
+                    </div>
+
+                    <div class="field-group">
+                        <div class="field-header">
+                            <label class="field-label">深度介紹圖文混排 (deepBlocks)</label>
+                            <div class="field-toolbar">
+                                <button class="btn btn-secondary btn-mini" onclick="convertDeepDescToBlocks()">轉成圖文混排</button>
+                                <button class="btn btn-secondary btn-mini" onclick="clearDeepBlocks()">清除圖文混排</button>
+                            </div>
+                        </div>
+                        <div id="blocksList" class="blocks-list"></div>
+                        <div class="block-add-row">
+                            <button class="btn btn-secondary btn-mini" onclick="addBlock('text')">＋文字</button>
+                            <button class="btn btn-secondary btn-mini" onclick="addBlock('heading')">＋小標題</button>
+                            <button class="btn btn-secondary btn-mini" onclick="addBlock('img')">＋圖片</button>
+                        </div>
+                    </div>
+
+                    <div class="field-group">
+                        <div class="field-header">
+                            <label class="field-label">照片</label>
+                            <button class="btn btn-secondary btn-mini" onclick="refreshPhotoPool()">🔄 重新整理清單</button>
+                        </div>
+                        <div class="photo-panel-sub">輪播中（拖曳排序，點 × 移回待選區）</div>
+                        <div id="carouselThumbs" class="photo-thumb-row"></div>
+                        <div class="photo-panel-sub photo-pool-header">
+                            待選區
+                            <span class="pool-toggle">
+                                <button class="pool-toggle-btn" data-filter="spot" onclick="setPhotoPoolFilter('spot')">本景點</button>
+                                <button class="pool-toggle-btn" data-filter="unused" onclick="setPhotoPoolFilter('unused')">未使用</button>
+                                <button class="pool-toggle-btn" data-filter="all" onclick="setPhotoPoolFilter('all')">全部</button>
+                            </span>
+                        </div>
+                        <div id="poolThumbs" class="photo-thumb-row wrap"></div>
                     </div>
 
                     <div class="field-group note">
@@ -664,6 +1335,8 @@
             `;
 
             updateAllPreviews();
+            renderBlocksList();
+            renderPhotoPanel();
             document.getElementById('topBar').style.display = 'flex';
         }
 
@@ -722,7 +1395,9 @@
                 desc: descInput.value.trim(),
                 deepDesc: deepDescInput.value.trim(),
                 note: noteInput.value.trim(),
-                map: mapInput.value.trim()
+                map: mapInput.value.trim(),
+                images: currentSpotImages.slice(),
+                deepBlocks: JSON.parse(JSON.stringify(currentDeepBlocks))
             };
 
             saveDrafts();
