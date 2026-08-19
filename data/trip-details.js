@@ -111,14 +111,14 @@ const TRIP = {
         "name": "哈尔格林姆教堂 Hallgrímskirkja",
         "label": "A",
         "images": [
-          "hallgrimskirkja.webp",
-          "Hallgrímskirkja-1.webp",
-          "Hallgrímskirkja-2.webp",
-          "Hallgrímskirkja-3.webp",
-          "Hallgrímskirkja-4.webp",
-          "Hallgrímskirkja-5.webp",
-          "Hallgrímskirkja-6.webp",
-          "Hallgrímskirkja-7.webp"
+          "hallgrimskirkja-01.webp",
+          "hallgrimskirkja-02.webp",
+          "hallgrimskirkja-03.webp",
+          "hallgrimskirkja-04.webp",
+          "hallgrimskirkja-05.webp",
+          "hallgrimskirkja-06.webp",
+          "hallgrimskirkja-07.webp",
+          "hallgrimskirkja-08.webp"
         ],
         "tags": [
           "花儿与少年"
@@ -161,14 +161,14 @@ const TRIP = {
         "name": "哈帕音乐厅 Harpa",
         "label": "C",
         "images": [
-          "harpa.webp",
-          "Harpa-1.webp",
-          "Harpa-2.webp",
-          "Harpa-3.webp",
-          "Harpa-4.webp",
-          "Harpa-5.webp",
-          "Harpa-6.webp",
-          "Harpa-7.webp"
+          "harpa-01.webp",
+          "harpa-02.webp",
+          "harpa-03.webp",
+          "harpa-04.webp",
+          "harpa-05.webp",
+          "harpa-06.webp",
+          "harpa-07.webp",
+          "harpa-08.webp"
         ],
         "tags": [
           "花儿与少年"
@@ -188,9 +188,9 @@ const TRIP = {
         "tags": [],
         "isOptional": true,
         "images": [
-          "Tjornin-1.webp",
-          "Tjornin-2.webp",
-          "Tjornin-4.webp"
+          "tjornin-01.webp",
+          "tjornin-02.webp",
+          "tjornin-03.webp"
         ],
         "desc": "离开哈帕音乐厅后，不走回头路，改沿旧港区海滨及托宁湖，徒步感受不同路径返回大教堂。",
         "deepDesc": "一、托宁湖是雷克雅未克市内最大的湖泊，沿湖畔走一圈，好多天鹅、海鸥、野鸭漫游其中，有些游客还会带饲料或面包来场喂食秀，景色相当美。\n二、托宁湖算是比较小众的冰岛秘境，不是每个到雷克雅未克的人都会去。湖里有超多天鹅、鸭子，很多人会直接带饲料或面包来喂食，所以被当地人称为「世界最大面包汤」。"
@@ -200,18 +200,18 @@ const TRIP = {
         "name": "辛格维利尔国家公园 Þingvellir",
         "label": "D",
         "images": [
-          "thingvellir.webp",
-          "thingvellir-alt-1.webp",
-          "thingvellir-alt-2.webp",
-          "thingvellir-alt-3.webp",
-          "thingvellir-alt-4.webp",
-          "thingvellir-alt-5.webp",
-          "pingvellir-1.webp",
-          "pingvellir-2.webp",
-          "pingvellir-3.webp",
-          "pingvellir-4.webp",
-          "pingvellir-5.webp",
-          "oxararfoss-1.webp"
+          "thingvellir-01.webp",
+          "thingvellir-02.webp",
+          "thingvellir-03.webp",
+          "thingvellir-04.webp",
+          "thingvellir-05.webp",
+          "thingvellir-06.webp",
+          "thingvellir-07.webp",
+          "thingvellir-08.webp",
+          "thingvellir-09.webp",
+          "thingvellir-10.webp",
+          "thingvellir-11.webp",
+          "thingvellir-12.webp"
         ],
         "tags": [
           "花儿与少年",
@@ -236,14 +236,14 @@ const TRIP = {
         "name": "火山口湖 Kerið",
         "label": "E",
         "images": [
-          "kerid.webp",
-          "kerid-alt-1.webp",
-          "kerid-alt-2.webp",
-          "kerid-alt-3.webp",
-          "kerid-alt-4.webp",
-          "kerid-alt-5.webp",
-          "Kerio-1.webp",
-          "Kerio-2.webp"
+          "kerid-01.webp",
+          "kerid-02.webp",
+          "kerid-03.webp",
+          "kerid-04.webp",
+          "kerid-05.webp",
+          "kerid-06.webp",
+          "kerid-07.webp",
+          "kerid-08.webp"
         ],
         "tags": [
           "火山"
@@ -305,16 +305,16 @@ const TRIP = {
         "name": "蓝色秘境瀑布 Brúarfoss",
         "label": "A",
         "images": [
-          "bruarfoss.webp",
-          "bruarfoss-alt-2.webp",
-          "bruarfoss-alt-3.webp",
-          "bruarfoss-alt-4.webp",
-          "bruarfoss-alt-5.webp",
-          "Bruarfoss-1.webp",
-          "Bruarfoss-2.webp",
-          "Bruarfoss-3.webp",
-          "Bruarfoss-4.webp",
-          "Bruarfoss-5.webp"
+          "bruarfoss-01.webp",
+          "bruarfoss-02.webp",
+          "bruarfoss-03.webp",
+          "bruarfoss-04.webp",
+          "bruarfoss-05.webp",
+          "bruarfoss-06.webp",
+          "bruarfoss-07.webp",
+          "bruarfoss-08.webp",
+          "bruarfoss-09.webp",
+          "bruarfoss-10.webp"
         ],
         "tags": [
           "瀑布"
@@ -336,12 +336,12 @@ const TRIP = {
         "name": "盖锡尔地热区 Geysir",
         "label": "B",
         "images": [
-          "geysir.webp",
-          "geysir-alt-1.webp",
-          "geysir-alt-2.webp",
-          "geysir-alt-3.webp",
-          "geysir-alt-4.webp",
-          "geysir-alt-5.webp"
+          "geysir-01.webp",
+          "geysir-02.webp",
+          "geysir-03.webp",
+          "geysir-04.webp",
+          "geysir-05.webp",
+          "geysir-06.webp"
         ],
         "tags": [
           "花儿与少年",
@@ -364,20 +364,20 @@ const TRIP = {
         "name": "黄金瀑布 Gullfoss",
         "label": "C",
         "images": [
-          "gullfoss.webp",
-          "gullfoss-alt-1.webp",
-          "gullfoss-alt-2.webp",
-          "gullfoss-alt-3.webp",
-          "gullfoss-alt-4.webp",
-          "gullfoss-alt-5.webp",
-          "Gullfoss-1.webp",
-          "Gullfoss-2.webp",
-          "Gullfoss-3.webp",
-          "Gullfoss-4.webp",
-          "Gullfoss-5.webp",
-          "Gullfoss-6.webp",
-          "Gullfoss-7.webp",
-          "Gullfoss-8.webp"
+          "gullfoss-01.webp",
+          "gullfoss-02.webp",
+          "gullfoss-03.webp",
+          "gullfoss-04.webp",
+          "gullfoss-05.webp",
+          "gullfoss-06.webp",
+          "gullfoss-07.webp",
+          "gullfoss-08.webp",
+          "gullfoss-09.webp",
+          "gullfoss-10.webp",
+          "gullfoss-11.webp",
+          "gullfoss-12.webp",
+          "gullfoss-13.webp",
+          "gullfoss-14.webp"
         ],
         "tags": [
           "花儿与少年",
@@ -400,8 +400,8 @@ const TRIP = {
         "name": "黄金圈隐藏版瀑布 Faxi",
         "label": "D",
         "images": [
-          "Faxi-1.webp",
-          "Faxi-2.webp"
+          "faxi-01.webp",
+          "faxi-02.webp"
         ],
         "tags": [
           "瀑布"
@@ -418,11 +418,11 @@ const TRIP = {
         "name": "家庭农庄 Efstidalur II",
         "label": "E",
         "images": [
-          "Efstidalur-1.webp",
-          "Efstidalur-2.webp",
-          "Efstidalur-3.webp",
-          "Efstidalur-4.webp",
-          "Efstidalur-5.webp"
+          "efstidalur-01.webp",
+          "efstidalur-02.webp",
+          "efstidalur-03.webp",
+          "efstidalur-04.webp",
+          "efstidalur-05.webp"
         ],
         "tags": [],
         "isOptional": true,
@@ -438,10 +438,10 @@ const TRIP = {
         "name": "冰岛马场 Bru Horsefarm",
         "label": "F",
         "images": [
-          "BruHorsefarm-1.webp",
-          "BruHorsefarm-2.webp",
-          "BruHorsefarm-3.webp",
-          "BruHorsefarm-4.webp"
+          "bruhorsefarm-01.webp",
+          "bruhorsefarm-02.webp",
+          "bruhorsefarm-03.webp",
+          "bruhorsefarm-04.webp"
         ],
         "tags": [],
         "desc": "超可爱、一直想靠近人的冰岛马，却也是世界上最孤独的马。",
@@ -491,10 +491,10 @@ const TRIP = {
         "name": "塞里雅兰瀑布 Seljalandsfoss",
         "label": "A",
         "images": [
-          "seljalandsfoss.webp",
-          "Seljalandsfoss-1.webp",
-          "Seljalandsfoss-2.webp",
-          "Seljalandsfoss-3.webp"
+          "seljalandsfoss-01.webp",
+          "seljalandsfoss-02.webp",
+          "seljalandsfoss-03.webp",
+          "seljalandsfoss-04.webp"
         ],
         "tags": [
           "需带雨衣",
@@ -517,13 +517,13 @@ const TRIP = {
         "name": "史可加瀑布 Skógafoss",
         "label": "B",
         "images": [
-          "skogafoss.webp",
-          "Skógafoss-1.webp",
-          "Skógafoss-2.webp",
-          "Skógafoss-3.webp",
-          "Skógafoss-4.webp",
-          "Skógafoss-5.webp",
-          "Skógafoss-6.webp"
+          "skogafoss-01.webp",
+          "skogafoss-02.webp",
+          "skogafoss-03.webp",
+          "skogafoss-04.webp",
+          "skogafoss-05.webp",
+          "skogafoss-06.webp",
+          "skogafoss-07.webp"
         ],
         "tags": [
           "瀑布",
@@ -546,10 +546,10 @@ const TRIP = {
         "name": "岬角 Dyrhólaey",
         "label": "C",
         "images": [
-          "Dyrholaey-1.webp",
-          "Dyrholaey-2.webp",
-          "Dyrholaey-3.webp",
-          "Dyrholaey-4.webp"
+          "dyrholaey-01.webp",
+          "dyrholaey-02.webp",
+          "dyrholaey-03.webp",
+          "dyrholaey-04.webp"
         ],
         "tags": [
           "花儿与少年",
@@ -569,17 +569,17 @@ const TRIP = {
         "name": "黑沙滩 Reynisfjara",
         "label": "D",
         "images": [
-          "reynisfjara.webp",
-          "Reynisfjara-1.webp",
-          "Reynisfjara-2.webp",
-          "Reynisfjara-3.webp",
-          "Reynisfjara-4.webp",
-          "Reynisfjara-5.webp",
-          "Reynisfjara-6.webp",
-          "Reynisfjara-7.webp",
-          "Reynisfjara-8.webp",
-          "Reynisfjara-9.webp",
-          "Reynisfjara-10.webp"
+          "reynisfjara-01.webp",
+          "reynisfjara-02.webp",
+          "reynisfjara-03.webp",
+          "reynisfjara-04.webp",
+          "reynisfjara-05.webp",
+          "reynisfjara-06.webp",
+          "reynisfjara-07.webp",
+          "reynisfjara-08.webp",
+          "reynisfjara-09.webp",
+          "reynisfjara-10.webp",
+          "reynisfjara-11.webp"
         ],
         "tags": [
           "花儿与少年",
@@ -609,7 +609,7 @@ const TRIP = {
         "icon": "🏘️",
         "name": "维克镇 Vík",
         "label": "E",
-        "img": "Vík-1.webp",
+        "img": "vik-04.webp",
         "tags": [
           "补给"
         ],
@@ -661,7 +661,7 @@ const TRIP = {
         "icon": "🧊",
         "name": "冰川徒步与蓝冰洞",
         "label": "A",
-        "img": "blue-ice-cave.webp",
+        "img": "icehiking-10.webp",
         "tags": [
           "花儿与少年",
           "冰川"
@@ -690,7 +690,7 @@ const TRIP = {
         "icon": "🚤",
         "name": "杰古沙龙冰河湖 Jökulsárlón",
         "label": "B",
-        "img": "jokulsarlon.webp",
+        "img": "jokulsarlon-06.webp",
         "tags": [
           "花儿与少年",
           "冰川"
@@ -736,7 +736,7 @@ const TRIP = {
         "icon": "💠",
         "name": "钻石海滩 Diamond Beach",
         "label": "D",
-        "img": "diamond-beach.webp",
+        "img": "diamond-beach-08.webp",
         "tags": [
           "花儿与少年",
           "冰川"
@@ -818,7 +818,7 @@ const TRIP = {
         "icon": "♨️",
         "name": "蓝湖温泉 Blue Lagoon",
         "label": "B",
-        "img": "blue-lagoon.webp",
+        "img": "bluelagoon-12.webp",
         "tags": [
           "火山",
           "温泉"
@@ -935,7 +935,7 @@ const TRIP = {
         "icon": "🐟",
         "name": "市集广场及老农贸市场",
         "tags": [],
-        "img": "market-square-helsinki.webp",
+        "img": "market-square-08.webp",
         "desc": "赫尔辛基老农贸市场于1889年开幕，规模并不大，不过是赫尔辛基最具历史意义和人气的市场之一。",
         "deepDesc": "一、位于市中心的海港附近，靠近芬兰湾。自1889年开业以来，成为当地居民和游客的热门去处，既是购买新鲜食材的地方，也是感受赫尔辛基传统饮食文化的好场所。市场内共有约20多间不同的摊贩和咖啡店，主要售卖食品，也有少量纪念品店。\n二、营业时间：大部分店铺约10:00-11:00开门，下午16:00左右就会提前关门，周日很多店铺休息。\n三、推荐好店：（1）SOUP+MORE——主打三文鱼汤（14欧），有中文菜单，面包免费续，座位较少，饭点容易排队。（2）E. Eriksson——市场内的人气老店，三文鱼汤、烟熏三文鱼、章鱼沙拉和生蚝都很受欢迎。",
         "map": "Vanha Kauppahalli Helsinki",
@@ -953,7 +953,7 @@ const TRIP = {
         "icon": "🔴",
         "name": "红教堂 Uspenski Cathedral",
         "tags": [],
-        "img": "uspenski-cathedral.webp",
+        "img": "uspenski-10.webp",
         "desc": "以13座24K镀金洋葱头穹顶、深红色砖墙和浓郁的俄式拜占庭风格著称，是西欧最大的东正教教堂。",
         "deepDesc": "一、乌斯佩斯基大教堂耗时6年完工，兴建于芬兰仍被俄国统治的1862-1868年，由俄国建筑师设计。建筑风格属于俄式拜占庭风格，外立面采用了70万块红色砖石堆砌而成，最大特色是大量金色圆顶和十字架，象征东正教的神圣。\n二、从赫尔辛基大教堂走过去不到十分钟，大多数人拍摄都是在门口的广场，在拍摄点可以拍到爱情锁桥+乌斯佩斯基大教堂同框的角度，还满特别的。外观是典型的红砖绿圆顶拜占庭式建筑风格，共有十三座塔，所有尖塔上的十字架都朝向东方，象征耶稣与十二使徒。\n三、内部最值得一看的是位在正中央的Iconostasis圣龛墙，每一位圣像都画得栩栩如生，金色为底的背景增添了几分华丽；教堂正上方挑高的穹顶描绘着华丽的饰画与宗教典故雕饰，建筑以蓝底代表天空、高挂着金色星星，还有壁面细腻的雕花，看似朴实的外观，内部却有着低调的华丽，是传统东正教堂的艺术风格。",
         "tips": "周六开放时间 10:00-15:00。",
@@ -974,7 +974,7 @@ const TRIP = {
         "icon": "🪨",
         "name": "岩石教堂 Temppeliaukio Church",
         "tags": [],
-        "img": "temppeliaukio-church.webp",
+        "img": "temppeliaukio-04.webp",
         "desc": "赫尔辛基三大教堂中最近代的建筑，教堂内部以裸露的岩石为基础，融合了现代感与自然美。",
         "deepDesc": "一、岩石教堂又称「圣殿广场教堂」，是一座修建于巨大岩石中的教堂。教堂外观简洁，外墙完全由岩石形成；教堂内部以裸露的岩石为基础，融合了现代感与自然美，顶部有一个圆形天窗，让自然光照射到教堂内部。\n二、赫尔辛基的岩石教堂可说颠覆了很多对欧洲教堂华丽古典的刻板印象。完工于1969年，是赫尔辛基三大教堂中最近代的建筑。虽没有华丽的装饰，也没有精致的雕花，但内部特殊的氛围、别出心裁的建筑方式，已让它成为赫尔辛基最热门的景点和重要建筑之一。",
         "tips": "周六 10:00-13:05、14:15-14:35、15:45-16:50。门票：成人票 €8。",

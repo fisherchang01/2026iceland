@@ -62,7 +62,7 @@
 
 - 只用小寫英文字母、數字與減號 `-`
 - 不使用中文、空格、括號或版本字樣
-- 使用可辨識名稱，例如 `thingvellir.webp`、`thingvellir-alt-1.webp`
+- 使用可辨識名稱，例如 `thingvellir.webp`、`thingvellir-02.webp`
 - 路線圖用 `route-day1.webp` 格式
 - 同一景點的 `thumb` 與 `medium` **檔名必須完全相同**
 - `catalog/` 建議用「主題-序號」格式，例如 `flowerchild-01.webp`、`supermarket-shopping-02.webp`
