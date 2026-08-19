@@ -1,0 +1,234 @@
+name: Stage A Builder
+
+on:
+  push:
+    branches:
+      - agent/stage-a-builder
+
+permissions:
+  contents: write
+
+jobs:
+  stage-a:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout builder branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Apply Stage A atomically to main
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BUILDER_BRANCH: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git fetch origin main --prune
+          git checkout -B stage-a-final origin/main
+
+          node <<'NODE'
+          const fs = require('fs');
+          const path = require('path');
+          const vm = require('vm');
+          const cp = require('child_process');
+
+          const slugByName = {
+            '冰岛机场 KEF Airport': 'kefairport',
+            '哈尔格林姆教堂 Hallgrímskirkja': 'hallgrimskirkja',
+            '彩虹街与购物主街 Laugavegur': 'laugavegur',
+            '哈帕音乐厅 Harpa': 'harpa',
+            '回程路线：海港与托宁湖': 'tjornin',
+            '辛格维利尔国家公园 Þingvellir': 'thingvellir',
+            '火山口湖 Kerið': 'kerid',
+            '蓝色秘境瀑布 Brúarfoss': 'bruarfoss',
+            '盖锡尔地热区 Geysir': 'geysir',
+            '黄金瀑布 Gullfoss': 'gullfoss',
+            '黄金圈隐藏版瀑布 Faxi': 'faxi',
+            '家庭农庄 Efstidalur II': 'efstidalur',
+            '冰岛马场 Bru Horsefarm': 'bruhorsefarm',
+            '塞里雅兰瀑布 Seljalandsfoss': 'seljalandsfoss',
+            '史可加瀑布 Skógafoss': 'skogafoss',
+            '岬角 Dyrhólaey': 'dyrholaey',
+            '黑沙滩 Reynisfjara': 'reynisfjara',
+            '维克镇 Vík': 'vik',
+            '冰川徒步与蓝冰洞': 'icehiking',
+            '杰古沙龙冰河湖 Jökulsárlón': 'jokulsarlon',
+            '钻石海滩 Diamond Beach': 'diamond-beach',
+            '羽毛峡谷 Fjaðrárgljúfur': 'fjadrargljufur',
+            '蓝湖温泉 Blue Lagoon': 'bluelagoon',
+            '赫尔辛基机场': 'helairport',
+            '中央车站 Helsinki Central Station': 'centralstation',
+            '白教堂 Helsinki Cathedral': 'helsinki-cathedral',
+            '市集广场及老农贸市场': 'market-square',
+            '红教堂 Uspenski Cathedral': 'uspenski',
+            '岩石教堂 Temppeliaukio Church': 'temppeliaukio',
+            '芬兰堡 Suomenlinna': 'suomenlinna',
+            '购物（Louis Vuitton 等）': 'helsinki-lv'
+          };
+          const expectedCounts = {
+            kefairport: 6, hallgrimskirkja: 8, laugavegur: 5, harpa: 8, tjornin: 3,
+            thingvellir: 12, kerid: 8, bruarfoss: 10, geysir: 6, gullfoss: 14,
+            faxi: 2, efstidalur: 5, bruhorsefarm: 4, seljalandsfoss: 4, skogafoss: 7,
+            dyrholaey: 4, reynisfjara: 11, vik: 4, icehiking: 10, jokulsarlon: 6,
+            'diamond-beach': 8, fjadrargljufur: 3, bluelagoon: 12, helairport: 7,
+            centralstation: 4, 'helsinki-cathedral': 5, 'market-square': 8, uspenski: 10,
+            temppeliaukio: 4, suomenlinna: 8, 'helsinki-lv': 4
+          };
+
+          const dataPath = 'data/trip-details.js';
+          const docsPath = 'docs/IMAGES.md';
+          const sourceBefore = fs.readFileSync(dataPath, 'utf8');
+          fs.writeFileSync('/tmp/trip-details.before.js', sourceBefore);
+
+          const sandbox = {};
+          vm.runInNewContext(sourceBefore + '\n;globalThis.__TRIP__ = TRIP;', sandbox, { filename: dataPath });
+          const trip = sandbox.__TRIP__;
+          const oldToNew = new Map();
+          const newToOld = new Map();
+          const mappedSpots = [];
+          let totalRefs = 0;
+
+          function remember(oldName, newName) {
+            if (oldName === newName) return;
+            if (oldToNew.has(oldName) && oldToNew.get(oldName) !== newName) {
+              throw new Error(`Conflicting mapping for ${oldName}: ${oldToNew.get(oldName)} vs ${newName}`);
+            }
+            if (newToOld.has(newName) && newToOld.get(newName) !== oldName) {
+              throw new Error(`Target collision for ${newName}: ${newToOld.get(newName)} vs ${oldName}`);
+            }
+            oldToNew.set(oldName, newName);
+            newToOld.set(newName, oldName);
+          }
+
+          function walk(value) {
+            if (!value || typeof value !== 'object') return;
+            if (value.name && slugByName[value.name] && (Array.isArray(value.images) || typeof value.img === 'string')) {
+              const slug = slugByName[value.name];
+              const refs = Array.isArray(value.images) ? value.images.slice() : [];
+              const beforeRefs = refs.slice();
+              if (typeof value.img === 'string' && value.img) refs.push(value.img);
+              const expected = expectedCounts[slug];
+              if (refs.length !== expected) {
+                throw new Error(`Count mismatch for ${value.name}: expected ${expected}, got ${refs.length}`);
+              }
+              totalRefs += refs.length;
+              const afterRefs = refs.map((oldName, i) => {
+                const ext = path.extname(oldName);
+                const next = `${slug}-${String(i + 1).padStart(2, '0')}${ext}`;
+                remember(oldName, next);
+                return next;
+              });
+              mappedSpots.push({ name: value.name, slug, beforeRefs, afterRefs });
+            }
+            if (Array.isArray(value)) value.forEach(walk);
+            else Object.values(value).forEach(walk);
+          }
+          walk(trip);
+
+          if (mappedSpots.length !== 31) {
+            throw new Error(`Expected 31 photo spots, found ${mappedSpots.length}`);
+          }
+          if (totalRefs !== 210) {
+            throw new Error(`Expected 210 photo references, found ${totalRefs}`);
+          }
+
+          // Replace exact filenames in the data file, preserving every other character.
+          let sourceAfter = sourceBefore;
+          for (const [oldName, newName] of [...oldToNew.entries()].sort((a, b) => b[0].length - a[0].length)) {
+            sourceAfter = sourceAfter.split(oldName).join(newName);
+          }
+          fs.writeFileSync(dataPath, sourceAfter, 'utf8');
+
+          // Documentation has one concrete legacy filename example.
+          let docs = fs.readFileSync(docsPath, 'utf8');
+          docs = docs.split('thingvellir-alt-1.webp').join('thingvellir-02.webp');
+          fs.writeFileSync(docsPath, docs, 'utf8');
+
+          // Rename existing files in both medium and thumb. Known missing references are intentionally skipped.
+          let renamedMedium = 0;
+          let renamedThumb = 0;
+          for (const [oldName, newName] of oldToNew.entries()) {
+            for (const dir of ['images/spots/medium', 'images/spots/thumb']) {
+              const oldPath = path.join(dir, oldName);
+              const newPath = path.join(dir, newName);
+              if (fs.existsSync(oldPath)) {
+                if (fs.existsSync(newPath)) throw new Error(`Target file already exists: ${newPath}`);
+                fs.renameSync(oldPath, newPath);
+                if (dir.endsWith('/medium')) renamedMedium++; else renamedThumb++;
+              }
+            }
+          }
+
+          // Validate filename policy for every file actually present in medium/thumb.
+          const filenameRe = /^[a-z0-9]+(?:-[a-z0-9]+)*-\d{2}\.(?:webp|png|jpe?g)$/;
+          for (const dir of ['images/spots/medium', 'images/spots/thumb']) {
+            for (const name of fs.readdirSync(dir)) {
+              if (!filenameRe.test(name)) throw new Error(`Non-compliant filename remains: ${dir}/${name}`);
+            }
+          }
+
+          // Validate all mapped references now point to the new filenames while preserving reference order.
+          const sandboxAfter = {};
+          vm.runInNewContext(sourceAfter + '\n;globalThis.__TRIP__ = TRIP;', sandboxAfter, { filename: dataPath });
+          const tripAfter = sandboxAfter.__TRIP__;
+          const afterSpots = [];
+          function walkAfter(value) {
+            if (!value || typeof value !== 'object') return;
+            if (value.name && slugByName[value.name] && (Array.isArray(value.images) || typeof value.img === 'string')) {
+              const slug = slugByName[value.name];
+              const refs = Array.isArray(value.images) ? value.images.slice() : [];
+              if (typeof value.img === 'string' && value.img) refs.push(value.img);
+              afterSpots.push({ name: value.name, refs });
+            }
+            if (Array.isArray(value)) value.forEach(walkAfter);
+            else Object.values(value).forEach(walkAfter);
+          }
+          walkAfter(tripAfter);
+          for (const before of mappedSpots) {
+            const after = afterSpots.find(x => x.name === before.name);
+            if (!after) throw new Error(`Spot disappeared after rewrite: ${before.name}`);
+            const expected = expectedCounts[before.slug];
+            if (after.refs.length !== expected) throw new Error(`Post-rewrite count mismatch for ${before.name}`);
+            const normalizedExpected = before.beforeRefs.map((oldName, i) => `${before.slug}-${String(i + 1).padStart(2, '0')}${path.extname(oldName)}`);
+            if (JSON.stringify(after.refs) !== JSON.stringify(normalizedExpected)) {
+              throw new Error(`Reference order changed for ${before.name}`);
+            }
+          }
+
+          const git = cmd => cp.execFileSync('git', cmd, { stdio: 'inherit' });
+          git(['status', '--short']);
+          cp.execFileSync('node', ['--check', dataPath], { stdio: 'inherit' });
+          git(['diff', '--check']);
+
+          console.log(`Stage A mappings: ${oldToNew.size}`);
+          console.log(`Existing medium files renamed: ${renamedMedium}`);
+          console.log(`Existing thumb files renamed: ${renamedThumb}`);
+          console.log(`Known missing references intentionally preserved: 75 (spec baseline)`);
+          console.log(`Mapped spots: ${mappedSpots.length}; references: ${totalRefs}`);
+          NODE
+
+          git diff --name-status
+          if git diff --quiet; then
+            echo "No changes produced; aborting to avoid an empty stage A commit."
+            exit 1
+          fi
+
+          # Ensure only Stage A paths changed.
+          allowed_re='^(data/trip-details\.js|docs/IMAGES\.md|images/spots/(medium|thumb)/)'
+          while IFS= read -r p; do
+            [[ "$p" =~ $allowed_re ]] || { echo "Unexpected changed path: $p"; exit 1; }
+          done < <(git diff --name-only)
+
+          git add data/trip-details.js docs/IMAGES.md images/spots/medium images/spots/thumb
+          git commit -m 'refactor: 統一 spots 照片檔名為 {slug}-NN 格式（全小寫 ASCII、補零連號）'
+          git push origin HEAD:main
+
+          # Clean up the builder branch after the final main commit has landed.
+          main_sha=$(git rev-parse HEAD)
+          git push origin --delete "$BUILDER_BRANCH" || true
+          echo "FINAL_MAIN_SHA=$main_sha"
