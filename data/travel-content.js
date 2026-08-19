@@ -463,7 +463,7 @@ const TRAVEL_CONTENT = {
       "key": "reykjavik_food",
       "emoji": "🍜",
       "title": "雷市的餐厅及美食",
-      "sub": "整理雷克雅维克热门餐厅与小吃，包括羊肉汤、热狗、海鲜料理及特色咖啡店",
+      "sub": "整理雷克雅维克热门餐厅与小吃，包括羊肉汤、热狗、海鲜料理及特色咖啡店。",
       "cover": "reykjavik_food.webp",
       "size": "2x2",
       "items": [
