@@ -79,7 +79,7 @@ const TRAVEL_CONTENT = {
       "key": "supermarket_food",
       "emoji": "🧀",
       "title": "超市食物",
-      "sub": "超市值得购买的冰岛国民食物有Skyr优格、鱼子酱牙膏，也可品尝冰川水、可口可乐及当地啤酒。",
+      "sub": "超市值得购买的冰岛国民食物有Skyr优格、鱼子酱牙膏，也可品尝冰川水、可口可乐及当地啤酒",
       "cover": "supermarket_food.webp",
       "size": "2x4",
       "items": [
@@ -217,7 +217,7 @@ const TRAVEL_CONTENT = {
       "key": "supermarket_shopping",
       "emoji": "🛒",
       "title": "超市购物",
-      "sub": "介绍在冰岛超市上，适合采买的生活用品或食品，带回家分送亲友或同事。",
+      "sub": "介绍在冰岛超市上，适合采买的生活用品或食品，带回家分送亲友或同事",
       "cover": "supermarket_shopping.webp",
       "size": "2x4",
       "items": [
@@ -301,7 +301,7 @@ const TRAVEL_CONTENT = {
       "key": "store_shopping",
       "emoji": "🛍️",
       "title": "商店购物",
-      "sub": "整理冰岛特色商店、纪念品店及户外用品店，方便选购伴手礼、服饰与旅游用品。",
+      "sub": "整理冰岛特色商店、纪念品店及户外用品店，方便选购伴手礼、服饰与旅游用品",
       "cover": "store_shopping.webp",
       "size": "2x2",
       "items": [
@@ -374,7 +374,7 @@ const TRAVEL_CONTENT = {
       "key": "iceland_supermarket",
       "emoji": "🏪",
       "title": "冰岛超市介紹",
-      "sub": "介绍Bónus、Krónan及Nettó等冰岛超市",
+      "sub": "介绍Bónus、Krónan及Nettó等冰岛超市。",
       "cover": "iceland_supermarket.webp",
       "size": "2x2",
       "items": [
@@ -462,8 +462,8 @@ const TRAVEL_CONTENT = {
     {
       "key": "reykjavik_food",
       "emoji": "🍜",
-      "title": "雷市美食",
-      "sub": "整理雷克雅维克热门餐厅与小吃，包括羊肉汤、热狗、海鲜料理及特色咖啡店。",
+      "title": "雷克雅为克的餐厅及美食",
+      "sub": "整理雷克雅维克热门餐厅与小吃，包括羊肉汤、热狗、海鲜料理及特色咖啡店",
       "cover": "reykjavik_food.webp",
       "size": "2x2",
       "items": [
@@ -532,8 +532,8 @@ const TRAVEL_CONTENT = {
     {
       "key": "iceland_food",
       "emoji": "🍲",
-      "title": "冰岛美食",
-      "sub": "冰岛特色美食包含羊肉汤、龙虾汤、发酵鲨鱼、黑麦面包及各式新鲜海鲜。",
+      "title": "非雷市的冰岛美食及餐厅",
+      "sub": "离开雷克雅维克后，比较有名的冰岛美食及餐厅",
       "cover": "iceland_food.webp",
       "size": "2x2",
       "items": []
@@ -541,7 +541,7 @@ const TRAVEL_CONTENT = {
     {
       "key": "finland_food",
       "emoji": "🥐",
-      "title": "芬兰美食",
+      "title": "芬兰美食及餐厅",
       "sub": "芬兰必吃美食包括鲑鱼汤、肉桂卷、驯鹿肉、卡累利阿派及Fazer巧克力。",
       "cover": "finland_food.webp",
       "size": "2x2",
@@ -606,6 +606,7 @@ const TRAVEL_CONTENT = {
     }
   ]
 };
+
 
 
 
