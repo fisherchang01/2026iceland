@@ -470,6 +470,46 @@ function buildSpotImageHtml(s) {
   return buildPhotoCarouselHtml(imgs, getSpotIconHtml(s.icon), s.name, 'spot');
 }
 
+// ===== 深度介紹：圖文混排（階段 D）=====
+// 有 deepBlocks 就走圖文混排，否則退回既有的 deepDesc 純文字路徑。
+// 沒有 deepBlocks 的景點，產生的 HTML 與改造前逐字元相同。
+function buildDeepDescHtml(s) {
+  if (s.deepBlocks && s.deepBlocks.length) {
+    return '<div class="info-card"><div class="card-label">深度介绍</div>' +
+           renderDeepBlocks(s.deepBlocks) + '</div>';
+  }
+  if (s.deepDesc) {
+    return '<div class="info-card"><div class="card-label">深度介绍</div>' +
+           formatOutlineText(s.deepDesc) + '</div>';
+  }
+  return '';
+}
+// 內文圖只用 medium/ 單一尺寸、不做 srcset（已確認決策）：詳情頁的圖是全卡片寬顯示，
+// 480w 的 thumb 幾乎用不到；只讀一個目錄，日後上傳新照片也只要傳一個地方，少一個出錯點。
+//
+// ⚠️ 呼叫此函式前，currentGalleryImages 必須已經被 buildSpotImageHtml(s) 設定過（該函式會
+// 「覆寫」currentGalleryImages 為頂部輪播的圖片清單），這裡則是往後「追加」內文圖，讓燈箱
+// 左右滑可以跨越輪播與內文圖瀏覽。renderSpotDetail() 是一整串由左到右求值的字串串接運算式，
+// buildSpotImageHtml(s) 已經在最前面，天然滿足此依賴順序——若之後有人重排這段運算式，
+// 燈箱的圖片 index 會錯位，請勿調整呼叫順序。
+function renderDeepBlocks(blocks) {
+  var html = '';
+  blocks.forEach(function(b) {
+    if (b.type === 'text') {
+      html += formatOutlineText(b.value);           // 沿用既有函式，支援 \n 與四種標記
+    } else if (b.type === 'heading') {
+      html += '<h4 class="deep-heading">' + parseMarkup(b.value) + '</h4>';
+    } else if (b.type === 'img' && b.src) {
+      var idx = currentGalleryImages.length;
+      currentGalleryImages.push(spotImagePath(b.src, 'medium'));
+      html += '<div class="deep-img"><img src="' + spotImagePath(b.src, 'medium') +
+              '" alt="" loading="lazy" decoding="async" onclick="openLightbox(' + idx + ')"' +
+              ' onerror="this.closest(\'.deep-img\').style.display=\'none\'" /></div>';
+    }
+  });
+  return html;
+}
+
 // ===== 圖片放大燈箱：點擊景點照片（單張或網格縮圖）可放大檢視，多張時可左右切換 =====
 function openLightbox(idx) {
   if (!currentGalleryImages.length) return;
@@ -638,7 +678,7 @@ function renderSpotDetail(s, d) {
     buildSpotImageHtml(s) +
     factsHtml +
     (s.desc ? '<div class="info-card"><div class="card-label">景点介绍</div><p>' + parseMarkup(s.desc) + '</p></div>' : '') +
-    (s.deepDesc ? '<div class="info-card"><div class="card-label">深度介绍</div>' + formatOutlineText(s.deepDesc) + '</div>' : '') +
+    buildDeepDescHtml(s) +
     (s.note ? '<div class="note-card"><div class="card-label">备注</div>' + formatOutlineText(s.note) + '</div>' : '') +
     nextStopHtml;
   // 注意（Phase 2 調整）：景點詳情頁不再放導航按鈕，導航改附掛在列表卡片之間「距離/時間」那一行

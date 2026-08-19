@@ -679,6 +679,22 @@
       margin-bottom: var(--sp-3); font-weight: 600;
     }
     .info-card p { font-size: var(--fs-base); line-height: 1.8; color: #3a3a3a; }
+    /* 深度介紹的圖文混排（階段 D）：內文圖在 .info-card 的 padding 內顯示，不做出血。 */
+    .info-card .deep-img { margin: var(--sp-5) 0; }
+    .info-card .deep-img img {
+        width: 100%;
+        height: auto;
+        display: block;
+        border-radius: calc(var(--radius) - 4px);
+        cursor: zoom-in;
+    }
+    .info-card .deep-heading {
+        font-size: var(--fs-base);
+        font-weight: 700;
+        color: #2f2f2f;
+        margin: var(--sp-6) 0 var(--sp-3);
+    }
+    .info-card .deep-heading:first-child { margin-top: 0; }
     .tips-card {
       background: var(--warn-bg);
       border: 1px solid var(--warn-brd);
