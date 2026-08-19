@@ -8,17 +8,39 @@ var tramIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strok
 var CN_DAY_NUM = ['一','二','三','四','五','六','七','八','九','十'];
 var MONTH_NUM = { JAN:1, FEB:2, MAR:3, APR:4, MAY:5, JUN:6, JUL:7, AUG:8, SEP:9, OCT:10, NOV:11, DEC:12 };
 
-// ===== 景點/一般卡片配色（v7，Phase 2）=====
-// 不再依「當天」上色，全站固定兩色：有字母編號（A/B/C...）的是「景點」，沒有編號的
-// （機場/超市/租車/取車等）是「一般」，只看 s.label 有沒有值就能判斷，沿用既有資料、不需要新增欄位。
+// ===== 景點/一般卡片配色（v7，Phase 2；階段 C 起改判斷 s.kind）=====
+// 不再依「當天」上色，全站固定兩色：kind:'spot' 是「景點」，kind:'general'
+// （機場/超市/租車/取車等）是「一般」。向下相容：沒有 kind 欄位時退回舊規則（看 s.label 有沒有值）。
 function spotTypeClass(s) {
-  return s.label ? 'type-spot' : 'type-general';
+  var kind = s.kind || (s.label ? 'spot' : 'general');
+  return kind === 'spot' ? 'type-spot' : 'type-general';
 }
 // 標題前綴：景點顯示「A.」「B.」這類編號；一般則顯示原本的 icon 表情符號，不再用彩色方塊當徽章。
-function spotPrefixHtml(s) {
-  if (s.label) return '<span class="spot-num">' + s.label + '.</span> ';
+// 階段 C 起，字母編號改由 computeSpotLabels() 在渲染當下依序計算並傳入，不再讀取資料裡固定的 s.label
+// （資料裡仍可能保留舊的 label 欄位當參考，但不影響顯示；這樣未來新增/排序景點時字母才會自動跟著變動）。
+function spotPrefixHtml(s, computedLabel) {
+  if (computedLabel) return '<span class="spot-num">' + computedLabel + '.</span> ';
   if (s.icon)  return '<span class="spot-num-icon">' + s.icon + '</span> ';
   return '';
+}
+// 依序計算一份景點清單（d.spots 或 area.spots）裡每個項目的字母編號：
+// 分配給 kind:'spot' 的項目，general 不佔字母。
+// ⚠️ 這裡刻意不排除 isOptional：實測發現 day1 的備選景點（回程路线）原本就沒有 label，
+// 但 day2 的兩個備選景點（Faxi、Efstidalur II）原本卻「有」label（D、E），
+// 這點在目前資料裡並不一致。階段 C 的驗收標準是「外觀完全不變」，所以這裡如實
+// 依照 kind 重現目前的實際編號結果，不依規格書 E.1 描述的「備選一律不佔字母」這個
+// （與 day2 現況不符的）通則來計算 —— 該通則留給階段 E 處理 attachTo 時再決定是否要
+// 真的改變 day2 這兩個景點的顯示行為（那會是一個外觀變動，需要另外確認）。
+function computeSpotLabels(list) {
+  var A = 'A'.charCodeAt(0);
+  var n = 0;
+  return (list || []).map(function(s) {
+    var kind = s.kind || (s.label ? 'spot' : 'general');
+    if (kind === 'spot') {
+      return String.fromCharCode(A + (n++));
+    }
+    return null;
+  });
 }
 
 // 景點名稱資料可使用「拉丁字母 + 中文」混排。
@@ -142,7 +164,7 @@ function initThumbRowLazyLoad(containerEl) {
 // showDay() 裡三種情境（一般行程、分區行程、住宿）都呼叫這個函式產生卡片，不用各自重寫一份。
 // 卡片外面包一層 timeline-row（節點欄 + 卡片），節點欄裡的圓點才是真正對齊左側貫穿線的定位點，
 // 不能直接畫在卡片自己身上（卡片有 overflow:hidden 讓圓角裁切正常，圓點疊在上面會被連帶裁掉）。=====
-function buildSpotCardHtml(s, onclickExpr) {
+function buildSpotCardHtml(s, onclickExpr, computedLabel) {
   var isShop = s.isShop || false;
   var clickable = !isShop && !!onclickExpr;
   var scheduleParts = [];
@@ -158,7 +180,7 @@ function buildSpotCardHtml(s, onclickExpr) {
   var cardHtml = '<div class="spot-item ' + spotTypeClass(s) + (isShop ? ' no-click' : '') + (s.isOptional ? ' spot-optional' : '') + '">' +
     thumbHtml +
     '<div class="spot-card-row">' +
-      '<div class="spot-card-copy"' + copyClickAttr + '><h4 class="spot-card-title">' + spotPrefixHtml(s) + spotTitleHtml(s.name) + optionalBadge + '</h4>' + scheduleHtml + summaryHtml + '</div>' +
+      '<div class="spot-card-copy"' + copyClickAttr + '><h4 class="spot-card-title">' + spotPrefixHtml(s, computedLabel) + spotTitleHtml(s.name) + optionalBadge + '</h4>' + scheduleHtml + summaryHtml + '</div>' +
     '</div>' +
     '</div>';
   return '<div class="timeline-row">' +
@@ -286,9 +308,10 @@ function showDay(dayId) {
           '<div class="travel-collapse-arrow">▼</div>' +
         '</div>' +
         '<div class="travel-collapse-body">';
+      var areaLabels = computeSpotLabels(area.spots);
       area.spots.forEach(function(s, sIdx) {
         var onclickExpr = s.isShop ? null : "showAreaSpot('" + dayId + "'," + aIdx + ',' + sIdx + ')';
-        html += buildSpotCardHtml(s, onclickExpr);
+        html += buildSpotCardHtml(s, onclickExpr, areaLabels[sIdx]);
         if (s.nextStop) {
           var ns = s.nextStop;
           var nextSpot = area.spots[sIdx + 1];
@@ -305,9 +328,10 @@ function showDay(dayId) {
   } else {
     listEl.classList.remove('no-timeline');
     var html = '';
+    var dayLabels = computeSpotLabels(d.spots);
     (d.spots || []).forEach(function(s, i) {
       var onclickExpr = s.isShop ? null : "showSpot('" + dayId + "'," + i + ')';
-      html += buildSpotCardHtml(s, onclickExpr);
+      html += buildSpotCardHtml(s, onclickExpr, dayLabels[i]);
       var nextSpot = (d.spots || [])[i + 1];
       var destQuery = nextSpot ? encodeURIComponent(nextSpot.map || nextSpot.name) :
         (d.hotel && d.hotel.map ? encodeURIComponent(d.hotel.map) : null);

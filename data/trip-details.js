@@ -85,6 +85,8 @@ const TRIP = {
       {
         "icon": "🛬",
         "name": "冰岛机场 KEF Airport",
+        "id": "kefairport",
+        "kind": "general",
         "tags": [
           "机场"
         ],
@@ -109,6 +111,8 @@ const TRIP = {
       {
         "icon": "⛪",
         "name": "哈尔格林姆教堂 Hallgrímskirkja",
+        "id": "hallgrimskirkja",
+        "kind": "spot",
         "label": "A",
         "images": [
           "hallgrimskirkja-01.webp",
@@ -136,6 +140,8 @@ const TRIP = {
       {
         "icon": "🌈",
         "name": "彩虹街与购物主街 Laugavegur",
+        "id": "laugavegur",
+        "kind": "spot",
         "label": "B",
         "tags": [
           "花儿与少年"
@@ -159,6 +165,8 @@ const TRIP = {
       {
         "icon": "🎼",
         "name": "哈帕音乐厅 Harpa",
+        "id": "harpa",
+        "kind": "spot",
         "label": "C",
         "images": [
           "harpa-01.webp",
@@ -185,6 +193,8 @@ const TRIP = {
       {
         "icon": "🚶",
         "name": "回程路线：海港与托宁湖",
+        "id": "tjornin",
+        "kind": "general",
         "tags": [],
         "isOptional": true,
         "images": [
@@ -198,6 +208,8 @@ const TRIP = {
       {
         "icon": "🏞️",
         "name": "辛格维利尔国家公园 Þingvellir",
+        "id": "thingvellir",
+        "kind": "spot",
         "label": "D",
         "images": [
           "thingvellir-01.webp",
@@ -232,6 +244,8 @@ const TRIP = {
       {
         "icon": "🌀",
         "name": "火山口湖 Kerið",
+        "id": "kerid",
+        "kind": "spot",
         "label": "E",
         "images": [
           "kerid-01.webp",
@@ -299,6 +313,8 @@ const TRIP = {
       {
         "icon": "💎",
         "name": "蓝色秘境瀑布 Brúarfoss",
+        "id": "bruarfoss",
+        "kind": "spot",
         "label": "A",
         "images": [
           "bruarfoss-01.webp",
@@ -328,6 +344,8 @@ const TRIP = {
       {
         "icon": "💦",
         "name": "盖锡尔地热区 Geysir",
+        "id": "geysir",
+        "kind": "spot",
         "label": "B",
         "images": [
           "geysir-01.webp",
@@ -354,6 +372,8 @@ const TRIP = {
       {
         "icon": "🌊",
         "name": "黄金瀑布 Gullfoss",
+        "id": "gullfoss",
+        "kind": "spot",
         "label": "C",
         "images": [
           "gullfoss-01.webp",
@@ -388,6 +408,8 @@ const TRIP = {
       {
         "icon": "💧",
         "name": "黄金圈隐藏版瀑布 Faxi",
+        "id": "faxi",
+        "kind": "spot",
         "label": "D",
         "images": [
           "faxi-01.webp",
@@ -405,6 +427,8 @@ const TRIP = {
       {
         "icon": "🍦",
         "name": "家庭农庄 Efstidalur II",
+        "id": "efstidalur",
+        "kind": "spot",
         "label": "E",
         "images": [
           "efstidalur-01.webp",
@@ -422,6 +446,8 @@ const TRIP = {
       {
         "icon": "🐴",
         "name": "冰岛马场 Bru Horsefarm",
+        "id": "bruhorsefarm",
+        "kind": "spot",
         "label": "F",
         "images": [
           "bruhorsefarm-01.webp",
@@ -474,6 +500,8 @@ const TRIP = {
       {
         "icon": "💧",
         "name": "塞里雅兰瀑布 Seljalandsfoss",
+        "id": "seljalandsfoss",
+        "kind": "spot",
         "label": "A",
         "images": [
           "seljalandsfoss-01.webp",
@@ -498,6 +526,8 @@ const TRIP = {
       {
         "icon": "🏔️",
         "name": "史可加瀑布 Skógafoss",
+        "id": "skogafoss",
+        "kind": "spot",
         "label": "B",
         "images": [
           "skogafoss-01.webp",
@@ -525,6 +555,8 @@ const TRIP = {
       {
         "icon": "🐦",
         "name": "岬角 Dyrhólaey",
+        "id": "dyrholaey",
+        "kind": "spot",
         "label": "C",
         "images": [
           "dyrholaey-01.webp",
@@ -548,6 +580,8 @@ const TRIP = {
       {
         "icon": "⚫",
         "name": "黑沙滩 Reynisfjara",
+        "id": "reynisfjara",
+        "kind": "spot",
         "label": "D",
         "images": [
           "reynisfjara-01.webp",
@@ -588,6 +622,8 @@ const TRIP = {
       {
         "icon": "🏘️",
         "name": "维克镇 Vík",
+        "id": "vik",
+        "kind": "spot",
         "label": "E",
         "img": "vik-04.webp",
         "tags": [
@@ -640,6 +676,8 @@ const TRIP = {
       {
         "icon": "🧊",
         "name": "冰川徒步与蓝冰洞",
+        "id": "icehiking",
+        "kind": "spot",
         "label": "A",
         "img": "icehiking-10.webp",
         "tags": [
@@ -669,6 +707,8 @@ const TRIP = {
       {
         "icon": "🚤",
         "name": "杰古沙龙冰河湖 Jökulsárlón",
+        "id": "jokulsarlon",
+        "kind": "spot",
         "label": "B",
         "img": "jokulsarlon-06.webp",
         "tags": [
@@ -695,6 +735,8 @@ const TRIP = {
       {
         "icon": "🏔️",
         "name": "小冰河湖 Fjallsárlón",
+        "id": "fjallsarlon",
+        "kind": "spot",
         "label": "C",
         "tags": [
           "冰川"
@@ -712,6 +754,8 @@ const TRIP = {
       {
         "icon": "💠",
         "name": "钻石海滩 Diamond Beach",
+        "id": "diamond-beach",
+        "kind": "spot",
         "label": "D",
         "img": "diamond-beach-08.webp",
         "tags": [
@@ -771,6 +815,8 @@ const TRIP = {
       {
         "icon": "🏞️",
         "name": "羽毛峡谷 Fjaðrárgljúfur",
+        "id": "fjadrargljufur",
+        "kind": "spot",
         "label": "A",
         "tags": [],
         "desc": "冰岛南部最壮丽的自然奇观之一，拥有「世界最美峡谷」的美誉。",
@@ -791,6 +837,8 @@ const TRIP = {
       {
         "icon": "♨️",
         "name": "蓝湖温泉 Blue Lagoon",
+        "id": "bluelagoon",
+        "kind": "spot",
         "label": "B",
         "img": "bluelagoon-12.webp",
         "tags": [
@@ -860,6 +908,8 @@ const TRIP = {
       {
         "icon": "✈️",
         "name": "赫尔辛基机场",
+        "id": "helairport",
+        "kind": "general",
         "tags": [
           "机场"
         ],
@@ -879,6 +929,8 @@ const TRIP = {
       {
         "icon": "🚉",
         "name": "中央车站 Helsinki Central Station",
+        "id": "centralstation",
+        "kind": "general",
         "tags": [],
         "desc": "不仅是交通枢纽，还有许多好逛的购物中心、必吃的美食和芬兰特色的纪念品店。",
         "deepDesc": "一、车站本身：外表古老壮观，设有正门和西门，正门左右各有巨大人形雕像拿着圆灯，旁侧还有大钟楼，由芬兰建筑师伊利尔·沙里宁设计，就像一件特大艺术品。站内大厅非常雄伟华丽，细致的雕刻就像到了博物馆，吊灯下方是通往地下的手扶梯，地下能直通地铁站、超市及餐厅卖店。\n二、周边购物中心：（1）Citycenter购物中心——位于车站对面，超过50家店铺、咖啡厅及餐厅，一楼有间2欧商店，每样商品都2欧。（2）Kamppi购物中心——市中心最繁忙的购物中心，超过90家店铺及近50家咖啡厅餐厅，分布七层楼；楼下有K market和Alepa market两间超市（K market较大较齐全），还有一条美食街，拉面、泰式料理、新加坡风味应有尽有。（3）Forum购物中心——约140家店铺，2楼有Moomin专卖店。（4）Sokos百货——设有LUMENE保养品、marimekko、iittala等芬兰本地品牌。（5）Stockmann百货——北欧最大百货公司，超过5万平方米零售空间，几乎都是复合式销售，结帐要到中央结帐台。\n三、延伸景点──静默教堂：位于Kamppi购物中心旁边，非常好找。外观是一个超大椭圆形木质建筑，温暖的木头色调，像一艘船或一滴水滴，非常吸睛，建材主要是芬兰云杉木，内部使用大量自然木材，给人温暖平静的感觉，免费入场。",
@@ -893,6 +945,8 @@ const TRIP = {
       {
         "icon": "⛪",
         "name": "白教堂 Helsinki Cathedral",
+        "id": "helsinki-cathedral",
+        "kind": "general",
         "tags": [],
         "images": [
           "helsinki-cathedral-01.webp",
@@ -908,6 +962,8 @@ const TRIP = {
       {
         "icon": "🐟",
         "name": "市集广场及老农贸市场",
+        "id": "market-square",
+        "kind": "general",
         "tags": [],
         "img": "market-square-08.webp",
         "desc": "赫尔辛基老农贸市场于1889年开幕，规模并不大，不过是赫尔辛基最具历史意义和人气的市场之一。",
@@ -926,6 +982,8 @@ const TRIP = {
       {
         "icon": "🔴",
         "name": "红教堂 Uspenski Cathedral",
+        "id": "uspenski",
+        "kind": "general",
         "tags": [],
         "img": "uspenski-10.webp",
         "desc": "以13座24K镀金洋葱头穹顶、深红色砖墙和浓郁的俄式拜占庭风格著称，是西欧最大的东正教教堂。",
@@ -947,6 +1005,8 @@ const TRIP = {
       {
         "icon": "🪨",
         "name": "岩石教堂 Temppeliaukio Church",
+        "id": "temppeliaukio",
+        "kind": "general",
         "tags": [],
         "img": "temppeliaukio-04.webp",
         "desc": "赫尔辛基三大教堂中最近代的建筑，教堂内部以裸露的岩石为基础，融合了现代感与自然美。",
@@ -962,6 +1022,8 @@ const TRIP = {
       {
         "icon": "🏰",
         "name": "芬兰堡 Suomenlinna",
+        "id": "suomenlinna",
+        "kind": "general",
         "tags": [
           "世界遗产"
         ],
@@ -983,6 +1045,8 @@ const TRIP = {
       {
         "icon": "🛍️",
         "name": "购物",
+        "id": "helsinki-lv",
+        "kind": "general",
         "tags": [],
         "isOptional": true,
         "desc": "传说中是世界上最便宜LV的地方，原因是LV在欧盟统一订价，但芬兰享有极高的退税比例（最高可达约17%）。",
@@ -998,6 +1062,8 @@ const TRIP = {
       {
         "icon": "🍽️",
         "name": "餐厅",
+        "id": "helsinki-food",
+        "kind": "general",
         "tags": [],
         "isOptional": true,
         "desc": "码头热门三文鱼餐厅 Kappeli Restaurant，玻璃房子坐落在海边码头公园中央，喷泉环绕，仿佛置身童话世界。",

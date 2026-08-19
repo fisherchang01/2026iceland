@@ -486,6 +486,21 @@
         function loadDrafts() {
             const saved = localStorage.getItem('trip_drafts');
             drafts = saved ? JSON.parse(saved) : {};
+
+            // 階段 C：草稿鍵改用 id（day1_gullfoss），舊格式是 day1_3 這種純數字 index。
+            // 舊格式在新版讀取時 index 語意已不可靠（新增/排序過景點就會對錯位置），
+            // 不嘗試自動轉換，直接捨棄並提示使用者。
+            const staleKeys = Object.keys(drafts).filter(key => {
+                const underscoreIdx = key.indexOf('_');
+                if (underscoreIdx < 0) return false;
+                const secondPart = key.substring(underscoreIdx + 1);
+                return /^\d+$/.test(secondPart);
+            });
+            if (staleKeys.length) {
+                staleKeys.forEach(key => delete drafts[key]);
+                saveDrafts();
+                alert(`偵測到舊格式草稿 ${staleKeys.length} 筆，已清除，請重新編輯`);
+            }
         }
 
         function saveDrafts() {
@@ -555,7 +570,7 @@
             day.spots.forEach((spot, idx) => {
                 const btn = document.createElement('button');
                 btn.className = 'spot-btn';
-                const draftKey = `${currentDay}_${idx}`;
+                const draftKey = `${currentDay}_${spot.id}`;
                 if (drafts[draftKey]) {
                     btn.classList.add('modified');
                 }
@@ -584,7 +599,7 @@
         function renderEditor() {
             const day = tripData[currentDay];
             const spot = day.spots[currentSpotIndex];
-            const draftKey = `${currentDay}_${currentSpotIndex}`;
+            const draftKey = `${currentDay}_${spot.id}`;
             const draft = drafts[draftKey] || {};
 
             const editor = document.getElementById('editor');
@@ -696,12 +711,13 @@
         function saveLocally() {
             if (!currentDay || currentSpotIndex === null) return;
 
+            const spot = tripData[currentDay].spots[currentSpotIndex];
             const descInput = document.getElementById('descInput');
             const deepDescInput = document.getElementById('deepDescInput');
             const noteInput = document.getElementById('noteInput');
             const mapInput = document.getElementById('mapInput');
 
-            const draftKey = `${currentDay}_${currentSpotIndex}`;
+            const draftKey = `${currentDay}_${spot.id}`;
             drafts[draftKey] = {
                 desc: descInput.value.trim(),
                 deepDesc: deepDescInput.value.trim(),
@@ -728,12 +744,15 @@
             try {
                 const pat = getPAT();
 
-                // 應用所有草稿到 tripData
+                // 應用所有草稿到 tripData（依 spot.id 找景點，不再依陣列 index）
                 Object.entries(drafts).forEach(([draftKey, data]) => {
-                    const [dayKey, spotIdx] = draftKey.split('_');
-                    const idx = parseInt(spotIdx);
-                    if (tripData[dayKey] && tripData[dayKey].spots[idx]) {
-                        Object.assign(tripData[dayKey].spots[idx], data);
+                    const underscoreIdx = draftKey.indexOf('_');
+                    const dayKey = draftKey.substring(0, underscoreIdx);
+                    const spotId = draftKey.substring(underscoreIdx + 1);
+                    const day = tripData[dayKey];
+                    const spot = day && day.spots && day.spots.find(s => s.id === spotId);
+                    if (spot) {
+                        Object.assign(spot, data);
                     }
                 });
 
