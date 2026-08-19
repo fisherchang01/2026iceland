@@ -8,7 +8,7 @@ const TRAVEL_CONTENT = {
       "emoji": "🇮🇸",
       "title": "冰島介紹",
       "sub": "冰島風景、自然、人文及體驗的14張精選照片集。",
-      "cover": "item-01.webp",
+      "cover": "iceland-cover-01.webp",
       "size": "2x4",
       "items": [
         {
@@ -606,5 +606,6 @@ const TRAVEL_CONTENT = {
     }
   ]
 };
+
 
 
