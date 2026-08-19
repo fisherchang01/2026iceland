@@ -252,14 +252,14 @@
             resize: vertical;
         }
 
-        .field-group.tips textarea {
-            min-height: 80px;
+        .field-group.note textarea {
+            min-height: 140px;
             resize: vertical;
         }
 
-        .field-group.parking textarea {
-            min-height: 80px;
-            resize: vertical;
+        .field-hint {
+            font-size: 11px;
+            color: #999;
         }
 
         .btn {
@@ -625,39 +625,20 @@
                         <textarea id="deepDescInput" oninput="updateAllPreviews()">${escapeAttr(draft.deepDesc !== undefined ? draft.deepDesc : (spot.deepDesc || ''))}</textarea>
                     </div>
 
-                    <div class="field-group tips">
+                    <div class="field-group note">
                         <div class="field-header">
-                            <label class="field-label">小提醒 (tips)</label>
+                            <label class="field-label">備註 (note)</label>
                             <div class="field-toolbar">
-                                <button class="mini-btn" onclick="insertToField('tipsInput', '{bold}', '{/bold}')"><strong>B</strong></button>
-                                <button class="mini-btn" onclick="insertToField('tipsInput', '{italic}', '{/italic}')"><em>I</em></button>
-                                <button class="mini-btn" onclick="insertToField('tipsInput', '/n')">↵</button>
-                                <button class="color-btn red" onclick="applyColorToField('tipsInput', '#ff0000')" title="紅色">R</button>
-                                <button class="color-btn blue" onclick="applyColorToField('tipsInput', '#0066cc')" title="藍色">B</button>
-                                <button class="color-btn green" onclick="applyColorToField('tipsInput', '#00aa00')" title="綠色">G</button>
+                                <button class="mini-btn" onclick="insertToField('noteInput', '{bold}', '{/bold}')"><strong>B</strong></button>
+                                <button class="mini-btn" onclick="insertToField('noteInput', '{italic}', '{/italic}')"><em>I</em></button>
+                                <button class="mini-btn" onclick="insertToField('noteInput', '/n')">↵</button>
+                                <button class="color-btn red" onclick="applyColorToField('noteInput', '#ff0000')" title="紅色">R</button>
+                                <button class="color-btn blue" onclick="applyColorToField('noteInput', '#0066cc')" title="藍色">B</button>
+                                <button class="color-btn green" onclick="applyColorToField('noteInput', '#00aa00')" title="綠色">G</button>
                             </div>
                         </div>
-                        <textarea id="tipsInput" oninput="updateAllPreviews()">${escapeAttr(draft.tips !== undefined ? draft.tips : (spot.tips || ''))}</textarea>
-                    </div>
-
-                    <div class="field-group parking">
-                        <div class="field-header">
-                            <label class="field-label">停車及廁所 (parking)</label>
-                            <div class="field-toolbar">
-                                <button class="mini-btn" onclick="insertToField('parkingInput', '{bold}', '{/bold}')"><strong>B</strong></button>
-                                <button class="mini-btn" onclick="insertToField('parkingInput', '{italic}', '{/italic}')"><em>I</em></button>
-                                <button class="mini-btn" onclick="insertToField('parkingInput', '/n')">↵</button>
-                                <button class="color-btn red" onclick="applyColorToField('parkingInput', '#ff0000')" title="紅色">R</button>
-                                <button class="color-btn blue" onclick="applyColorToField('parkingInput', '#0066cc')" title="藍色">B</button>
-                                <button class="color-btn green" onclick="applyColorToField('parkingInput', '#00aa00')" title="綠色">G</button>
-                            </div>
-                        </div>
-                        <textarea id="parkingInput" oninput="updateAllPreviews()">${escapeAttr(draft.parking !== undefined ? draft.parking : (spot.parking || ''))}</textarea>
-                    </div>
-
-                    <div class="field-group">
-                        <label class="field-label">衛生間 (toilet)</label>
-                        <input type="text" id="toiletInput" value="${escapeAttr(draft.toilet !== undefined ? draft.toilet : (spot.toilet || ''))}" oninput="updateAllPreviews()">
+                        <textarea id="noteInput" rows="8" oninput="updateAllPreviews()">${escapeAttr(draft.note !== undefined ? draft.note : (spot.note || ''))}</textarea>
+                        <div class="field-hint">設施資訊建議放前面（🅿️ 停車、🚻 廁所），提醒事項放後面（💡）</div>
                     </div>
 
                     <div class="field-group">
@@ -674,8 +655,7 @@
         function updateAllPreviews() {
             const descInput = document.getElementById('descInput');
             const deepDescInput = document.getElementById('deepDescInput');
-            const tipsInput = document.getElementById('tipsInput');
-            const parkingInput = document.getElementById('parkingInput');
+            const noteInput = document.getElementById('noteInput');
 
             if (!descInput) return;
 
@@ -695,20 +675,11 @@
                 `;
             }
 
-            if (tipsInput && tipsInput.value) {
+            if (noteInput && noteInput.value) {
                 html += `
                 <div class="preview-section">
-                    <div class="preview-section-title">小提醒</div>
-                    <div class="preview-content">${parseMarkup(tipsInput.value)}</div>
-                </div>
-                `;
-            }
-
-            if (parkingInput && parkingInput.value) {
-                html += `
-                <div class="preview-section">
-                    <div class="preview-section-title">停車及廁所</div>
-                    <div class="preview-content">${parseMarkup(parkingInput.value)}</div>
+                    <div class="preview-section-title">備註</div>
+                    <div class="preview-content">${parseMarkup(noteInput.value)}</div>
                 </div>
                 `;
             }
@@ -727,18 +698,14 @@
 
             const descInput = document.getElementById('descInput');
             const deepDescInput = document.getElementById('deepDescInput');
-            const tipsInput = document.getElementById('tipsInput');
-            const parkingInput = document.getElementById('parkingInput');
-            const toiletInput = document.getElementById('toiletInput');
+            const noteInput = document.getElementById('noteInput');
             const mapInput = document.getElementById('mapInput');
 
             const draftKey = `${currentDay}_${currentSpotIndex}`;
             drafts[draftKey] = {
                 desc: descInput.value.trim(),
                 deepDesc: deepDescInput.value.trim(),
-                tips: tipsInput.value.trim(),
-                parking: parkingInput.value.trim(),
-                toilet: toiletInput.value.trim(),
+                note: noteInput.value.trim(),
                 map: mapInput.value.trim()
             };
 

@@ -194,7 +194,7 @@ function buildFlightStripHtml(flights) {
 // 不支援 IntersectionObserver 或使用者系統設定「減少動態效果」時，直接顯示、不播動畫。
 function initScrollReveal(containerEl) {
   if (!containerEl) return;
-  var items = containerEl.querySelectorAll('.ov-tl-row, .timeline-row, .info-card, .tips-card');
+  var items = containerEl.querySelectorAll('.ov-tl-row, .timeline-row, .info-card, .tips-card, .note-card');
   if (!items.length) return;
   var reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (!('IntersectionObserver' in window) || reducedMotion) return;
@@ -591,12 +591,6 @@ function renderSpotDetail(s, d) {
   if (s.booking) facts.push('<div><strong>预订：</strong>' + s.booking + '</div>');
   var factsHtml = facts.length ? '<div class="info-card"><div class="card-label">参观资讯</div>' + facts.join('') + '</div>' : '';
 
-  var parkingHtml = (s.parking || s.toilet) ?
-    '<div class="parking-card"><div class="card-label">停车 &amp; 厕所</div><div class="parking-row">' +
-    (s.parking ? '<div class="parking-item"><strong>🅿️ 停车：</strong>' + s.parking + '</div>' : '') +
-    (s.toilet ? '<div class="parking-item"><strong>🚻 厕所：</strong>' + s.toilet + '</div>' : '') +
-    '</div></div>' : '';
-
   var nextStopHtml = '';
   if (s.nextStop) {
     var ns = s.nextStop;
@@ -613,15 +607,15 @@ function renderSpotDetail(s, d) {
       (tagsHtml ? '<div class="tags spot-hero-tags">' + tagsHtml + '</div>' : '') +
     '</div>';
 
-  // 其餘內容可捲動，順序（v9 調整為「相片在最上面」）：
-  // 相片輪播 → 介紹 → 深度介紹 → 提醒 → 停車廁所 → 前往下一站
+  // 其餘內容可捲動，順序（v9 調整為「相片在最上面」；v1.1 起 tips/parking/toilet
+  // 合併為單一 note 備註卡，見階段 B 規格）：
+  // 相片輪播 → 介紹 → 深度介紹 → 備註 → 前往下一站
   document.getElementById('spotDetail').innerHTML =
     buildSpotImageHtml(s) +
     factsHtml +
     (s.desc ? '<div class="info-card"><div class="card-label">景点介绍</div><p>' + parseMarkup(s.desc) + '</p></div>' : '') +
     (s.deepDesc ? '<div class="info-card"><div class="card-label">深度介绍</div>' + formatOutlineText(s.deepDesc) + '</div>' : '') +
-    (s.tips ? '<div class="tips-card"><div class="card-label">小提醒</div>' + formatOutlineText(s.tips) + '</div>' : '') +
-    parkingHtml +
+    (s.note ? '<div class="note-card"><div class="card-label">备注</div>' + formatOutlineText(s.note) + '</div>' : '') +
     nextStopHtml;
   // 注意（Phase 2 調整）：景點詳情頁不再放導航按鈕，導航改附掛在列表卡片之間「距離/時間」那一行
   // （見 buildNavIconsHtml），這裡只留景點本身的介紹內容。住宿詳情頁的導航按鈕不受影響，維持原樣。

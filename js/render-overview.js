@@ -52,7 +52,8 @@ function getDayPrimaryStop(day) {
 
 function getDayReminders(day) {
   if (Array.isArray(day.reminders) && day.reminders.length) return day.reminders.slice(0, 2);
-  var reminders = getDaySpots(day).filter(function(spot){ return !!spot.tips; }).slice(0, 2).map(function(spot){ return spot.tips; });
+  // 階段 B：spot.tips 已合併進 spot.note（連同 parking/toilet），此處改讀 spot.note 維持原行為。
+  var reminders = getDaySpots(day).filter(function(spot){ return !!spot.note; }).slice(0, 2).map(function(spot){ return spot.note; });
   if (!reminders.length && day.note) reminders.push(day.note);
   return reminders;
 }

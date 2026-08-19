@@ -710,6 +710,27 @@
     .parking-row { display: flex; gap: var(--sp-7); flex-wrap: wrap; }
     .parking-item { font-size: var(--fs-sm); color: #5a5018; line-height: 1.6; }
     .parking-item strong { font-weight: 700; }
+    /* 備註卡：中性淺灰底，靠左側灰色條與白底的 .info-card 做出區隔。
+       合併 tips/parking/toilet 之後，內容從「警示」變成「綜合資訊」，
+       因此刻意不沿用 .tips-card 的琥珀警示色，避免弱化警示的意義。
+       （階段 B：.tips-card / .parking-card 暫時保留不刪，見規格書 B.4） */
+    .note-card {
+        background: #f7f6f4;
+        border: 1px solid var(--border);
+        border-left: 3px solid #b8b3a8;
+        border-radius: var(--radius);
+        padding: var(--sp-5) var(--sp-7);
+        margin-bottom: var(--sp-6);
+    }
+    .note-card .card-label {
+        font-size: var(--fs-2xs);
+        letter-spacing: 1px;
+        color: #7a746a;
+        text-transform: uppercase;
+        margin-bottom: var(--sp-3);
+        font-weight: 700;
+    }
+    .note-card p { font-size: var(--fs-sm); line-height: 1.8; color: #4a463e; }
     .next-stop-card {
       background: linear-gradient(135deg, #e8f4f8, #d8eaf0);
       border: 1px solid #a8ccd8;
