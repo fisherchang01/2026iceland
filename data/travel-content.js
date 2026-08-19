@@ -216,7 +216,7 @@ const TRAVEL_CONTENT = {
     {
       "key": "supermarket_shopping",
       "emoji": "🛒",
-      "title": "超市购物",
+      "title": "超市纪念品",
       "sub": "介绍在冰岛超市上，适合采买的生活用品或食品，带回家分送亲友或同事",
       "cover": "supermarket_shopping.webp",
       "size": "2x4",
@@ -300,7 +300,7 @@ const TRAVEL_CONTENT = {
     {
       "key": "store_shopping",
       "emoji": "🛍️",
-      "title": "商店购物",
+      "title": "商店手信",
       "sub": "整理冰岛特色商店、纪念品店及户外用品店，方便选购伴手礼、服饰与旅游用品",
       "cover": "store_shopping.webp",
       "size": "2x2",
@@ -462,7 +462,7 @@ const TRAVEL_CONTENT = {
     {
       "key": "reykjavik_food",
       "emoji": "🍜",
-      "title": "雷克雅为克的餐厅及美食",
+      "title": "雷市的餐厅及美食",
       "sub": "整理雷克雅维克热门餐厅与小吃，包括羊肉汤、热狗、海鲜料理及特色咖啡店",
       "cover": "reykjavik_food.webp",
       "size": "2x2",
@@ -532,7 +532,7 @@ const TRAVEL_CONTENT = {
     {
       "key": "iceland_food",
       "emoji": "🍲",
-      "title": "非雷市的冰岛美食及餐厅",
+      "title": "非雷市的美食及餐厅",
       "sub": "离开雷克雅维克后，比较有名的冰岛美食及餐厅",
       "cover": "iceland_food.webp",
       "size": "2x2",
