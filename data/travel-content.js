@@ -85,7 +85,7 @@ const TRAVEL_CONTENT = {
       "items": [
         {
           "name": "Skyr 優格",
-          "layout": "sm",
+          "layout": "lg",
           "blocks": [
             {
               "type": "text",
@@ -606,6 +606,7 @@ const TRAVEL_CONTENT = {
     }
   ]
 };
+
 
 
 
