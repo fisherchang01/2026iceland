@@ -509,6 +509,18 @@
             cursor: pointer;
         }
 
+        .used-badge {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            background: rgba(0,0,0,0.65);
+            color: white;
+            font-size: 9px;
+            padding: 1px 5px;
+            border-radius: 3px;
+            z-index: 1;
+        }
+
         .thumb-actions {
             display: flex;
             gap: 2px;
@@ -1004,9 +1016,15 @@
             }
 
             let displayFiles;
+            const usedInThisSpot = new Set(currentSpotImages);
+            currentDeepBlocks.forEach(b => { if (b.type === 'img' && b.src) usedInThisSpot.add(b.src); });
             if (photoPoolFilter === 'spot') {
                 const pool = computeSpotPhotoPool(spot.id, files);
-                displayFiles = pool.filter(f => !currentSpotImages.includes(f));
+                // 本景點＝這個景點的照片池，扣掉「目前輪播中」跟「目前深度介紹已經插入的」，
+                // 兩邊都要扣，不然轉成圖文混排、把圖從輪播搬進內文之後，那幾張圖會留在待選區，
+                // 明明已經用掉了看起來卻像沒選過一樣，容易誤按重複加入。
+                // 真的要重複使用同一張圖（已確認決策：允許重複），切到「全部」還是選得到。
+                displayFiles = pool.filter(f => !usedInThisSpot.has(f));
             } else if (photoPoolFilter === 'unused') {
                 const used = computeUsedImagesGlobal();
                 displayFiles = files.filter(f => !used.has(f));
@@ -1016,7 +1034,7 @@
 
             if (!displayFiles.length) {
                 const msg = photoPoolFilter === 'spot'
-                    ? '此景點的照片尚未上傳到 images/spots/medium/，可切換到「未使用」或「全部」挑選，或用下方手動輸入檔名。'
+                    ? '此景點的照片都已經用在輪播或深度介紹裡了（或還沒上傳），可切換到「未使用」或「全部」挑選重複使用，或用下方手動輸入檔名。'
                     : '目前沒有符合條件的照片。';
                 poolEl.innerHTML = `<div class="photo-pool-status">${msg}</div>
                     <div class="manual-img-row"><input type="text" id="manualImgInput" placeholder="檔名，如 kefairport-05.webp">
@@ -1029,7 +1047,11 @@
             displayFiles.forEach(name => {
                 const wrap = document.createElement('div');
                 wrap.className = 'thumb-wrap';
+                // 「全部」／「未使用」兩個 tab 不會自動濾掉本景點已經用過的圖（保留重複使用的彈性，
+                // 已確認決策），但至少標個「已用」讓使用者知道，是自己選擇要重複用，不是沒發現。
+                const usedBadge = usedInThisSpot.has(name) ? '<div class="used-badge">已用</div>' : '';
                 wrap.innerHTML = `
+                    ${usedBadge}
                     <img src="${imgUrl(name)}" onerror="this.style.opacity=0.2">
                     <div class="fname">${escapeAttr(name)}</div>
                     <div class="thumb-actions">
