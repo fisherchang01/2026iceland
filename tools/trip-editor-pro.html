@@ -546,6 +546,29 @@
             font-size: 11px;
         }
 
+        .photo-upload-box {
+            margin-top: 10px;
+            padding: 10px;
+            border: 1px dashed #c0c0e0;
+            border-radius: 6px;
+            background: #f9f9ff;
+        }
+
+        .photo-upload-box input[type="file"] {
+            margin-top: 6px;
+            font-size: 11px;
+        }
+
+        #photoUploadStatus {
+            margin-top: 6px;
+            font-size: 11px;
+            line-height: 1.6;
+        }
+
+        #photoUploadStatus .upload-row.ok { color: #218838; }
+        #photoUploadStatus .upload-row.err { color: #c0392b; }
+        #photoUploadStatus .upload-row.pending { color: #888; }
+
         .preview-panel {
             background: #f9f9f9;
             border-left: 1px solid #e5e5e5;
@@ -1091,6 +1114,147 @@
             addImageToDeepBlocks(val);
         }
 
+        // ===== 階段 D 追加：直接從編輯器上傳新照片 =====
+        // 使用者不用自己想檔名、不用自己開圖片軟體縮圖，選檔案就自動處理好一切：
+        // 1) 掃描目前已知的檔名（照片池快取 + 本景點輪播 + deepBlocks），算出這個景點
+        //    下一個可用的 {slug}-NN 檔名（兩位數，補零，NN 不重來，即使中間有缺號也一律接在最大值之後）
+        // 2) 用 canvas 把圖片縮成 medium（長邊 960px，q0.82）與 thumb（長邊 480px，q0.76）
+        //    兩個 WebP 檔，比例不裁切、不變形
+        // 3) 直接呼叫 GitHub Contents API 建立這兩個檔案（跟 uploadToGitHub() 用同一組 PAT）
+        // 4) 成功後清掉照片池快取、重新渲染面板，新照片會直接出現在待選區，不用使用者自己按重新整理
+
+        function computeNextAvailableNumber(spotId, existingFiles) {
+            const re = new RegExp(`^${spotId}-(\\d{2})\\.`);
+            let max = 0;
+            existingFiles.forEach(f => {
+                const m = f.match(re);
+                if (m) max = Math.max(max, parseInt(m[1], 10));
+            });
+            return max + 1;
+        }
+
+        function resizeToWebpBlob(file, maxDim, quality) {
+            return new Promise((resolve, reject) => {
+                const img = new Image();
+                const url = URL.createObjectURL(file);
+                img.onload = () => {
+                    URL.revokeObjectURL(url);
+                    let { width, height } = img;
+                    if (width >= height) {
+                        if (width > maxDim) { height = Math.round(height * maxDim / width); width = maxDim; }
+                    } else {
+                        if (height > maxDim) { width = Math.round(width * maxDim / height); height = maxDim; }
+                    }
+                    const canvas = document.createElement('canvas');
+                    canvas.width = width;
+                    canvas.height = height;
+                    canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+                    canvas.toBlob(blob => {
+                        if (!blob) { reject(new Error('浏览器不支援輸出 WebP')); return; }
+                        resolve(blob);
+                    }, 'image/webp', quality);
+                };
+                img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('圖片讀取失敗')); };
+                img.src = url;
+            });
+        }
+
+        function blobToBase64(blob) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result.split(',')[1]);
+                reader.onerror = () => reject(new Error('檔案讀取失敗'));
+                reader.readAsDataURL(blob);
+            });
+        }
+
+        // 上傳前一定先查一次該路徑是否已存在，避免用同一個檔名意外覆蓋掉別人剛好也在傳的檔案
+        // （多分頁同時編輯、或照片池快取沒更新到最新狀態時的保護）。存在就直接中止、請使用者重新整理清單。
+        async function uploadNewImageFile(path, blob, pat) {
+            const checkResp = await fetch(
+                `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${path}`,
+                { headers: { 'Authorization': `token ${pat}` } }
+            );
+            if (checkResp.ok) {
+                throw new Error(`${path} 已經存在，可能有人同時在傳，請按「🔄 重新整理清單」後重試`);
+            }
+            const base64 = await blobToBase64(blob);
+            const putResp = await fetch(
+                `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${path}`,
+                {
+                    method: 'PUT',
+                    headers: { 'Authorization': `token ${pat}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: `📷 新增照片 ${path}`, content: base64 })
+                }
+            );
+            if (!putResp.ok) {
+                const errBody = await putResp.json().catch(() => ({}));
+                throw new Error(`上傳失敗：${errBody.message || putResp.status}`);
+            }
+        }
+
+        function appendUploadStatus(text, cls) {
+            const el = document.getElementById('photoUploadStatus');
+            const row = document.createElement('div');
+            row.className = `upload-row ${cls}`;
+            row.textContent = text;
+            el.appendChild(row);
+            return row;
+        }
+
+        async function handlePhotoUpload(fileList) {
+            const files = Array.from(fileList || []);
+            if (!files.length) return;
+
+            const spot = tripData[currentDay].spots[currentSpotIndex];
+            const statusEl = document.getElementById('photoUploadStatus');
+            statusEl.innerHTML = '';
+
+            let pat;
+            try {
+                pat = getPAT();
+            } catch (e) {
+                appendUploadStatus('❌ ' + e.message, 'err');
+                return;
+            }
+
+            // 已知檔名：照片池快取（可能是舊的，先盡量抓一次最新的）＋ 目前輪播 ＋ 目前 deepBlocks 的圖
+            let knownFiles;
+            try {
+                photoPoolCache = null;
+                knownFiles = await loadPhotoPoolList();
+            } catch (e) {
+                knownFiles = photoPoolCache || [];
+            }
+            knownFiles = knownFiles.concat(currentSpotImages);
+            currentDeepBlocks.forEach(b => { if (b.type === 'img' && b.src) knownFiles.push(b.src); });
+
+            for (const file of files) {
+                const n = computeNextAvailableNumber(spot.id, knownFiles);
+                const filename = `${spot.id}-${String(n).padStart(2, '0')}.webp`;
+                const row = appendUploadStatus(`⏳ ${file.name} → ${filename} 處理中...`, 'pending');
+                try {
+                    const [mediumBlob, thumbBlob] = await Promise.all([
+                        resizeToWebpBlob(file, 960, 0.82),
+                        resizeToWebpBlob(file, 480, 0.76),
+                    ]);
+                    row.textContent = `⏳ ${filename} 上傳中...`;
+                    await uploadNewImageFile(`${SPOT_IMAGE_DIR}${filename}`, mediumBlob, pat);
+                    await uploadNewImageFile(`images/spots/thumb/${filename}`, thumbBlob, pat);
+                    row.className = 'upload-row ok';
+                    row.textContent = `✅ ${filename} 上傳成功`;
+                    knownFiles.push(filename); // 同一批下一張檔名才不會撞號
+                } catch (e) {
+                    row.className = 'upload-row err';
+                    row.textContent = `❌ ${file.name}：${e.message}`;
+                }
+            }
+
+            document.getElementById('photoUploadInput').value = '';
+            photoPoolCache = null; // 強制下次重抓，讓剛上傳的檔案出現在待選區
+            await renderPhotoPanel();
+        }
+
         async function init() {
             await loadTripData();
             loadDrafts();
@@ -1309,6 +1473,11 @@
                             </span>
                         </div>
                         <div id="poolThumbs" class="photo-thumb-row wrap"></div>
+                        <div class="photo-upload-box">
+                            <div class="field-hint">上傳新照片：自動算出下一個檔名（{slug}-NN.webp）、自動產生 thumb 縮圖，直接建立兩個檔案到 GitHub，上傳完就會自動出現在上面的待選區。</div>
+                            <input type="file" id="photoUploadInput" accept="image/*" multiple onchange="handlePhotoUpload(this.files)">
+                            <div id="photoUploadStatus"></div>
+                        </div>
                     </div>
 
                     <div class="field-group note">
