@@ -78,6 +78,78 @@
             font-weight: 700;
         }
 
+        /* ===== 階段 E：景點區塊（拖曳排序＋刪除＋新增）===== */
+        .spot-block-row {
+            display: flex;
+            align-items: stretch;
+            gap: 4px;
+            margin-bottom: 4px;
+        }
+        .spot-block-row .spot-btn {
+            margin-bottom: 0;
+            flex: 1;
+            min-width: 0;
+        }
+        .spot-block-row[draggable="true"] {
+            cursor: grab;
+        }
+        .spot-block-row.dragging {
+            opacity: 0.4;
+        }
+        .spot-drag-handle {
+            color: #aaa;
+            margin-right: 2px;
+        }
+        .spot-block-child {
+            margin-left: 16px;
+        }
+        .spot-btn-child {
+            font-size: 10px;
+            color: #666;
+        }
+        .spot-del-btn {
+            flex-shrink: 0;
+            width: 26px;
+            border: 1px solid #e5e5e5;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            color: #c0392b;
+        }
+        .spot-del-btn:hover {
+            background: #ffe5e5;
+            border-color: #ffb3b3;
+        }
+        .spot-add-btn {
+            width: 100%;
+            margin-top: 6px;
+        }
+        .route-hint {
+            margin-top: 8px;
+            padding: 6px 8px;
+            background: #fff8e5;
+            border-radius: 4px;
+            line-height: 1.5;
+        }
+        .add-spot-form {
+            margin-top: 8px;
+            padding: 8px;
+            border: 1px dashed #c0c0e0;
+            border-radius: 6px;
+            background: #f9f9ff;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .add-spot-form input,
+        .add-spot-form select {
+            padding: 5px 6px;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
+            font-size: 11px;
+        }
+
         .editor {
             background: white;
             display: flex;
@@ -688,6 +760,13 @@
         let photoPoolCache = null;    // images/spots/medium/ 目錄列表快取（跨景點共用，同一個目錄）
         const SPOT_IMAGE_DIR = 'images/spots/medium/';
 
+        // 階段 E：新增／排序／刪除景點是直接改 tripData 本身（跟 drafts 不同機制——
+        // drafts 只管內容欄位，可以跨重新整理保留在 localStorage；結構性變更沒有這層保留，
+        // 只在這次編輯階段有效，重新整理分頁會遺失未上傳的結構變更，這點會在畫面上提示）。
+        let structuralChangeCount = 0;
+        let initialSpotSnapshot = null; // { total, optional } 上傳前 Guard 用來比對數量變化
+        let addSpotFormDayKey = null;   // 目前「新增景點」表單是開給哪一天用的（null 表示表單關閉）
+
         function utf8ToBase64(str) {
             try {
                 return btoa(unescape(encodeURIComponent(str)));
@@ -1279,9 +1358,25 @@
 
         async function init() {
             await loadTripData();
+            initialSpotSnapshot = computeSpotSnapshot();
             loadDrafts();
             renderSidebar();
             updateDraftBadge();
+        }
+
+        function computeSpotSnapshot() {
+            let total = 0, optional = 0, images = 0;
+            Object.values(tripData).forEach(day => {
+                const allSpots = (day.spots || []).concat(
+                    (day.areas || []).reduce((acc, a) => acc.concat(a.spots || []), [])
+                );
+                allSpots.forEach(s => {
+                    total++;
+                    if (s.isOptional) optional++;
+                    images += (s.images || []).length;
+                });
+            });
+            return { total, optional, images };
         }
 
         async function loadTripData() {
@@ -1326,11 +1421,15 @@
 
         function updateDraftBadge() {
             const count = Object.keys(drafts).length;
+            const totalChanges = count + structuralChangeCount;
             const badge = document.getElementById('draftBadge');
             const uploadBtn = document.getElementById('uploadBtn');
-            
-            if (count > 0) {
-                badge.textContent = `${count} 個草稿`;
+
+            if (totalChanges > 0) {
+                const parts = [];
+                if (count > 0) parts.push(`${count} 個內容草稿`);
+                if (structuralChangeCount > 0) parts.push(`${structuralChangeCount} 個結構變更`);
+                badge.textContent = parts.join('、');
                 badge.style.display = 'block';
                 uploadBtn.style.display = 'block';
                 document.getElementById('topBar').classList.add('has-unsaved');
@@ -1376,6 +1475,25 @@
             clearEditor();
         }
 
+        // 依 attachTo 把景點分組成「頂層區塊」：每個區塊是一個母景點（或沒有 attachTo 的一般景點）
+        // 加上緊跟在後、attachTo 指向它的子項。拖曳排序只針對頂層區塊，子項永遠跟著母項一起動，
+        // 不會單獨被拖走（規格書 E.4：排序時 attachTo 的子項要跟著母項移動）。
+        function buildTopLevelBlocks(spots) {
+            const childrenByParentId = {};
+            (spots || []).forEach((s, idx) => {
+                if (s.attachTo) {
+                    if (!childrenByParentId[s.attachTo]) childrenByParentId[s.attachTo] = [];
+                    childrenByParentId[s.attachTo].push(idx);
+                }
+            });
+            const blocks = [];
+            (spots || []).forEach((s, idx) => {
+                if (s.attachTo) return; // 子項不獨立成一個頂層區塊
+                blocks.push({ parentIdx: idx, childIdxs: childrenByParentId[s.id] || [] });
+            });
+            return blocks;
+        }
+
         function renderSpots() {
             const section = document.getElementById('spotsSection');
             section.innerHTML = `<div class="sidebar-title">🏔️ 景點</div>`;
@@ -1383,25 +1501,259 @@
             const day = tripData[currentDay];
             if (!day.spots) return;
 
-            day.spots.forEach((spot, idx) => {
+            const blocks = buildTopLevelBlocks(day.spots);
+            blocks.forEach((block) => {
+                const parent = day.spots[block.parentIdx];
+                const row = document.createElement('div');
+                row.className = 'spot-block-row';
+                row.draggable = true;
+                row.dataset.parentIdx = block.parentIdx;
+                row.addEventListener('dragstart', onSpotBlockDragStart);
+                row.addEventListener('dragover', onSpotBlockDragOver);
+                row.addEventListener('drop', onSpotBlockDrop);
+                row.addEventListener('dragend', onSpotBlockDragEnd);
+
                 const btn = document.createElement('button');
                 btn.className = 'spot-btn';
-                const draftKey = `${currentDay}_${spot.id}`;
-                if (drafts[draftKey]) {
-                    btn.classList.add('modified');
-                }
-                btn.textContent = `${spot.icon} ${spot.name}`;
-                btn.title = spot.name;
-                btn.onclick = () => selectSpot(idx);
-                section.appendChild(btn);
+                const draftKey = `${currentDay}_${parent.id}`;
+                if (drafts[draftKey]) btn.classList.add('modified');
+                if (currentSpotIndex === block.parentIdx) btn.classList.add('active');
+                btn.innerHTML = `<span class="spot-drag-handle">⠿</span> ${parent.icon || ''} ${escapeAttr(parent.name)}`;
+                btn.title = parent.name;
+                btn.onclick = () => selectSpot(block.parentIdx);
+                row.appendChild(btn);
+
+                const delBtn = document.createElement('button');
+                delBtn.className = 'spot-del-btn';
+                delBtn.textContent = '🗑';
+                delBtn.title = '刪除景點';
+                delBtn.onclick = (e) => { e.stopPropagation(); deleteSpot(block.parentIdx); };
+                row.appendChild(delBtn);
+
+                section.appendChild(row);
+
+                block.childIdxs.forEach((childIdx) => {
+                    const child = day.spots[childIdx];
+                    const childRow = document.createElement('div');
+                    childRow.className = 'spot-block-row spot-block-child';
+                    const childBtn = document.createElement('button');
+                    childBtn.className = 'spot-btn spot-btn-child';
+                    const childDraftKey = `${currentDay}_${child.id}`;
+                    if (drafts[childDraftKey]) childBtn.classList.add('modified');
+                    if (currentSpotIndex === childIdx) childBtn.classList.add('active');
+                    childBtn.innerHTML = `↳ ${child.icon || ''} ${escapeAttr(child.name)}`;
+                    childBtn.title = child.name;
+                    childBtn.onclick = () => selectSpot(childIdx);
+                    childRow.appendChild(childBtn);
+
+                    const childDelBtn = document.createElement('button');
+                    childDelBtn.className = 'spot-del-btn';
+                    childDelBtn.textContent = '🗑';
+                    childDelBtn.title = '刪除景點';
+                    childDelBtn.onclick = (e) => { e.stopPropagation(); deleteSpot(childIdx); };
+                    childRow.appendChild(childDelBtn);
+
+                    section.appendChild(childRow);
+                });
             });
+
+            const addBtn = document.createElement('button');
+            addBtn.className = 'btn btn-secondary btn-mini spot-add-btn';
+            addBtn.textContent = '➕ 新增景點';
+            addBtn.onclick = () => toggleAddSpotForm();
+            section.appendChild(addBtn);
+
+            const routeHint = document.createElement('div');
+            routeHint.className = 'field-hint route-hint';
+            routeHint.textContent = '⚠️ 調整順序或新增景點後，手繪路線圖 images/routes/route-dayN.webp 不會自動更新，需要人工重畫。';
+            section.appendChild(routeHint);
+
+            if (addSpotFormDayKey === currentDay) {
+                section.appendChild(buildAddSpotFormEl());
+            }
+        }
+
+        let spotBlockDragSrcIdx = null;
+        function onSpotBlockDragStart(e) {
+            spotBlockDragSrcIdx = Number(e.currentTarget.dataset.parentIdx);
+            e.currentTarget.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+        }
+        function onSpotBlockDragOver(e) { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; }
+        function onSpotBlockDrop(e) {
+            e.preventDefault();
+            const targetParentIdx = Number(e.currentTarget.dataset.parentIdx);
+            if (spotBlockDragSrcIdx === null || targetParentIdx === spotBlockDragSrcIdx) return;
+            reorderSpotBlocks(spotBlockDragSrcIdx, targetParentIdx);
+            spotBlockDragSrcIdx = null;
+        }
+        function onSpotBlockDragEnd(e) {
+            e.currentTarget.classList.remove('dragging');
+            spotBlockDragSrcIdx = null;
+        }
+
+        // 把「以 srcParentIdx 為母景點的整個區塊（含子項）」搬到「以 targetParentIdx 為母景點的
+        // 區塊」那個位置，攤平寫回 tripData[currentDay].spots，母項跟子項的相對順序不變。
+        function reorderSpotBlocks(srcParentIdx, targetParentIdx) {
+            const day = tripData[currentDay];
+            const blocks = buildTopLevelBlocks(day.spots);
+            const srcBlockPos = blocks.findIndex(b => b.parentIdx === srcParentIdx);
+            const targetBlockPos = blocks.findIndex(b => b.parentIdx === targetParentIdx);
+            if (srcBlockPos < 0 || targetBlockPos < 0) return;
+
+            const movedBlock = blocks.splice(srcBlockPos, 1)[0];
+            blocks.splice(targetBlockPos, 0, movedBlock);
+
+            const newSpots = [];
+            const oldToNewIdx = {}; // 舊 index -> 新 index，selectSpot 用得到
+            blocks.forEach(block => {
+                oldToNewIdx[block.parentIdx] = newSpots.length;
+                newSpots.push(day.spots[block.parentIdx]);
+                block.childIdxs.forEach(childIdx => {
+                    oldToNewIdx[childIdx] = newSpots.length;
+                    newSpots.push(day.spots[childIdx]);
+                });
+            });
+            day.spots = newSpots;
+            if (currentSpotIndex !== null && currentSpotIndex in oldToNewIdx) {
+                currentSpotIndex = oldToNewIdx[currentSpotIndex];
+            }
+            structuralChangeCount++;
+            updateDraftBadge();
+            renderSpots();
+        }
+
+        // ===== 階段 E：新增景點 =====
+
+        function toggleAddSpotForm() {
+            addSpotFormDayKey = addSpotFormDayKey === currentDay ? null : currentDay;
+            renderSpots();
+        }
+
+        function collectAllSpotIds() {
+            const ids = new Set();
+            Object.values(tripData).forEach(day => {
+                (day.spots || []).forEach(s => { if (s.id) ids.add(s.id); });
+                (day.areas || []).forEach(area => (area.spots || []).forEach(s => { if (s.id) ids.add(s.id); }));
+            });
+            return ids;
+        }
+
+        function buildAddSpotFormEl() {
+            const day = tripData[currentDay];
+            const wrap = document.createElement('div');
+            wrap.className = 'add-spot-form';
+
+            const attachOptions = ['<option value="">（不掛載，獨立景點）</option>']
+                .concat((day.spots || [])
+                    .filter(s => !s.attachTo) // 只能掛在「本身不是子項」的景點下面，避免多層掛載
+                    .map(s => `<option value="${escapeAttr(s.id)}">${escapeAttr(s.name)}</option>`))
+                .join('');
+
+            wrap.innerHTML = `
+                <div class="field-hint" style="margin-bottom:6px;">新增景點（id 限小寫英數與連字號、全 repo 需唯一）</div>
+                <input type="text" id="newSpotId" placeholder="id，例如 new-spot-name">
+                <input type="text" id="newSpotName" placeholder="景點名稱">
+                <input type="text" id="newSpotIcon" placeholder="icon（emoji，可留空）">
+                <select id="newSpotKind">
+                    <option value="spot">spot（佔字母編號）</option>
+                    <option value="general">general（不佔字母）</option>
+                </select>
+                <label style="display:flex;align-items:center;gap:6px;font-size:12px;">
+                    <input type="checkbox" id="newSpotOptional"> 備選景點（isOptional）
+                </label>
+                <select id="newSpotAttachTo">${attachOptions}</select>
+                <div style="display:flex;gap:6px;margin-top:6px;">
+                    <button class="btn btn-primary btn-mini" onclick="submitAddSpot()">確認新增</button>
+                    <button class="btn btn-secondary btn-mini" onclick="toggleAddSpotForm()">取消</button>
+                </div>
+            `;
+            return wrap;
+        }
+
+        function submitAddSpot() {
+            const day = tripData[currentDay];
+            const id = document.getElementById('newSpotId').value.trim();
+            const name = document.getElementById('newSpotName').value.trim();
+            const icon = document.getElementById('newSpotIcon').value.trim();
+            const kind = document.getElementById('newSpotKind').value;
+            const isOptional = document.getElementById('newSpotOptional').checked;
+            const attachTo = document.getElementById('newSpotAttachTo').value || null;
+
+            if (!id) { alert('id 不可為空'); return; }
+            if (!/^[a-z0-9-]+$/.test(id)) { alert('id 只能用小寫英文、數字、連字號（例如 new-spot-name）'); return; }
+            if (collectAllSpotIds().has(id)) { alert(`id "${id}" 已經被使用，全 repo 的景點 id 必須唯一`); return; }
+            if (!name) { alert('景點名稱不可為空'); return; }
+            if (attachTo) {
+                const target = (day.spots || []).find(s => s.id === attachTo);
+                if (!target) { alert('掛載目標不存在'); return; }
+                if (target.attachTo) { alert('掛載目標本身也是掛載的子項，不支援多層掛載'); return; }
+            }
+
+            const newSpot = {
+                icon: icon || '📍',
+                name,
+                id,
+                kind,
+                tags: [],
+                images: [],
+                desc: '',
+            };
+            if (isOptional) newSpot.isOptional = true;
+            if (attachTo) newSpot.attachTo = attachTo;
+
+            if (attachTo) {
+                // 插在母景點與它原本的子項之後，維持「母項＋子項連續排列」的資料慣例
+                const blocks = buildTopLevelBlocks(day.spots);
+                const parentBlock = blocks.find(b => day.spots[b.parentIdx].id === attachTo);
+                const lastChildIdx = parentBlock.childIdxs.length ? parentBlock.childIdxs[parentBlock.childIdxs.length - 1] : parentBlock.parentIdx;
+                day.spots.splice(lastChildIdx + 1, 0, newSpot);
+            } else {
+                day.spots.push(newSpot);
+            }
+
+            structuralChangeCount++;
+            addSpotFormDayKey = null;
+            updateDraftBadge();
+            showNotif(`✅ 已新增景點「${name}」（尚未上傳，記得按上傳按鈕）`, 'success');
+            renderSpots();
+        }
+
+        // ===== 階段 E：刪除景點 =====
+
+        function deleteSpot(idx) {
+            const day = tripData[currentDay];
+            const spot = day.spots[idx];
+            if (!spot) return;
+
+            const dependents = day.spots.filter(s => s.attachTo === spot.id);
+            if (dependents.length) {
+                alert(`無法刪除「${spot.name}」：還有 ${dependents.length} 個景點（${dependents.map(s => s.name).join('、')}）掛載在它下面，請先改掉那些景點的掛載對象或先刪除它們。`);
+                return;
+            }
+
+            if (!confirm(`確定要刪除「${spot.name}」嗎？此操作要按「上傳到GitHub」才會真的生效，上傳前都可以重新整理頁面還原。`)) return;
+
+            day.spots.splice(idx, 1);
+            const draftKey = `${currentDay}_${spot.id}`;
+            delete drafts[draftKey];
+            saveDrafts();
+
+            if (currentSpotIndex === idx) {
+                currentSpotIndex = null;
+                clearEditor();
+            } else if (currentSpotIndex !== null && currentSpotIndex > idx) {
+                currentSpotIndex--;
+            }
+
+            structuralChangeCount++;
+            updateDraftBadge();
+            renderSpots();
         }
 
         function selectSpot(idx) {
             currentSpotIndex = idx;
-            document.querySelectorAll('.spot-btn').forEach((btn, i) => {
-                btn.classList.toggle('active', i === idx);
-            });
+            renderSpots(); // 重繪整個側欄，正確標記 active（新的區塊結構不能再靠 querySelectorAll 的順序對應 index）
             renderEditor();
         }
 
@@ -1596,10 +1948,84 @@
             renderSpots(); // 更新侧边栏显示修改标记
         }
 
+        // ===== 階段 E：上傳前 Guard（比照 v1.0 體驗編輯器）=====
+        // 回傳 null 表示通過；回傳字串表示要中止上傳並顯示這個錯誤訊息。
+        function runUploadGuard() {
+            // 1) 可序列化為 JSON
+            try {
+                JSON.stringify(tripData);
+            } catch (e) {
+                return '資料無法序列化為 JSON：' + e.message;
+            }
+
+            const seenIds = new Set();
+            let allSpotsFlat = [];
+            Object.entries(tripData).forEach(([dayKey, day]) => {
+                (day.spots || []).forEach(s => allSpotsFlat.push({ dayKey, spot: s }));
+                (day.areas || []).forEach(area => (area.spots || []).forEach(s => allSpotsFlat.push({ dayKey, spot: s })));
+            });
+
+            for (const { dayKey, spot } of allSpotsFlat) {
+                // 2) 每個景點都有非空 id 且格式合法
+                if (!spot.id || typeof spot.id !== 'string' || !/^[a-z0-9-]+$/.test(spot.id)) {
+                    return `${dayKey} 的「${spot.name || '(無名稱)'}」id 不合法或缺漏：${JSON.stringify(spot.id)}`;
+                }
+                // 3) id 全 repo 唯一
+                if (seenIds.has(spot.id)) {
+                    return `id "${spot.id}" 重複出現，id 必須全 repo 唯一`;
+                }
+                seenIds.add(spot.id);
+            }
+
+            for (const { dayKey, spot } of allSpotsFlat) {
+                if (!spot.attachTo) continue;
+                // 4) attachTo 指向存在的 id、不指向自己、不形成環（這裡只支援單層掛載，
+                //    所以規則簡化成「目標必須存在且目標本身不能也有 attachTo」，
+                //    這樣就不可能形成鏈或環）
+                if (spot.attachTo === spot.id) {
+                    return `景點「${spot.name}」的 attachTo 指向自己`;
+                }
+                if (!seenIds.has(spot.attachTo)) {
+                    return `景點「${spot.name}」的 attachTo 指向不存在的 id "${spot.attachTo}"`;
+                }
+                const target = allSpotsFlat.find(x => x.spot.id === spot.attachTo);
+                if (target && target.spot.attachTo) {
+                    return `景點「${spot.name}」掛載到「${target.spot.name}」，但後者自己也是掛載的子項（不支援多層掛載／可能形成環）`;
+                }
+            }
+
+            // 5) 景點總數不得無故減少
+            const current = computeSpotSnapshot();
+            if (initialSpotSnapshot && current.total < initialSpotSnapshot.total) {
+                const diff = initialSpotSnapshot.total - current.total;
+                if (!confirm(`景點總數比開始編輯時少了 ${diff} 個（${initialSpotSnapshot.total} → ${current.total}），確定要這樣上傳嗎？`)) {
+                    return '使用者取消上傳（景點數量減少確認未通過）';
+                }
+            }
+
+            // 6) 顯示 diff 摘要供人工確認
+            if (initialSpotSnapshot) {
+                const summary = `景點數：${initialSpotSnapshot.total} → ${current.total}\n` +
+                    `備選數：${initialSpotSnapshot.optional} → ${current.optional}\n` +
+                    `照片引用數：${initialSpotSnapshot.images} → ${current.images}`;
+                if (!confirm(`即將上傳，異動摘要：\n\n${summary}\n\n確定上傳？`)) {
+                    return '使用者取消上傳';
+                }
+            }
+
+            return null;
+        }
+
         async function uploadToGitHub() {
             const draftCount = Object.keys(drafts).length;
-            if (draftCount === 0) {
+            if (draftCount === 0 && structuralChangeCount === 0) {
                 showNotif('沒有未上傳的修改', 'error');
+                return;
+            }
+
+            const guardError = runUploadGuard();
+            if (guardError) {
+                showNotif('❌ 上傳中止：' + guardError, 'error');
                 return;
             }
 
@@ -1645,6 +2071,7 @@
                 );
                 const fileData = await shaResp.json();
 
+                const structuralNote = structuralChangeCount > 0 ? `＋${structuralChangeCount} 個結構變更（新增/排序/刪除）` : '';
                 // 上傳
                 const updateResp = await fetch(
                     `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_FILE}`,
@@ -1655,7 +2082,7 @@
                             'Content-Type': 'application/json'
                         },
                         body: JSON.stringify({
-                            message: `📝 批量編輯 ${draftCount} 個景點`,
+                            message: `📝 批量編輯 ${draftCount} 個景點${structuralNote}`,
                             content: utf8ToBase64(newContent),
                             sha: fileData.sha
                         })
@@ -1664,11 +2091,13 @@
 
                 if (!updateResp.ok) throw new Error('更新失敗');
 
-                // 清空草稿
+                // 清空草稿與結構變更計數，並重設基準快照（下一輪 Guard 的「數量減少」比對基準）
                 drafts = {};
                 saveDrafts();
-                
-                showNotif(`✅ 已上傳 ${draftCount} 個景點到 GitHub！`, 'success');
+                structuralChangeCount = 0;
+                initialSpotSnapshot = computeSpotSnapshot();
+
+                showNotif(`✅ 已上傳 ${draftCount} 個景點${structuralNote} 到 GitHub！`, 'success');
                 renderSpots(); // 更新侧边栏
                 
             } catch(e) {
