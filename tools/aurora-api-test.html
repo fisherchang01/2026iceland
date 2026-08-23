@@ -3,164 +3,153 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>極光資料源測試</title>
+<title>極光資料源測試（第二輪）</title>
 <style>
   body { font-family: -apple-system, "Noto Sans TC", sans-serif; background: #0f1419; color: #e0e0e0;
-         margin: 0; padding: 16px; line-height: 1.6; }
+         margin: 0; padding: 16px; line-height: 1.55; }
   h1 { font-size: 18px; color: #4db8d4; margin: 0 0 4px; }
-  .sub { font-size: 12px; color: #888; margin-bottom: 16px; }
+  .sub { font-size: 12px; color: #888; margin-bottom: 14px; }
+  .sec { font-size: 13px; color: #ffc107; font-weight: 700; margin: 18px 0 8px; }
   .card { background: #1a2332; border: 1px solid rgba(77,184,212,.2); border-radius: 10px;
-          padding: 12px 14px; margin-bottom: 10px; }
-  .name { font-size: 14px; font-weight: 700; color: #4db8d4; margin-bottom: 2px; }
-  .url  { font-size: 10px; color: #666; word-break: break-all; margin-bottom: 8px; }
+          padding: 10px 12px; margin-bottom: 8px; }
+  .name { font-size: 13px; font-weight: 700; color: #4db8d4; }
+  .url  { font-size: 10px; color: #666; word-break: break-all; margin: 2px 0 6px; }
   .status { font-size: 13px; font-weight: 700; }
-  .ok   { color: #3dbd67; }
-  .fail { color: #f44336; }
-  .wait { color: #ffc107; }
-  .detail { font-size: 12px; color: #aaa; margin-top: 6px; white-space: pre-wrap; word-break: break-all; }
-  .verdict { background: #1a2332; border: 2px solid #4db8d4; border-radius: 10px;
-             padding: 14px; margin-top: 16px; font-size: 14px; }
-  .verdict h2 { font-size: 15px; margin: 0 0 8px; color: #4db8d4; }
-  code { background: rgba(77,184,212,.12); padding: 1px 5px; border-radius: 3px; font-size: 11px; }
+  .ok { color: #3dbd67; } .fail { color: #f44336; } .wait { color: #ffc107; }
+  .detail { font-size: 11px; color: #aaa; margin-top: 5px; white-space: pre-wrap;
+            word-break: break-all; font-family: ui-monospace, monospace; }
+  .raw { background: #0d1117; border-left: 2px solid #4db8d4; padding: 6px 8px; margin-top: 6px;
+         font-size: 10px; color: #8b949e; white-space: pre-wrap; word-break: break-all;
+         font-family: ui-monospace, monospace; max-height: 150px; overflow: auto; }
 </style>
 </head>
 <body>
 
-<h1>☄️ 極光資料源可用性測試</h1>
+<h1>☄️ 極光資料源測試（第二輪）</h1>
 <div class="sub">
-  從 <code id="origin"></code> 發出請求，條件與極光頁完全相同。<br>
-  測試完成後把整個畫面截圖回報即可。這個檔案測完可以刪除。
+  第一輪已確認 CORS 大致可通。這一輪確認兩件事：<b>Kp 的實際資料格式</b>，以及 <b>Bz/Bt 的替代來源</b>。<br>
+  請把整頁截圖回報（灰色區塊的原始資料才是重點）。
 </div>
 
-<div id="results"></div>
-<div class="verdict" id="verdict" style="display:none;"></div>
+<div class="sec">▍A. 確認 Kp 資料格式（第一輪已通，是我解析錯）</div>
+<div id="secA"></div>
+
+<div class="sec">▍B. 尋找 Bz / Bt 的可用來源（第一輪 solar-wind 被擋）</div>
+<div id="secB"></div>
+
+<div class="sec">▍C. OVATION 格點解析驗證</div>
+<div id="secC"></div>
 
 <script>
-document.getElementById('origin').textContent = location.origin;
+function run(parent, name, url, note, describe, showRaw) {
+  var id = 'c' + Math.random().toString(36).slice(2, 8);
+  var el = document.createElement('div');
+  el.className = 'card';
+  el.innerHTML = '<div class="name">' + name + '</div>' +
+    '<div class="url">' + url + '</div>' +
+    (note ? '<div class="detail" style="color:#777;">' + note + '</div>' : '') +
+    '<div class="status wait" id="s' + id + '">⏳ 測試中…</div>' +
+    '<div class="detail" id="d' + id + '"></div>' +
+    '<div class="raw" id="r' + id + '" style="display:none;"></div>';
+  document.getElementById(parent).appendChild(el);
 
-// 四個住宿地點（與極光頁一致），用來驗證 OVATION 能不能取到各地機率
-const LOCS = [
-  { name: '雷克雅維克',      lat: 63.15, lon: -21.94 },
-  { name: '南部民宿 Selfoss', lat: 63.93, lon: -20.85 },
-  { name: 'Lakeview Cabin',  lat: 63.79, lon: -18.06 },
-  { name: 'Garður',          lat: 64.07, lon: -22.70 }
-];
-
-const TESTS = [
-  {
-    key: 'kp_now',
-    name: '① Kp 指數（實測值，過去 7 天）',
-    url: 'https://services.swpc.noaa.gov/products/noaa-planetary-k-index.json',
-    parse: d => {
-      const last = d[d.length - 1];
-      return '共 ' + (d.length - 1) + ' 筆\n最新：' + last[0] + ' UTC　Kp = ' + last[1];
-    }
-  },
-  {
-    key: 'kp_forecast',
-    name: '② Kp 預報（未來 3 天，每 3 小時）',
-    url: 'https://services.swpc.noaa.gov/products/noaa-planetary-k-index-forecast.json',
-    parse: d => {
-      const rows = d.slice(1, 4).map(r => r.join('　')).join('\n');
-      return '共 ' + (d.length - 1) + ' 筆\n欄位：' + d[0].join(' / ') + '\n' + rows + '\n…';
-    }
-  },
-  {
-    key: 'mag',
-    name: '③ 太陽風磁場 Bz / Bt（即時）',
-    url: 'https://services.swpc.noaa.gov/products/solar-wind/mag-1-day.json',
-    parse: d => {
-      const head = d[0], last = d[d.length - 1];
-      const bz = head.indexOf('bz_gsm'), bt = head.indexOf('bt');
-      return '共 ' + (d.length - 1) + ' 筆\n最新：' + last[0] +
-             '\nBz = ' + (bz >= 0 ? last[bz] : '?') + ' nT　Bt = ' + (bt >= 0 ? last[bt] : '?') + ' nT';
-    }
-  },
-  {
-    key: 'ovation',
-    name: '④ OVATION 極光機率（依經緯度）',
-    url: 'https://services.swpc.noaa.gov/json/ovation_aurora_latest.json',
-    parse: d => {
-      const grid = d.coordinates || [];
-      const map = new Map();
-      grid.forEach(p => map.set(Math.round(p[0]) + ',' + Math.round(p[1]), p[2]));
-      const lines = LOCS.map(L => {
-        const lon360 = Math.round((L.lon + 360) % 360);
-        const v = map.get(lon360 + ',' + Math.round(L.lat));
-        return '　' + L.name + '：' + (v === undefined ? '(格點未命中)' : v + '%');
-      }).join('\n');
-      return '預報時間：' + (d['Forecast Time'] || '?') + '\n格點數：' + grid.length +
-             '\n各地機率：\n' + lines;
-    }
-  },
-  {
-    key: 'meteo',
-    name: '⑤ Open-Meteo 天氣（對照組，目前已在用）',
-    url: 'https://api.open-meteo.com/v1/forecast?latitude=63.93&longitude=-20.85' +
-         '&current=temperature_2m,cloud_cover&daily=sunrise,sunset&timezone=auto&forecast_days=1',
-    parse: d => '氣溫 ' + d.current.temperature_2m + '°C　雲量 ' + d.current.cloud_cover + '%' +
-                '\n日出 ' + d.daily.sunrise[0].slice(11) + '　日落 ' + d.daily.sunset[0].slice(11)
-  }
-];
-
-const results = document.getElementById('results');
-const outcome = {};
-
-TESTS.forEach(t => {
-  const card = document.createElement('div');
-  card.className = 'card';
-  card.innerHTML = '<div class="name">' + t.name + '</div>' +
-                   '<div class="url">' + t.url + '</div>' +
-                   '<div class="status wait" id="s_' + t.key + '">⏳ 測試中…</div>' +
-                   '<div class="detail" id="d_' + t.key + '"></div>';
-  results.appendChild(card);
-
-  const t0 = performance.now();
-  fetch(t.url)
-    .then(r => {
-      if (!r.ok) throw new Error('HTTP ' + r.status);
-      return r.text();
+  var t0 = performance.now();
+  fetch(url)
+    .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); })
+    .then(function (txt) {
+      var ms = Math.round(performance.now() - t0);
+      var kb = Math.round(txt.length / 1024);
+      document.getElementById('s' + id).className = 'status ok';
+      document.getElementById('s' + id).textContent = '✅ 可用　' + ms + ' ms　' + kb + ' KB';
+      var desc = '';
+      try { desc = describe ? describe(JSON.parse(txt)) : ''; }
+      catch (e) { desc = '(解析：' + e.message + ')'; }
+      document.getElementById('d' + id).textContent = desc;
+      if (showRaw) {
+        var raw = document.getElementById('r' + id);
+        raw.style.display = 'block';
+        raw.textContent = '原始資料開頭：\n' + txt.slice(0, 420);
+      }
     })
-    .then(txt => {
-      const ms = Math.round(performance.now() - t0);
-      const kb = Math.round(txt.length / 1024);
-      let detail;
-      try { detail = t.parse(JSON.parse(txt)); }
-      catch (e) { detail = '（回應收到了，但解析失敗：' + e.message + '）'; }
-      document.getElementById('s_' + t.key).className = 'status ok';
-      document.getElementById('s_' + t.key).textContent = '✅ 可用　' + ms + ' ms　' + kb + ' KB';
-      document.getElementById('d_' + t.key).textContent = detail;
-      outcome[t.key] = true;
-      summarise();
-    })
-    .catch(e => {
-      document.getElementById('s_' + t.key).className = 'status fail';
-      document.getElementById('s_' + t.key).textContent = '❌ 失敗';
-      document.getElementById('d_' + t.key).textContent =
-        e.message + '\n（若訊息為 "Failed to fetch"，通常就是 CORS 被擋）';
-      outcome[t.key] = false;
-      summarise();
+    .catch(function (e) {
+      document.getElementById('s' + id).className = 'status fail';
+      document.getElementById('s' + id).textContent = '❌ ' + e.message;
     });
-});
-
-function summarise() {
-  if (Object.keys(outcome).length < TESTS.length) return;
-  const noaa = ['kp_now', 'kp_forecast', 'mag', 'ovation'].filter(k => outcome[k]).length;
-  const box = document.getElementById('verdict');
-  box.style.display = 'block';
-  let txt;
-  if (noaa === 4) {
-    txt = '<h2>✅ 全部可用</h2>NOAA 四個端點都能直接從瀏覽器取得，' +
-          '極光頁可以完全改接真實資料：Kp 實測與預報、Bz/Bt、各住宿地點的 OVATION 機率。';
-  } else if (noaa === 0) {
-    txt = '<h2>❌ NOAA 全部被擋</h2>需要改用其他來源或加中介層。' +
-          'Open-Meteo 若正常，至少雲量、日出日落可以是真實的。';
-  } else {
-    txt = '<h2>⚠️ 部分可用（' + noaa + ' / 4）</h2>' +
-          '可用的部分改接真值，其餘另尋來源。詳細看上方各項狀態。';
-  }
-  box.innerHTML = txt;
 }
+
+// ---------- A ----------
+run('secA', '① Kp 實測值',
+  'https://services.swpc.noaa.gov/products/noaa-planetary-k-index.json',
+  '看原始資料才知道正確欄位',
+  function (d) {
+    return '型別：' + (Array.isArray(d) ? 'Array 長度 ' + d.length : typeof d) +
+      '\n第 0 筆：' + JSON.stringify(d[0]) +
+      '\n最後 1 筆：' + JSON.stringify(d[d.length - 1]);
+  }, true);
+
+run('secA', '② Kp 預報（未來 3 天）',
+  'https://services.swpc.noaa.gov/products/noaa-planetary-k-index-forecast.json', '',
+  function (d) {
+    return '型別：' + (Array.isArray(d) ? 'Array 長度 ' + d.length : typeof d) +
+      '\n第 0 筆：' + JSON.stringify(d[0]) +
+      '\n第 1 筆：' + JSON.stringify(d[1]);
+  }, true);
+
+run('secA', '③ Kp 1 分鐘版（/json/ 路徑）',
+  'https://services.swpc.noaa.gov/json/planetary_k_index_1m.json',
+  '若 /json/ 也通，代表被擋的只有 /products/solar-wind/',
+  function (d) {
+    return '筆數：' + (Array.isArray(d) ? d.length : '?') +
+      '\n最後 1 筆：' + JSON.stringify(d[d.length - 1]);
+  }, true);
+
+// ---------- B ----------
+run('secB', '④ solar-wind mag（第一輪失敗，再確認）',
+  'https://services.swpc.noaa.gov/products/solar-wind/mag-1-day.json', '', null, true);
+
+run('secB', '⑤ RTSW 磁場（/json/rtsw/）',
+  'https://services.swpc.noaa.gov/json/rtsw/rtsw_mag_1m.json',
+  '同樣資料的另一條路徑',
+  function (d) {
+    return '筆數：' + (Array.isArray(d) ? d.length : '?') +
+      '\n最後 1 筆：' + JSON.stringify(d[d.length - 1]);
+  }, true);
+
+run('secB', '⑥ DSCOVR 磁力計（/json/dscovr/）',
+  'https://services.swpc.noaa.gov/json/dscovr/dscovr_mag_1s.json', '',
+  function (d) { return '筆數：' + (Array.isArray(d) ? d.length : '?'); }, true);
+
+run('secB', '⑦ Geospace 預測（含地磁指標）',
+  'https://services.swpc.noaa.gov/json/geospace/geospace_pred_est_kp_1_hour.json', '',
+  function (d) {
+    return '筆數：' + (Array.isArray(d) ? d.length : '?') +
+      '\n最後 1 筆：' + JSON.stringify(d[d.length - 1]).slice(0, 260);
+  }, true);
+
+// ---------- C ----------
+run('secC', '⑧ OVATION：找出全球最高機率格點',
+  'https://services.swpc.noaa.gov/json/ovation_aurora_latest.json',
+  '若最高值 > 0，代表格點解析正確，冰島現在 0% 只是因為是白天',
+  function (d) {
+    var g = d.coordinates || [];
+    var max = 0, at = null;
+    for (var i = 0; i < g.length; i++) { if (g[i][2] > max) { max = g[i][2]; at = g[i]; } }
+    var locs = [
+      ['雷克雅維克', 63.15, -21.94], ['南部民宿 Selfoss', 63.93, -20.85],
+      ['Lakeview Cabin', 63.79, -18.06], ['Garður', 64.07, -22.70]
+    ];
+    var map = {};
+    for (var j = 0; j < g.length; j++) { map[g[j][0] + ',' + g[j][1]] = g[j][2]; }
+    var lines = locs.map(function (L) {
+      var lon360 = Math.round((L[2] + 360) % 360);
+      var v = map[lon360 + ',' + Math.round(L[1])];
+      return '　' + L[0] + '：' + (v === undefined ? '格點未命中' : v + '%');
+    }).join('\n');
+    return '預報時間：' + (d['Forecast Time'] || '?') +
+      '\n格點數：' + g.length +
+      '\n全球最高機率：' + max + '%　（lon=' + (at ? at[0] : '?') + ', lat=' + (at ? at[1] : '?') + '）' +
+      '\n\n四個住宿點：\n' + lines;
+  }, false);
 </script>
 
 </body>
