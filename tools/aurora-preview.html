@@ -361,11 +361,19 @@
 
   // ---------- 今晚這一條 ----------
   function drawStrip(l){
-    var W=360,H=132,N=l.kp.length;
-    function x(i){ return i/(N-1)*W; }
-    function ky(v){ return 118 - v/9*96; }
+    var W=360,H=132,N=l.kp.length,PAD=26;        // 右側留白給 Kp 刻度
+    var PW=W-PAD;
+    function x(i){ return i/(N-1)*PW; }
+    // Kp 縱軸取 1–6：實際多在 1–5 之間，用 0–9 會讓 3.3 和 5.0 看起來差不多。
+    // 超過 6 就壓在頂端（Kp 6 以上屬於強地磁風暴，差異對觀測決策已無意義）。
+    var KMIN=1, KMAX=6;
+    function ky(v){
+      var c=Math.max(KMIN,Math.min(KMAX,v));
+      return 118 - (c-KMIN)/(KMAX-KMIN)*98;
+    }
+    var veilCol = THEME==='light' ? '#FFFFFF' : '#EEF1F5';
+    var axisCol = THEME==='light' ? 'rgba(255,255,255,.45)' : 'rgba(255,255,255,.38)';
 
-    // 暮光：日落與日出各佔兩端，中間為完全天黑
     var g='<defs><linearGradient id="sky" x1="0" y1="0" x2="1" y2="0">'
       +'<stop offset="0" stop-color="#2A4A6B"/><stop offset=".08" stop-color="#1B3A5C"/>'
       +'<stop offset=".17" stop-color="#0E1C2E"/><stop offset=".27" stop-color="#070C14"/>'
@@ -373,26 +381,36 @@
       +'<stop offset=".93" stop-color="#1B3A5C"/><stop offset="1" stop-color="#2A4A6B"/>'
       +'</linearGradient>'
       +'<linearGradient id="ridge" x1="0" y1="0" x2="0" y2="1">'
-      +'<stop offset="0" stop-color="#5FE3A1" stop-opacity=".85"/>'
-      +'<stop offset=".55" stop-color="#5FE3A1" stop-opacity=".28"/>'
+      +'<stop offset="0" stop-color="#5FE3A1" stop-opacity=".9"/>'
+      +'<stop offset=".55" stop-color="#5FE3A1" stop-opacity=".3"/>'
       +'<stop offset="1" stop-color="#5FE3A1" stop-opacity="0"/>'
       +'</linearGradient></defs>';
 
-    var s='<rect width="360" height="132" fill="url(#sky)"/>';
-    [34,62,90].forEach(function(y){
-      s+='<line x1="0" y1="'+y+'" x2="360" y2="'+y+'" stroke="rgba(255,255,255,.06)"/>';
-    });
+    var s='<rect width="'+PW+'" height="132" fill="url(#sky)"/>';
 
-    var d='M'+x(0)+','+ky(l.kp[0]);
+    // Kp 刻度線與標示
+    for(var kv=KMIN+1; kv<=KMAX; kv++){
+      var yy=ky(kv);
+      s+='<line x1="0" y1="'+yy.toFixed(1)+'" x2="'+PW+'" y2="'+yy.toFixed(1)
+        +'" stroke="rgba(255,255,255,.09)"/>';
+      s+='<text x="'+(PW+6)+'" y="'+(yy+4).toFixed(1)+'" fill="'+axisCol
+        +'" font-size="11" font-family="IBM Plex Mono,monospace">'
+        +(kv===KMAX?'6+':kv)+'</text>';
+    }
+    s+='<text x="'+(PW+6)+'" y="12" fill="'+axisCol
+      +'" font-size="9.5" font-family="Noto Sans SC,sans-serif">Kp</text>';
+
+    var d='M'+x(0)+','+ky(l.kp[0]).toFixed(1);
     for(var i=1;i<N;i++) d+=' L'+x(i).toFixed(1)+','+ky(l.kp[i]).toFixed(1);
-    s+='<path d="'+d+' L360,132 L0,132 Z" fill="url(#ridge)"/>';
-    s+='<path d="'+d+'" fill="none" stroke="#5FE3A1" stroke-width="1.6" stroke-linejoin="round"/>';
+    s+='<path d="'+d+' L'+PW+',132 L0,132 Z" fill="url(#ridge)"/>';
+    s+='<path d="'+d+'" fill="none" stroke="#5FE3A1" stroke-width="2" stroke-linejoin="round"/>';
 
-    // 雲層遮蔽：每小時一格白紗，越不透明代表雲越厚
+    // 雲層遮蔽：用 smoothstep 拉開對比，晴空幾乎透明、厚雲幾乎蓋死
     for(var j=0;j<N-1;j++){
-      var c=(l.cloud[j]+l.cloud[j+1])/2;
-      s+='<rect x="'+x(j).toFixed(1)+'" y="0" width="'+(W/(N-1)+0.6).toFixed(1)
-        +'" height="132" fill="'+(THEME==='light'?'#FFFFFF':'#EEF1F5')+'" opacity="'+(c/100*0.5).toFixed(3)+'"/>';
+      var c=(l.cloud[j]+l.cloud[j+1])/2/100;
+      var op=c*c*(3-2*c)*0.82;
+      s+='<rect x="'+x(j).toFixed(1)+'" y="0" width="'+(PW/(N-1)+0.6).toFixed(1)
+        +'" height="132" fill="'+veilCol+'" opacity="'+op.toFixed(3)+'"/>';
     }
 
     document.getElementById('strip').innerHTML=g+s;
@@ -400,13 +418,21 @@
 
   // ---------- 雲場圖 ----------
   var cv=document.getElementById('cloudMap');
-  var CSS=300,R=150,pts=[];
+  var CSS=300,R=150,pts=[],dpr=1;
   // 取不到 2D context 時（極少見）不讓整頁掛掉，其餘區塊照常運作
   var ctx=cv && cv.getContext ? cv.getContext('2d') : null;
   if(ctx){
-    var dpr=Math.min(window.devicePixelRatio||1,3);
-    cv.width=CSS*dpr; cv.height=CSS*dpr; ctx.scale(dpr,dpr);
+    dpr=Math.min(window.devicePixelRatio||1,3);
+    cv.width=CSS*dpr; cv.height=CSS*dpr;
   }
+  // ⚠️ putImageData() 會忽略 canvas 的縮放變換，直接寫實體像素。
+  // 若在 scale(dpr,dpr) 之後直接 putImageData，300×300 的雲場只會被寫進
+  // 900×900 畫布的左上角九分之一，其餘區域留白、舊筆跡也擦不掉。
+  // 因此雲場改在離屏畫布產生，再用 drawImage 貼上（drawImage 遵守變換）。
+  var off=document.createElement('canvas');
+  var FIELD=200;                       // 雲場本身很平滑，用較低解析度算再放大即可
+  off.width=FIELD; off.height=FIELD;
+  var offCtx=off.getContext ? off.getContext('2d') : null;
 
   function sample(x,y){
     var n=0,dn=0;
@@ -436,16 +462,25 @@
         pts.push({x:R+r*Math.cos(a), y:R+r*Math.sin(a), v:l.ring[d][j]});
       });
     });
-    if(!ctx) return;
-    var img=ctx.createImageData(CSS,CSS), D=img.data;
-    for(var y=0;y<CSS;y++) for(var x=0;x<CSS;x++){
-      var i=(y*CSS+x)*4, dx=x-R, dy=y-R, dist=Math.sqrt(dx*dx+dy*dy);
-      if(dist>R){ D[i+3]=0; continue; }
-      var c=shade(sample(x,y));
+    if(!ctx || !offCtx) return;
+
+    // 每次重繪都完整清空，避免舊筆跡殘留
+    ctx.setTransform(1,0,0,1,0,0);
+    ctx.clearRect(0,0,cv.width,cv.height);
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+
+    var k=CSS/FIELD, FR=FIELD/2;
+    var img=offCtx.createImageData(FIELD,FIELD), D=img.data;
+    for(var y=0;y<FIELD;y++) for(var x=0;x<FIELD;x++){
+      var i=(y*FIELD+x)*4, dx=x-FR, dy=y-FR, dist=Math.sqrt(dx*dx+dy*dy);
+      if(dist>FR){ D[i+3]=0; continue; }
+      var c=shade(sample(x*k, y*k));
       D[i]=c[0]; D[i+1]=c[1]; D[i+2]=c[2];
-      D[i+3]= dist>R-2 ? Math.round(255*(R-dist)/2) : 255;
+      D[i+3]= dist>FR-1.5 ? Math.round(255*(FR-dist)/1.5) : 255;
     }
-    ctx.putImageData(img,0,0);
+    offCtx.putImageData(img,0,0);
+    ctx.imageSmoothingEnabled=true;
+    ctx.drawImage(off,0,0,CSS,CSS);
 
     ctx.strokeStyle= THEME==='light' ? 'rgba(0,0,0,.16)' : 'rgba(255,255,255,.16)';
     ctx.lineWidth=.8;
