@@ -8,8 +8,8 @@
 //   雲量／日出日落：Open-Meteo（依地點座標查詢，含逐時雲量與每日日出日落）
 //   本頁「可見機率」為本站自行推導的啟發式換算，非官方演算法，介面上標明「本站換算，僅供參考」。
 //
-// 本階段（B）雲況地圖僅用單點資料（尚未做八方位取樣），因此地圖呈現為單一數值的
-// 平面圓（無方向差異）；八方位取樣與方向建議留到階段 C，不在此階段編造方向資料。
+// 八方位雲況取樣（階段 C）：以住宿地為中心，八方位 × 10/20/30 km，一次多座標請求
+// 取回 25 組資料，繪成連續雲場圖（IDW 內插）。取樣失敗時退回單點資料（不編造方向差異）。
 
 const AURORA_DIRS = ['N','NE','E','SE','S','SW','W','NW'];
 const AURORA_DIRNAME = ['正北','東北','正東','東南','正南','西南','正西','西北'];
@@ -140,16 +140,16 @@ function buildAuroraShellHtml() {
             <div class="dir">
               <div class="lab" id="auroraMapLab"></div>
               <div class="cmp-best">
-                <span class="ar">·</span>
-                <div><b id="auroraBestLine">方向分析尚未加入</b><span id="auroraBestSub">八方位雲況取樣將於階段 C 加入，目前僅顯示所在地數值</span></div>
+                <span class="ar">↗</span>
+                <div><b id="auroraBestLine">計算中…</b><span id="auroraBestSub"></span></div>
               </div>
               <div class="mapwrap">
                 <canvas id="auroraCloudMap" width="300" height="300" role="img"
-                        aria-label="以住宿地為中心的雲量分佈（單點資料，方向細節見階段 C）"></canvas>
+                        aria-label="以住宿地為中心的雲量分佈（八方位 × 10/20/30 公里）"></canvas>
                 <span class="cdir n">北</span><span class="cdir e">東</span>
                 <span class="cdir s">南</span><span class="cdir w">西</span>
               </div>
-              <div class="readout" id="auroraReadout">目前僅有所在地單點資料，點選功能將於階段 C 加入方向差異</div>
+              <div class="readout" id="auroraReadout">點一下地圖任一處，看該方向的雲量</div>
               <div class="cmp-scale">
                 <span><i id="auroraSc0"></i>晴</span>
                 <span><i id="auroraSc1"></i></span>
@@ -158,8 +158,8 @@ function buildAuroraShellHtml() {
                 <span><i id="auroraSc4"></i>雲</span>
               </div>
               <div class="fine">
-                數值為低層＋中層雲量；高層薄雲半透明，僅作提示。<br>
-                出發前請先確認路況與路線。
+                三圈由內而外為 10 / 20 / 30 公里。數值為低層＋中層雲量；<br>
+                高層薄雲半透明，僅作提示。出發前請先確認路況與路線。
               </div>
             </div>
           </div>
@@ -289,9 +289,12 @@ function bindAuroraShellEvents() {
     const dx = x - AURORA_MAP_R, dy = y - AURORA_MAP_R;
     const dist = Math.sqrt(dx * dx + dy * dy);
     if (dist > AURORA_MAP_R) return;
+    const km = Math.round(dist / (AURORA_MAP_R * 0.94) * 30);
+    const ang = (Math.atan2(dy, dx) * 180 / Math.PI + 90 + 360) % 360;
     const v = Math.round(auroraSampleMap(x, y));
-    document.getElementById('auroraReadout').innerHTML =
-      '所在地單點資料　低中雲 <b>' + v + '%</b>（方向差異將於階段 C 加入）';
+    document.getElementById('auroraReadout').innerHTML = km < 3
+      ? '所在地　低中雲 <b>' + v + '%</b>'
+      : AURORA_DIRNAME[Math.round(ang / 45) % 8] + '方向 ' + km + ' 公里　低中雲 <b>' + v + '%</b>';
   });
 }
 
@@ -466,6 +469,80 @@ async function fetchAuroraWeather(loc) {
   }
 }
 
+// ---------- 八方位雲況取樣（階段 C）----------
+// 以住宿地為中心，八方位 × 10/20/30 km，一次多座標請求取回 25 組資料。
+// 取樣點順序固定為：[中心, N10,N20,N30, NE10,NE20,NE30, … , NW10,NW20,NW30]，
+// 與 drawAuroraMap() 畫圖時的點位順序一致，兩邊都不能各自調整順序。
+
+function auroraOffsetLatLon(lat, lon, bearingDeg, km) {
+  const R = 6371, b = bearingDeg * Math.PI / 180;
+  const dLat = (km / R) * Math.cos(b) * 180 / Math.PI;
+  const dLon = (km / R) * Math.sin(b) * 180 / Math.PI / Math.cos(lat * Math.PI / 180);
+  return [lat + dLat, lon + dLon];
+}
+
+function auroraBuildRingPoints(loc) {
+  const pts = [{ lat: loc.lat, lon: loc.lon, dir: null, km: null }];
+  AURORA_DIRS.forEach((dir, i) => {
+    const bearing = i * 45;
+    AURORA_KM.forEach(km => {
+      const [lat, lon] = auroraOffsetLatLon(loc.lat, loc.lon, bearing, km);
+      pts.push({ lat, lon, dir, km });
+    });
+  });
+  return pts;
+}
+
+async function fetchAuroraRingData(loc) {
+  const points = auroraBuildRingPoints(loc);
+  try {
+    const latStr = points.map(p => p.lat.toFixed(4)).join(',');
+    const lonStr = points.map(p => p.lon.toFixed(4)).join(',');
+    const url = 'https://api.open-meteo.com/v1/forecast'
+      + '?latitude=' + latStr + '&longitude=' + lonStr
+      + '&hourly=cloud_cover_low,cloud_cover_mid,cloud_cover_high'
+      + '&timezone=auto&forecast_days=2';
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('Open-Meteo 多座標回應非 200（' + res.status + '）');
+    const raw = await res.json();
+    // ⚠️ 多座標時回傳陣列；理論上單座標才會是物件，這裡固定送 25 點，保險起見仍判斷型別
+    const entries = Array.isArray(raw) ? raw : [raw];
+    if (entries.length !== points.length) {
+      throw new Error('Open-Meteo 多座標回傳筆數（' + entries.length + '）與請求點數（' + points.length + '）不符');
+    }
+
+    const values = entries.map(entry => {
+      if (!entry.hourly || typeof entry.utc_offset_seconds !== 'number') return null;
+      const offset = entry.utc_offset_seconds;
+      const times = entry.hourly.time;
+      let bestIdx = -1, bestDiff = Infinity;
+      const now = new Date();
+      for (let i = 0; i < times.length; i++) {
+        const t = auroraParseLocalTime(times[i], offset);
+        const diff = Math.abs(t - now);
+        if (diff < bestDiff) { bestDiff = diff; bestIdx = i; }
+      }
+      if (bestIdx === -1) return null;
+      const low = entry.hourly.cloud_cover_low[bestIdx];
+      const mid = entry.hourly.cloud_cover_mid[bestIdx];
+      if (typeof low !== 'number' || typeof mid !== 'number') return null;
+      return auroraEffectiveLowMid(low, mid);
+    });
+
+    if (values[0] === null) throw new Error('中心點雲量資料缺失');
+
+    const byDir = {};
+    AURORA_DIRS.forEach((dir, i) => {
+      byDir[dir] = [values[1 + i * 3], values[1 + i * 3 + 1], values[1 + i * 3 + 2]];
+    });
+
+    return { ok: true, center: values[0], byDir };
+  } catch (e) {
+    console.warn('[Aurora] 八方位雲況取樣失敗（' + loc.name + '），不編造方向資料：', e);
+    return { ok: false };
+  }
+}
+
 // ---------- 綜合推算：今晚每小時的可見機率、星級、最佳時段 ----------
 
 function buildAuroraTonight(loc, weatherResult) {
@@ -607,6 +684,42 @@ function auroraCloudDesc(v) {
   return '陰天';
 }
 
+// ---------- 方向建議（階段 C）----------
+// 誠實原則：差距 < 10 個百分點時明確說「差距不大，不一定要特地移動」——
+// 差 3% 不值得半夜開車。文案一律用「東側條件較好」而非「往東開 20 公里」，
+// 避免暗示不明路況下的駕駛指示；出發前請先確認路況與路線（見下方 .dir .fine）。
+function auroraBuildDirectionConclusion(loc, ring) {
+  if (!ring || !ring.ok) {
+    return { bestLine: '暫時取不到方向資料', bestSub: '八方位雲況取樣本次失敗，僅顯示所在地單點資料' };
+  }
+
+  let bestDir = null, bestKmIdx = -1, bestVal = Infinity;
+  AURORA_DIRS.forEach(dir => {
+    ring.byDir[dir].forEach((v, kmIdx) => {
+      if (typeof v === 'number' && v < bestVal) { bestVal = v; bestDir = dir; bestKmIdx = kmIdx; }
+    });
+  });
+
+  if (bestDir === null) {
+    return { bestLine: '暫時取不到方向資料', bestSub: '八方位雲況取樣本次失敗，僅顯示所在地單點資料' };
+  }
+
+  const diff = ring.center - bestVal;
+  if (diff < 10) {
+    return {
+      bestLine: '四周條件差不多　所在地低中雲 ' + ring.center + '%',
+      bestSub: '差距不大，不一定要特地移動'
+    };
+  }
+
+  const dirName = AURORA_DIRNAME[AURORA_DIRS.indexOf(bestDir)];
+  const km = AURORA_KM[bestKmIdx];
+  return {
+    bestLine: dirName + '側 ' + km + ' 公里條件較好　低中雲 ' + bestVal + '%',
+    bestSub: '所在地 ' + ring.center + '%，出發前請先確認路況與路線'
+  };
+}
+
 // ---------- 主渲染流程 ----------
 
 async function renderAuroraDashboard() {
@@ -614,8 +727,13 @@ async function renderAuroraDashboard() {
   if (kpStale) await fetchAuroraKpData();
 
   const loc = AURORA_CONFIG.locations[auroraCurrentLocation];
-  const weatherResult = await fetchAuroraWeather(loc);
+  const [weatherResult, ringResult] = await Promise.all([
+    fetchAuroraWeather(loc),
+    fetchAuroraRingData(loc)
+  ]);
   const tonight = buildAuroraTonight(loc, weatherResult);
+  tonight.ring = ringResult;
+  tonight.direction = auroraBuildDirectionConclusion(loc, ringResult);
   auroraLocData[loc.key] = tonight;
 
   auroraLastUpdate = new Date();
@@ -669,6 +787,9 @@ function renderAuroraDashboardUiOnly() {
   document.getElementById('auroraBestP').textContent = tonight.bestSlot ? tonight.bestSlot.probPct + '%' : '暫時無足夠可見機率';
 
   document.getElementById('auroraMapLab').textContent = '目前雲況（以' + loc.name + '為中心，半徑 30 公里）';
+  document.getElementById('auroraBestLine').textContent = tonight.direction ? tonight.direction.bestLine : '暫時取不到方向資料';
+  document.getElementById('auroraBestSub').textContent = tonight.direction ? tonight.direction.bestSub : '';
+  document.getElementById('auroraReadout').textContent = '點一下地圖任一處，看該方向的雲量';
 
   drawAuroraStrip(tonight);
   drawAuroraMap(tonight);
@@ -786,8 +907,11 @@ function auroraRampCss(v) {
 function drawAuroraMap(tonight) {
   if (!auroraMapCtx || !auroraMapOffCtx) return;
 
-  const center = tonight.mapCenterValue;
-  if (center === null) {
+  const ring = tonight.ring;
+  const hasRing = ring && ring.ok;
+  const center = hasRing ? ring.center : tonight.mapCenterValue;
+
+  if (center === null || typeof center === 'undefined') {
     auroraMapCtx.setTransform(1, 0, 0, 1, 0, 0);
     auroraMapCtx.clearRect(0, 0, auroraMapCv.width, auroraMapCv.height);
     auroraMapCtx.setTransform(auroraMapDpr, 0, 0, auroraMapDpr, 0, 0);
@@ -798,13 +922,14 @@ function drawAuroraMap(tonight) {
     return;
   }
 
-  // 本階段尚無方向取樣，八方位 × 三距離全部沿用中心值（不編造方向差異）
+  // 階段 C：有真實八方位資料時逐點取值；取樣失敗時退回單點（沿用中心值，不編造方向差異）
   auroraMapPts = [{ x: AURORA_MAP_R, y: AURORA_MAP_R, v: center }];
   AURORA_DIRS.forEach((d, i) => {
     const a = (i * 45 - 90) * Math.PI / 180;
-    AURORA_KM.forEach(km => {
+    AURORA_KM.forEach((km, j) => {
       const r = AURORA_MAP_R * (km / 30) * 0.94;
-      auroraMapPts.push({ x: AURORA_MAP_R + r * Math.cos(a), y: AURORA_MAP_R + r * Math.sin(a), v: center });
+      const v = hasRing ? ring.byDir[d][j] : center;
+      auroraMapPts.push({ x: AURORA_MAP_R + r * Math.cos(a), y: AURORA_MAP_R + r * Math.sin(a), v: (typeof v === 'number' ? v : center) });
     });
   });
 
@@ -849,7 +974,21 @@ function drawAuroraMap(tonight) {
   const G = auroraTheme === 'light' ? '#0E7A50' : '#5FE3A1';
   const HALO = auroraTheme === 'light' ? 'rgba(255,255,255,.9)' : 'rgba(8,13,20,.85)';
 
-  // 你在這裡（本階段中心與所有取樣點同值，故無「最清朗點」標示，僅標「住宿」）
+  // 最清朗的取樣點（僅在有真實方向資料時標示；否則所有點同值，標了也沒有意義）
+  if (hasRing) {
+    let bi = 0;
+    for (let q = 1; q < auroraMapPts.length; q++) if (auroraMapPts[q].v < auroraMapPts[bi].v) bi = q;
+    if (bi > 0) {
+      auroraMapCtx.beginPath(); auroraMapCtx.arc(auroraMapPts[bi].x, auroraMapPts[bi].y, 13, 0, Math.PI * 2);
+      auroraMapCtx.fillStyle = HALO; auroraMapCtx.fill();
+      auroraMapCtx.strokeStyle = G; auroraMapCtx.lineWidth = 2.6; auroraMapCtx.stroke();
+      auroraMapCtx.beginPath(); auroraMapCtx.arc(auroraMapPts[bi].x, auroraMapPts[bi].y, 4, 0, Math.PI * 2);
+      auroraMapCtx.fillStyle = G; auroraMapCtx.fill();
+      auroraMapLabel('最清朗', auroraMapPts[bi].x, auroraMapPts[bi].y - 21, G, HALO);
+    }
+  }
+
+  // 你在這裡
   auroraMapCtx.beginPath(); auroraMapCtx.arc(AURORA_MAP_R, AURORA_MAP_R, 15, 0, Math.PI * 2);
   auroraMapCtx.fillStyle = HALO; auroraMapCtx.fill();
   auroraMapCtx.beginPath(); auroraMapCtx.arc(AURORA_MAP_R, AURORA_MAP_R, 15, 0, Math.PI * 2);
