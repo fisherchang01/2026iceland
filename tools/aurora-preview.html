@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>极光页视觉概念</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* 极光发射谱线：这些不是挑出来的装饰色，是那道光真正的颜色 */
+    --ox-green:#5FE3A1;      /* 氧 557.7nm　最常见的极光绿 */
+    --ox-red:#D96A78;        /* 氧 630nm　高空红 */
+    --n2-violet:#7C8BE8;     /* 氮 427.8nm　蓝紫 */
+    /* 冰岛夜空：雪地反照让夜色偏蓝板岩，不是纯黑 */
+    --night:#080D14;
+    --surface:#0E1620;
+    --surface-2:#141F2C;
+    --twilight:#1B3A5C;
+    --line:rgba(124,139,232,.16);
+    --ink:#DDE7E4;
+    --ink-2:#8397A0;
+    --ink-3:#5A6B75;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{margin:0;background:var(--night);color:var(--ink);
+       font-family:'Noto Sans SC',-apple-system,sans-serif;line-height:1.6;
+       padding:16px 14px 40px;max-width:520px;margin:0 auto}
+  .mono{font-family:'IBM Plex Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums}
+
+  .preview-note{background:#1a1508;border:1px solid #4a3c10;color:#d8c384;
+       border-radius:10px;padding:10px 12px;font-size:12px;margin-bottom:20px}
+
+  /* ── 页首 ── */
+  .top{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:4px}
+  .top h1{font-size:17px;font-weight:700;margin:0;letter-spacing:.5px}
+  .top .upd{font-size:11px;color:var(--ink-3)}
+  .place{display:flex;align-items:baseline;gap:8px;margin-bottom:18px}
+  .place .nm{font-size:13px;color:var(--ox-green);font-weight:500}
+  .place .sub{font-size:11px;color:var(--ink-3)}
+
+  /* ── 签名元素：今晚这一条 ── */
+  .strip-wrap{margin-bottom:8px}
+  .strip-cap{display:flex;justify-content:space-between;align-items:baseline;
+       font-size:11px;color:var(--ink-3);margin-bottom:6px}
+  .strip-cap b{color:var(--ink-2);font-weight:500}
+  svg.strip{width:100%;display:block;border-radius:10px;overflow:hidden}
+  .legend{display:flex;gap:14px;font-size:10px;color:var(--ink-3);margin:8px 2px 22px}
+  .legend i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:4px;
+       vertical-align:-1px;font-style:normal}
+
+  /* ── 判断卡 ── */
+  .verdict{background:var(--surface);border:1px solid var(--line);border-radius:14px;
+       padding:16px 16px 14px;margin-bottom:10px}
+  .verdict .lab{font-size:10px;letter-spacing:2px;color:var(--ink-3);margin-bottom:8px}
+  .stars{font-size:22px;letter-spacing:3px;color:var(--ox-green);line-height:1.2}
+  .verdict .say{font-size:14px;margin-top:6px;color:var(--ink)}
+  .verdict .why{font-size:11px;color:var(--ink-3);margin-top:4px}
+
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+  .cell{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px}
+  .cell .lab{font-size:10px;letter-spacing:2px;color:var(--ink-3);margin-bottom:6px}
+  .cell .big{font-size:21px;font-weight:500;color:var(--ox-green);line-height:1.25}
+  .cell .fine{font-size:11px;color:var(--ink-3);margin-top:3px}
+
+  /* ── 方向建议 ── */
+  .dir{background:var(--surface);border:1px solid var(--line);border-radius:14px;
+       padding:14px 16px;margin-bottom:10px}
+  .dir .lab{font-size:10px;letter-spacing:2px;color:var(--ink-3);margin-bottom:10px}
+  .drow{display:flex;align-items:center;gap:10px;padding:7px 0;
+        border-bottom:1px solid rgba(124,139,232,.08);font-size:13px}
+  .drow:last-of-type{border-bottom:none}
+  .drow .w{width:70px;color:var(--ink-2)}
+  .drow .bar{flex:1;height:5px;background:rgba(124,139,232,.12);border-radius:3px;overflow:hidden}
+  .drow .bar span{display:block;height:100%;border-radius:3px}
+  .drow .v{width:42px;text-align:right;font-size:12px;color:var(--ink-2)}
+  .drow.best .w{color:var(--ox-green);font-weight:500}
+  .drow.here .w{color:var(--ink)}
+
+  /* ── 外部连结 ── */
+  .links{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px}
+  .links a{display:block;background:var(--surface-2);border:1px solid var(--line);
+       border-radius:10px;padding:11px 12px;text-decoration:none;color:var(--ink-2);font-size:12px}
+  .links a b{display:block;color:var(--ink);font-size:13px;font-weight:500;margin-bottom:2px}
+  .links a.wide{grid-column:1/-1}
+
+  .foot{font-size:10px;color:var(--ink-3);text-align:center;margin-top:22px;line-height:1.8}
+</style>
+</head>
+<body>
+
+<div class="preview-note">
+  这是 <b>视觉概念预览</b>，资料是 10 月 5 日的模拟情境，不会更新。<br>
+  确认视觉方向后才会接真实 API 并取代现有极光页。
+</div>
+
+<div class="top">
+  <h1>今晚的天空</h1>
+  <div class="upd mono">22:14 更新</div>
+</div>
+<div class="place">
+  <span class="nm">南部民宿 Selfoss</span>
+  <span class="sub">10月5日 · 第 3 晚住宿</span>
+</div>
+
+<div class="strip-wrap">
+  <div class="strip-cap">
+    <span>日落 <b class="mono">18:52</b> → 日出 <b class="mono">07:57</b></span>
+    <span>完全天黑 <b class="mono">20:24</b></span>
+  </div>
+  <svg class="strip" viewBox="0 0 360 132" preserveAspectRatio="none" role="img"
+       aria-label="今晚从日落到日出的暮光变化、Kp 活动强度与低中云量">
+    <defs>
+      <linearGradient id="sky" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0"    stop-color="#2A4A6B"/>
+        <stop offset=".08"  stop-color="#1B3A5C"/>
+        <stop offset=".16"  stop-color="#0E1C2E"/>
+        <stop offset=".26"  stop-color="#070C14"/>
+        <stop offset=".74"  stop-color="#070C14"/>
+        <stop offset=".86"  stop-color="#0E1C2E"/>
+        <stop offset=".94"  stop-color="#1B3A5C"/>
+        <stop offset="1"    stop-color="#2A4A6B"/>
+      </linearGradient>
+      <linearGradient id="ridge" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0"   stop-color="#5FE3A1" stop-opacity=".85"/>
+        <stop offset=".55" stop-color="#5FE3A1" stop-opacity=".28"/>
+        <stop offset="1"   stop-color="#5FE3A1" stop-opacity="0"/>
+      </linearGradient>
+    </defs>
+
+    <rect x="0" y="0" width="360" height="132" fill="url(#sky)"/>
+
+    <line x1="0" y1="34" x2="360" y2="34" stroke="rgba(255,255,255,.06)"/>
+    <line x1="0" y1="62" x2="360" y2="62" stroke="rgba(255,255,255,.06)"/>
+    <line x1="0" y1="90" x2="360" y2="90" stroke="rgba(255,255,255,.06)"/>
+
+    <path d="M0,104 L26,98 L52,86 L78,66 L104,52 L130,44 L156,40 L182,46 L208,58
+             L234,72 L260,80 L286,88 L312,96 L338,101 L360,104
+             L360,132 L0,132 Z" fill="url(#ridge)"/>
+    <path d="M0,104 L26,98 L52,86 L78,66 L104,52 L130,44 L156,40 L182,46 L208,58
+             L234,72 L260,80 L286,88 L312,96 L338,101 L360,104"
+          fill="none" stroke="#5FE3A1" stroke-width="1.6" stroke-linejoin="round"/>
+
+    <path d="M0,18 L40,20 L80,26 L120,44 L160,58 L200,54 L240,36 L280,24 L320,19 L360,17"
+          fill="none" stroke="#7C8BE8" stroke-width="1.3" stroke-dasharray="3 3" opacity=".85"/>
+
+    <rect x="108" y="0" width="84" height="132" fill="#5FE3A1" opacity=".07"/>
+    <line x1="108" y1="0" x2="108" y2="132" stroke="#5FE3A1" stroke-width=".8" opacity=".5"/>
+    <line x1="192" y1="0" x2="192" y2="132" stroke="#5FE3A1" stroke-width=".8" opacity=".5"/>
+  </svg>
+  <div class="strip-cap mono" style="margin-top:5px;color:var(--ink-3)">
+    <span>19:00</span><span>22:00</span><span>01:00</span><span>04:00</span><span>07:00</span>
+  </div>
+</div>
+
+<div class="legend">
+  <span><i style="background:#5FE3A1"></i>Kp 活动</span>
+  <span><i style="background:#7C8BE8"></i>低中云量</span>
+  <span><i style="background:#2A4A6B"></i>天未黑</span>
+</div>
+
+<div class="verdict">
+  <div class="lab">今晚值不值得等</div>
+  <div class="stars">★★★★☆</div>
+  <div class="say">值得等，21:30 之后云会散开</div>
+  <div class="why">Kp 预报 4（偏高）· 22:00 低中云 15% · 月龄 6 天，月光影响小</div>
+</div>
+
+<div class="row2">
+  <div class="cell">
+    <div class="lab">最佳时段</div>
+    <div class="big mono">21:30–00:30</div>
+    <div class="fine">Kp 最高且云最少的重叠区间</div>
+  </div>
+  <div class="cell">
+    <div class="lab">现在机率</div>
+    <div class="big mono">32%</div>
+    <div class="fine">NOAA OVATION · 未来 30 分钟</div>
+  </div>
+</div>
+
+<div class="dir">
+  <div class="lab">22:00 各方向云况（半径 30 公里）</div>
+  <div class="drow best">
+    <span class="w">东 20 km</span>
+    <span class="bar"><span style="width:12%;background:#5FE3A1"></span></span>
+    <span class="v mono">12%</span>
+  </div>
+  <div class="drow here">
+    <span class="w">民宿所在</span>
+    <span class="bar"><span style="width:15%;background:#5FE3A1"></span></span>
+    <span class="v mono">15%</span>
+  </div>
+  <div class="drow">
+    <span class="w">北 30 km</span>
+    <span class="bar"><span style="width:48%;background:#D9B36A"></span></span>
+    <span class="v mono">48%</span>
+  </div>
+  <div class="drow">
+    <span class="w">西 30 km</span>
+    <span class="bar"><span style="width:82%;background:#D96A78"></span></span>
+    <span class="v mono">82%</span>
+  </div>
+  <div class="fine" style="font-size:11px;color:var(--ink-3);margin-top:10px">
+    数值为低层＋中层云量，越低越好。高层薄云半透明，不列入判断。<br>
+    出发前请先确认路况与路线。
+  </div>
+</div>
+
+<div class="links">
+  <a href="https://en.vedur.is/weather/forecasts/aurora/">
+    <b>冰岛气象局</b>全岛云量地图与极光活动</a>
+  <a href="https://www.road.is/travel-info/road-conditions-and-weather/">
+    <b>Road.is</b>即时路况与封闭资讯</a>
+</div>
+
+<div class="foot">
+  极光活动与机率来自 NOAA SWPC，云量与日照来自 Open-Meteo。<br>
+  星级为本站依上述资料自行换算，仅供参考，权威预报请以冰岛气象局为准。
+</div>
+
+</body>
+</html>
