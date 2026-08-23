@@ -27,14 +27,14 @@
 
 <h1>☄️ 極光資料源測試（第二輪）</h1>
 <div class="sub">
-  第一輪已確認 CORS 大致可通。這一輪確認兩件事：<b>Kp 的實際資料格式</b>，以及 <b>Bz/Bt 的替代來源</b>。<br>
+  第一輪已確認 CORS 可通。Bz/Bt 已確認不需要，不再測試。<br>這一輪確認：<b>Kp 的實際資料格式</b>，以及 <b>Open-Meteo 能否一次查多個座標</b>（決定「方向建議」的實作方式）。<br>
   請把整頁截圖回報（灰色區塊的原始資料才是重點）。
 </div>
 
 <div class="sec">▍A. 確認 Kp 資料格式（第一輪已通，是我解析錯）</div>
 <div id="secA"></div>
 
-<div class="sec">▍B. 尋找 Bz / Bt 的可用來源（第一輪 solar-wind 被擋）</div>
+<div class="sec">▍B. Open-Meteo 多點取樣（決定「方向建議」怎麼實作）</div>
 <div id="secB"></div>
 
 <div class="sec">▍C. OVATION 格點解析驗證</div>
@@ -103,28 +103,52 @@ run('secA', '③ Kp 1 分鐘版（/json/ 路徑）',
       '\n最後 1 筆：' + JSON.stringify(d[d.length - 1]);
   }, true);
 
-// ---------- B ----------
-run('secB', '④ solar-wind mag（第一輪失敗，再確認）',
-  'https://services.swpc.noaa.gov/products/solar-wind/mag-1-day.json', '', null, true);
+// ---------- B：多點取樣 ----------
+// 「方向建議」需要一次查很多個座標的逐時雲量。
+// 若 Open-Meteo 支援逗號分隔的多座標，就只要 1 次請求；否則要發 20 幾次。
 
-run('secB', '⑤ RTSW 磁場（/json/rtsw/）',
-  'https://services.swpc.noaa.gov/json/rtsw/rtsw_mag_1m.json',
-  '同樣資料的另一條路徑',
+// 以南部民宿 Selfoss 為中心，八方位 × 10/20/30 km 取樣（半徑 30 km 已確認）
+var CENTER = { lat: 63.93, lon: -20.85 };
+var BEARINGS = [0, 45, 90, 135, 180, 225, 270, 315];
+var DISTS = [10, 20, 30];
+function offset(lat, lon, brgDeg, km) {
+  var R = 6371, b = brgDeg * Math.PI / 180;
+  var dLat = (km / R) * Math.cos(b) * 180 / Math.PI;
+  var dLon = (km / R) * Math.sin(b) * 180 / Math.PI / Math.cos(lat * Math.PI / 180);
+  return [ (lat + dLat).toFixed(4), (lon + dLon).toFixed(4) ];
+}
+var pts = [[CENTER.lat.toFixed(4), CENTER.lon.toFixed(4)]];
+BEARINGS.forEach(function (b) {
+  DISTS.forEach(function (d) { pts.push(offset(CENTER.lat, CENTER.lon, b, d)); });
+});
+var latsStr = pts.map(function (p) { return p[0]; }).join(',');
+var lonsStr = pts.map(function (p) { return p[1]; }).join(',');
+
+run('secB', '④ 多座標一次查詢（' + pts.length + ' 個點）',
+  'https://api.open-meteo.com/v1/forecast?latitude=' + latsStr + '&longitude=' + lonsStr +
+  '&hourly=cloud_cover_low,cloud_cover_mid,cloud_cover_high&timezone=auto&forecast_days=2',
+  '若可用 → 方向建議只要 1 次請求；若失敗 → 要發 ' + pts.length + ' 次',
   function (d) {
-    return '筆數：' + (Array.isArray(d) ? d.length : '?') +
-      '\n最後 1 筆：' + JSON.stringify(d[d.length - 1]);
-  }, true);
+    if (!Array.isArray(d)) return '⚠️ 回傳的不是陣列，代表不支援多座標\n型別：' + typeof d;
+    var first = d[0], last = d[d.length - 1];
+    return '✅ 支援多座標！回傳 ' + d.length + ' 組（送出 ' + pts.length + ' 個點）' +
+      '\n第 1 組：lat=' + first.latitude + ' lon=' + first.longitude +
+      '　逐時筆數 ' + (first.hourly ? first.hourly.time.length : '?') +
+      '\n最後 1 組：lat=' + last.latitude + ' lon=' + last.longitude;
+  }, false);
 
-run('secB', '⑥ DSCOVR 磁力計（/json/dscovr/）',
-  'https://services.swpc.noaa.gov/json/dscovr/dscovr_mag_1s.json', '',
-  function (d) { return '筆數：' + (Array.isArray(d) ? d.length : '?'); }, true);
-
-run('secB', '⑦ Geospace 預測（含地磁指標）',
-  'https://services.swpc.noaa.gov/json/geospace/geospace_pred_est_kp_1_hour.json', '',
+run('secB', '⑤ 逐時雲量三層 + 日照（單點，確認欄位齊全）',
+  'https://api.open-meteo.com/v1/forecast?latitude=63.93&longitude=-20.85' +
+  '&hourly=cloud_cover,cloud_cover_low,cloud_cover_mid,cloud_cover_high' +
+  '&daily=sunrise,sunset&timezone=auto&forecast_days=3',
+  '「今晚幾點最好」需要逐時雲量 + 日落時間',
   function (d) {
-    return '筆數：' + (Array.isArray(d) ? d.length : '?') +
-      '\n最後 1 筆：' + JSON.stringify(d[d.length - 1]).slice(0, 260);
-  }, true);
+    var h = d.hourly, i = 22;   // 取索引 22 當樣本
+    return '逐時筆數：' + h.time.length + '（' + h.time[0] + ' ~ ' + h.time[h.time.length - 1] + '）' +
+      '\n樣本 ' + h.time[i] + '：總 ' + h.cloud_cover[i] + '%　低 ' + h.cloud_cover_low[i] +
+      '%　中 ' + h.cloud_cover_mid[i] + '%　高 ' + h.cloud_cover_high[i] + '%' +
+      '\n日落：' + d.daily.sunset.join('  ');
+  }, false);
 
 // ---------- C ----------
 run('secC', '⑧ OVATION：找出全球最高機率格點',
