@@ -27,6 +27,13 @@ let auroraKpFetchFailed = false;
 let auroraLocData = {};
 let auroraLastUpdate = null;
 
+// OVATION「現在機率」：全球格點資料，按需載入（897 KB，開頁不自動抓）。
+// 資料涵蓋全球，載入一次後切換地點只需重新查表，不必重新打 API。
+let auroraOvationMap = null;        // Map<'lon360,lat', percent>
+let auroraOvationForecastTime = null;
+let auroraOvationLoading = false;
+let auroraOvationFailed = false;
+
 // canvas 狀態（雲況地圖）
 let auroraMapCv = null, auroraMapCtx = null, auroraMapOff = null, auroraMapOffCtx = null;
 let auroraMapDpr = 1;
@@ -133,7 +140,7 @@ function buildAuroraShellHtml() {
               <div class="cell">
                 <div class="lab">現在機率</div>
                 <div class="big mono" id="auroraNow">—</div>
-                <div class="fine" id="auroraNowFine">NOAA OVATION　按需載入（階段 D 開放）</div>
+                <div class="fine" id="auroraNowFine"></div>
               </div>
             </div>
 
@@ -684,6 +691,80 @@ function auroraCloudDesc(v) {
   return '陰天';
 }
 
+// ---------- OVATION「現在機率」（階段 D，按需載入）----------
+// 格點查詢：經度 0–360，緯度有正負（lat=-63 是南極光，本頁地點皆為北半球正緯度）。
+
+function auroraOvationKey(lat, lon) {
+  const lon360 = Math.round((lon + 360) % 360);
+  return lon360 + ',' + Math.round(lat);
+}
+
+async function loadAuroraOvation() {
+  if (auroraOvationLoading) return;
+  auroraOvationLoading = true;
+  auroraOvationFailed = false;
+  renderAuroraNowCell();
+
+  try {
+    const res = await fetch('https://services.swpc.noaa.gov/json/ovation_aurora_latest.json');
+    if (!res.ok) throw new Error('OVATION API 回應非 200（' + res.status + '）');
+    const data = await res.json();
+    if (!data.coordinates || !data['Forecast Time']) throw new Error('OVATION 回傳缺少必要欄位');
+
+    const map = new Map();
+    data.coordinates.forEach(c => { map.set(c[0] + ',' + c[1], c[2]); });
+    auroraOvationMap = map;
+    auroraOvationForecastTime = new Date(data['Forecast Time']); // 含 Z，直接是正確 UTC 時刻
+    auroraOvationFailed = false;
+  } catch (e) {
+    console.warn('[Aurora] OVATION 現在機率取得失敗，不使用任何模擬數值：', e);
+    auroraOvationMap = null;
+    auroraOvationForecastTime = null;
+    auroraOvationFailed = true;
+  }
+  auroraOvationLoading = false;
+  renderAuroraNowCell();
+}
+
+// 只重繪「現在機率」這一格，供載入完成或切換地點時呼叫
+function renderAuroraNowCell() {
+  const nowEl = document.getElementById('auroraNow');
+  const fineEl = document.getElementById('auroraNowFine');
+  if (!nowEl || !fineEl) return;
+
+  const loc = AURORA_CONFIG.locations[auroraCurrentLocation];
+
+  if (auroraOvationLoading) {
+    nowEl.innerHTML = '<span class="mono" style="font-size:14px;color:var(--ink-3)">載入中…</span>';
+    fineEl.textContent = '資料量較大（約 900 KB），慢速網路請稍候數秒';
+    return;
+  }
+
+  if (auroraOvationFailed) {
+    nowEl.innerHTML = '<span style="font-size:14px;color:var(--ink-3)">暫時取不到資料</span>';
+    fineEl.innerHTML = 'NOAA OVATION　<button class="ovation-btn" id="auroraOvationBtn" type="button">重試</button>';
+    const btn = document.getElementById('auroraOvationBtn');
+    if (btn) btn.onclick = loadAuroraOvation;
+    return;
+  }
+
+  if (!auroraOvationMap) {
+    nowEl.innerHTML = '<button class="ovation-btn" id="auroraOvationBtn" type="button">查看現在機率</button>';
+    fineEl.textContent = 'NOAA OVATION　未來 30 分鐘（按需載入，約 900 KB）';
+    const btn = document.getElementById('auroraOvationBtn');
+    if (btn) btn.onclick = loadAuroraOvation;
+    return;
+  }
+
+  const key = auroraOvationKey(loc.lat, loc.lon);
+  const value = auroraOvationMap.has(key) ? auroraOvationMap.get(key) : null;
+  // 白天顯示 0% 屬正常（OVATION 只反映極光活動本身，未排除日照），不視為錯誤
+  nowEl.textContent = (value === null) ? '—' : value + '%';
+  fineEl.textContent = 'NOAA OVATION　預報時間 '
+    + (auroraOvationForecastTime ? auroraFmtHM(auroraOvationForecastTime) : '—')
+    + '　未來 30 分鐘';
+}
+
 // ---------- 方向建議（階段 C）----------
 // 誠實原則：差距 < 10 個百分點時明確說「差距不大，不一定要特地移動」——
 // 差 3% 不值得半夜開車。文案一律用「東側條件較好」而非「往東開 20 公里」，
@@ -757,6 +838,8 @@ function renderAuroraDashboardUiOnly() {
 
   document.getElementById('auroraUpdTime').textContent = auroraLastUpdate
     ? auroraFmtHM(auroraLastUpdate) + ' 更新' : '更新中';
+
+  renderAuroraNowCell(); // OVATION 現在機率與資料流程獨立，不論今晚判斷是否成功都要更新
 
   if (!tonight.ok) {
     document.getElementById('auroraTSunset').textContent = '暫時取不到資料';
