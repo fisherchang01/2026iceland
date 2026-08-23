@@ -13,6 +13,14 @@
     --night:#080D14; --surface:#0E1620; --surface-2:#141F2C;
     --line:rgba(124,139,232,.16);
     --ink:#DDE7E4; --ink-2:#8397A0; --ink-3:#5A6B75;
+    --veil:#EEF1F5;
+  }
+  [data-theme="light"]{
+    --ox-green:#178B5C; --ox-red:#B93F53; --n2-violet:#4453B8;
+    --night:#EEF2F1; --surface:#FFFFFF; --surface-2:#E4EAEA;
+    --line:rgba(20,60,80,.13);
+    --ink:#16262C; --ink-2:#4B6673; --ink-3:#7C949E;
+    --veil:#FFFFFF;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   body{margin:0 auto;background:var(--night);color:var(--ink);
@@ -20,70 +28,73 @@
        padding:16px 14px 40px;max-width:520px}
   .mono{font-family:'IBM Plex Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums}
 
-  .preview-note{background:#1a1508;border:1px solid #4a3c10;color:#d8c384;
-       border-radius:10px;padding:10px 12px;font-size:12px;margin-bottom:18px}
+  .preview-note{background:rgba(216,195,132,.12);border:1px solid rgba(216,195,132,.35);
+       color:#b89a4a;border-radius:10px;padding:11px 13px;font-size:13px;margin-bottom:18px}
 
   .top{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:12px}
-  .top h1{font-size:17px;font-weight:700;margin:0;letter-spacing:.5px}
-  .top .upd{font-size:11px;color:var(--ink-3)}
+  .top h1{font-size:19px;font-weight:700;margin:0;letter-spacing:.5px}
+  #themeBtn{background:var(--surface-2);border:1px solid var(--line);color:var(--ink-2);
+       border-radius:14px;padding:5px 11px;font-size:12px;cursor:pointer;
+       font-family:'Noto Sans SC',sans-serif}
+  .top .upd{font-size:12px;color:var(--ink-3)}
 
   .tabs{display:flex;gap:6px;overflow-x:auto;margin-bottom:4px;padding-bottom:4px;
         scrollbar-width:none}
   .tabs::-webkit-scrollbar{display:none}
-  .tab{flex:0 0 auto;padding:6px 12px;border-radius:16px;font-size:12px;cursor:pointer;
+  .tab{flex:0 0 auto;padding:7px 13px;border-radius:16px;font-size:13.5px;cursor:pointer;
        background:var(--surface-2);border:1px solid transparent;color:var(--ink-3);
        white-space:nowrap;transition:.15s}
   .tab.on{border-color:rgba(95,227,161,.45);color:var(--ox-green);background:rgba(95,227,161,.08)}
-  .tab .tn{font-size:9px;display:block;opacity:.7}
+  .tab .tn{font-size:10.5px;display:block;opacity:.7}
 
   .place{display:flex;align-items:baseline;gap:8px;margin:10px 0 16px}
-  .place .nm{font-size:15px;color:var(--ox-green);font-weight:500}
-  .place .sub{font-size:11px;color:var(--ink-3)}
-  .place .today{font-size:9.5px;color:var(--night);background:var(--ox-green);
+  .place .nm{font-size:17px;color:var(--ox-green);font-weight:500}
+  .place .sub{font-size:12.5px;color:var(--ink-3)}
+  .place .today{font-size:11px;color:var(--night);background:var(--ox-green);
        border-radius:4px;padding:1px 5px;font-weight:500}
 
   .swipe{touch-action:pan-y}
 
   .strip-cap{display:flex;justify-content:space-between;align-items:baseline;
-       font-size:11px;color:var(--ink-3);margin-bottom:6px}
+       font-size:12.5px;color:var(--ink-3);margin-bottom:6px}
   .strip-cap b{color:var(--ink-2);font-weight:500}
   svg.strip{width:100%;display:block;border-radius:10px}
-  .legend{display:flex;gap:14px;font-size:10px;color:var(--ink-3);margin:8px 2px 20px}
+  .legend{display:flex;gap:15px;font-size:11.5px;color:var(--ink-3);margin:8px 2px 20px}
   .legend i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:4px;
        vertical-align:-1px;font-style:normal}
 
   .verdict{background:var(--surface);border:1px solid var(--line);border-radius:14px;
        padding:16px 16px 14px;margin-bottom:10px}
-  .verdict .lab{font-size:10px;letter-spacing:2px;color:var(--ink-3);margin-bottom:8px}
-  .stars{font-size:22px;letter-spacing:3px;color:var(--ox-green);line-height:1.2}
-  .verdict .say{font-size:14px;margin-top:6px}
+  .verdict .lab{font-size:11px;letter-spacing:2px;color:var(--ink-3);margin-bottom:8px}
+  .stars{font-size:26px;letter-spacing:3px;color:var(--ox-green);line-height:1.2}
+  .verdict .say{font-size:16px;margin-top:6px}
   .nums{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px;
        padding-top:12px;border-top:1px solid rgba(124,139,232,.1)}
   .n{text-align:center}
-  .nk{display:block;font-size:10px;color:var(--ink-3)}
-  .nv{display:block;font-size:17px;font-weight:500;color:var(--ink);margin:1px 0}
+  .nk{display:block;font-size:11.5px;color:var(--ink-3)}
+  .nv{display:block;font-size:20px;font-weight:500;color:var(--ink);margin:1px 0}
   .nv.ok{color:var(--ox-green)} .nv.no{color:var(--ox-red)}
-  .nn{display:block;font-size:9.5px;color:var(--ink-3)}
+  .nn{display:block;font-size:11px;color:var(--ink-3)}
 
   .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
   .cell{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px}
-  .cell .lab{font-size:10px;letter-spacing:2px;color:var(--ink-3);margin-bottom:6px}
-  .cell .big{font-size:20px;font-weight:500;color:var(--ox-green);line-height:1.25}
-  .cell .fine{font-size:11px;color:var(--ink-3);margin-top:3px}
+  .cell .lab{font-size:11px;letter-spacing:2px;color:var(--ink-3);margin-bottom:6px}
+  .cell .big{font-size:22px;font-weight:500;color:var(--ox-green);line-height:1.25}
+  .cell .fine{font-size:12px;color:var(--ink-3);margin-top:3px}
 
   .dir{background:var(--surface);border:1px solid var(--line);border-radius:14px;
        padding:14px 16px;margin-bottom:10px}
-  .dir .lab{font-size:10px;letter-spacing:2px;color:var(--ink-3);margin-bottom:6px}
+  .dir .lab{font-size:11px;letter-spacing:2px;color:var(--ink-3);margin-bottom:6px}
   .mapwrap{position:relative;width:300px;max-width:100%;aspect-ratio:1;margin:4px auto 0}
   #cloudMap{width:100%;height:100%;display:block;border-radius:50%;cursor:crosshair}
-  .cdir{position:absolute;font-size:11px;color:var(--ink-3);pointer-events:none}
+  .cdir{position:absolute;font-size:12.5px;color:var(--ink-3);pointer-events:none}
   .cdir.n{top:-2px;left:50%;transform:translateX(-50%)}
   .cdir.s{bottom:-2px;left:50%;transform:translateX(-50%)}
   .cdir.e{right:-4px;top:50%;transform:translateY(-50%)}
   .cdir.w{left:-4px;top:50%;transform:translateY(-50%)}
-  .readout{text-align:center;font-size:12px;color:var(--ink-2);margin:10px 0 2px;min-height:18px}
+  .readout{text-align:center;font-size:13.5px;color:var(--ink-2);margin:10px 0 2px;min-height:18px}
   .readout b{color:var(--ox-green);font-weight:500}
-  .cmp-scale{display:flex;justify-content:center;align-items:center;font-size:9.5px;
+  .cmp-scale{display:flex;justify-content:center;align-items:center;font-size:11px;
        color:var(--ink-3);margin:6px 0 14px}
   .cmp-scale span{display:flex;align-items:center;gap:4px}
   .cmp-scale i{display:inline-block;width:26px;height:7px;font-style:normal}
@@ -92,39 +103,39 @@
   .cmp-best{display:flex;gap:10px;align-items:flex-start;background:rgba(95,227,161,.07);
        border:1px solid rgba(95,227,161,.2);border-radius:10px;padding:10px 12px;margin-bottom:10px}
   .cmp-best .ar{color:var(--ox-green);font-size:18px;line-height:1.2}
-  .cmp-best b{display:block;font-size:13px;color:var(--ox-green);font-weight:500}
-  .cmp-best span{font-size:11px;color:var(--ink-3)}
-  .dir .fine{font-size:10.5px;color:var(--ink-3);line-height:1.7}
+  .cmp-best b{display:block;font-size:15px;color:var(--ox-green);font-weight:500}
+  .cmp-best span{font-size:12.5px;color:var(--ink-3)}
+  .dir .fine{font-size:12px;color:var(--ink-3);line-height:1.7}
 
   .links{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
   .links a{display:block;background:var(--surface-2);border:1px solid var(--line);
-       border-radius:10px;padding:11px 12px;text-decoration:none;color:var(--ink-2);font-size:12px}
-  .links a b{display:block;color:var(--ink);font-size:13px;font-weight:500;margin-bottom:2px}
+       border-radius:10px;padding:12px 13px;text-decoration:none;color:var(--ink-2);font-size:13px}
+  .links a b{display:block;color:var(--ink);font-size:14.5px;font-weight:500;margin-bottom:2px}
 
   .learn{background:var(--surface);border:1px solid var(--line);border-radius:14px;
        margin-top:14px;overflow:hidden}
-  .learn summary{padding:14px 16px;font-size:13px;color:var(--ink);cursor:pointer;
+  .learn summary{padding:15px 16px;font-size:14.5px;color:var(--ink);cursor:pointer;
        list-style:none;display:flex;justify-content:space-between;align-items:center}
   .learn summary::-webkit-details-marker{display:none}
   .learn summary::after{content:'＋';color:var(--ink-3);font-size:15px}
   .learn[open] summary::after{content:'−'}
   .learn[open] summary{border-bottom:1px solid var(--line)}
   .ldoc{padding:4px 16px 16px}
-  .ldoc .lead{font-size:12.5px;color:var(--ink-2);margin:12px 0 16px;line-height:1.8}
+  .ldoc .lead{font-size:14px;color:var(--ink-2);margin:12px 0 16px;line-height:1.8}
   .ldoc .lead b{color:var(--ox-green);font-weight:500}
   .lrow{display:flex;gap:11px;margin-bottom:16px}
-  .lrow .li{flex:0 0 20px;height:20px;border-radius:50%;background:rgba(95,227,161,.14);
+  .lrow .li{flex:0 0 22px;height:22px;border-radius:50%;background:rgba(95,227,161,.14);
        color:var(--ox-green);font-size:11px;display:flex;align-items:center;
-       justify-content:center;font-family:'IBM Plex Mono',monospace;margin-top:1px}
-  .lrow b{display:block;font-size:13px;color:var(--ink);font-weight:500;margin-bottom:3px}
-  .lrow p{font-size:11.5px;color:var(--ink-2);margin:0 0 5px;line-height:1.85}
-  .lrow p b{display:inline;font-size:11.5px;color:var(--ox-green)}
+       justify-content:center;font-family:'IBM Plex Mono',monospace;margin-top:1px;font-size:12px}
+  .lrow b{display:block;font-size:14.5px;color:var(--ink);font-weight:500;margin-bottom:3px}
+  .lrow p{font-size:13px;color:var(--ink-2);margin:0 0 5px;line-height:1.85}
+  .lrow p b{display:inline;font-size:13px;color:var(--ox-green)}
   .lnote{background:rgba(124,139,232,.06);border-radius:10px;padding:11px 13px;margin-bottom:9px}
-  .lnote b{display:block;font-size:12px;color:var(--n2-violet);font-weight:500;margin-bottom:3px}
-  .lnote p{font-size:11.5px;color:var(--ink-2);margin:0;line-height:1.85}
-  .lnote p b{display:inline;font-size:11.5px;color:var(--ink)}
+  .lnote b{display:block;font-size:13.5px;color:var(--n2-violet);font-weight:500;margin-bottom:3px}
+  .lnote p{font-size:13px;color:var(--ink-2);margin:0;line-height:1.85}
+  .lnote p b{display:inline;font-size:13px;color:var(--ink)}
 
-  .foot{font-size:10px;color:var(--ink-3);text-align:center;margin-top:20px;line-height:1.8}
+  .foot{font-size:11.5px;color:var(--ink-3);text-align:center;margin-top:20px;line-height:1.8}
 </style>
 </head>
 <body>
@@ -136,7 +147,10 @@
 
 <div class="top">
   <h1>今晚的天空</h1>
-  <div class="upd mono">22:14 更新</div>
+  <div style="display:flex;align-items:center;gap:10px">
+    <button id="themeBtn">◑ 淺色</button>
+    <span class="upd mono">22:14 更新</span>
+  </div>
 </div>
 
 <div class="tabs" id="tabs"></div>
@@ -174,17 +188,21 @@
     <div class="cell">
       <div class="lab">最佳时段</div>
       <div class="big mono" id="cBest"></div>
-      <div class="fine">Kp 最高且云最少的重叠区间</div>
+      <div class="fine">该时段估计 <b id="cBestP" style="color:var(--ink-2)"></b>　本站换算</div>
     </div>
     <div class="cell">
       <div class="lab">现在机率</div>
       <div class="big mono" id="cNow"></div>
-      <div class="fine">NOAA OVATION · 未来 30 分钟</div>
+      <div class="fine">NOAA OVATION　未来 30 分钟</div>
     </div>
   </div>
 
   <div class="dir">
     <div class="lab" id="mapLab"></div>
+    <div class="cmp-best">
+      <span class="ar">↗</span>
+      <div><b id="bestLine"></b><span id="bestSub"></span></div>
+    </div>
     <div class="mapwrap">
       <canvas id="cloudMap" width="300" height="300" role="img"
               aria-label="以住宿地为中心的云量分布图"></canvas>
@@ -193,20 +211,15 @@
     </div>
     <div class="readout" id="readout">点一下地图任一处，看该方向的云量</div>
     <div class="cmp-scale">
-      <span><i style="background:#0d1a1a"></i>晴</span>
-      <span><i style="background:#4a5a68"></i></span>
-      <span><i style="background:#8e9aa6"></i></span>
-      <span><i style="background:#c8ced6"></i></span>
-      <span><i style="background:#eef1f5"></i>云</span>
-    </div>
-    <div class="cmp-best">
-      <span class="ar">↗</span>
-      <div><b id="bestLine"></b><span id="bestSub"></span></div>
+      <span><i id="sc0"></i>晴</span>
+      <span><i id="sc1"></i></span>
+      <span><i id="sc2"></i></span>
+      <span><i id="sc3"></i></span>
+      <span><i id="sc4"></i>云</span>
     </div>
     <div class="fine">
-      三圈由内而外为 10 / 20 / 30 公里。亮＝云多，暗＝晴朗。<br>
-      数值为低层＋中层云量；高层薄云半透明，不列入判断。<br>
-      出发前请先确认路况与路线。
+      三圈由内而外为 10 / 20 / 30 公里。数值为低层＋中层云量；<br>
+      高层薄云半透明，不列入判断。出发前请先确认路况与路线。
     </div>
   </div>
 </div>
@@ -283,7 +296,7 @@
       sunset:'18:52', sunrise:'07:57', dark:'20:24',
       kp:   [2.0,2.3,2.7,3.3,3.7,4.0,4.0,3.7,3.3,2.7,2.3,2.0,1.7,1.7,1.3],
       cloud:[62,55,44,30,18,15,14,17,24,33,42,50,58,64,68],
-      center:15, best:'21:30–00:30', now:'32%', stars:4,
+      center:15, best:'21:30–00:30', bestProb:'38%', now:'32%', stars:4,
       say:'值得等，21:30 之后云会散开',
       nums:[['Kp','4.0','偏高',''],['低中云','15%','大致晴空','ok'],
             ['高云','60%','半透明',''],['月龄','6 天','影响小','']],
@@ -296,7 +309,7 @@
       sunset:'18:45', sunrise:'08:03', dark:'20:18',
       kp:   [1.7,2.0,2.3,2.7,3.0,3.3,3.3,3.0,2.7,2.3,2.0,1.7,1.3,1.3,1.0],
       cloud:[20,16,12,8,6,5,7,10,14,20,26,32,38,44,50],
-      center:6, best:'21:00–01:30', now:'28%', stars:5,
+      center:6, best:'21:00–01:30', bestProb:'46%', now:'28%', stars:5,
       say:'条件很好，几乎万里无云',
       nums:[['Kp','3.3','中等',''],['低中云','6%','近乎晴空','ok'],
             ['高云','12%','影响很小',''],['月龄','8 天','轻微干扰','']],
@@ -309,7 +322,7 @@
       sunset:'18:38', sunrise:'08:09', dark:'20:11',
       kp:   [3.0,3.3,3.7,4.3,4.7,5.0,5.0,4.7,4.3,3.7,3.3,3.0,2.7,2.3,2.0],
       cloud:[78,80,82,84,85,84,82,80,78,74,70,66,62,58,54],
-      center:84, best:'—', now:'8%', stars:1,
+      center:84, best:'—', bestProb:'6%', now:'8%', stars:1,
       say:'Kp 很高，但整晚云都挡住',
       nums:[['Kp','5.0','很高',''],['低中云','84%','主要原因','no'],
             ['高云','30%','—',''],['月龄','9 天','—','']],
@@ -322,7 +335,7 @@
       sunset:'18:56', sunrise:'07:54', dark:'20:28',
       kp:   [2.0,2.3,2.7,3.3,3.7,4.0,4.0,3.7,3.3,2.7,2.3,2.0,1.7,1.7,1.3],
       cloud:[45,42,38,34,30,28,30,34,40,46,52,58,62,66,70],
-      center:28, best:'22:00–23:30', now:'30%', stars:3,
+      center:28, best:'22:00–23:30', bestProb:'27%', now:'30%', stars:3,
       say:'尚可，但市区光害会削弱观感',
       nums:[['Kp','4.0','偏高',''],['低中云','28%','部分多云',''],
             ['高云','45%','半透明',''],['月龄','6 天','影响小','']],
@@ -332,6 +345,7 @@
       bestSub:'往北离开市区也能同时避开光害' }
   ];
 
+  var THEME='dark';
   var cur = LOC.findIndex(function(l){return l.today;});
   if(cur<0) cur=0;
 
@@ -378,7 +392,7 @@
     for(var j=0;j<N-1;j++){
       var c=(l.cloud[j]+l.cloud[j+1])/2;
       s+='<rect x="'+x(j).toFixed(1)+'" y="0" width="'+(W/(N-1)+0.6).toFixed(1)
-        +'" height="132" fill="#EEF1F5" opacity="'+(c/100*0.5).toFixed(3)+'"/>';
+        +'" height="132" fill="'+(THEME==='light'?'#FFFFFF':'#EEF1F5')+'" opacity="'+(c/100*0.5).toFixed(3)+'"/>';
     }
 
     document.getElementById('strip').innerHTML=g+s;
@@ -403,10 +417,16 @@
     }
     return n/dn;
   }
+  // 兩種主題共通的直覺：白＝雲、暗＝晴空。
+  // 深色主題晴空近乎透黑；淺色主題晴空用深藍綠，對比才拉得開。
+  var RAMP={ dark:[[13,26,26],[238,241,245]], light:[[26,74,86],[255,255,255]] };
   function shade(v){
-    var t=Math.max(0,Math.min(1,v/100)), e=t*t*(3-2*t);
-    return [Math.round(13+225*e), Math.round(26+215*e), Math.round(26+219*e)];
+    var r=RAMP[THEME], t=Math.max(0,Math.min(1,v/100)), e=t*t*(3-2*t);
+    return [Math.round(r[0][0]+(r[1][0]-r[0][0])*e),
+            Math.round(r[0][1]+(r[1][1]-r[0][1])*e),
+            Math.round(r[0][2]+(r[1][2]-r[0][2])*e)];
   }
+  function rampCss(v){ var c=shade(v); return 'rgb('+c[0]+','+c[1]+','+c[2]+')'; }
   function drawMap(l){
     pts=[{x:R,y:R,v:l.center}];
     DIRS.forEach(function(d,i){
@@ -427,11 +447,12 @@
     }
     ctx.putImageData(img,0,0);
 
-    ctx.strokeStyle='rgba(255,255,255,.16)'; ctx.lineWidth=.8;
+    ctx.strokeStyle= THEME==='light' ? 'rgba(0,0,0,.16)' : 'rgba(255,255,255,.16)';
+    ctx.lineWidth=.8;
     KM.forEach(function(km){
       ctx.beginPath(); ctx.arc(R,R,R*(km/30)*0.94,0,Math.PI*2); ctx.stroke();
     });
-    ctx.strokeStyle='rgba(255,255,255,.09)';
+    ctx.strokeStyle= THEME==='light' ? 'rgba(0,0,0,.10)' : 'rgba(255,255,255,.09)';
     for(var k=0;k<4;k++){
       var a=k*45*Math.PI/180, rr=R*0.94;
       ctx.beginPath();
@@ -439,16 +460,38 @@
       ctx.lineTo(R+rr*Math.cos(a),R+rr*Math.sin(a));
       ctx.stroke();
     }
-    // 找出最清朗的取樣點
+    var G = THEME==='light' ? '#0E7A50' : '#5FE3A1';
+    var HALO = THEME==='light' ? 'rgba(255,255,255,.9)' : 'rgba(8,13,20,.85)';
+
+    // 最清朗的取樣點
     var bi=0;
     for(var q=1;q<pts.length;q++) if(pts[q].v<pts[bi].v) bi=q;
     if(bi>0){
-      ctx.beginPath(); ctx.arc(pts[bi].x,pts[bi].y,7,0,Math.PI*2);
-      ctx.strokeStyle='#5FE3A1'; ctx.lineWidth=2; ctx.stroke();
+      ctx.beginPath(); ctx.arc(pts[bi].x,pts[bi].y,13,0,Math.PI*2);
+      ctx.fillStyle=HALO; ctx.fill();
+      ctx.strokeStyle=G; ctx.lineWidth=2.6; ctx.stroke();
+      ctx.beginPath(); ctx.arc(pts[bi].x,pts[bi].y,4,0,Math.PI*2);
+      ctx.fillStyle=G; ctx.fill();
+      label('最清朗', pts[bi].x, pts[bi].y-21, G, HALO);
     }
-    ctx.beginPath(); ctx.arc(R,R,4.5,0,Math.PI*2); ctx.fillStyle='#5FE3A1'; ctx.fill();
-    ctx.beginPath(); ctx.arc(R,R,8,0,Math.PI*2);
-    ctx.strokeStyle='rgba(95,227,161,.45)'; ctx.lineWidth=1.2; ctx.stroke();
+
+    // 你在這裡
+    ctx.beginPath(); ctx.arc(R,R,15,0,Math.PI*2); ctx.fillStyle=HALO; ctx.fill();
+    ctx.beginPath(); ctx.arc(R,R,15,0,Math.PI*2);
+    ctx.strokeStyle=G; ctx.lineWidth=1.6; ctx.stroke();
+    ctx.beginPath(); ctx.arc(R,R,6.5,0,Math.PI*2); ctx.fillStyle=G; ctx.fill();
+    label('住宿', R, R+30, G, HALO);
+  }
+
+  function label(txt,x,y,color,halo){
+    ctx.font='500 13px "Noto Sans SC",sans-serif';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    var w=ctx.measureText(txt).width+12;
+    ctx.fillStyle=halo;
+    ctx.beginPath();
+    if(ctx.roundRect) ctx.roundRect(x-w/2,y-10,w,20,10); else ctx.rect(x-w/2,y-10,w,20);
+    ctx.fill();
+    ctx.fillStyle=color; ctx.fillText(txt,x,y);
   }
 
   cv.addEventListener('click',function(ev){
@@ -484,12 +527,13 @@
         +'<span class="nn">'+n[2]+'</span></div>';
     }).join('');
     document.getElementById('cBest').textContent=l.best;
+    document.getElementById('cBestP').textContent=l.bestProb;
     document.getElementById('cNow').textContent=l.now;
     document.getElementById('mapLab').textContent='22:00 云况地图（以'+l.name+'为中心，半径 30 公里）';
     document.getElementById('bestLine').textContent=l.bestLine;
     document.getElementById('bestSub').textContent=l.bestSub;
     document.getElementById('readout').textContent='点一下地图任一处，看该方向的云量';
-    drawStrip(l); drawMap(l);
+    drawStrip(l); drawMap(l); paintScale();
     tabs.children[i].scrollIntoView({block:'nearest',inline:'center',behavior:'smooth'});
   }
 
@@ -505,6 +549,23 @@
     if(Math.abs(dx)<50 || Math.abs(dx)<Math.abs(dy)*1.5) return;
     show(dx<0 ? Math.min(cur+1,LOC.length-1) : Math.max(cur-1,0));
   },{passive:true});
+
+  // 主題切換：讓深淺兩版可以直接比較
+  var tb=document.getElementById('themeBtn');
+  tb.onclick=function(){
+    THEME = THEME==='dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', THEME==='light'?'light':'');
+    tb.textContent = THEME==='dark' ? '◑ 淺色' : '◐ 深色';
+    show(cur);
+  };
+
+  // 色階圖例跟著主題重算
+  function paintScale(){
+    [0,25,50,75,100].forEach(function(v,i){
+      var el=document.getElementById('sc'+i);
+      if(el) el.style.background=rampCss(v);
+    });
+  }
 
   show(cur);
 })();
