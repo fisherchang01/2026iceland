@@ -94,20 +94,50 @@
   .nn{display:block;font-size:9.5px;color:var(--ink-3)}
   .verdict.bad{border-color:rgba(217,106,120,.22)}
 
-  svg.compass{width:100%;max-width:300px;display:block;margin:2px auto 4px}
-  .cmp-dir{fill:#8397A0;font-size:12px;font-family:'Noto Sans SC',sans-serif}
-  .cmp-here{fill:#DDE7E4;font-size:11px;font-family:'Noto Sans SC',sans-serif}
-  .cmp-here2{fill:#5FE3A1;font-size:12px;font-family:'IBM Plex Mono',monospace}
-  .cmp-scale{display:flex;justify-content:center;gap:9px;font-size:9.5px;color:var(--ink-3);
-       margin:6px 0 12px;flex-wrap:wrap}
-  .cmp-scale i{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:3px;
-       vertical-align:-1px;font-style:normal}
+  .mapwrap{position:relative;width:300px;max-width:100%;aspect-ratio:1;margin:4px auto 0}
+  #cloudMap{width:100%;height:100%;display:block;border-radius:50%;cursor:crosshair}
+  .cdir{position:absolute;font-size:11px;color:var(--ink-3);pointer-events:none}
+  .cdir.n{top:-2px;left:50%;transform:translateX(-50%)}
+  .cdir.s{bottom:-2px;left:50%;transform:translateX(-50%)}
+  .cdir.e{right:-4px;top:50%;transform:translateY(-50%)}
+  .cdir.w{left:-4px;top:50%;transform:translateY(-50%)}
+  .readout{text-align:center;font-size:12px;color:var(--ink-2);margin:10px 0 2px;min-height:18px}
+  .readout b{color:var(--ox-green);font-weight:500}
+  .cmp-scale{display:flex;justify-content:center;align-items:center;gap:0;font-size:9.5px;
+       color:var(--ink-3);margin:6px 0 14px}
+  .cmp-scale span{display:flex;align-items:center;gap:4px}
+  .cmp-scale i{display:inline-block;width:26px;height:7px;font-style:normal}
+  .cmp-scale span:first-child i{border-radius:3px 0 0 3px}
+  .cmp-scale span:last-child i{border-radius:0 3px 3px 0}
   .cmp-best{display:flex;gap:10px;align-items:flex-start;background:rgba(95,227,161,.07);
        border:1px solid rgba(95,227,161,.2);border-radius:10px;padding:10px 12px;margin-bottom:10px}
   .cmp-best .ar{color:var(--ox-green);font-size:18px;line-height:1.2}
   .cmp-best b{display:block;font-size:13px;color:var(--ox-green);font-weight:500}
   .cmp-best span{font-size:11px;color:var(--ink-3)}
   .dir .fine{font-size:10.5px;color:var(--ink-3);line-height:1.7}
+
+  .learn{background:var(--surface);border:1px solid var(--line);border-radius:14px;
+       margin-top:16px;overflow:hidden}
+  .learn summary{padding:14px 16px;font-size:13px;color:var(--ink);cursor:pointer;
+       list-style:none;display:flex;justify-content:space-between;align-items:center}
+  .learn summary::-webkit-details-marker{display:none}
+  .learn summary::after{content:'＋';color:var(--ink-3);font-size:15px}
+  .learn[open] summary::after{content:'−'}
+  .learn[open] summary{border-bottom:1px solid var(--line)}
+  .ldoc{padding:4px 16px 16px}
+  .ldoc .lead{font-size:12.5px;color:var(--ink-2);margin:12px 0 16px;line-height:1.8}
+  .ldoc .lead b{color:var(--ox-green);font-weight:500}
+  .lrow{display:flex;gap:11px;margin-bottom:16px}
+  .lrow .li{flex:0 0 20px;height:20px;border-radius:50%;background:rgba(95,227,161,.14);
+       color:var(--ox-green);font-size:11px;display:flex;align-items:center;
+       justify-content:center;font-family:'IBM Plex Mono',monospace;margin-top:1px}
+  .lrow b{display:block;font-size:13px;color:var(--ink);font-weight:500;margin-bottom:3px}
+  .lrow p{font-size:11.5px;color:var(--ink-2);margin:0 0 5px;line-height:1.85}
+  .lrow p b{display:inline;font-size:11.5px;color:var(--ox-green)}
+  .lnote{background:rgba(124,139,232,.06);border-radius:10px;padding:11px 13px;margin-bottom:9px}
+  .lnote b{display:block;font-size:12px;color:var(--n2-violet);font-weight:500;margin-bottom:3px}
+  .lnote p{font-size:11.5px;color:var(--ink-2);margin:0;line-height:1.85}
+  .lnote p b{display:inline;font-size:11.5px;color:var(--ink)}
 
   .foot{font-size:10px;color:var(--ink-3);text-align:center;margin-top:22px;line-height:1.8}
 </style>
@@ -196,17 +226,6 @@
   </div>
 </div>
 
-<div class="verdict bad">
-  <div class="lab">对照：同样条件但云厚的一晚</div>
-  <div class="stars" style="color:var(--ink-3)">★☆☆☆☆</div>
-  <div class="say">Kp 够高，但云挡住了</div>
-  <div class="nums">
-    <div class="n"><span class="nk">Kp</span><span class="nv mono">5.0</span><span class="nn">很高</span></div>
-    <div class="n"><span class="nk">低中云</span><span class="nv mono no">80%</span><span class="nn">主要原因</span></div>
-    <div class="n"><span class="nk">高云</span><span class="nv mono">30%</span><span class="nn">—</span></div>
-    <div class="n"><span class="nk">月龄</span><span class="nv mono">14 天</span><span class="nn">满月干扰</span></div>
-  </div>
-</div>
 
 <div class="row2">
   <div class="cell">
@@ -222,61 +241,32 @@
 </div>
 
 <div class="dir">
-  <div class="lab">22:00 各方向云况（半径 30 公里）</div>
-<svg viewBox="-16 -16 292 292" class="compass" role="img" aria-label="以住宿地為中心的八方位雲量分布，東側 20 公里雲最少">
-<path d="M119.2,102.0 A30,30 0 0 1 140.8,102.0 L150.8,75.9 A58,58 0 0 0 109.2,75.9 Z" fill="#8FD98A" fill-opacity="0.62"/>
-<path d="M108.5,74.0 A60,60 0 0 1 151.5,74.0 L161.5,47.8 A88,88 0 0 0 98.5,47.8 Z" fill="#D9C46A" fill-opacity="0.62"/>
-<path d="M97.7,46.0 A90,90 0 0 1 162.3,46.0 L172.3,19.8 A118,118 0 0 0 87.7,19.8 Z" fill="#D9C46A" fill-opacity="0.62"/>
-<path d="M142.2,102.6 A30,30 0 0 1 157.4,117.8 L183.0,106.4 A58,58 0 0 0 153.6,77.0 Z" fill="#5FE3A1" fill-opacity="0.62"/>
-<path d="M154.4,75.2 A60,60 0 0 1 184.8,105.6 L210.4,94.2 A88,88 0 0 0 165.8,49.6 Z" fill="#8FD98A" fill-opacity="0.62"/>
-<path d="M166.6,47.8 A90,90 0 0 1 212.2,93.4 L237.8,82.0 A118,118 0 0 0 178.0,22.2 Z" fill="#8FD98A" fill-opacity="0.62"/>
-<path d="M158.0,119.2 A30,30 0 0 1 158.0,140.8 L184.1,150.8 A58,58 0 0 0 184.1,109.2 Z" fill="#5FE3A1" fill-opacity="0.62"/>
-<path d="M186.0,108.5 A60,60 0 0 1 186.0,151.5 L212.2,161.5 A88,88 0 0 0 212.2,98.5 Z" fill="#5FE3A1" fill-opacity="0.92" stroke="#DDE7E4" stroke-width="1.6"/>
-<path d="M214.0,97.7 A90,90 0 0 1 214.0,162.3 L240.2,172.3 A118,118 0 0 0 240.2,87.7 Z" fill="#5FE3A1" fill-opacity="0.62"/>
-<path d="M157.4,142.2 A30,30 0 0 1 142.2,157.4 L153.6,183.0 A58,58 0 0 0 183.0,153.6 Z" fill="#8FD98A" fill-opacity="0.62"/>
-<path d="M184.8,154.4 A60,60 0 0 1 154.4,184.8 L165.8,210.4 A88,88 0 0 0 210.4,165.8 Z" fill="#8FD98A" fill-opacity="0.62"/>
-<path d="M212.2,166.6 A90,90 0 0 1 166.6,212.2 L178.0,237.8 A118,118 0 0 0 237.8,178.0 Z" fill="#8FD98A" fill-opacity="0.62"/>
-<path d="M140.8,158.0 A30,30 0 0 1 119.2,158.0 L109.2,184.1 A58,58 0 0 0 150.8,184.1 Z" fill="#D9C46A" fill-opacity="0.62"/>
-<path d="M151.5,186.0 A60,60 0 0 1 108.5,186.0 L98.5,212.2 A88,88 0 0 0 161.5,212.2 Z" fill="#D9995F" fill-opacity="0.62"/>
-<path d="M162.3,214.0 A90,90 0 0 1 97.7,214.0 L87.7,240.2 A118,118 0 0 0 172.3,240.2 Z" fill="#D9995F" fill-opacity="0.62"/>
-<path d="M117.8,157.4 A30,30 0 0 1 102.6,142.2 L77.0,153.6 A58,58 0 0 0 106.4,183.0 Z" fill="#D9995F" fill-opacity="0.62"/>
-<path d="M105.6,184.8 A60,60 0 0 1 75.2,154.4 L49.6,165.8 A88,88 0 0 0 94.2,210.4 Z" fill="#D96A78" fill-opacity="0.62"/>
-<path d="M93.4,212.2 A90,90 0 0 1 47.8,166.6 L22.2,178.0 A118,118 0 0 0 82.0,237.8 Z" fill="#D96A78" fill-opacity="0.62"/>
-<path d="M102.0,140.8 A30,30 0 0 1 102.0,119.2 L75.9,109.2 A58,58 0 0 0 75.9,150.8 Z" fill="#D9995F" fill-opacity="0.62"/>
-<path d="M74.0,151.5 A60,60 0 0 1 74.0,108.5 L47.8,98.5 A88,88 0 0 0 47.8,161.5 Z" fill="#D96A78" fill-opacity="0.62"/>
-<path d="M46.0,162.3 A90,90 0 0 1 46.0,97.7 L19.8,87.7 A118,118 0 0 0 19.8,172.3 Z" fill="#D96A78" fill-opacity="0.62"/>
-<path d="M102.6,117.8 A30,30 0 0 1 117.8,102.6 L106.4,77.0 A58,58 0 0 0 77.0,106.4 Z" fill="#D9995F" fill-opacity="0.62"/>
-<path d="M75.2,105.6 A60,60 0 0 1 105.6,75.2 L94.2,49.6 A88,88 0 0 0 49.6,94.2 Z" fill="#D9995F" fill-opacity="0.62"/>
-<path d="M47.8,93.4 A90,90 0 0 1 93.4,47.8 L82.0,22.2 A118,118 0 0 0 22.2,82.0 Z" fill="#D9995F" fill-opacity="0.62"/>
-<circle cx="130" cy="130" r="26" fill="#0E1620" stroke="rgba(124,139,232,.3)"/>
-<text x="130" y="128" text-anchor="middle" class="cmp-here">民宿</text>
-<text x="130" y="141" text-anchor="middle" class="cmp-here2">15%</text>
-<text x="130.0" y="-3.0" text-anchor="middle" class="cmp-dir">北</text>
-<text x="226.9" y="37.1" text-anchor="middle" class="cmp-dir">東北</text>
-<text x="267.0" y="134.0" text-anchor="middle" class="cmp-dir">東</text>
-<text x="226.9" y="230.9" text-anchor="middle" class="cmp-dir">東南</text>
-<text x="130.0" y="271.0" text-anchor="middle" class="cmp-dir">南</text>
-<text x="33.1" y="230.9" text-anchor="middle" class="cmp-dir">西南</text>
-<text x="-7.0" y="134.0" text-anchor="middle" class="cmp-dir">西</text>
-<text x="33.1" y="37.1" text-anchor="middle" class="cmp-dir">西北</text>
-</svg>
+  <div class="lab">22:00 云况地图（以民宿为中心，半径 30 公里）</div>
+  <div class="mapwrap">
+    <canvas id="cloudMap" width="300" height="300"
+            role="img" aria-label="以住宿地为中心的云量分布图，东侧较为清朗"></canvas>
+    <span class="cdir n">北</span><span class="cdir e">东</span>
+    <span class="cdir s">南</span><span class="cdir w">西</span>
+  </div>
+  <div class="readout" id="readout">点一下地图任一处，看该方向的云量</div>
   <div class="cmp-scale">
-    <span><i style="background:#5FE3A1"></i>0–20%</span>
-    <span><i style="background:#8FD98A"></i>–35%</span>
-    <span><i style="background:#D9C46A"></i>–50%</span>
-    <span><i style="background:#D9995F"></i>–70%</span>
-    <span><i style="background:#D96A78"></i>70%+</span>
+    <span><i style="background:#0d1a1a"></i>晴</span>
+    <span><i style="background:#4a5a68"></i></span>
+    <span><i style="background:#8e9aa6"></i></span>
+    <span><i style="background:#c8ced6"></i></span>
+    <span><i style="background:#eef1f5"></i>云</span>
   </div>
   <div class="cmp-best">
     <span class="ar">↗</span>
     <div>
-      <b>东 20 公里最清朗　低中云 12%</b>
+      <b>东侧 20 公里最清朗　低中云 12%</b>
       <span>民宿所在 15%，差距不大，不一定要特地移动</span>
     </div>
   </div>
   <div class="fine">
-    三圈由内而外为 10 / 20 / 30 公里。数值为低层＋中层云量，越低越好；<br>
-    高层薄云半透明，不列入判断。出发前请先确认路况与路线。
+    三圈由内而外为 10 / 20 / 30 公里。亮＝云多，暗＝晴朗。<br>
+    数值为低层＋中层云量；高层薄云半透明，不列入判断。<br>
+    出发前请先确认路况与路线。
   </div>
 </div>
 
@@ -287,10 +277,155 @@
     <b>Road.is</b>即时路况与封闭资讯</a>
 </div>
 
+<details class="learn">
+  <summary>看到极光需要什么条件？</summary>
+  <div class="ldoc">
+    <p class="lead">要看到极光，三件事必须<b>同时</b>成立。缺一件就是零，不是打折。</p>
+
+    <div class="lrow"><span class="li">1</span><div>
+      <b>天要够黑</b>
+      <p>极光一直都在，只是白天被日光盖过。太阳落到地平线下约 12 度之后天才算真的暗，
+      冰岛十月大约是日落后一个半小时。这就是上方光带里深色那一段。</p>
+    </div></div>
+
+    <div class="lrow"><span class="li">2</span><div>
+      <b>极光活动要够强 —— 这就是 Kp</b>
+      <p>Kp 是全球地磁扰动指数，0 到 9，每 3 小时一个值。数字越大，极光带往低纬度扩张得越远、也越明亮。</p>
+      <p>但冰岛有个先天优势：<b>它本来就位在极光带正下方</b>。所以在冰岛 <b>Kp 2 到 3 常常就够看</b>，
+      不必等到 5 以上。Kp 5 以上属于地磁风暴，一趟旅程遇到一两次算幸运。</p>
+    </div></div>
+
+    <div class="lrow"><span class="li">3</span><div>
+      <b>云要够少 —— 而且只看低层和中层</b>
+      <p>极光发生在 100 公里以上的高空，比所有云都高。所以云不是「减弱」极光，是<b>直接挡死</b>。</p>
+      <p>但三层云的差别很大：<b>低层与中层云不透光</b>，有就是完全看不到；
+      <b>高层的卷云是半透明的</b>，较亮的极光穿得过去，顶多像蒙了一层薄纱。</p>
+      <p>所以本页所有判断只看低中云，高云仅作提示。冰岛气象局的雲量地圖也是建议看「低层与中层」那一层。</p>
+    </div></div>
+
+    <div class="lnote">
+      <b>为什么权重不是各半？</b>
+      <p>云是硬否决条件，Kp 只要过门槛就行。
+      <b>Kp 5 但低中云 80%，结果多半是什么都没看到</b>；
+      反过来 Kp 2 但万里无云，却常常看得很清楚。
+      所以判断时先看云，再看 Kp。</p>
+    </div>
+
+    <div class="lnote">
+      <b>月光呢？</b>
+      <p>满月会洗掉比较暗弱的极光，但也会照亮地景，拍起来反而好看。
+      影响不到云那么关键，本页只当作参考提示。</p>
+    </div>
+
+    <div class="lnote">
+      <b>实际操作</b>
+      <p>到了现场给眼睛 15 到 20 分钟适应黑暗，远离路灯。
+      极光是一阵一阵的，安静半小时后突然爆发很常见，值得多等一会儿。</p>
+    </div>
+  </div>
+</details>
+
 <div class="foot">
   极光活动与机率来自 NOAA SWPC，云量与日照来自 Open-Meteo。<br>
   星级为本站依上述资料自行换算，仅供参考，权威预报请以冰岛气象局为准。
 </div>
 
+<script>
+(function(){
+  // 模擬情境：東側晴朗、西側雲厚。正式版由 Open-Meteo 多座標查詢回填。
+  var DIRS=['N','NE','E','SE','S','SW','W','NW'];
+  var DATA={N:[28,38,48],NE:[20,22,30],E:[16,12,14],SE:[22,26,34],
+            S:[40,52,60],SW:[62,74,80],W:[70,78,82],NW:[52,60,66]};
+  var CENTER=15, KM=[10,20,30];
+
+  var cv=document.getElementById('cloudMap'); if(!cv) return;
+  var CSS=300, R=CSS/2, dpr=Math.min(window.devicePixelRatio||1,3);
+  cv.width=CSS*dpr; cv.height=CSS*dpr;
+  var ctx=cv.getContext('2d'); ctx.scale(dpr,dpr);
+
+  // 取樣點：中心 + 8 方位 × 3 距離
+  var pts=[{x:R,y:R,v:CENTER}];
+  DIRS.forEach(function(d,i){
+    var a=(i*45-90)*Math.PI/180;
+    KM.forEach(function(km,j){
+      var r=R*(km/30)*0.94;
+      pts.push({x:R+r*Math.cos(a), y:R+r*Math.sin(a), v:DATA[d][j]});
+    });
+  });
+
+  // 反距離加權內插，讓 24 個取樣點變成連續雲場
+  function sample(x,y){
+    var num=0,den=0;
+    for(var i=0;i<pts.length;i++){
+      var dx=x-pts[i].x, dy=y-pts[i].y, d2=dx*dx+dy*dy;
+      if(d2<1) return pts[i].v;
+      var w=1/(d2*d2);
+      num+=pts[i].v*w; den+=w;
+    }
+    return num/den;
+  }
+  // 晴朗＝透空的暗色，多雲＝不透明的淡灰白，看起來就像雲圖
+  function shade(v){
+    var t=Math.max(0,Math.min(1,v/100));
+    var e=t*t*(3-2*t);
+    return [Math.round(13+(238-13)*e), Math.round(26+(241-26)*e), Math.round(26+(245-26)*e)];
+  }
+
+  var img=ctx.createImageData(CSS,CSS), D=img.data;
+  for(var y=0;y<CSS;y++){
+    for(var x=0;x<CSS;x++){
+      var i=(y*CSS+x)*4, dx=x-R, dy=y-R, dist=Math.sqrt(dx*dx+dy*dy);
+      if(dist>R){ D[i+3]=0; continue; }
+      var c=shade(sample(x,y));
+      D[i]=c[0]; D[i+1]=c[1]; D[i+2]=c[2];
+      D[i+3]=dist>R-2 ? Math.round(255*(R-dist)/2) : 255;
+    }
+  }
+  ctx.putImageData(img,0,0);
+
+  // 距離環與方位線
+  ctx.strokeStyle='rgba(255,255,255,.16)'; ctx.lineWidth=.8;
+  KM.forEach(function(km){
+    ctx.beginPath(); ctx.arc(R,R,R*(km/30)*0.94,0,Math.PI*2); ctx.stroke();
+  });
+  ctx.strokeStyle='rgba(255,255,255,.09)';
+  for(var k=0;k<4;k++){
+    var a=(k*45)*Math.PI/180;
+    ctx.beginPath();
+    ctx.moveTo(R-R*0.94*Math.cos(a),R-R*0.94*Math.sin(a));
+    ctx.lineTo(R+R*0.94*Math.cos(a),R+R*0.94*Math.sin(a));
+    ctx.stroke();
+  }
+
+  // 最佳點（東 20 km）
+  var ba=(90-90)*Math.PI/180, br=R*(20/30)*0.94;
+  var bx=R+br*Math.cos(ba), by=R+br*Math.sin(ba);
+  ctx.beginPath(); ctx.arc(bx,by,7,0,Math.PI*2);
+  ctx.strokeStyle='#5FE3A1'; ctx.lineWidth=2; ctx.stroke();
+
+  // 你在這裡
+  ctx.beginPath(); ctx.arc(R,R,4.5,0,Math.PI*2);
+  ctx.fillStyle='#5FE3A1'; ctx.fill();
+  ctx.beginPath(); ctx.arc(R,R,8,0,Math.PI*2);
+  ctx.strokeStyle='rgba(95,227,161,.45)'; ctx.lineWidth=1.2; ctx.stroke();
+
+  // 點一下看數值
+  var out=document.getElementById('readout');
+  cv.addEventListener('click',function(ev){
+    var b=cv.getBoundingClientRect();
+    var x=(ev.clientX-b.left)/b.width*CSS, y=(ev.clientY-b.top)/b.height*CSS;
+    var dx=x-R, dy=y-R, dist=Math.sqrt(dx*dx+dy*dy);
+    if(dist>R){ return; }
+    var km=Math.round(dist/(R*0.94)*30);
+    var ang=(Math.atan2(dy,dx)*180/Math.PI+90+360)%360;
+    var names=['正北','东北','正东','东南','正南','西南','正西','西北'];
+    var nm=names[Math.round(ang/45)%8];
+    var v=Math.round(sample(x,y));
+    out.innerHTML = km<3
+      ? '民宿所在　低中云 <b>'+CENTER+'%</b>'
+      : nm+'方向 '+km+' 公里　低中云 <b>'+v+'%</b>';
+  });
+})();
+</script>
 </body>
 </html>
