@@ -85,6 +85,30 @@
   .links a b{display:block;color:var(--ink);font-size:13px;font-weight:500;margin-bottom:2px}
   .links a.wide{grid-column:1/-1}
 
+  .verdict .nums{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px;
+       padding-top:12px;border-top:1px solid rgba(124,139,232,.1)}
+  .verdict .n{text-align:center}
+  .nk{display:block;font-size:10px;color:var(--ink-3)}
+  .nv{display:block;font-size:17px;font-weight:500;color:var(--ink);margin:1px 0}
+  .nv.ok{color:var(--ox-green)} .nv.no{color:var(--ox-red)}
+  .nn{display:block;font-size:9.5px;color:var(--ink-3)}
+  .verdict.bad{border-color:rgba(217,106,120,.22)}
+
+  svg.compass{width:100%;max-width:300px;display:block;margin:2px auto 4px}
+  .cmp-dir{fill:#8397A0;font-size:12px;font-family:'Noto Sans SC',sans-serif}
+  .cmp-here{fill:#DDE7E4;font-size:11px;font-family:'Noto Sans SC',sans-serif}
+  .cmp-here2{fill:#5FE3A1;font-size:12px;font-family:'IBM Plex Mono',monospace}
+  .cmp-scale{display:flex;justify-content:center;gap:9px;font-size:9.5px;color:var(--ink-3);
+       margin:6px 0 12px;flex-wrap:wrap}
+  .cmp-scale i{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:3px;
+       vertical-align:-1px;font-style:normal}
+  .cmp-best{display:flex;gap:10px;align-items:flex-start;background:rgba(95,227,161,.07);
+       border:1px solid rgba(95,227,161,.2);border-radius:10px;padding:10px 12px;margin-bottom:10px}
+  .cmp-best .ar{color:var(--ox-green);font-size:18px;line-height:1.2}
+  .cmp-best b{display:block;font-size:13px;color:var(--ox-green);font-weight:500}
+  .cmp-best span{font-size:11px;color:var(--ink-3)}
+  .dir .fine{font-size:10.5px;color:var(--ink-3);line-height:1.7}
+
   .foot{font-size:10px;color:var(--ink-3);text-align:center;margin-top:22px;line-height:1.8}
 </style>
 </head>
@@ -164,7 +188,24 @@
   <div class="lab">今晚值不值得等</div>
   <div class="stars">★★★★☆</div>
   <div class="say">值得等，21:30 之后云会散开</div>
-  <div class="why">Kp 预报 4（偏高）· 22:00 低中云 15% · 月龄 6 天，月光影响小</div>
+  <div class="nums">
+    <div class="n"><span class="nk">Kp</span><span class="nv mono">4.0</span><span class="nn">偏高</span></div>
+    <div class="n"><span class="nk">低中云</span><span class="nv mono ok">15%</span><span class="nn">大致晴空</span></div>
+    <div class="n"><span class="nk">高云</span><span class="nv mono">60%</span><span class="nn">半透明</span></div>
+    <div class="n"><span class="nk">月龄</span><span class="nv mono">6 天</span><span class="nn">影响小</span></div>
+  </div>
+</div>
+
+<div class="verdict bad">
+  <div class="lab">对照：同样条件但云厚的一晚</div>
+  <div class="stars" style="color:var(--ink-3)">★☆☆☆☆</div>
+  <div class="say">Kp 够高，但云挡住了</div>
+  <div class="nums">
+    <div class="n"><span class="nk">Kp</span><span class="nv mono">5.0</span><span class="nn">很高</span></div>
+    <div class="n"><span class="nk">低中云</span><span class="nv mono no">80%</span><span class="nn">主要原因</span></div>
+    <div class="n"><span class="nk">高云</span><span class="nv mono">30%</span><span class="nn">—</span></div>
+    <div class="n"><span class="nk">月龄</span><span class="nv mono">14 天</span><span class="nn">满月干扰</span></div>
+  </div>
 </div>
 
 <div class="row2">
@@ -182,29 +223,60 @@
 
 <div class="dir">
   <div class="lab">22:00 各方向云况（半径 30 公里）</div>
-  <div class="drow best">
-    <span class="w">东 20 km</span>
-    <span class="bar"><span style="width:12%;background:#5FE3A1"></span></span>
-    <span class="v mono">12%</span>
+<svg viewBox="-16 -16 292 292" class="compass" role="img" aria-label="以住宿地為中心的八方位雲量分布，東側 20 公里雲最少">
+<path d="M119.2,102.0 A30,30 0 0 1 140.8,102.0 L150.8,75.9 A58,58 0 0 0 109.2,75.9 Z" fill="#8FD98A" fill-opacity="0.62"/>
+<path d="M108.5,74.0 A60,60 0 0 1 151.5,74.0 L161.5,47.8 A88,88 0 0 0 98.5,47.8 Z" fill="#D9C46A" fill-opacity="0.62"/>
+<path d="M97.7,46.0 A90,90 0 0 1 162.3,46.0 L172.3,19.8 A118,118 0 0 0 87.7,19.8 Z" fill="#D9C46A" fill-opacity="0.62"/>
+<path d="M142.2,102.6 A30,30 0 0 1 157.4,117.8 L183.0,106.4 A58,58 0 0 0 153.6,77.0 Z" fill="#5FE3A1" fill-opacity="0.62"/>
+<path d="M154.4,75.2 A60,60 0 0 1 184.8,105.6 L210.4,94.2 A88,88 0 0 0 165.8,49.6 Z" fill="#8FD98A" fill-opacity="0.62"/>
+<path d="M166.6,47.8 A90,90 0 0 1 212.2,93.4 L237.8,82.0 A118,118 0 0 0 178.0,22.2 Z" fill="#8FD98A" fill-opacity="0.62"/>
+<path d="M158.0,119.2 A30,30 0 0 1 158.0,140.8 L184.1,150.8 A58,58 0 0 0 184.1,109.2 Z" fill="#5FE3A1" fill-opacity="0.62"/>
+<path d="M186.0,108.5 A60,60 0 0 1 186.0,151.5 L212.2,161.5 A88,88 0 0 0 212.2,98.5 Z" fill="#5FE3A1" fill-opacity="0.92" stroke="#DDE7E4" stroke-width="1.6"/>
+<path d="M214.0,97.7 A90,90 0 0 1 214.0,162.3 L240.2,172.3 A118,118 0 0 0 240.2,87.7 Z" fill="#5FE3A1" fill-opacity="0.62"/>
+<path d="M157.4,142.2 A30,30 0 0 1 142.2,157.4 L153.6,183.0 A58,58 0 0 0 183.0,153.6 Z" fill="#8FD98A" fill-opacity="0.62"/>
+<path d="M184.8,154.4 A60,60 0 0 1 154.4,184.8 L165.8,210.4 A88,88 0 0 0 210.4,165.8 Z" fill="#8FD98A" fill-opacity="0.62"/>
+<path d="M212.2,166.6 A90,90 0 0 1 166.6,212.2 L178.0,237.8 A118,118 0 0 0 237.8,178.0 Z" fill="#8FD98A" fill-opacity="0.62"/>
+<path d="M140.8,158.0 A30,30 0 0 1 119.2,158.0 L109.2,184.1 A58,58 0 0 0 150.8,184.1 Z" fill="#D9C46A" fill-opacity="0.62"/>
+<path d="M151.5,186.0 A60,60 0 0 1 108.5,186.0 L98.5,212.2 A88,88 0 0 0 161.5,212.2 Z" fill="#D9995F" fill-opacity="0.62"/>
+<path d="M162.3,214.0 A90,90 0 0 1 97.7,214.0 L87.7,240.2 A118,118 0 0 0 172.3,240.2 Z" fill="#D9995F" fill-opacity="0.62"/>
+<path d="M117.8,157.4 A30,30 0 0 1 102.6,142.2 L77.0,153.6 A58,58 0 0 0 106.4,183.0 Z" fill="#D9995F" fill-opacity="0.62"/>
+<path d="M105.6,184.8 A60,60 0 0 1 75.2,154.4 L49.6,165.8 A88,88 0 0 0 94.2,210.4 Z" fill="#D96A78" fill-opacity="0.62"/>
+<path d="M93.4,212.2 A90,90 0 0 1 47.8,166.6 L22.2,178.0 A118,118 0 0 0 82.0,237.8 Z" fill="#D96A78" fill-opacity="0.62"/>
+<path d="M102.0,140.8 A30,30 0 0 1 102.0,119.2 L75.9,109.2 A58,58 0 0 0 75.9,150.8 Z" fill="#D9995F" fill-opacity="0.62"/>
+<path d="M74.0,151.5 A60,60 0 0 1 74.0,108.5 L47.8,98.5 A88,88 0 0 0 47.8,161.5 Z" fill="#D96A78" fill-opacity="0.62"/>
+<path d="M46.0,162.3 A90,90 0 0 1 46.0,97.7 L19.8,87.7 A118,118 0 0 0 19.8,172.3 Z" fill="#D96A78" fill-opacity="0.62"/>
+<path d="M102.6,117.8 A30,30 0 0 1 117.8,102.6 L106.4,77.0 A58,58 0 0 0 77.0,106.4 Z" fill="#D9995F" fill-opacity="0.62"/>
+<path d="M75.2,105.6 A60,60 0 0 1 105.6,75.2 L94.2,49.6 A88,88 0 0 0 49.6,94.2 Z" fill="#D9995F" fill-opacity="0.62"/>
+<path d="M47.8,93.4 A90,90 0 0 1 93.4,47.8 L82.0,22.2 A118,118 0 0 0 22.2,82.0 Z" fill="#D9995F" fill-opacity="0.62"/>
+<circle cx="130" cy="130" r="26" fill="#0E1620" stroke="rgba(124,139,232,.3)"/>
+<text x="130" y="128" text-anchor="middle" class="cmp-here">民宿</text>
+<text x="130" y="141" text-anchor="middle" class="cmp-here2">15%</text>
+<text x="130.0" y="-3.0" text-anchor="middle" class="cmp-dir">北</text>
+<text x="226.9" y="37.1" text-anchor="middle" class="cmp-dir">東北</text>
+<text x="267.0" y="134.0" text-anchor="middle" class="cmp-dir">東</text>
+<text x="226.9" y="230.9" text-anchor="middle" class="cmp-dir">東南</text>
+<text x="130.0" y="271.0" text-anchor="middle" class="cmp-dir">南</text>
+<text x="33.1" y="230.9" text-anchor="middle" class="cmp-dir">西南</text>
+<text x="-7.0" y="134.0" text-anchor="middle" class="cmp-dir">西</text>
+<text x="33.1" y="37.1" text-anchor="middle" class="cmp-dir">西北</text>
+</svg>
+  <div class="cmp-scale">
+    <span><i style="background:#5FE3A1"></i>0–20%</span>
+    <span><i style="background:#8FD98A"></i>–35%</span>
+    <span><i style="background:#D9C46A"></i>–50%</span>
+    <span><i style="background:#D9995F"></i>–70%</span>
+    <span><i style="background:#D96A78"></i>70%+</span>
   </div>
-  <div class="drow here">
-    <span class="w">民宿所在</span>
-    <span class="bar"><span style="width:15%;background:#5FE3A1"></span></span>
-    <span class="v mono">15%</span>
+  <div class="cmp-best">
+    <span class="ar">↗</span>
+    <div>
+      <b>东 20 公里最清朗　低中云 12%</b>
+      <span>民宿所在 15%，差距不大，不一定要特地移动</span>
+    </div>
   </div>
-  <div class="drow">
-    <span class="w">北 30 km</span>
-    <span class="bar"><span style="width:48%;background:#D9B36A"></span></span>
-    <span class="v mono">48%</span>
-  </div>
-  <div class="drow">
-    <span class="w">西 30 km</span>
-    <span class="bar"><span style="width:82%;background:#D96A78"></span></span>
-    <span class="v mono">82%</span>
-  </div>
-  <div class="fine" style="font-size:11px;color:var(--ink-3);margin-top:10px">
-    数值为低层＋中层云量，越低越好。高层薄云半透明，不列入判断。<br>
-    出发前请先确认路况与路线。
+  <div class="fine">
+    三圈由内而外为 10 / 20 / 30 公里。数值为低层＋中层云量，越低越好；<br>
+    高层薄云半透明，不列入判断。出发前请先确认路况与路线。
   </div>
 </div>
 
