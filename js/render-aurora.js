@@ -1,97 +1,420 @@
 // ===== AURORA DASHBOARD =====
-// 極光儀表板：4個地點（雷市+3個住宿地點）、水平滑動卡片、每小時自動更新
+// 極光頁：「今晚的天空」。版面依規格書 §3.3 重建，CSS／SVG／Canvas 邏輯取自
+// tools/aurora-preview.html（已確認的設計原型，commit e5a5370），逐字沿用。
 //
-// 資料源（全部為真實 API，無任何亂數／模擬數值）：
+// 真實資料源（無任何亂數／模擬數值）：
 //   Kp 實測值：https://services.swpc.noaa.gov/products/noaa-planetary-k-index.json         （欄位大寫 Kp）
-//   Kp 預報值：https://services.swpc.noaa.gov/products/noaa-planetary-k-index-forecast.json （欄位小寫 kp，另有 observed 欄位）
-//   雲量／日出日落：Open-Meteo（依地點座標查詢）
-// 任一來源失敗時，對應區塊顯示「暫時取不到資料」，絕不回退到亂數或編造數值。
+//   Kp 預報值：https://services.swpc.noaa.gov/products/noaa-planetary-k-index-forecast.json （欄位小寫 kp）
+//   雲量／日出日落：Open-Meteo（依地點座標查詢，含逐時雲量與每日日出日落）
+//   本頁「可見機率」為本站自行推導的啟發式換算，非官方演算法，介面上標明「本站換算，僅供參考」。
+//
+// 本階段（B）雲況地圖僅用單點資料（尚未做八方位取樣），因此地圖呈現為單一數值的
+// 平面圓（無方向差異）；八方位取樣與方向建議留到階段 C，不在此階段編造方向資料。
 
-// 地點顯示用的 emoji（座標與名稱一律來自 data/aurora-config.js 的 AURORA_CONFIG，此處僅補 UI 用的圖示）
-const AURORA_LOCATION_EMOJI = {
-  reykjavik: '🏛️',
-  selfoss:   '🏠',
-  lakeview:  '🌲',
-  gardur:    '🌊'
-};
+const AURORA_DIRS = ['N','NE','E','SE','S','SW','W','NW'];
+const AURORA_DIRNAME = ['正北','東北','正東','東南','正南','西南','正西','西北'];
+const AURORA_KM = [10, 20, 30];
 
 let auroraCurrentLocation = 0;
+let auroraTheme = 'dark';
 
 // Kp 資料為全球指數，與地點無關，四個地點共用同一份快取
-let auroraKpTimeline = [];      // 用於圖表：過去12h ~ 未來36h 的 {time, kp, observed} 陣列
-let auroraKpFetchedAt = null;   // 上次成功取得 Kp 資料的時間，避免切換地點時重複打 API
+let auroraKpTimeline = [];      // {time, kp, observed} 陣列，涵蓋過去與未來
+let auroraKpFetchedAt = null;
 let auroraKpFetchFailed = false;
 
-// 天氣資料依地點而異，每次切換地點或更新時重新取得
-let auroraWeather = null;       // Open-Meteo 的 current 區塊
-let auroraSunset = null;        // 當地今日日落時間（HH:MM），取自 Open-Meteo daily
-let auroraWeatherFetchFailed = false;
-
+// 每個地點各自的天氣／推算結果快取（key 為 loc.key）
+let auroraLocData = {};
 let auroraLastUpdate = null;
 
-// 初始化極光頁籤
+// canvas 狀態（雲況地圖）
+let auroraMapCv = null, auroraMapCtx = null, auroraMapOff = null, auroraMapOffCtx = null;
+let auroraMapDpr = 1;
+const AURORA_MAP_CSS = 300, AURORA_MAP_R = 150, AURORA_MAP_FIELD = 200;
+let auroraMapPts = [];
+
+// ---------- 初始化 ----------
+
 function initAuroraPage() {
   const mount = document.getElementById('mount-aurora');
   if (!mount) return;
 
-  mount.innerHTML = `
-    <div class="page" id="page-aurora">
-      <div class="page-inner">
-        <div id="auroraContent" style="padding-bottom: 20px;"></div>
-      </div>
-    </div>
-  `;
+  mount.innerHTML = buildAuroraShellHtml();
 
-  // 首次加載
+  // 依今天日期選出預設地點（今晚住宿地）；不在旅程期間時預設雷克雅未克
+  auroraCurrentLocation = resolveDefaultAuroraLocation();
+
+  bindAuroraShellEvents();
   renderAuroraDashboard();
 
-  // 每小時自動更新（判斷是否在旅行期間）
   const tripStart = new Date('2026-10-01');
   const tripEnd = new Date('2026-10-12');
   const now = new Date();
-
   if (now >= tripStart && now <= tripEnd) {
-    setInterval(renderAuroraDashboard, 60 * 60 * 1000); // 1小時
+    setInterval(renderAuroraDashboard, 60 * 60 * 1000);
   }
 }
 
-// 渲染極光儀表板：依序取得 Kp（全域共用、有快取）與天氣（依地點），再畫面呈現
-async function renderAuroraDashboard() {
-  const loc = AURORA_CONFIG.locations[auroraCurrentLocation];
-
-  // Kp 是全球指數，只要 1 小時內已取得過就不重複打 API（例如切換地點時）
-  const kpStale = !auroraKpFetchedAt || (Date.now() - auroraKpFetchedAt) > 5 * 60 * 1000;
-  if (kpStale) {
-    await fetchAuroraKpData();
-  }
-
-  await fetchAuroraWeather(loc);
-
-  renderAuroraUI(loc);
-  auroraLastUpdate = new Date();
+function resolveDefaultAuroraLocation() {
+  if (typeof TRIP_DATA === 'undefined' || !TRIP_DATA.days) return 0;
+  const today = new Date();
+  const todayStr = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0')
+    + '-' + String(today.getDate()).padStart(2, '0');
+  const todayDay = TRIP_DATA.days.find(d => d.isoDate === todayStr);
+  if (!todayDay) return 0; // 不在旅程期間：預設雷克雅未克（locations[0]）
+  const idx = AURORA_CONFIG.locations.findIndex(l => l.nights.indexOf(todayDay.id) !== -1);
+  return idx === -1 ? 0 : idx;
 }
 
-// 取得 Kp 實測值與預報值，合併為圖表用的時間序列
+function isAuroraTripActive() {
+  if (typeof TRIP_DATA === 'undefined' || !TRIP_DATA.days) return false;
+  const today = new Date();
+  const todayStr = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0')
+    + '-' + String(today.getDate()).padStart(2, '0');
+  return !!TRIP_DATA.days.find(d => d.isoDate === todayStr);
+}
+
+// ---------- 靜態外殼 HTML（一次掛載，之後只更新內容） ----------
+
+function buildAuroraShellHtml() {
+  const tripActive = isAuroraTripActive();
+  const notice = tripActive ? '' :
+    `<div class="trip-notice">旅程尚未開始，以下為雷克雅未克即時資料。</div>`;
+
+  return `
+    <div class="page" id="page-aurora">
+      <div class="page-inner">
+        <div id="auroraContent">
+          ${notice}
+          <div class="top">
+            <h1>今晚的天空</h1>
+            <div style="display:flex;align-items:center;gap:10px">
+              <button id="auroraThemeBtn">◑ 淺色</button>
+              <span class="upd mono" id="auroraUpdTime">更新中</span>
+            </div>
+          </div>
+
+          <div class="tabs" id="auroraTabs"></div>
+
+          <div class="swipe" id="auroraSwipe">
+            <div class="place">
+              <span class="nm" id="auroraPName"></span>
+              <span class="sub" id="auroraPSub"></span>
+              <span class="today" id="auroraPToday" style="display:none">今晚</span>
+            </div>
+
+            <div class="strip-cap">
+              <span>日落 <b class="mono" id="auroraTSunset">--:--</b> → 日出 <b class="mono" id="auroraTSunrise">--:--</b></span>
+              <span>完全天黑 <b class="mono" id="auroraTDark">--:--</b></span>
+            </div>
+            <svg class="strip" id="auroraStrip" viewBox="0 0 360 132" preserveAspectRatio="none"
+                 role="img" aria-label="今晚從日落到日出的暮光變化、Kp 活動強度與雲層遮蔽"></svg>
+            <div class="strip-cap mono" id="auroraStripAxis" style="margin-top:5px;color:var(--ink-3)"></div>
+
+            <div class="legend">
+              <span><i style="background:#5FE3A1"></i>Kp 活動</span>
+              <span><i style="background:rgba(238,241,245,.55)"></i>雲層遮蔽</span>
+              <span><i style="background:#2A4A6B"></i>天未黑</span>
+            </div>
+
+            <div class="verdict">
+              <div class="lab">今晚值不值得等</div>
+              <div class="stars" id="auroraStars">☆☆☆☆☆</div>
+              <div class="say" id="auroraSay">計算中…</div>
+              <div class="nums" id="auroraNums"></div>
+            </div>
+
+            <div class="row2">
+              <div class="cell">
+                <div class="lab">最佳時段</div>
+                <div class="big mono" id="auroraBest">—</div>
+                <div class="fine">該時段估計 <b id="auroraBestP" style="color:var(--ink-2)">—</b>　本站換算</div>
+              </div>
+              <div class="cell">
+                <div class="lab">現在機率</div>
+                <div class="big mono" id="auroraNow">—</div>
+                <div class="fine" id="auroraNowFine">NOAA OVATION　按需載入（階段 D 開放）</div>
+              </div>
+            </div>
+
+            <div class="dir">
+              <div class="lab" id="auroraMapLab"></div>
+              <div class="cmp-best">
+                <span class="ar">·</span>
+                <div><b id="auroraBestLine">方向分析尚未加入</b><span id="auroraBestSub">八方位雲況取樣將於階段 C 加入，目前僅顯示所在地數值</span></div>
+              </div>
+              <div class="mapwrap">
+                <canvas id="auroraCloudMap" width="300" height="300" role="img"
+                        aria-label="以住宿地為中心的雲量分佈（單點資料，方向細節見階段 C）"></canvas>
+                <span class="cdir n">北</span><span class="cdir e">東</span>
+                <span class="cdir s">南</span><span class="cdir w">西</span>
+              </div>
+              <div class="readout" id="auroraReadout">目前僅有所在地單點資料，點選功能將於階段 C 加入方向差異</div>
+              <div class="cmp-scale">
+                <span><i id="auroraSc0"></i>晴</span>
+                <span><i id="auroraSc1"></i></span>
+                <span><i id="auroraSc2"></i></span>
+                <span><i id="auroraSc3"></i></span>
+                <span><i id="auroraSc4"></i>雲</span>
+              </div>
+              <div class="fine">
+                數值為低層＋中層雲量；高層薄雲半透明，僅作提示。<br>
+                出發前請先確認路況與路線。
+              </div>
+            </div>
+          </div>
+
+          <div class="links">
+            <a href="${AURORA_CONFIG.links.vedur}" target="_blank" rel="noopener">
+              <b>冰島氣象局</b>全島雲量地圖與極光活動</a>
+            <a href="${AURORA_CONFIG.links.road}" target="_blank" rel="noopener">
+              <b>Road.is</b>即時路況與封閉資訊</a>
+          </div>
+
+          <details class="learn">
+            <summary>看到極光需要什麼條件？</summary>
+            <div class="ldoc">
+              <p class="lead">要看到極光，三件事必須<b>同時</b>成立。缺一件就是零，不是打折。</p>
+
+              <div class="lrow"><span class="li">1</span><div>
+                <b>天要夠黑</b>
+                <p>極光一直都在，只是白天被日光蓋過。太陽落到地平線下約 12 度之後天才算真的暗，
+                冰島十月大約是日落後一個半小時。這就是上方光帶裡深色那一段。</p>
+              </div></div>
+
+              <div class="lrow"><span class="li">2</span><div>
+                <b>極光活動要夠強 —— 這就是 Kp</b>
+                <p>Kp 是全球地磁擾動指數，0 到 9，每 3 小時一個值。數字越大，極光帶往低緯度擴張得越遠、也越明亮。</p>
+                <p>但冰島有個先天優勢：<b>它本來就位在極光帶正下方</b>。所以在冰島 <b>Kp 2 到 3 常常就夠看</b>，
+                不必等到 5 以上。Kp 5 以上屬於地磁風暴，一趟旅程遇到一兩次算幸運。</p>
+              </div></div>
+
+              <div class="lrow"><span class="li">3</span><div>
+                <b>雲要夠少 —— 而且只看低層和中層</b>
+                <p>極光發生在 100 公里以上的高空，比所有雲都高。所以雲不是「減弱」極光，是<b>直接擋死</b>。</p>
+                <p>但三層雲的差別很大：<b>低層與中層雲不透光</b>，有就是完全看不到；
+                <b>高層的卷雲是半透明的</b>，較亮的極光穿得過去，頂多像蒙了一層薄紗。</p>
+                <p>所以本頁所有判斷只看低中雲，高雲僅作提示。冰島氣象局的雲量地圖也建議看「低層與中層」那一層。</p>
+              </div></div>
+
+              <div class="lnote">
+                <b>為什麼權重不是各半？</b>
+                <p>雲是硬否決條件，Kp 只要過門檻就行。
+                <b>Kp 5 但低中雲 80%，結果多半是什麼都沒看到</b>；
+                反過來 Kp 2 但萬里無雲，卻常常看得很清楚。所以判斷時先看雲，再看 Kp。</p>
+              </div>
+
+              <div class="lnote">
+                <b>月光呢？</b>
+                <p>滿月會洗掉比較暗弱的極光，但也會照亮地景，拍起來反而好看。
+                影響不到雲那麼關鍵，本頁只當作參考提示。</p>
+              </div>
+
+              <div class="lnote">
+                <b>實際操作</b>
+                <p>到了現場給眼睛 15 到 20 分鐘適應黑暗，遠離路燈。
+                極光是一陣一陣的，安靜半小時後突然爆發很常見，值得多等一會兒。</p>
+              </div>
+            </div>
+          </details>
+
+          <div class="foot">
+            極光活動與機率來自 NOAA SWPC，雲量與日照來自 Open-Meteo。<br>
+            星級為本站依上述資料自行換算，本站換算僅供參考，權威預報請以冰島氣象局為準。
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function bindAuroraShellEvents() {
+  // 地點標籤列
+  const tabs = document.getElementById('auroraTabs');
+  tabs.innerHTML = '';
+  AURORA_CONFIG.locations.forEach((l, i) => {
+    const b = document.createElement('div');
+    b.className = 'tab';
+    b.dataset.i = i;
+    b.innerHTML = l.name + '<span class="tn">' + auroraLocationTag(l) + '</span>';
+    b.onclick = () => switchAuroraLocation(i);
+    tabs.appendChild(b);
+  });
+
+  // 左右滑（門檻：水平位移 > 50px 且 > 垂直位移 × 1.5）
+  const sw = document.getElementById('auroraSwipe');
+  let x0 = null, y0 = null;
+  sw.addEventListener('touchstart', e => {
+    x0 = e.touches[0].clientX; y0 = e.touches[0].clientY;
+  }, { passive: true });
+  sw.addEventListener('touchend', e => {
+    if (x0 === null) return;
+    const dx = e.changedTouches[0].clientX - x0;
+    const dy = e.changedTouches[0].clientY - y0;
+    x0 = null;
+    if (Math.abs(dx) < 50 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+    const next = dx < 0
+      ? Math.min(auroraCurrentLocation + 1, AURORA_CONFIG.locations.length - 1)
+      : Math.max(auroraCurrentLocation - 1, 0);
+    switchAuroraLocation(next);
+  }, { passive: true });
+
+  // 主題切換
+  const tb = document.getElementById('auroraThemeBtn');
+  tb.onclick = () => {
+    auroraTheme = auroraTheme === 'dark' ? 'light' : 'dark';
+    const root = document.getElementById('page-aurora');
+    if (root) root.setAttribute('data-theme', auroraTheme === 'light' ? 'light' : '');
+    tb.textContent = auroraTheme === 'dark' ? '◑ 淺色' : '◐ 深色';
+    renderAuroraDashboardUiOnly();
+  };
+
+  // 雲況地圖 canvas
+  auroraMapCv = document.getElementById('auroraCloudMap');
+  auroraMapCtx = auroraMapCv && auroraMapCv.getContext ? auroraMapCv.getContext('2d') : null;
+  if (auroraMapCtx) {
+    auroraMapDpr = Math.min(window.devicePixelRatio || 1, 3);
+    auroraMapCv.width = AURORA_MAP_CSS * auroraMapDpr;
+    auroraMapCv.height = AURORA_MAP_CSS * auroraMapDpr;
+  }
+  auroraMapOff = document.createElement('canvas');
+  auroraMapOff.width = AURORA_MAP_FIELD;
+  auroraMapOff.height = AURORA_MAP_FIELD;
+  auroraMapOffCtx = auroraMapOff.getContext ? auroraMapOff.getContext('2d') : null;
+
+  auroraMapCv && auroraMapCv.addEventListener('click', e => {
+    const b = auroraMapCv.getBoundingClientRect();
+    const x = (e.clientX - b.left) / b.width * AURORA_MAP_CSS;
+    const y = (e.clientY - b.top) / b.height * AURORA_MAP_CSS;
+    const dx = x - AURORA_MAP_R, dy = y - AURORA_MAP_R;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    if (dist > AURORA_MAP_R) return;
+    const v = Math.round(auroraSampleMap(x, y));
+    document.getElementById('auroraReadout').innerHTML =
+      '所在地單點資料　低中雲 <b>' + v + '%</b>（方向差異將於階段 C 加入）';
+  });
+}
+
+function auroraLocationTag(l) {
+  if (l.nights.length === 0) return '參考點';
+  if (typeof TRIP_DATA === 'undefined' || !TRIP_DATA.days) return '';
+  const d = TRIP_DATA.days.find(d => d.id === l.nights[0]);
+  return d ? (d.month + d.date + '日') : '';
+}
+
+function auroraLocationSub(l) {
+  if (l.nights.length === 0) return '參考點・非住宿';
+  if (typeof TRIP_DATA === 'undefined' || !TRIP_DATA.days) return '住宿地';
+  const days = l.nights.map(id => TRIP_DATA.days.find(d => d.id === id)).filter(Boolean);
+  if (days.length === 0) return '住宿地';
+  const first = days[0], last = days[days.length - 1];
+  let label = first.month + first.date + '日';
+  if (days.length > 1) label += '–' + last.date + '日';
+  return label + ' · 住宿地';
+}
+
+// ---------- 天文計算（真實公式，非亂數；用於黑暗係數與月齡） ----------
+// 太陽仰角：低精度天文年曆公式（Astronomical Almanac low-precision formula），
+// 精度約 ±0.01°，足供判斷「天黑到什麼程度」使用。
+
+// Open-Meteo 的 timezone=auto 回傳「當地掛鐘時間」字串（無時區標記）。
+// 直接用 new Date() 解析會被瀏覽器當成「瀏覽器所在時區」的時間，離開冰島時區測試會整批算錯。
+// 用回應本身的 utc_offset_seconds 換算回正確的 UTC 時刻，才能與真正的「現在」正確比較。
+function auroraParseLocalTime(str, utcOffsetSeconds) {
+  const fakeUtcMs = Date.parse(str + 'Z'); // 把掛鐘數字當成 UTC 解析
+  return new Date(fakeUtcMs - utcOffsetSeconds * 1000);
+}
+
+function auroraJulianDay(date) {
+  return date.getTime() / 86400000 + 2440587.5;
+}
+
+function auroraSolarElevationDeg(date, lat, lon) {
+  const jd = auroraJulianDay(date);
+  const n = jd - 2451545.0;
+  const rad = Math.PI / 180;
+
+  let L = (280.460 + 0.9856474 * n) % 360; if (L < 0) L += 360;
+  let g = (357.528 + 0.9856003 * n) % 360; if (g < 0) g += 360;
+  const gRad = g * rad;
+  const lambda = L + 1.915 * Math.sin(gRad) + 0.020 * Math.sin(2 * gRad);
+  const lambdaRad = lambda * rad;
+  const epsilon = (23.439 - 0.0000004 * n) * rad;
+
+  const alpha = Math.atan2(Math.cos(epsilon) * Math.sin(lambdaRad), Math.cos(lambdaRad)) / rad;
+  const delta = Math.asin(Math.sin(epsilon) * Math.sin(lambdaRad));
+
+  let gmst = (280.46061837 + 360.98564736629 * n) % 360; if (gmst < 0) gmst += 360;
+  let lst = (gmst + lon) % 360; if (lst < 0) lst += 360;
+  let H = lst - alpha; if (H > 180) H -= 360; if (H < -180) H += 360;
+  const Hrad = H * rad;
+
+  const latRad = lat * rad;
+  const sinAlt = Math.sin(latRad) * Math.sin(delta) + Math.cos(latRad) * Math.cos(delta) * Math.cos(Hrad);
+  return Math.asin(Math.max(-1, Math.min(1, sinAlt))) / rad;
+}
+
+// 月齡（距離上一次朔的天數）：以已知朔望日為基準，模同步月週期，屬標準天文近似公式。
+function auroraMoonAgeDays(date) {
+  const synodic = 29.53058867;
+  const knownNewMoonJd = 2451550.1; // 2000-01-06 18:14 UTC
+  const jd = auroraJulianDay(date);
+  let age = (jd - knownNewMoonJd) % synodic;
+  if (age < 0) age += synodic;
+  return age;
+}
+
+function auroraDarkFactor(elevDeg) {
+  if (elevDeg > -6) return 0;
+  if (elevDeg > -12) return 0.3;
+  if (elevDeg > -18) return 0.8;
+  return 1.0;
+}
+
+function auroraClearFactor(low, mid, high) {
+  return (1 - low / 100) * (1 - mid / 100) * (1 - high * 0.4 / 100);
+}
+
+// 有效低中雲遮蔽（合併表示用，用於顯示數值與否決判斷）
+function auroraEffectiveLowMid(low, mid) {
+  return Math.round((1 - (1 - low / 100) * (1 - mid / 100)) * 100);
+}
+
+function auroraKpActivityFactor(kp) {
+  if (kp < 1) return 0.2;
+  if (kp < 2) return 0.5;
+  if (kp < 3) return 0.75;
+  if (kp < 4) return 0.9;
+  return 1.0;
+}
+
+function auroraNearestKp(time) {
+  if (auroraKpTimeline.length === 0) return null;
+  let best = auroraKpTimeline[0], bestDiff = Math.abs(time - best.time);
+  for (let i = 1; i < auroraKpTimeline.length; i++) {
+    const diff = Math.abs(time - auroraKpTimeline[i].time);
+    if (diff < bestDiff) { best = auroraKpTimeline[i]; bestDiff = diff; }
+  }
+  return best.kp;
+}
+
+// ---------- 資料取得 ----------
+
 async function fetchAuroraKpData() {
   try {
     const [obsRes, fcRes] = await Promise.all([
       fetch('https://services.swpc.noaa.gov/products/noaa-planetary-k-index.json'),
       fetch('https://services.swpc.noaa.gov/products/noaa-planetary-k-index-forecast.json')
     ]);
-
-    if (!obsRes.ok || !fcRes.ok) {
-      throw new Error('Kp API 回應非 200（實測 ' + obsRes.status + '，預報 ' + fcRes.status + '）');
-    }
+    if (!obsRes.ok || !fcRes.ok) throw new Error('Kp API 回應非 200');
 
     const obsData = await obsRes.json();
     const fcData = await fcRes.json();
 
-    // 實測值：欄位大寫 Kp
     const observedSeries = (obsData || [])
       .filter(row => row && row.time_tag && typeof row.Kp === 'number')
       .map(row => ({ time: new Date(row.time_tag + 'Z'), kp: row.Kp, observed: true }));
 
-    // 預報值：欄位小寫 kp；observed 欄位區分「已觀測」與「預測」
     const forecastSeries = (fcData || [])
       .filter(row => row && row.time_tag && typeof row.kp === 'number')
       .map(row => ({ time: new Date(row.time_tag + 'Z'), kp: row.kp, observed: row.observed === 'observed' }));
@@ -100,15 +423,13 @@ async function fetchAuroraKpData() {
       throw new Error('Kp API 回傳內容為空或格式不符預期');
     }
 
-    // 圖表用時間序列：取預報端點（涵蓋過去與未來），裁切到「過去12h ~ 未來36h」
     const now = Date.now();
     const windowStart = now - 12 * 60 * 60 * 1000;
-    const windowEnd = now + 36 * 60 * 60 * 1000;
+    const windowEnd = now + 48 * 60 * 60 * 1000;
     auroraKpTimeline = forecastSeries
       .filter(pt => pt.time.getTime() >= windowStart && pt.time.getTime() <= windowEnd)
       .sort((a, b) => a.time - b.time);
 
-    // 若預報端點在裁切窗內完全沒有資料（理論上不應發生），退而用實測序列
     if (auroraKpTimeline.length === 0) {
       auroraKpTimeline = observedSeries
         .filter(pt => pt.time.getTime() >= windowStart && pt.time.getTime() <= windowEnd)
@@ -125,535 +446,434 @@ async function fetchAuroraKpData() {
   }
 }
 
-// 取得指定地點的天氣（含分層雲量）與今日日落時間
 async function fetchAuroraWeather(loc) {
   try {
     const url = 'https://api.open-meteo.com/v1/forecast'
       + '?latitude=' + loc.lat + '&longitude=' + loc.lon
       + '&current=temperature_2m,wind_speed_10m,cloud_cover,cloud_cover_low,cloud_cover_mid,cloud_cover_high'
-      + '&daily=sunrise,sunset&timezone=auto&forecast_days=1';
+      + '&hourly=cloud_cover_low,cloud_cover_mid,cloud_cover_high,cloud_cover'
+      + '&daily=sunrise,sunset&timezone=auto&forecast_days=2';
     const res = await fetch(url);
     if (!res.ok) throw new Error('Open-Meteo 回應非 200（' + res.status + '）');
     const data = await res.json();
-
-    if (!data.current) throw new Error('Open-Meteo 回傳缺少 current 區塊');
-
-    auroraWeather = data.current;
-    auroraSunset = (data.daily && data.daily.sunset && data.daily.sunset[0])
-      ? data.daily.sunset[0].split('T')[1]
-      : null;
-    auroraWeatherFetchFailed = false;
+    if (!data.current || !data.hourly || !data.daily || typeof data.utc_offset_seconds !== 'number') {
+      throw new Error('Open-Meteo 回傳缺少必要區塊');
+    }
+    return { ok: true, data };
   } catch (e) {
     console.warn('[Aurora] 天氣資料取得失敗（' + loc.name + '），不使用任何模擬數值：', e);
-    auroraWeather = null;
-    auroraSunset = null;
-    auroraWeatherFetchFailed = true;
+    return { ok: false, data: null };
   }
 }
 
-// 計算極光機率（依 Kp 與總雲量的簡易換算，沿用既有公式）
-function calculateAuroraChance(kp, cloudCover) {
-  let chance = 0;
+// ---------- 綜合推算：今晚每小時的可見機率、星級、最佳時段 ----------
 
-  if (kp < 2) chance = 0;
-  else if (kp < 4) chance = 20 + kp * 10;
-  else if (kp < 6) chance = 50 + (kp - 4) * 15;
-  else chance = 80 + (kp - 6) * 5;
+function buildAuroraTonight(loc, weatherResult) {
+  if (!weatherResult.ok) return { ok: false };
 
-  chance *= (1 - cloudCover / 200); // 雲量影響
+  const data = weatherResult.data;
+  const offset = data.utc_offset_seconds;
+  const hourlyTime = data.hourly.time;
+  const hours = hourlyTime.map((t, i) => {
+    const time = auroraParseLocalTime(t, offset);
+    const elevDeg = auroraSolarElevationDeg(time, loc.lat, loc.lon);
+    const low = data.hourly.cloud_cover_low[i];
+    const mid = data.hourly.cloud_cover_mid[i];
+    const high = data.hourly.cloud_cover_high[i];
+    const total = data.hourly.cloud_cover[i];
+    const kp = auroraNearestKp(time);
+    const dark = auroraDarkFactor(elevDeg);
+    const clear = (typeof low === 'number' && typeof mid === 'number' && typeof high === 'number')
+      ? auroraClearFactor(low, mid, high) : null;
+    const activity = (kp !== null) ? auroraKpActivityFactor(kp) : null;
+    const prob = (clear !== null && activity !== null) ? activity * clear * dark : null;
+    const effLowMid = (typeof low === 'number' && typeof mid === 'number') ? auroraEffectiveLowMid(low, mid) : null;
+    return { time, elevDeg, low, mid, high, total, kp, dark, clear, activity, prob, effLowMid };
+  });
 
-  return Math.max(0, Math.min(100, Math.round(chance)));
-}
+  const sunset = data.daily.sunset[0] ? auroraParseLocalTime(data.daily.sunset[0], offset) : null;
+  const sunriseStr = data.daily.sunrise[1] || data.daily.sunrise[0];
+  const sunrise = sunriseStr ? auroraParseLocalTime(sunriseStr, offset) : null;
 
-// 渲染 UI
-function renderAuroraUI(loc) {
-  const content = document.getElementById('auroraContent');
-  if (!content) return;
-
-  const emoji = AURORA_LOCATION_EMOJI[loc.key] || '📍';
-
-  // 取得 22:00 時刻的 Kp 值（最佳觀測時間參考）；資料不可用時保持 null，絕不編造數值
-  let current22Kp = null;
-  if (auroraKpTimeline.length > 0) {
-    const target22 = auroraKpTimeline.find(v => v.time.getHours() === 22)
-      || auroraKpTimeline.find(v => v.time.getHours() >= 21)
-      || auroraKpTimeline.find(v => v.time.getHours() >= 20)
-      || auroraKpTimeline[Math.floor(auroraKpTimeline.length / 2)];
-    current22Kp = target22 ? target22.kp : null;
+  // 完全天黑時刻：日落後太陽仰角首次 <= -18 度（每 5 分鐘掃描一次，取精確時間）
+  let darkStart = null;
+  if (sunset) {
+    for (let m = 0; m <= 180; m += 5) {
+      const t = new Date(sunset.getTime() + m * 60000);
+      if (auroraSolarElevationDeg(t, loc.lat, loc.lon) <= -18) { darkStart = t; break; }
+    }
   }
 
-  const cloudCoverValue = auroraWeather ? auroraWeather.cloud_cover : null;
+  // 全黑時段內（elevDeg <= -18）找出可見機率最高點
+  const fullDarkHours = hours.filter(h => h.elevDeg <= -18 && h.prob !== null);
+  let peakProb = 0, peakHour = null;
+  fullDarkHours.forEach(h => { if (h.prob > peakProb) { peakProb = h.prob; peakHour = h; } });
 
-  const auroraChanceDisplay = (current22Kp === null || cloudCoverValue === null)
-    ? '暫時取不到資料'
-    : calculateAuroraChance(current22Kp, cloudCoverValue) + '%';
+  let bestSlot = null;
+  if (peakHour && peakProb * 100 >= 5) {
+    const idxInFull = fullDarkHours.indexOf(peakHour);
+    let s = idxInFull, e = idxInFull;
+    while (s > 0 && fullDarkHours[s - 1].prob >= peakProb * 0.9) s--;
+    while (e < fullDarkHours.length - 1 && fullDarkHours[e + 1].prob >= peakProb * 0.9) e++;
+    const startT = fullDarkHours[s].time, endT = new Date(fullDarkHours[e].time.getTime() + 60 * 60000);
+    bestSlot = {
+      label: auroraFmtHM(startT) + '–' + auroraFmtHM(endT),
+      probPct: Math.round(peakProb * 100)
+    };
+  }
 
-  const sunsetDisplay = auroraSunset || '暫時取不到資料';
+  // 否決規則：全黑時段內「低中雲」最差（最高）值 >= 70% → 最多 1 星
+  let worstEffHour = null, worstEff = -1;
+  fullDarkHours.forEach(h => { if (h.effLowMid !== null && h.effLowMid > worstEff) { worstEff = h.effLowMid; worstEffHour = h; } });
+  const vetoed = worstEff >= 70;
 
-  const updateTime = auroraLastUpdate
-    ? `${auroraLastUpdate.getHours().toString().padStart(2, '0')}:${auroraLastUpdate.getMinutes().toString().padStart(2, '0')}`
-    : '更新中';
+  let stars;
+  if (vetoed) stars = 1;
+  else if (peakProb * 100 >= 45) stars = 5;
+  else if (peakProb * 100 >= 30) stars = 4;
+  else if (peakProb * 100 >= 18) stars = 3;
+  else if (peakProb * 100 >= 8) stars = 2;
+  else stars = 1;
 
-  let html = `
-    <style>
-      #auroraContent {
-        font-family: 'Noto Sans SC', sans-serif;
-        background: linear-gradient(135deg, #1a2332 0%, #0f1419 100%);
-        border-radius: 12px;
-        color: #e0e0e0;
-        padding: 12px;
-      }
+  // 四個數值的參考時刻：否決時用最差雲況時刻，否則用最佳時段的峰值時刻
+  const refHour = vetoed ? worstEffHour : (peakHour || worstEffHour);
+  const moonAge = auroraMoonAgeDays(new Date());
 
-      .aurora-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 12px;
-        font-size: 14px;
-        color: #888;
-      }
+  const nums = refHour ? [
+    ['Kp', refHour.kp !== null ? refHour.kp.toFixed(1) : '—', auroraKpDesc(refHour.kp), ''],
+    ['低中雲', refHour.effLowMid !== null ? refHour.effLowMid + '%' : '—',
+      vetoed ? '主要原因' : auroraCloudDesc(refHour.effLowMid), vetoed ? 'no' : (refHour.effLowMid !== null && refHour.effLowMid < 30 ? 'ok' : '')],
+    ['高雲', typeof refHour.high === 'number' ? Math.round(refHour.high) + '%' : '—', '半透明', ''],
+    ['月齡', moonAge.toFixed(0) + ' 天', '參考用', '']
+  ] : [
+    ['Kp', '—', '暫時取不到資料', ''],
+    ['低中雲', '—', '暫時取不到資料', ''],
+    ['高雲', '—', '暫時取不到資料', ''],
+    ['月齡', moonAge.toFixed(0) + ' 天', '參考用', '']
+  ];
 
-      .aurora-title {
-        font-size: 18px;
-        font-weight: 700;
-        color: #4db8d4;
-      }
+  let say;
+  if (!refHour) say = '暫時取不到足夠資料進行判斷';
+  else if (vetoed) say = '雲層過厚，今晚多半看不到';
+  else if (stars >= 5) say = '非常值得等，' + (bestSlot ? bestSlot.label + ' 前後條件絕佳' : '今晚條件絕佳');
+  else if (stars >= 4) say = '值得等，' + (bestSlot ? bestSlot.label + ' 前後條件不錯' : '今晚條件不錯');
+  else if (stars >= 3) say = '尚可，' + (bestSlot ? bestSlot.label + ' 前後有機會' : '今晚有機會');
+  else if (stars >= 2) say = '機會不高，但' + (bestSlot ? bestSlot.label + ' 仍有機會' : '仍有機會');
+  else say = '極光活動偏弱或雲況不佳，今晚機會不大';
 
-      .location-card {
-        background: linear-gradient(135deg, rgba(77, 184, 212, 0.15) 0%, rgba(77, 184, 212, 0.05) 100%);
-        border: 1px solid rgba(77, 184, 212, 0.2);
-        border-radius: 12px;
-        padding: 12px;
-        margin-bottom: 12px;
-        position: relative;
-        overflow: hidden;
-      }
+  // 單點雲況地圖用值：取「現在」時刻最接近的一筆 low/mid 有效值
+  const nowIdx = hours.reduce((best, h, i) => {
+    const diff = Math.abs(h.time - new Date());
+    return (best === -1 || diff < Math.abs(hours[best].time - new Date())) ? i : best;
+  }, -1);
+  const mapCenterValue = (nowIdx !== -1 && hours[nowIdx].effLowMid !== null) ? hours[nowIdx].effLowMid : null;
 
-      .location-name {
-        font-size: 18px;
-        font-weight: 700;
-        color: #4db8d4;
-        margin-bottom: 8px;
-      }
-
-      .location-emoji {
-        font-size: 32px;
-        position: absolute;
-        top: 12px;
-        right: 12px;
-        opacity: 0.3;
-      }
-
-      .metric-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 8px;
-        margin-bottom: 12px;
-      }
-
-      .metric-box {
-        background: rgba(77, 184, 212, 0.08);
-        padding: 8px;
-        border-radius: 8px;
-        text-align: center;
-      }
-
-      .metric-value {
-        font-size: 20px;
-        font-weight: 700;
-        color: #4db8d4;
-        line-height: 1.2;
-      }
-
-      .metric-value.is-unavailable {
-        font-size: 13px;
-        color: #888;
-      }
-
-      .metric-label {
-        font-size: 11px;
-        color: #888;
-        margin-top: 3px;
-      }
-
-      .kp-chart {
-        background: rgba(15, 20, 25, 0.5);
-        border-radius: 8px;
-        padding: 6px;
-        margin-bottom: 10px;
-      }
-
-      #auroraKpCanvas {
-        width: 100%;
-        height: 120px;
-        display: block;
-      }
-
-      .gauge-single {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        margin-bottom: 12px;
-      }
-
-      #auroraGaugeKp {
-        width: 90px;
-        height: 90px;
-        display: block;
-      }
-
-      .gauge-label {
-        font-size: 12px;
-        color: #888;
-        margin-top: 2px;
-        font-weight: 600;
-      }
-
-      .weather-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 8px;
-        margin-bottom: 12px;
-      }
-
-      .weather-item {
-        background: rgba(77, 184, 212, 0.08);
-        padding: 10px;
-        border-radius: 8px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-      }
-
-      .weather-emoji {
-        font-size: 18px;
-        margin-bottom: 4px;
-      }
-
-      .weather-label {
-        font-size: 11px;
-        color: #888;
-        line-height: 1.2;
-        margin-bottom: 2px;
-      }
-
-      .weather-value {
-        font-size: 14px;
-        font-weight: 600;
-        color: #4db8d4;
-      }
-
-      .weather-value.is-unavailable {
-        font-size: 11px;
-      }
-
-      .location-nav {
-        display: flex;
-        gap: 6px;
-        margin-top: 0;
-        overflow-x: auto;
-        padding-bottom: 4px;
-        padding-right: 8px;
-      }
-
-      .location-nav-wrapper {
-        background: linear-gradient(135deg, #1a2332 0%, #0f1419 100%);
-        padding: 12px;
-        margin: -12px -12px 12px -12px;
-        border-bottom: 1px solid rgba(77, 184, 212, 0.2);
-        position: sticky;
-        top: 0;
-        z-index: 10;
-      }
-
-      .location-btn {
-        flex: 0 0 auto;
-        padding: 8px 12px;
-        background: rgba(77, 184, 212, 0.1);
-        border: 1px solid rgba(77, 184, 212, 0.2);
-        color: #4db8d4;
-        border-radius: 6px;
-        font-size: 12px;
-        cursor: pointer;
-        white-space: nowrap;
-      }
-
-      .location-btn:hover {
-        background: rgba(77, 184, 212, 0.2);
-      }
-
-      .update-time {
-        font-size: 11px;
-        color: #666;
-        text-align: center;
-        margin-top: 8px;
-      }
-    </style>
-
-    <div class="aurora-header">
-      <div class="aurora-title">☄️ 極光即時預報</div>
-      <div>更新: ${updateTime}</div>
-    </div>
-
-    <div class="location-nav-wrapper">
-      <div style="font-size: 11px; color: #666; margin-bottom: 6px;">📍 切換地點</div>
-      <div class="location-nav">
-  `;
-
-  AURORA_CONFIG.locations.forEach((l, idx) => {
-    const isActive = idx === auroraCurrentLocation;
-    const lEmoji = AURORA_LOCATION_EMOJI[l.key] || '📍';
-    html += `<button class="location-btn" onclick="switchAuroraLocation(${idx})" style="${isActive ? 'background: rgba(77, 184, 212, 0.3); border-color: rgba(77, 184, 212, 0.6);' : ''}">${lEmoji} ${l.name}</button>`;
-  });
-
-  html += `
-      </div>
-    </div>
-
-    <div class="location-card">
-      <div class="location-emoji">${emoji}</div>
-      <div class="location-name">${loc.name}</div>
-
-      <div class="metric-row">
-        <div class="metric-box">
-          <div class="metric-value ${current22Kp === null || cloudCoverValue === null ? 'is-unavailable' : ''}">${auroraChanceDisplay}</div>
-          <div class="metric-label">極光機率<br/><span style="font-size: 10px; color: #888;">@22:00</span></div>
-        </div>
-        <div class="metric-box">
-          <div class="metric-value ${!auroraSunset ? 'is-unavailable' : ''}">${sunsetDisplay}</div>
-          <div class="metric-label">日落時間</div>
-        </div>
-      </div>
-
-      <div style="border-top: 1px solid rgba(77, 184, 212, 0.2); padding-top: 12px; margin-top: 12px;">
-        <div class="kp-chart">
-          <canvas id="auroraKpCanvas" width="380" height="120"></canvas>
-        </div>
-
-        <div style="font-size: 12px; color: #888; text-align: center; margin-bottom: 12px;">過去12h | 未來36h <span style="color: #ff4444;">⬜ 紅框：22:00</span></div>
-
-        <div style="font-size: 11px; color: #666; text-align: center; margin-bottom: 8px; font-style: italic;">下方數據基於 22:00 時刻預測</div>
-
-        <div class="gauge-single">
-          <canvas id="auroraGaugeKp" width="90" height="90"></canvas>
-          <div class="gauge-label">Kp 指數</div>
-        </div>
-      </div>
-    </div>
-
-    <div>
-      <div style="font-size: 12px; color: #888; margin-bottom: 8px; font-weight: 600;">🌤️ 當地天氣</div>
-      <div class="weather-grid">
-        <div style="display: flex; flex-direction: column; gap: 8px;">
-          <div class="weather-item">
-            <div class="weather-emoji">🌡️</div>
-            <div class="weather-label">氣溫</div>
-            <div class="weather-value ${!auroraWeather ? 'is-unavailable' : ''}">${auroraWeather ? auroraWeather.temperature_2m.toFixed(0) + '°C' : '暫時取不到資料'}</div>
-          </div>
-          <div class="weather-item">
-            <div class="weather-emoji">💨</div>
-            <div class="weather-label">風速</div>
-            <div class="weather-value ${!auroraWeather ? 'is-unavailable' : ''}">${auroraWeather ? auroraWeather.wind_speed_10m.toFixed(1) + ' m/s' : '暫時取不到資料'}</div>
-          </div>
-          <div class="weather-item">
-            <div class="weather-emoji">☁️</div>
-            <div class="weather-label">總雲</div>
-            <div class="weather-value ${!auroraWeather ? 'is-unavailable' : ''}">${auroraWeather ? auroraWeather.cloud_cover + '%' : '暫時取不到資料'}</div>
-          </div>
-        </div>
-        <div style="display: flex; flex-direction: column; gap: 8px;">
-          <div class="weather-item">
-            <div class="weather-emoji">⬆️</div>
-            <div class="weather-label">高雲</div>
-            <div class="weather-value ${!auroraWeather ? 'is-unavailable' : ''}">${auroraWeather ? auroraWeather.cloud_cover_high + '%' : '暫時取不到資料'}</div>
-          </div>
-          <div class="weather-item">
-            <div class="weather-emoji">➡️</div>
-            <div class="weather-label">中雲</div>
-            <div class="weather-value ${!auroraWeather ? 'is-unavailable' : ''}">${auroraWeather ? auroraWeather.cloud_cover_mid + '%' : '暫時取不到資料'}</div>
-          </div>
-          <div class="weather-item">
-            <div class="weather-emoji">⬇️</div>
-            <div class="weather-label">低雲</div>
-            <div class="weather-value ${!auroraWeather ? 'is-unavailable' : ''}">${auroraWeather ? auroraWeather.cloud_cover_low + '%' : '暫時取不到資料'}</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="update-time">⚡ 每小時自動更新一次</div>
-  `;
-
-  content.innerHTML = html;
-
-  // 繪製圖表（DOM 已同步掛載完成，用 requestAnimationFrame 取代原本的 setTimeout(…,150) hack）
-  requestAnimationFrame(() => {
-    const kpCanvas = document.getElementById('auroraKpCanvas');
-    const gaugeKp = document.getElementById('auroraGaugeKp');
-
-    if (kpCanvas && kpCanvas.width > 0) drawKpChart(kpCanvas, auroraKpTimeline);
-    if (gaugeKp && gaugeKp.width > 0 && current22Kp !== null) drawGauge(gaugeKp, current22Kp, 0, 9);
-  });
+  return {
+    ok: true,
+    hours,
+    sunset, sunrise, darkStart,
+    bestSlot, stars, say, nums, mapCenterValue,
+    currentTemp: data.current.temperature_2m,
+    currentWind: data.current.wind_speed_10m
+  };
 }
 
-// 切換地點
-function switchAuroraLocation(idx) {
-  auroraCurrentLocation = idx;
-  renderAuroraDashboard();
+// 一律以冰島當地時區顯示時刻，避免使用者裝置不在冰島時區時（例如出發前用台灣手機測試）
+// getHours()/getMinutes() 顯示成瀏覽器所在時區的時間。
+const AURORA_TZ_FORMATTER = (typeof Intl !== 'undefined')
+  ? new Intl.DateTimeFormat('zh-TW', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'Atlantic/Reykjavik' })
+  : null;
+
+function auroraFmtHM(date) {
+  if (AURORA_TZ_FORMATTER) {
+    return AURORA_TZ_FORMATTER.format(date).replace(/^24:/, '00:');
+  }
+  return String(date.getHours()).padStart(2, '0') + ':' + String(date.getMinutes()).padStart(2, '0');
 }
 
-// 繪製 Kp 圖表
-function drawKpChart(canvas, kpValues) {
-  const ctx = canvas.getContext('2d');
-  const width = canvas.width;
-  const height = canvas.height;
+function auroraKpDesc(kp) {
+  if (kp === null) return '—';
+  if (kp < 2) return '偏低';
+  if (kp < 3) return '中等';
+  if (kp < 4) return '偏高';
+  return '很高';
+}
 
-  const gradient = ctx.createLinearGradient(0, 0, 0, height);
-  gradient.addColorStop(0, 'rgba(15, 20, 25, 0.8)');
-  gradient.addColorStop(1, 'rgba(10, 15, 21, 0.8)');
-  ctx.fillStyle = gradient;
-  ctx.fillRect(0, 0, width, height);
+function auroraCloudDesc(v) {
+  if (v === null) return '—';
+  if (v < 15) return '大致晴空';
+  if (v < 40) return '部分多雲';
+  if (v < 70) return '多雲';
+  return '陰天';
+}
 
-  if (!kpValues || kpValues.length === 0) {
-    ctx.fillStyle = '#666';
-    ctx.font = '12px Noto Sans SC';
-    ctx.textAlign = 'center';
-    ctx.fillText('暫時取不到資料', width / 2, height / 2);
+// ---------- 主渲染流程 ----------
+
+async function renderAuroraDashboard() {
+  const kpStale = !auroraKpFetchedAt || (Date.now() - auroraKpFetchedAt) > 5 * 60 * 1000;
+  if (kpStale) await fetchAuroraKpData();
+
+  const loc = AURORA_CONFIG.locations[auroraCurrentLocation];
+  const weatherResult = await fetchAuroraWeather(loc);
+  const tonight = buildAuroraTonight(loc, weatherResult);
+  auroraLocData[loc.key] = tonight;
+
+  auroraLastUpdate = new Date();
+  renderAuroraDashboardUiOnly();
+}
+
+// 只重繪畫面（不重新打 API），用於切主題、初次掛載已抓好資料後的重繪
+function renderAuroraDashboardUiOnly() {
+  const loc = AURORA_CONFIG.locations[auroraCurrentLocation];
+  const tonight = auroraLocData[loc.key];
+  if (!tonight) return;
+
+  [].forEach.call(document.getElementById('auroraTabs').children, (b, i) => {
+    b.classList.toggle('on', i === auroraCurrentLocation);
+  });
+
+  document.getElementById('auroraPName').textContent = loc.name;
+  document.getElementById('auroraPSub').textContent = auroraLocationSub(loc);
+  document.getElementById('auroraPToday').style.display =
+    (auroraCurrentLocation === resolveDefaultAuroraLocation() && isAuroraTripActive()) ? 'inline-block' : 'none';
+
+  document.getElementById('auroraUpdTime').textContent = auroraLastUpdate
+    ? auroraFmtHM(auroraLastUpdate) + ' 更新' : '更新中';
+
+  if (!tonight.ok) {
+    document.getElementById('auroraTSunset').textContent = '暫時取不到資料';
+    document.getElementById('auroraTSunrise').textContent = '暫時取不到資料';
+    document.getElementById('auroraTDark').textContent = '暫時取不到資料';
+    document.getElementById('auroraStars').textContent = '☆☆☆☆☆';
+    document.getElementById('auroraSay').textContent = '暫時取不到資料';
+    document.getElementById('auroraNums').innerHTML = '';
+    document.getElementById('auroraBest').textContent = '—';
+    document.getElementById('auroraBestP').textContent = '暫時取不到資料';
+    document.getElementById('auroraStrip').innerHTML = '';
     return;
   }
 
-  ctx.strokeStyle = 'rgba(77, 184, 212, 0.1)';
-  ctx.lineWidth = 1;
-  for (let i = 0; i <= 5; i++) {
-    const y = (height / 5) * i;
-    ctx.beginPath();
-    ctx.moveTo(0, y);
-    ctx.lineTo(width, y);
-    ctx.stroke();
+  document.getElementById('auroraTSunset').textContent = tonight.sunset ? auroraFmtHM(tonight.sunset) : '暫時取不到資料';
+  document.getElementById('auroraTSunrise').textContent = tonight.sunrise ? auroraFmtHM(tonight.sunrise) : '暫時取不到資料';
+  document.getElementById('auroraTDark').textContent = tonight.darkStart ? auroraFmtHM(tonight.darkStart) : '暫時取不到資料';
+
+  document.getElementById('auroraStars').textContent = '★★★★★☆☆☆☆☆'.slice(5 - tonight.stars, 10 - tonight.stars);
+  document.getElementById('auroraSay').textContent = tonight.say;
+  document.getElementById('auroraNums').innerHTML = tonight.nums.map(n =>
+    '<div class="n"><span class="nk">' + n[0] + '</span>'
+    + '<span class="nv mono ' + n[3] + '">' + n[1] + '</span>'
+    + '<span class="nn">' + n[2] + '</span></div>'
+  ).join('');
+
+  document.getElementById('auroraBest').textContent = tonight.bestSlot ? tonight.bestSlot.label : '—';
+  document.getElementById('auroraBestP').textContent = tonight.bestSlot ? tonight.bestSlot.probPct + '%' : '暫時無足夠可見機率';
+
+  document.getElementById('auroraMapLab').textContent = '目前雲況（以' + loc.name + '為中心，半徑 30 公里）';
+
+  drawAuroraStrip(tonight);
+  drawAuroraMap(tonight);
+  paintAuroraScale();
+}
+
+function switchAuroraLocation(idx) {
+  auroraCurrentLocation = idx;
+  const loc = AURORA_CONFIG.locations[idx];
+  if (auroraLocData[loc.key]) {
+    renderAuroraDashboardUiOnly();
+  } else {
+    renderAuroraDashboard();
+  }
+}
+
+// ---------- 「今晚這一條」SVG（§3.4） ----------
+
+function drawAuroraStrip(tonight) {
+  const strip = document.getElementById('auroraStrip');
+  const axis = document.getElementById('auroraStripAxis');
+  if (!strip) return;
+
+  const hours = tonight.hours;
+  if (!hours || hours.length === 0) { strip.innerHTML = ''; if (axis) axis.innerHTML = ''; return; }
+
+  const W = 360, PAD = 26, PW = W - PAD;
+  const N = hours.length;
+  const x = i => i / (N - 1) * PW;
+  const KMIN = 1, KMAX = 6;
+  const ky = v => {
+    const c = Math.max(KMIN, Math.min(KMAX, v === null ? KMIN : v));
+    return 118 - (c - KMIN) / (KMAX - KMIN) * 98;
+  };
+  const veilCol = auroraTheme === 'light' ? '#FFFFFF' : '#EEF1F5';
+  const axisCol = auroraTheme === 'light' ? 'rgba(255,255,255,.45)' : 'rgba(255,255,255,.38)';
+
+  let g = '<defs><linearGradient id="auroraSky" x1="0" y1="0" x2="1" y2="0">'
+    + '<stop offset="0" stop-color="#2A4A6B"/><stop offset=".08" stop-color="#1B3A5C"/>'
+    + '<stop offset=".17" stop-color="#0E1C2E"/><stop offset=".27" stop-color="#070C14"/>'
+    + '<stop offset=".73" stop-color="#070C14"/><stop offset=".84" stop-color="#0E1C2E"/>'
+    + '<stop offset=".93" stop-color="#1B3A5C"/><stop offset="1" stop-color="#2A4A6B"/>'
+    + '</linearGradient>'
+    + '<linearGradient id="auroraRidge" x1="0" y1="0" x2="0" y2="1">'
+    + '<stop offset="0" stop-color="#5FE3A1" stop-opacity=".9"/>'
+    + '<stop offset=".55" stop-color="#5FE3A1" stop-opacity=".3"/>'
+    + '<stop offset="1" stop-color="#5FE3A1" stop-opacity="0"/>'
+    + '</linearGradient></defs>';
+
+  let s = '<rect width="' + PW + '" height="132" fill="url(#auroraSky)"/>';
+
+  for (let kv = KMIN + 1; kv <= KMAX; kv++) {
+    const yy = ky(kv);
+    s += '<line x1="0" y1="' + yy.toFixed(1) + '" x2="' + PW + '" y2="' + yy.toFixed(1)
+      + '" stroke="rgba(255,255,255,.09)"/>';
+    s += '<text x="' + (PW + 6) + '" y="' + (yy + 4).toFixed(1) + '" fill="' + axisCol
+      + '" font-size="11" font-family="IBM Plex Mono,monospace">'
+      + (kv === KMAX ? '6+' : kv) + '</text>';
+  }
+  s += '<text x="' + (PW + 6) + '" y="12" fill="' + axisCol
+    + '" font-size="9.5" font-family="Noto Sans SC,sans-serif">Kp</text>';
+
+  let d = 'M' + x(0) + ',' + ky(hours[0].kp).toFixed(1);
+  for (let i = 1; i < N; i++) d += ' L' + x(i).toFixed(1) + ',' + ky(hours[i].kp).toFixed(1);
+  s += '<path d="' + d + ' L' + PW + ',132 L0,132 Z" fill="url(#auroraRidge)"/>';
+  s += '<path d="' + d + '" fill="none" stroke="#5FE3A1" stroke-width="2" stroke-linejoin="round"/>';
+
+  for (let j = 0; j < N - 1; j++) {
+    const c1 = hours[j].total, c2 = hours[j + 1].total;
+    const c = (typeof c1 === 'number' && typeof c2 === 'number') ? (c1 + c2) / 2 / 100 : 0;
+    const op = c * c * (3 - 2 * c) * 0.82;
+    s += '<rect x="' + x(j).toFixed(1) + '" y="0" width="' + (PW / (N - 1) + 0.6).toFixed(1)
+      + '" height="132" fill="' + veilCol + '" opacity="' + op.toFixed(3) + '"/>';
   }
 
-  const barWidth = Math.max(2, width / kpValues.length - 2);
-  const padding = 8;
-  const chartHeight = height - padding * 2;
+  strip.innerHTML = g + s;
 
-  // 找出資料中最接近今晚／明晚 22:00 的位置，畫紅框標示觀測窗口
-  ctx.strokeStyle = '#ff4444';
-  ctx.lineWidth = 2;
-  ctx.setLineDash([4, 4]);
-
-  kpValues.forEach((item, idx) => {
-    if (item.time.getHours() === 22) {
-      const x = padding + (width - padding * 2) * idx / (kpValues.length - 1);
-      ctx.beginPath();
-      ctx.rect(x - 6, padding - 2, 12, chartHeight + 4);
-      ctx.stroke();
-    }
-  });
-
-  ctx.setLineDash([]);
-
-  // 繪製柱狀圖
-  kpValues.forEach((item, idx) => {
-    const x = padding + (width - padding * 2) * idx / (kpValues.length - 1);
-    const kpHeight = (item.kp / 9) * chartHeight;
-
-    if (item.kp < 4) ctx.fillStyle = '#3dbd67';
-    else if (item.kp < 6) ctx.fillStyle = '#ffc107';
-    else if (item.kp < 8) ctx.fillStyle = '#ff9800';
-    else ctx.fillStyle = '#f44336';
-
-    ctx.fillRect(x - barWidth / 2, height - padding - kpHeight, barWidth, kpHeight);
-  });
-
-  // 繪製時間標籤
-  ctx.fillStyle = '#666';
-  ctx.font = '9px Noto Sans SC';
-  ctx.textAlign = 'center';
-  kpValues.forEach((item, idx) => {
-    if (idx % 3 === 0) {
-      const x = padding + (width - padding * 2) * idx / (kpValues.length - 1);
-      const hours = item.time.getHours();
-      ctx.fillText(hours + 'h', x, height - 2);
-    }
-  });
+  if (axis) {
+    const labelIdx = [0, Math.floor((N - 1) / 4), Math.floor((N - 1) / 2), Math.floor((N - 1) * 3 / 4), N - 1];
+    axis.innerHTML = labelIdx.map(i => '<span>' + auroraFmtHM(hours[i].time) + '</span>').join('');
+  }
 }
 
-// 繪製 Kp 儀表盤
-function drawGauge(canvas, value, min, max) {
-  const ctx = canvas.getContext('2d');
-  const size = Math.min(canvas.width, canvas.height);
-  const centerX = size / 2;
-  const centerY = size / 2;
-  const radius = size / 2 - 6;
+// ---------- 雲況地圖（§3.5，本階段為單點資料，方向皆與中心同值） ----------
 
-  const bgGradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, radius);
-  bgGradient.addColorStop(0, 'rgba(30, 40, 55, 0.6)');
-  bgGradient.addColorStop(1, 'rgba(20, 28, 42, 0.6)');
-  ctx.fillStyle = bgGradient;
-  ctx.beginPath();
-  ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
-  ctx.fill();
-
-  ctx.strokeStyle = 'rgba(77, 184, 212, 0.2)';
-  ctx.lineWidth = 1;
-  ctx.stroke();
-
-  const startAngle = Math.PI;
-  const endAngle = 2 * Math.PI;
-  const arcRadius = radius - 10;
-
-  ctx.strokeStyle = '#3dbd67';
-  ctx.lineWidth = 14;
-  ctx.lineCap = 'butt';
-  ctx.beginPath();
-  ctx.arc(centerX, centerY, arcRadius, startAngle, startAngle + (endAngle - startAngle) * 0.5);
-  ctx.stroke();
-
-  ctx.strokeStyle = '#ffc107';
-  ctx.beginPath();
-  ctx.arc(centerX, centerY, arcRadius, startAngle + (endAngle - startAngle) * 0.5, startAngle + (endAngle - startAngle) * 0.75);
-  ctx.stroke();
-
-  ctx.strokeStyle = '#f44336';
-  ctx.beginPath();
-  ctx.arc(centerX, centerY, arcRadius, startAngle + (endAngle - startAngle) * 0.75, endAngle);
-  ctx.stroke();
-
-  const normalizedValue = Math.max(min, Math.min(max, value));
-  const ratio = (normalizedValue - min) / (max - min);
-  const angle = startAngle + ratio * (endAngle - startAngle);
-
-  ctx.strokeStyle = '#4db8d4';
-  ctx.lineWidth = 3;
-  ctx.lineCap = 'round';
-  ctx.beginPath();
-  ctx.moveTo(centerX, centerY);
-  ctx.lineTo(centerX + Math.cos(angle) * (arcRadius - 1), centerY + Math.sin(angle) * (arcRadius - 1));
-  ctx.stroke();
-
-  const dotGradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, 4);
-  dotGradient.addColorStop(0, '#4db8d4');
-  dotGradient.addColorStop(1, '#2a7a94');
-  ctx.fillStyle = dotGradient;
-  ctx.beginPath();
-  ctx.arc(centerX, centerY, 4, 0, 2 * Math.PI);
-  ctx.fill();
-
-  ctx.strokeStyle = 'rgba(77, 184, 212, 0.3)';
-  ctx.lineWidth = 1.5;
-  ctx.beginPath();
-  ctx.arc(centerX, centerY, 3.5, 0, 2 * Math.PI);
-  ctx.stroke();
-
-  // 繪製數值
-  ctx.fillStyle = '#4db8d4';
-  ctx.font = 'bold 16px Noto Sans SC';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText(value.toFixed(1), centerX, centerY + 35);
+function auroraSampleMap(x, y) {
+  let n = 0, dn = 0;
+  for (let i = 0; i < auroraMapPts.length; i++) {
+    const dx = x - auroraMapPts[i].x, dy = y - auroraMapPts[i].y, d2 = dx * dx + dy * dy;
+    if (d2 < 1) return auroraMapPts[i].v;
+    const w = 1 / (d2 * d2);
+    n += auroraMapPts[i].v * w; dn += w;
+  }
+  return dn === 0 ? 0 : n / dn;
 }
 
-// 在 init.js 中調用此函數
-// initAuroraPage();
+const AURORA_RAMP = { dark: [[13, 26, 26], [238, 241, 245]], light: [[26, 74, 86], [255, 255, 255]] };
+
+function auroraShade(v) {
+  const r = AURORA_RAMP[auroraTheme];
+  const t = Math.max(0, Math.min(1, v / 100));
+  const e = t * t * (3 - 2 * t);
+  return [
+    Math.round(r[0][0] + (r[1][0] - r[0][0]) * e),
+    Math.round(r[0][1] + (r[1][1] - r[0][1]) * e),
+    Math.round(r[0][2] + (r[1][2] - r[0][2]) * e)
+  ];
+}
+
+function auroraRampCss(v) {
+  const c = auroraShade(v);
+  return 'rgb(' + c[0] + ',' + c[1] + ',' + c[2] + ')';
+}
+
+function drawAuroraMap(tonight) {
+  if (!auroraMapCtx || !auroraMapOffCtx) return;
+
+  const center = tonight.mapCenterValue;
+  if (center === null) {
+    auroraMapCtx.setTransform(1, 0, 0, 1, 0, 0);
+    auroraMapCtx.clearRect(0, 0, auroraMapCv.width, auroraMapCv.height);
+    auroraMapCtx.setTransform(auroraMapDpr, 0, 0, auroraMapDpr, 0, 0);
+    auroraMapCtx.fillStyle = auroraTheme === 'light' ? '#4B6673' : '#8397A0';
+    auroraMapCtx.font = '13px "Noto Sans SC",sans-serif';
+    auroraMapCtx.textAlign = 'center';
+    auroraMapCtx.fillText('暫時取不到資料', AURORA_MAP_R, AURORA_MAP_R);
+    return;
+  }
+
+  // 本階段尚無方向取樣，八方位 × 三距離全部沿用中心值（不編造方向差異）
+  auroraMapPts = [{ x: AURORA_MAP_R, y: AURORA_MAP_R, v: center }];
+  AURORA_DIRS.forEach((d, i) => {
+    const a = (i * 45 - 90) * Math.PI / 180;
+    AURORA_KM.forEach(km => {
+      const r = AURORA_MAP_R * (km / 30) * 0.94;
+      auroraMapPts.push({ x: AURORA_MAP_R + r * Math.cos(a), y: AURORA_MAP_R + r * Math.sin(a), v: center });
+    });
+  });
+
+  // 每次重繪都完整清空，避免舊筆跡殘留（DPR 縮放陷阱：putImageData 需在離屏畫布操作，見 §3.5）
+  auroraMapCtx.setTransform(1, 0, 0, 1, 0, 0);
+  auroraMapCtx.clearRect(0, 0, auroraMapCv.width, auroraMapCv.height);
+  auroraMapCtx.setTransform(auroraMapDpr, 0, 0, auroraMapDpr, 0, 0);
+
+  const k = AURORA_MAP_CSS / AURORA_MAP_FIELD, FR = AURORA_MAP_FIELD / 2;
+  const img = auroraMapOffCtx.createImageData(AURORA_MAP_FIELD, AURORA_MAP_FIELD);
+  const D = img.data;
+  for (let y = 0; y < AURORA_MAP_FIELD; y++) {
+    for (let x = 0; x < AURORA_MAP_FIELD; x++) {
+      const i = (y * AURORA_MAP_FIELD + x) * 4;
+      const dx = x - FR, dy = y - FR, dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist > FR) { D[i + 3] = 0; continue; }
+      const c = auroraShade(auroraSampleMap(x * k, y * k));
+      D[i] = c[0]; D[i + 1] = c[1]; D[i + 2] = c[2];
+      D[i + 3] = dist > FR - 1.5 ? Math.round(255 * (FR - dist) / 1.5) : 255;
+    }
+  }
+  auroraMapOffCtx.putImageData(img, 0, 0);
+  auroraMapCtx.imageSmoothingEnabled = true;
+  auroraMapCtx.drawImage(auroraMapOff, 0, 0, AURORA_MAP_CSS, AURORA_MAP_CSS);
+
+  auroraMapCtx.strokeStyle = auroraTheme === 'light' ? 'rgba(0,0,0,.16)' : 'rgba(255,255,255,.16)';
+  auroraMapCtx.lineWidth = 0.8;
+  AURORA_KM.forEach(km => {
+    auroraMapCtx.beginPath();
+    auroraMapCtx.arc(AURORA_MAP_R, AURORA_MAP_R, AURORA_MAP_R * (km / 30) * 0.94, 0, Math.PI * 2);
+    auroraMapCtx.stroke();
+  });
+  auroraMapCtx.strokeStyle = auroraTheme === 'light' ? 'rgba(0,0,0,.10)' : 'rgba(255,255,255,.09)';
+  for (let kk = 0; kk < 4; kk++) {
+    const a = kk * 45 * Math.PI / 180, rr = AURORA_MAP_R * 0.94;
+    auroraMapCtx.beginPath();
+    auroraMapCtx.moveTo(AURORA_MAP_R - rr * Math.cos(a), AURORA_MAP_R - rr * Math.sin(a));
+    auroraMapCtx.lineTo(AURORA_MAP_R + rr * Math.cos(a), AURORA_MAP_R + rr * Math.sin(a));
+    auroraMapCtx.stroke();
+  }
+
+  const G = auroraTheme === 'light' ? '#0E7A50' : '#5FE3A1';
+  const HALO = auroraTheme === 'light' ? 'rgba(255,255,255,.9)' : 'rgba(8,13,20,.85)';
+
+  // 你在這裡（本階段中心與所有取樣點同值，故無「最清朗點」標示，僅標「住宿」）
+  auroraMapCtx.beginPath(); auroraMapCtx.arc(AURORA_MAP_R, AURORA_MAP_R, 15, 0, Math.PI * 2);
+  auroraMapCtx.fillStyle = HALO; auroraMapCtx.fill();
+  auroraMapCtx.beginPath(); auroraMapCtx.arc(AURORA_MAP_R, AURORA_MAP_R, 15, 0, Math.PI * 2);
+  auroraMapCtx.strokeStyle = G; auroraMapCtx.lineWidth = 1.6; auroraMapCtx.stroke();
+  auroraMapCtx.beginPath(); auroraMapCtx.arc(AURORA_MAP_R, AURORA_MAP_R, 6.5, 0, Math.PI * 2);
+  auroraMapCtx.fillStyle = G; auroraMapCtx.fill();
+  auroraMapLabel('住宿', AURORA_MAP_R, AURORA_MAP_R + 30, G, HALO);
+}
+
+function auroraMapLabel(txt, x, y, color, halo) {
+  const ctx = auroraMapCtx;
+  ctx.font = '500 13px "Noto Sans SC",sans-serif';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  const w = ctx.measureText(txt).width + 12;
+  ctx.fillStyle = halo;
+  ctx.beginPath();
+  if (ctx.roundRect) ctx.roundRect(x - w / 2, y - 10, w, 20, 10); else ctx.rect(x - w / 2, y - 10, w, 20);
+  ctx.fill();
+  ctx.fillStyle = color; ctx.fillText(txt, x, y);
+}
+
+function paintAuroraScale() {
+  [0, 25, 50, 75, 100].forEach((v, i) => {
+    const el = document.getElementById('auroraSc' + i);
+    if (el) el.style.background = auroraRampCss(v);
+  });
+}
