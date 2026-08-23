@@ -1,8 +1,20 @@
 const CACHE_PREFIX = 'trip-' + self.registration.scope.replace(/[^a-z0-9]+/gi, '-').toLowerCase();
-// 改動 js/ 或 css/ 之後，務必把下面兩個版本字串往上調，否則舊快取不會被清掉。
-// 只改 data/ 的內容不需要動這裡（data/*.js 走 network-first，線上一定拿得到最新版）。
-const SHELL_CACHE = CACHE_PREFIX + 'shell-2026-08-19-stage-b-budget-v1';
-const DAY_CACHE = CACHE_PREFIX + 'current-days-2026-08-19-stage-b-budget-v1';
+// ★ 快取版本字串 ★
+//
+// 這兩個字串只是快取的「名字」，內容叫什麼完全不重要，
+// 有意義的只有「跟上一版不一樣」這件事：
+//   名字沒變 → 瀏覽器繼續用舊快取 → 使用者看到的還是舊版程式
+//   名字變了 → 重新抓取並清掉舊快取 → 使用者拿到新版
+//
+// 規則（請照做，不要往裡面塞功能名稱）：
+//   1. 改動 js/ 或 css/ 之後，把日期改成今天；同一天內第二次改就把 v 往上加
+//   2. 只改 data/ 的內容不用動這裡（data/*.js 走 network-first，線上一定拿得到最新版）
+//   3. 兩個字串一起改，日期與序號保持一致
+//
+// 改了什麼請寫在 commit message 與 CHANGELOG，不要寫在這裡——
+// 這是開關，不是紀錄。
+const SHELL_CACHE = CACHE_PREFIX + 'shell-2026-08-19-v1';
+const DAY_CACHE = CACHE_PREFIX + 'current-days-2026-08-19-v1';
 
 // 僅預先快取程式、資料與 App 圖示；不預載照片大圖、所有路線圖或 PDF。
 const SHELL_ASSETS = [

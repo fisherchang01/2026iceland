@@ -211,7 +211,11 @@ js/firebase-config.js (type=module)  ← 獨立於上面的順序，自己載完
 
 > ⚠️ **為什麼 `data/` 必須是 network-first**：編輯器上傳只改 `data/*.js`，`sw.js` 本身沒變，舊 Service Worker 不會重新安裝。若 `data/` 也走 cache-first，編輯完上傳後手機／PWA 上會**永遠看不到新內容**。
 
-**改動 `js/` 或 `css/` 後，務必同時 bump `sw.js` 開頭的 `SHELL_CACHE` 版本字串**，否則舊快取不會被清掉。
+**改動 `js/` 或 `css/` 後，務必同時 bump `sw.js` 開頭的 `SHELL_CACHE` 與 `DAY_CACHE` 版本字串**，否則舊快取不會被清掉。
+
+命名規則：`shell-YYYY-MM-DD-vN` / `current-days-YYYY-MM-DD-vN`，日期改成今天，同一天內第二次改就把 `N` 往上加，兩個字串保持一致。
+
+⚠️ **不要把功能名稱寫進版本字串**（例如 `shell-2026-08-19-stage-b-note-v1`）。這兩個字串只是快取的「名字」，內容叫什麼完全不重要，有意義的只有「跟上一版不一樣」這件事——它是開關，不是紀錄。改了什麼寫在 commit message 與 `CHANGELOG.md` 就好。曾經因為每個人都想把自己的功能名塞進去，字串越接越長且難以判斷該不該覆蓋。
 
 ---
 
