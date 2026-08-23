@@ -406,6 +406,18 @@
       padding: 1px 8px; border-radius: 999px; color: var(--sub);
       background: rgba(0,0,0,0.06); vertical-align: middle;
     }
+    /* 階段 E：掛載備選景點（attachTo）縮排顯示在母景點卡片下方，跟時間軸主線
+       區隔開——左邊縮排對齊到時間軸節點欄的寬度（30px + gap var(--sp-3)），
+       再用一條細線把它跟主線隔開，一看就知道是「順路可加的選項」，不是下一站。
+       沒有 .timeline-node，所以不佔時間軸節點，灰階樣式繼續沿用
+       .spot-item.spot-optional，這裡只是外層縮排容器。 */
+    .attached-spot-row {
+      margin-left: calc(30px + var(--sp-3));
+      padding-left: var(--sp-5);
+      border-left: 2px solid #d8d5cd;
+      margin-bottom: var(--sp-5);
+    }
+    .attached-spot-row .spot-item { margin-bottom: 0; }
     .spot-card-meta { margin-top: var(--sp-1); font-size: var(--fs-xs); color: var(--sub); }
     .spot-num, .spot-num-icon {
       color: var(--spot-accent, var(--primary)); font-weight: 700;

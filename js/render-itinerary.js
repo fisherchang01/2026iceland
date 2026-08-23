@@ -8,7 +8,31 @@ var tramIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strok
 var CN_DAY_NUM = ['一','二','三','四','五','六','七','八','九','十'];
 var MONTH_NUM = { JAN:1, FEB:2, MAR:3, APR:4, MAY:5, JUN:6, JUL:7, AUG:8, SEP:9, OCT:10, NOV:11, DEC:12 };
 
-// ===== 景點/一般卡片配色（v7，Phase 2；階段 C 起改判斷 s.kind）=====
+// ===== 階段 E：備選景點 attachTo 掛載 =====
+// 取「下一個主景點」：跳過所有掛載在別人底下的備選景點（有 attachTo 者）。
+// 備選景點縮排顯示在母景點下方，不參與行車鏈，否則「前往下一站」的導航
+// 目的地會指到備選景點而不是真正的下一站。
+// 只跳過「有 attachTo」的景點；沒有 attachTo 的 isOptional 景點維持現狀
+// 參與行車鏈（漸進遷移，未掛載的備選行為必須不變）。
+function nextMainSpot(list, i) {
+  for (var k = i + 1; k < list.length; k++) {
+    if (!list[k].attachTo) return list[k];
+  }
+  return null;
+}
+// 建立 parentId -> 子項原始陣列 index 清單的對照表。用 index 而不是存物件本身，
+// 是因為 buildSpotCardHtml() 的 onclick 一定要用原始陣列 index（E.3.2），
+// 縮排渲染在哪裡跟它在陣列裡的位置無關。
+function buildAttachedChildrenMap(list) {
+  var map = {};
+  (list || []).forEach(function(s, idx) {
+    if (s.attachTo) {
+      if (!map[s.attachTo]) map[s.attachTo] = [];
+      map[s.attachTo].push(idx);
+    }
+  });
+  return map;
+}
 // 不再依「當天」上色，全站固定兩色：kind:'spot' 是「景點」，kind:'general'
 // （機場/超市/租車/取車等）是「一般」。向下相容：沒有 kind 欄位時退回舊規則（看 s.label 有沒有值）。
 function spotTypeClass(s) {
@@ -24,17 +48,20 @@ function spotPrefixHtml(s, computedLabel) {
   return '';
 }
 // 依序計算一份景點清單（d.spots 或 area.spots）裡每個項目的字母編號：
-// 分配給 kind:'spot' 的項目，general 不佔字母。
-// ⚠️ 這裡刻意不排除 isOptional：實測發現 day1 的備選景點（回程路线）原本就沒有 label，
-// 但 day2 的兩個備選景點（Faxi、Efstidalur II）原本卻「有」label（D、E），
-// 這點在目前資料裡並不一致。階段 C 的驗收標準是「外觀完全不變」，所以這裡如實
-// 依照 kind 重現目前的實際編號結果，不依規格書 E.1 描述的「備選一律不佔字母」這個
-// （與 day2 現況不符的）通則來計算 —— 該通則留給階段 E 處理 attachTo 時再決定是否要
-// 真的改變 day2 這兩個景點的顯示行為（那會是一個外觀變動，需要另外確認）。
+// 分配給 kind:'spot' 的項目，general 不佔字母。有 attachTo 的一律不佔字母
+// （階段 E 起：掛載的備選景點縮排顯示在母景點卡片下方，不是獨立的時間軸項目，
+// 自然不該有自己的字母，這點跟母景點是不是 optional 無關）。
+// ⚠️ 這裡刻意不用 isOptional 排除一般（沒有 attachTo）的備選景點：
+// 實測發現 day2 的 Faxi、Efstidalur II 過去雖然是備選，卻原本「有」佔字母，
+// 這在階段 E 之前是刻意保留不動的既有不一致行為；階段 E 已經把這兩個景點
+// 加上了 attachTo，所以現在會被上面的 attachTo 規則排除，不再是這條註解
+// 討論的情境，但沒有 attachTo 的一般備選景點（例如 day1 的回程路线）
+// 依然维持過去的算法不變。
 function computeSpotLabels(list) {
   var A = 'A'.charCodeAt(0);
   var n = 0;
   return (list || []).map(function(s) {
+    if (s.attachTo) return null;
     var kind = s.kind || (s.label ? 'spot' : 'general');
     if (kind === 'spot') {
       return String.fromCharCode(A + (n++));
@@ -164,7 +191,7 @@ function initThumbRowLazyLoad(containerEl) {
 // showDay() 裡三種情境（一般行程、分區行程、住宿）都呼叫這個函式產生卡片，不用各自重寫一份。
 // 卡片外面包一層 timeline-row（節點欄 + 卡片），節點欄裡的圓點才是真正對齊左側貫穿線的定位點，
 // 不能直接畫在卡片自己身上（卡片有 overflow:hidden 讓圓角裁切正常，圓點疊在上面會被連帶裁掉）。=====
-function buildSpotCardHtml(s, onclickExpr, computedLabel) {
+function buildSpotCardInnerHtml(s, onclickExpr, computedLabel) {
   var isShop = s.isShop || false;
   var clickable = !isShop && !!onclickExpr;
   var scheduleParts = [];
@@ -177,16 +204,27 @@ function buildSpotCardHtml(s, onclickExpr, computedLabel) {
   // v12：拿掉右側箭頭按鈕，改成點擊整個「標題＋內容」區域就直接開詳情層。
   var copyClickAttr = clickable ? ' onclick="' + onclickExpr + '"' : '';
   var optionalBadge = s.isOptional ? '<span class="spot-optional-badge">备选</span>' : '';
-  var cardHtml = '<div class="spot-item ' + spotTypeClass(s) + (isShop ? ' no-click' : '') + (s.isOptional ? ' spot-optional' : '') + '">' +
+  return '<div class="spot-item ' + spotTypeClass(s) + (isShop ? ' no-click' : '') + (s.isOptional ? ' spot-optional' : '') + '">' +
     thumbHtml +
     '<div class="spot-card-row">' +
       '<div class="spot-card-copy"' + copyClickAttr + '><h4 class="spot-card-title">' + spotPrefixHtml(s, computedLabel) + spotTitleHtml(s.name) + optionalBadge + '</h4>' + scheduleHtml + summaryHtml + '</div>' +
     '</div>' +
     '</div>';
+}
+function buildSpotCardHtml(s, onclickExpr, computedLabel) {
+  var cardHtml = buildSpotCardInnerHtml(s, onclickExpr, computedLabel);
   return '<div class="timeline-row">' +
     '<div class="timeline-node"><span class="timeline-dot ' + spotTypeClass(s) + '"></span></div>' +
     cardHtml +
     '</div>';
+}
+// 階段 E：掛載的備選景點（有 attachTo）縮排顯示在母景點下方，不佔時間軸節點
+// （沒有 .timeline-node 圓點），左側縮排＋細線跟時間軸區隔開，一看就知道是
+// 「順路可加的選項」而不是行程主線的下一步。灰階／備選樣式完全沿用
+// .spot-item.spot-optional，這裡只多包一層縮排容器（E.1：視覺層不需重做）。
+function buildAttachedSpotCardHtml(s, onclickExpr) {
+  var cardHtml = buildSpotCardInnerHtml(s, onclickExpr, null);
+  return '<div class="attached-spot-row">' + cardHtml + '</div>';
 }
 
 // 飛行路線條（v15）：把「經過哪些機場」畫成一條橫向航點線，放在航班資訊卡最上面，
@@ -309,12 +347,19 @@ function showDay(dayId) {
         '</div>' +
         '<div class="travel-collapse-body">';
       var areaLabels = computeSpotLabels(area.spots);
+      var areaChildren = buildAttachedChildrenMap(area.spots);
       area.spots.forEach(function(s, sIdx) {
+        if (s.attachTo) return; // 掛載的備選景點在母景點那一輪就已經渲染過了，這裡跳過
         var onclickExpr = s.isShop ? null : "showAreaSpot('" + dayId + "'," + aIdx + ',' + sIdx + ')';
         html += buildSpotCardHtml(s, onclickExpr, areaLabels[sIdx]);
+        (areaChildren[s.id] || []).forEach(function(childIdx) {
+          var child = area.spots[childIdx];
+          var childOnclick = child.isShop ? null : "showAreaSpot('" + dayId + "'," + aIdx + ',' + childIdx + ')';
+          html += buildAttachedSpotCardHtml(child, childOnclick);
+        });
         if (s.nextStop) {
           var ns = s.nextStop;
-          var nextSpot = area.spots[sIdx + 1];
+          var nextSpot = nextMainSpot(area.spots, sIdx);
           var destQuery = nextSpot ? encodeURIComponent(nextSpot.map || nextSpot.name) : null;
           if (ns.type === 'drive') html += makeDriveConnector(ns.detail, '', destQuery);
           else if (ns.type === 'walk') html += makeWalkConnector(ns.text, ns.detail, destQuery);
@@ -329,10 +374,17 @@ function showDay(dayId) {
     listEl.classList.remove('no-timeline');
     var html = '';
     var dayLabels = computeSpotLabels(d.spots);
+    var dayChildren = buildAttachedChildrenMap(d.spots);
     (d.spots || []).forEach(function(s, i) {
+      if (s.attachTo) return; // 掛載的備選景點在母景點那一輪就已經渲染過了，這裡跳過
       var onclickExpr = s.isShop ? null : "showSpot('" + dayId + "'," + i + ')';
       html += buildSpotCardHtml(s, onclickExpr, dayLabels[i]);
-      var nextSpot = (d.spots || [])[i + 1];
+      (dayChildren[s.id] || []).forEach(function(childIdx) {
+        var child = d.spots[childIdx];
+        var childOnclick = child.isShop ? null : "showSpot('" + dayId + "'," + childIdx + ')';
+        html += buildAttachedSpotCardHtml(child, childOnclick);
+      });
+      var nextSpot = nextMainSpot(d.spots, i);
       var destQuery = nextSpot ? encodeURIComponent(nextSpot.map || nextSpot.name) :
         (d.hotel && d.hotel.map ? encodeURIComponent(d.hotel.map) : null);
       if (d.drives && d.drives[i]) {
