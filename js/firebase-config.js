@@ -13,6 +13,7 @@ import { getDatabase, ref, push, set, remove, onValue } from "https://www.gstati
 const settings = window.FIREBASE_SETTINGS || {};
 const firebaseConfig = settings.config || {};
 const EXPENSES_PATH = settings.expensesPath || '';
+const RATES_PATH = settings.ratesPath || (EXPENSES_PATH ? EXPENSES_PATH.replace(/\/expenses$/, '/rates') : '');
 
 try {
   if (!settings.enabled || !EXPENSES_PATH || !firebaseConfig.databaseURL) {
@@ -25,17 +26,42 @@ try {
   window.cloudExpenses = {
     available: true,
 
-    // 新增一筆消費到雲端，回傳這筆資料在雲端的專屬 ID
-    push: function (expense) {
+    // 新增一筆消費到雲端。
+    // ⚠️ 只有在 set() 真的寫入成功之後才透過 onDone 回報 cloudId；
+    // 寫入失敗時回報 null，讓 budget.js 把這筆留在「待上傳」狀態，
+    // 下次連上線時由 onChange 的合併邏輯自動補傳，避免記錄無聲消失。
+    push: function (expense, onDone) {
       try {
         const newRef = push(expensesRef);
-        set(newRef, expense).catch(function (e) {
+        const payload = Object.assign({}, expense);
+        delete payload._cloudId;              // 本機欄位不要寫進雲端
+        set(newRef, payload).then(function () {
+          if (onDone) onDone(newRef.key);
+        }).catch(function (e) {
           console.warn('雲端儲存失敗，這筆記錄暫時只存在本機：', e);
+          if (onDone) onDone(null);
         });
-        return newRef.key;
       } catch (e) {
         console.warn('雲端儲存失敗，這筆記錄暫時只存在本機：', e);
-        return null;
+        if (onDone) onDone(null);
+      }
+    },
+
+    // 更新雲端既有的一筆消費（用 push() 回報的雲端 ID）
+    update: function (cloudId, expense, onDone) {
+      if (!cloudId) { if (onDone) onDone(false); return; }
+      try {
+        const payload = Object.assign({}, expense);
+        delete payload._cloudId;
+        set(ref(db, EXPENSES_PATH + '/' + cloudId), payload).then(function () {
+          if (onDone) onDone(true);
+        }).catch(function (e) {
+          console.warn('雲端更新失敗：', e);
+          if (onDone) onDone(false);
+        });
+      } catch (e) {
+        console.warn('雲端更新失敗：', e);
+        if (onDone) onDone(false);
       }
     },
 
@@ -69,19 +95,57 @@ try {
     }
   };
 
+  // ---------- 匯率同步 ----------
+  // 整趟行程全隊共用同一組匯率。任何人在「匯率設定」改動，其他人立即同步，
+  // 所有歷史消費的等值金額一起重算（已確認的設計：單一匯率、回溯重算）。
+  // 衝突處理為 last-write-wins，對匯率而言已足夠。
+  if (RATES_PATH) {
+    const ratesRef = ref(db, RATES_PATH);
+    window.cloudRates = {
+      available: true,
+      set: function (ratesObj) {
+        try {
+          set(ratesRef, ratesObj).catch(function (e) {
+            console.warn('匯率同步失敗，暫時只存在本機：', e);
+          });
+        } catch (e) {
+          console.warn('匯率同步失敗，暫時只存在本機：', e);
+        }
+      },
+      onChange: function (callback) {
+        try {
+          onValue(ratesRef, function (snapshot) {
+            const val = snapshot.val();
+            if (val) callback(val);
+          });
+        } catch (e) {
+          console.warn('匯率同步監聽失敗，將只使用本機匯率：', e);
+        }
+      }
+    };
+  }
+
   console.log('✅ 費用同步（Firebase）已連線');
 } catch (e) {
   console.warn('⚠️ Firebase 初始化失敗，費用記錄將只儲存在本機（不會同步給旅伴）：', e);
   window.cloudExpenses = {
     available: false,
-    push: function () { return null; },
+    push: function (e, onDone) { if (onDone) onDone(null); },
+    update: function (id, e, onDone) { if (onDone) onDone(false); },
     remove: function () {},
     onChange: function () {}
   };
+}
+
+if (!window.cloudRates) {
+  window.cloudRates = { available: false, set: function () {}, onChange: function () {} };
 }
 
 // 不依賴載入順序：自己準備好之後，主動去呼叫 budget.js 裡的同步訂閱函式。
 // 就算這個檔案比 init.js 晚執行也沒關係。
 if (typeof initCloudExpensesSync === 'function') {
   initCloudExpensesSync();
+}
+if (typeof initCloudRatesSync === 'function') {
+  initCloudRatesSync();
 }

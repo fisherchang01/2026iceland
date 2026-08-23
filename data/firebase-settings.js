@@ -10,5 +10,7 @@ window.FIREBASE_SETTINGS = {
     messagingSenderId: '181720786427',
     appId: '1:181720786427:web:cae1feff6285befc7f175e'
   },
-  expensesPath: 'trips/iceland2026/expenses'
+  expensesPath: 'trips/iceland2026/expenses',
+  // 匯率也放雲端：整趟行程全隊共用同一組匯率，任何人改動所有人同步生效。
+  ratesPath: 'trips/iceland2026/rates'
 };

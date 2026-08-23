@@ -3,7 +3,11 @@ const BUDGET_HTML = `
 <div class="page" id="page-budget">
   <div class="page-inner">
     <div class="budget-section-header">📝 记录消费</div>
-    <div class="budget-card">
+    <div class="budget-card" id="budgetFormCard">
+      <div class="edit-bar" id="editBar" style="display:none;">
+        <span>✏️ 编辑中</span>
+        <button class="edit-cancel" onclick="cancelEdit()">取消编辑</button>
+      </div>
       <div class="form-label" style="margin-bottom:8px;">消费类别</div>
       <div class="cat-grid" id="catGrid">
       </div>
@@ -20,7 +24,8 @@ const BUDGET_HTML = `
       </div>
       <div class="form-group">
         <label class="form-label">金额</label>
-        <input type="text" class="form-input amount-input" id="bAmount" placeholder="0" inputmode="decimal" oninput="formatAmount(this)" onblur="formatAmount(this, true)">
+        <input type="text" class="form-input amount-input" id="bAmount" placeholder="0" inputmode="decimal" oninput="formatAmount(this); updateAmountPreview();" onblur="formatAmount(this, true); updateAmountPreview();">
+        <div class="amount-preview" id="amountPreview"></div>
       </div>
       <div class="form-group">
         <label class="form-label">说明（选填）</label>
@@ -36,8 +41,10 @@ const BUDGET_HTML = `
         <div class="people-grid-simple" id="participantGrid">
         </div>
       </div>
-      <button class="save-btn" onclick="saveExpense()">💾 储存记录</button>
+      <button class="save-btn" id="saveBtn" onclick="saveExpense()">💾 储存记录</button>
     </div>
+
+    <div id="recentList" class="recent-list"></div>
 
     <div class="budget-section-header">📊 分类汇总（<span class="base-currency-label"></span>）</div>
     <div class="budget-card">
@@ -55,8 +62,13 @@ const BUDGET_HTML = `
       </table>
     </div>
 
+    <div class="budget-section-header">💸 结算建议</div>
+    <div class="budget-card">
+      <div id="settleList"><div class="settle-empty">尚无资料</div></div>
+    </div>
+
     <div class="collapse-header" onclick="toggleCollapse('dailyBody', this)">
-      <span class="ch-title">📅 每日花费（CNY）</span>
+      <span class="ch-title">📅 每日花费（<span class="base-currency-label"></span>）</span>
       <span class="ch-arrow">▼</span>
     </div>
     <div class="collapse-body" id="dailyBody">
@@ -68,13 +80,14 @@ const BUDGET_HTML = `
       </div>
     </div>
 
-    <div class="collapse-header" onclick="toggleCollapse('recordBody', this)">
+    <div class="collapse-header open" onclick="toggleCollapse('recordBody', this)">
       <span class="ch-title">📋 消费记录</span>
       <span class="ch-arrow">▼</span>
     </div>
-    <div class="collapse-body" id="recordBody">
+    <div class="collapse-body open" id="recordBody">
       <div class="budget-card">
         <div id="expenseList"><div class="expense-empty">尚无消费记录</div></div>
+        <button class="export-btn" onclick="exportExpensesCsv()">⬇️ 导出 CSV</button>
       </div>
     </div>
 
