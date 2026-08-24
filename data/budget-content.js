@@ -44,6 +44,8 @@ const BUDGET_HTML = `
       <button class="save-btn" id="saveBtn" onclick="saveExpense()">💾 储存记录</button>
     </div>
 
+    <div id="cloudCleanup" class="cloud-cleanup" style="display:none;"></div>
+
     <div id="recentList" class="recent-list"></div>
 
     <div class="budget-section-header">📊 分类汇总（<span class="base-currency-label"></span>）</div>

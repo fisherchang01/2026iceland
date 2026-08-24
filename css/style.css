@@ -1863,3 +1863,25 @@
 
 /* toast 改用 visualViewport 的實際底邊，避免被手機鍵盤遮住 */
 .toast { bottom: calc(var(--nav-h) + 16px + var(--kb-offset, 0px)); }
+
+/* 雲端重複記錄的清理入口。只有偵測到重複時才出現。 */
+.cloud-cleanup {
+  background: var(--warn-bg);
+  border: 1px solid var(--danger);
+  border-radius: var(--radius);
+  padding: var(--sp-5) var(--sp-6);
+  margin-bottom: var(--sp-6);
+}
+.cloud-cleanup .cc-msg { font-size: var(--fs-sm); color: var(--text); line-height: 1.7; }
+.cloud-cleanup .cc-btn {
+  width: 100%;
+  margin-top: var(--sp-4);
+  padding: var(--sp-4);
+  background: var(--danger);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  cursor: pointer;
+}

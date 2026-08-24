@@ -363,25 +363,97 @@ function deleteExpense(id) {
 // 現在的規則：
 //   - 有 _cloudId 的以雲端為準（不在雲端清單裡＝別人刪掉了，跟著移除）
 //   - 沒有 _cloudId 的是「還沒成功上傳」，保留下來並重新嘗試上傳
+var _syncInFlight = {};      // id -> true，正在送往雲端、還沒收到回呼的記錄
+var _cloudDupes = [];        // 雲端偵測到的重複記錄（同一個 id 多筆）
+
 function initCloudExpensesSync() {
   if (!(window.cloudExpenses && window.cloudExpenses.available)) return;
+
   window.cloudExpenses.onChange(function(remoteList) {
-    var pending = expenses.filter(function(e){ return !e._cloudId; });
-    expenses = remoteList.concat(pending);
+    // ⚠️ 待上傳的判斷必須用本機產生的穩定 id，不能用「有沒有 _cloudId」。
+    //
+    // Firebase 的 onValue 會在伺服器確認之前，就先用本機的樂觀寫入回呼一次。
+    // 那個時間點 push() 的完成回呼還沒跑，該筆的 _cloudId 仍是 undefined，
+    // 於是被誤判成「還沒上傳」而再送一次 —— 新的寫入又觸發 onValue，
+    // 每一輪至少翻倍，最後變成無限增生。
+    //
+    // id 是存檔當下就產生、並且會一起寫進雲端的欄位，用它比對才不會誤判。
+    var remoteIds = {};
+    remoteList.forEach(function(e){ if (e.id != null) remoteIds[e.id] = true; });
+
+    var pending = expenses.filter(function(e){
+      return e.id != null && !remoteIds[e.id] && !_syncInFlight[e.id];
+    });
+
+    // 雲端同一個 id 只保留第一筆，其餘視為重複（先前的迴圈殘留）
+    var seen = {}, merged = [];
+    _cloudDupes = [];
+    remoteList.forEach(function(e){
+      if (e.id != null) {
+        if (seen[e.id]) { if (e._cloudId) _cloudDupes.push(e._cloudId); return; }
+        seen[e.id] = true;
+      }
+      merged.push(e);
+    });
+
+    expenses = merged.concat(pending);
     persistExpenses();
 
-    // 補傳離線期間累積的記錄
-    pending.forEach(function(e) {
-      window.cloudExpenses.push(e, function(cloudId) {
-        if (cloudId) { e._cloudId = cloudId; persistExpenses(); }
+    // 安全閥：正常情況待上傳不會很多。異常量體先停手並提示，不要盲目寫入雲端。
+    if (pending.length > 20) {
+      console.warn('待上傳筆數異常（' + pending.length + '），已暫停自動補傳');
+      showToast('待上传笔数异常，已暂停自动补传');
+    } else {
+      pending.forEach(function(e) {
+        _syncInFlight[e.id] = true;
+        window.cloudExpenses.push(e, function(cloudId) {
+          delete _syncInFlight[e.id];
+          if (cloudId) { e._cloudId = cloudId; persistExpenses(); }
+        });
       });
-    });
-    if (pending.length) showToast('已补传 ' + pending.length + ' 笔离线记录');
+      if (pending.length) showToast('已补传 ' + pending.length + ' 笔离线记录');
+    }
 
     renderExpenses();
     renderSummary();
     refreshDailyIfOpen();
+    renderCloudCleanup();
   });
+}
+
+// 偵測到雲端有重複記錄時，顯示一個清理入口。
+// 同一個 id 代表是同一筆消費被重複寫入，刪除多餘的那些不會損失任何資料。
+function renderCloudCleanup() {
+  var box = document.getElementById('cloudCleanup');
+  if (!box) return;
+  if (!_cloudDupes.length) { box.style.display = 'none'; box.innerHTML = ''; return; }
+  box.style.display = 'block';
+  box.innerHTML = '<div class="cc-msg">⚠️ 云端有 <b>' + _cloudDupes.length +
+    '</b> 笔重复记录（同一笔消费被重复写入）。<br>清理不会损失任何资料。</div>' +
+    '<button class="cc-btn" onclick="cleanupCloudDuplicates()">清理重复记录</button>';
+}
+
+function cleanupCloudDuplicates() {
+  if (!_cloudDupes.length) return;
+  if (!(window.cloudExpenses && window.cloudExpenses.available)) {
+    showToast('目前未连上云端'); return;
+  }
+  var n = _cloudDupes.length;
+  if (!confirm('将从云端删除 ' + n + ' 笔重复记录。\n\n每一笔消费都会保留一份，不会损失资料。\n确定继续吗？')) return;
+
+  var ids = _cloudDupes.slice();
+  _cloudDupes = [];
+  var box = document.getElementById('cloudCleanup');
+  if (box) box.innerHTML = '<div class="cc-msg">清理中… 0 / ' + n + '</div>';
+
+  var i = 0;
+  (function step() {
+    var batch = 0;
+    while (i < ids.length && batch < 50) { window.cloudExpenses.remove(ids[i]); i++; batch++; }
+    if (box) box.innerHTML = '<div class="cc-msg">清理中… ' + i + ' / ' + n + '</div>';
+    if (i < ids.length) { setTimeout(step, 120); }
+    else { showToast('已清理 ' + n + ' 笔重复记录'); }
+  })();
 }
 
 function renderExpenses() {
