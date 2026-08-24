@@ -597,8 +597,20 @@ function buildAuroraTonight(loc, weatherResult) {
     if (darkStart === null && minElev > -18) noFullDarkness = true;
   }
 
-  // 全黑時段內（elevDeg <= -18）找出可見機率最高點
-  const fullDarkHours = hours.filter(h => h.elevDeg <= -18 && h.prob !== null);
+  // 找出可見機率最高點：優先用「完全天黑」時段（elevDeg <= -18）。
+  // 但夏天在冰島這種高緯度，太陽整晚可能都不會低於 -18 度（見上面 noFullDarkness），
+  // 這種情況下這裡若堅持只看完全天黑的時段，會整晚一小時都篩不到，整張判斷卡
+  // 變成「暫時取不到資料」——但那不是真的沒資料，是門檻設太嚴。
+  // 退一步改用航海暮光（elevDeg <= -12，對應 auroraDarkFactor 的 0.8 那一檔）
+  // 來評估，並在結論文字裡誠實註明用的是哪一種暗度，不要讓使用者誤以為是完全天黑。
+  let fullDarkHours = hours.filter(h => h.elevDeg <= -18 && h.prob !== null);
+  let darkTierUsed = 'astronomical';
+  if (fullDarkHours.length === 0) {
+    fullDarkHours = hours.filter(h => h.elevDeg <= -12 && h.prob !== null);
+    darkTierUsed = 'nautical';
+  }
+  if (fullDarkHours.length === 0) darkTierUsed = 'none';
+
   let peakProb = 0, peakHour = null;
   fullDarkHours.forEach(h => { if (h.prob > peakProb) { peakProb = h.prob; peakHour = h; } });
 
@@ -616,7 +628,7 @@ function buildAuroraTonight(loc, weatherResult) {
     };
   }
 
-  // 否決規則：全黑時段內「低中雲」最差（最高）值 >= 70% → 最多 1 星
+  // 否決規則：全黑（或退而求其次的航海暮光）時段內「低中雲」最差（最高）值 >= 70% → 最多 1 星
   let worstEffHour = null, worstEff = -1;
   fullDarkHours.forEach(h => { if (h.effLowMid !== null && h.effLowMid > worstEff) { worstEff = h.effLowMid; worstEffHour = h; } });
   const vetoed = worstEff >= 70;
@@ -646,14 +658,15 @@ function buildAuroraTonight(loc, weatherResult) {
     ['月齡', moonAge.toFixed(0) + ' 天', '參考用', '']
   ];
 
+  const tierNote = darkTierUsed === 'nautical' ? '（本季無完全天黑，以航海暮光估算）' : '';
   let say;
-  if (!refHour) say = '暫時取不到足夠資料進行判斷';
-  else if (vetoed) say = '雲層過厚，今晚多半看不到';
-  else if (stars >= 5) say = '非常值得等，' + (bestSlot ? bestSlot.label + ' 前後條件絕佳' : '今晚條件絕佳');
-  else if (stars >= 4) say = '值得等，' + (bestSlot ? bestSlot.label + ' 前後條件不錯' : '今晚條件不錯');
-  else if (stars >= 3) say = '尚可，' + (bestSlot ? bestSlot.label + ' 前後有機會' : '今晚有機會');
-  else if (stars >= 2) say = '機會不高，但' + (bestSlot ? bestSlot.label + ' 仍有機會' : '仍有機會');
-  else say = '極光活動偏弱或雲況不佳，今晚機會不大';
+  if (!refHour) say = darkTierUsed === 'none' ? '本季這個時段幾乎不會天黑，無法判斷' : '暫時取不到足夠資料進行判斷';
+  else if (vetoed) say = '雲層過厚，今晚多半看不到' + tierNote;
+  else if (stars >= 5) say = '非常值得等，' + (bestSlot ? bestSlot.label + ' 前後條件絕佳' : '今晚條件絕佳') + tierNote;
+  else if (stars >= 4) say = '值得等，' + (bestSlot ? bestSlot.label + ' 前後條件不錯' : '今晚條件不錯') + tierNote;
+  else if (stars >= 3) say = '尚可，' + (bestSlot ? bestSlot.label + ' 前後有機會' : '今晚有機會') + tierNote;
+  else if (stars >= 2) say = '機會不高，但' + (bestSlot ? bestSlot.label + ' 仍有機會' : '仍有機會') + tierNote;
+  else say = '極光活動偏弱或雲況不佳，今晚機會不大' + tierNote;
 
   // 單點雲況地圖用值：取「現在」時刻最接近的一筆 low/mid 有效值
   const nowIdx = hours.reduce((best, h, i) => {
