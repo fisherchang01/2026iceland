@@ -1851,3 +1851,15 @@
   cursor: pointer;
 }
 .export-btn:hover { color: var(--text); border-color: var(--sub); }
+
+/* 儲存鍵的成功回饋。手機上鍵盤會蓋住畫面底部的 toast，
+   按鈕就在拇指下方，這裡的變化一定看得到。 */
+.save-btn.saved {
+  background: var(--success);
+  color: #fff;
+  opacity: 1;
+}
+.save-btn:disabled { cursor: default; }
+
+/* toast 改用 visualViewport 的實際底邊，避免被手機鍵盤遮住 */
+.toast { bottom: calc(var(--nav-h) + 16px + var(--kb-offset, 0px)); }

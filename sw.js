@@ -13,8 +13,8 @@ const CACHE_PREFIX = 'trip-' + self.registration.scope.replace(/[^a-z0-9]+/gi, '
 //
 // 改了什麼請寫在 commit message 與 CHANGELOG，不要寫在這裡——
 // 這是開關，不是紀錄。
-const SHELL_CACHE = CACHE_PREFIX + 'shell-2026-08-23-v1';
-const DAY_CACHE = CACHE_PREFIX + 'current-days-2026-08-23-v1';
+const SHELL_CACHE = CACHE_PREFIX + 'shell-2026-08-23-v2';
+const DAY_CACHE = CACHE_PREFIX + 'current-days-2026-08-23-v2';
 
 // 僅預先快取程式、資料與 App 圖示；不預載照片大圖、所有路線圖或 PDF。
 const SHELL_ASSETS = [

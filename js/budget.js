@@ -208,6 +208,10 @@ function parseAmount(str) { return parseFloat((str||'').replace(/,/g,'')) || 0; 
 function fmtNum(n) { return Math.round(n).toLocaleString('en-US'); }
 
 function saveExpense() {
+  // 先讓輸入框失焦，手機鍵盤才會收起 —— 否則畫面底部的 toast 會被鍵盤蓋住，
+  // 使用者看不到任何回饋，以為沒存成功。
+  if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
+
   var amount = parseAmount(document.getElementById('bAmount').value);
   if (!amount || amount <= 0) { showToast('请输入金额'); return; }
   if (selParticipants.length === 0) { showToast('请选择参与者'); return; }
@@ -227,8 +231,10 @@ function saveExpense() {
     if (cloudOn && target._cloudId) {
       window.cloudExpenses.update(target._cloudId, target);
       showToast('✅ 已更新并同步给旅伴');
+      flashSaved('✅ 已更新并同步');
     } else {
       showToast('✅ 已更新（目前只存在本机）');
+      flashSaved('✅ 已更新');
     }
     cancelEdit();
     renderExpenses(); renderSummary(); refreshDailyIfOpen();
@@ -236,6 +242,21 @@ function saveExpense() {
   }
 
   // ---- 新增 ----
+  // 防連按：完全相同的一筆在 10 秒內重複送出，先問過再存。
+  // 手機上鍵盤會蓋住畫面底部的 toast，使用者常以為沒反應而連按好幾下，
+  // 結果一次存進四五筆一樣的記錄，分類彙總就變成好幾倍金額。
+  var now = Date.now();
+  var dup = expenses.filter(function(e) {
+    return e.cat === selCat && e.date === date && e.amount === amount &&
+           e.currency === currency && e.desc === desc && e.payer === selPayer &&
+           (now - parseInt(String(e.id).split('-')[0], 10)) < 10000;
+  });
+  if (dup.length) {
+    if (!confirm('刚刚已经存过一笔一模一样的记录：\n\n' + desc + '　' +
+                 amount.toLocaleString('en-US') + ' ' + currency +
+                 '\n\n确定要再存一笔吗？')) { flashSaved('已取消'); return; }
+  }
+
   var expense = { id:newExpenseId(), cat:selCat, date:date, amount:amount, currency:currency, desc:desc, payer:selPayer, participants:selParticipants.slice() };
 
   // 先存本机，确保没网路也能立即看到、立即可用
@@ -255,9 +276,28 @@ function saveExpense() {
       if (cloudId) { expense._cloudId = cloudId; persistExpenses(); }
     });
     showToast('✅ 已储存并同步给旅伴');
+    flashSaved('✅ 已储存并同步');
   } else {
     showToast('✅ 已储存在本机（目前未连上云端同步）');
+    flashSaved('✅ 已储存在本机');
   }
+}
+
+// 在儲存鍵本身給回饋：手機上鍵盤可能蓋住底部 toast，
+// 按鈕就在拇指下方，這裡的變化一定看得到。
+function flashSaved(msg) {
+  var btn = document.getElementById('saveBtn');
+  if (!btn) return;
+  var original = editingId ? '✏️ 更新记录' : '💾 储存记录';
+  btn.textContent = msg;
+  btn.classList.add('saved');
+  btn.disabled = true;
+  clearTimeout(window.__saveFlash);
+  window.__saveFlash = setTimeout(function() {
+    btn.textContent = original;
+    btn.classList.remove('saved');
+    btn.disabled = false;
+  }, 1400);
 }
 
 function startEdit(id) {
@@ -383,10 +423,14 @@ function renderSummary() {
   if (!grandTotal) {
     catBody.innerHTML = '<tr><td colspan="3" style="text-align:center;color:var(--sub);padding:16px;">尚无资料</td></tr>';
   } else {
-    catBody.innerHTML = Object.keys(catTotals).map(function(cat) {
-      var amt = catTotals[cat];
-      return '<tr><td>' + CAT_ICON[cat] + ' ' + CAT_NAME[cat] + '</td><td>' + BASE_SYMBOL + fmtNum(amt) + '</td><td>' + (amt/grandTotal*100).toFixed(1) + '%</td></tr>';
-    }).join('') + '<tr class="summary-total"><td>合计</td><td>' + BASE_SYMBOL + fmtNum(grandTotal) + '</td><td>100%</td></tr>';
+    // 依設定檔的分類順序輸出，不要用 Object.keys 的插入順序 ——
+    // 否則每新增一個沒出現過的分類，整張表的排序就會洗牌一次，看起來像出錯。
+    catBody.innerHTML = BUDGET.categories.filter(function(c){ return catTotals[c.id]; })
+      .map(function(c) {
+        var amt = catTotals[c.id];
+        return '<tr><td>' + c.icon + ' ' + c.name + '</td><td>' + BASE_SYMBOL + fmtNum(amt) + '</td><td>' + (amt/grandTotal*100).toFixed(1) + '%</td></tr>';
+      }).join('') +
+      '<tr class="summary-total"><td>合计（' + expenses.length + ' 笔）</td><td>' + BASE_SYMBOL + fmtNum(grandTotal) + '</td><td>100%</td></tr>';
   }
   var netBody = document.getElementById('netSummary');
   if (!grandTotal) {
@@ -481,6 +525,20 @@ function exportExpensesCsv() {
   document.body.removeChild(a); URL.revokeObjectURL(a.href);
   showToast('已导出 ' + expenses.length + ' 笔记录');
 }
+
+// 手機鍵盤彈出時，position:fixed 仍以版面視窗為準，畫面底部的 toast 會被鍵盤蓋住。
+// 用 visualViewport 算出被遮住的高度，把 toast 往上頂。
+(function () {
+  var vv = window.visualViewport;
+  if (!vv) return;
+  function sync() {
+    var hidden = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
+    document.documentElement.style.setProperty('--kb-offset', hidden + 'px');
+  }
+  vv.addEventListener('resize', sync);
+  vv.addEventListener('scroll', sync);
+  sync();
+})();
 
 function showToast(msg) {
   var t = document.getElementById('toast');
