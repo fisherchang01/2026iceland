@@ -67,20 +67,6 @@ const TRIP = {
       "note": "黄金圈地区，舒适乡村民宿环境",
       "map": "South Central Country Apartment Iceland"
     },
-    "aurora": {
-      "location": {
-        "name": "南部民宿（Selfoss 一带）",
-        "lat": 63.93,
-        "lon": -20.85
-      },
-      "sunrise": "07:57",
-      "sunset": "18:52",
-      "kpIndex": 3,
-      "cloudCover": 30,
-      "probability": "medium",
-      "summary": "云量偏低、KP指数中等，示例情境下观测机会中等",
-      "updatedAt": "示例数值，出发前请再核实预报"
-    },
     "spots": [
       {
         "icon": "🛬",
@@ -362,20 +348,6 @@ const TRIP = {
       "note": "连住，黄金圈地区",
       "map": "South Central Country Apartment Iceland"
     },
-    "aurora": {
-      "location": {
-        "name": "南部民宿（Selfoss 一带）",
-        "lat": 63.93,
-        "lon": -20.85
-      },
-      "sunrise": "08:00",
-      "sunset": "18:49",
-      "kpIndex": 2,
-      "cloudCover": 55,
-      "probability": "low",
-      "summary": "云量偏高，示例情境下观测机会偏低",
-      "updatedAt": "示例数值，出发前请再核实预报"
-    },
     "spots": [
       {
         "icon": "💎",
@@ -589,20 +561,6 @@ const TRIP = {
       "name": "Lakeview Cabin 民宿",
       "note": "南岸地区，湖景小屋，有机会观赏极光",
       "map": "Lakeview Cabin Iceland"
-    },
-    "aurora": {
-      "location": {
-        "name": "Lakeview Cabin（近 Kirkjubæjarklaustur）",
-        "lat": 63.79,
-        "lon": -18.06
-      },
-      "sunrise": "08:03",
-      "sunset": "18:45",
-      "kpIndex": 4,
-      "cloudCover": 20,
-      "probability": "high",
-      "summary": "云量低、KP指数偏高，示例情境下是这趟旅程观测机会最好的一晚",
-      "updatedAt": "示例数值，出发前请再核实预报"
     },
     "spots": [
       {
@@ -869,20 +827,6 @@ const TRIP = {
       "note": "连住，南岸湖景小屋",
       "map": "Lakeview Cabin Iceland"
     },
-    "aurora": {
-      "location": {
-        "name": "Lakeview Cabin（近 Kirkjubæjarklaustur）",
-        "lat": 63.79,
-        "lon": -18.06
-      },
-      "sunrise": "08:06",
-      "sunset": "18:41",
-      "kpIndex": 3,
-      "cloudCover": 45,
-      "probability": "medium",
-      "summary": "云量中等，示例情境下观测机会中等",
-      "updatedAt": "示例数值，出发前请再核实预报"
-    },
     "spots": [
       {
         "icon": "🧊",
@@ -1007,20 +951,6 @@ const TRIP = {
       "name": "Garður Apartments 民宿",
       "note": "Garður 地区公寓式民宿，邻近蓝湖与机场",
       "map": "Gardur Apartments Iceland"
-    },
-    "aurora": {
-      "location": {
-        "name": "Garður（近蓝湖与机场）",
-        "lat": 64.07,
-        "lon": -22.7
-      },
-      "sunrise": "08:09",
-      "sunset": "18:38",
-      "kpIndex": 2,
-      "cloudCover": 65,
-      "probability": "low",
-      "summary": "云量偏高、又邻近机场光害，示例情境下观测机会偏低",
-      "updatedAt": "示例数值，出发前请再核实预报"
     },
     "spots": [
       {

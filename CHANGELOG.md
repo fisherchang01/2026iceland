@@ -10,7 +10,41 @@ git diff v1.0-stable HEAD     # 跟目前狀態比對
 
 ---
 
-## v1.0-stable — 2026-08-18 ⭐ 目前的穩定基準版
+## v1.1-aurora-live — 2026-08-23 ⭐ 極光頁改接真實資料
+
+**核心目的：極光頁的 Kp、雲量、極光機率此前全部是 `Math.random()` 產生的亂數，但頁面標題寫著「極光即時預報」——使用者會據此決定要不要熬夜、要不要開車去暗處。這次改造把假資料全部換成真實 API，並重建版面、加入方向建議與即時機率。**
+
+分 5 個階段施工，每階段獨立 commit、獨立驗收：
+
+**階段 A — 資料層：接上真實 API**
+- 新增 `data/aurora-config.js`（`AURORA_CONFIG`）：地點座標、取樣半徑、外部連結，取代寫死在 `js/render-aurora.js` 裡的 `AURORA_LOCATIONS`
+- 刪除 `generateMockKpData()`、`calculateSunElevation()`（死碼）、Bz/Bt 兩個模擬儀表、13 行除錯 log
+- Kp 改接 NOAA SWPC 兩支端點（實測值欄位 `Kp`、預報值欄位 `kp`，大小寫不同需分別處理）；雲量與日出日落改接 Open-Meteo
+- 任一 API 失敗時顯示「暫時取不到資料」，不回退到亂數或編造值
+
+**階段 B — 版面：套用新設計**
+- 版面依已確認的設計原型（`tools/aurora-preview.html`）重建：今晚這一條 SVG、判斷卡（星級／一句話／四數值）、雲況地圖、外部連結、說明摺疊區
+- CSS 外移至 `css/aurora.css`（此前寫在 `<style>` 字串裡、每次渲染重新注入）
+- 判斷公式改用真實資料換算：太陽仰角（標準天文年曆公式）決定黑暗係數、Open-Meteo 分層雲量決定晴空係數、Kp 預報決定極光活動係數，介面明確標示「本站換算，僅供參考」
+- 修正 Open-Meteo `timezone=auto` 回傳掛鐘時間字串在非冰島時區瀏覽器解析錯誤的問題（改用 `utc_offset_seconds` 換算，顯示固定用 `Atlantic/Reykjavik` 時區格式化）
+
+**階段 C — 方向建議：多點取樣**
+- 八方位 × 10/20/30 km（25 點）一次多座標請求取回全部資料，繪成連續雲場圖（IDW 內插）
+- 差距 < 10 個百分點時明確寫「差距不大，不一定要特地移動」；文案用「東側條件較好」而非駕駛指令，避免暗示不明路況下的行車建議
+
+**階段 D — OVATION 即時機率（按需載入）**
+- 「現在機率」格改為按鈕，開頁不自動抓 897 KB 的 OVATION 資料，點擊才載入
+- 65160 個格點載入後建成查詢表，資料為全球性質，切換地點只需重新查表
+
+**階段 E — 清理與文件**
+- 刪除 `tools/aurora-api-test.html`、`tools/aurora-preview.html`（任務完成）
+- 刪除 `data/trip-details.js` 中已不再讀取的 `aurora` 欄位（5 筆）
+- `sw.js` 快取清單納入 `css/aurora.css`、`data/aurora-config.js`，版本字串 bump
+- 更新 `docs/ARCHITECTURE.md`（極光頁資料源、非同步例外的範圍）、`docs/DATA-SCHEMA.md`（新增 `AURORA_CONFIG` 定義）
+
+---
+
+## v1.0-stable — 2026-08-18 ⭐ 體驗／工具頁架構重建的穩定基準版
 
 **這是第一個「架構乾淨、內容可安全編輯」的版本。日後任何改壞的情況，都可以安全回退到這裡。**
 

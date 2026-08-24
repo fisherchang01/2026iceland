@@ -22,7 +22,7 @@
 | 體驗 | `#mount-travel` → `#page-travel` | `data/travel-content.js`（`TRAVEL_CONTENT`） | `js/render-travel.js` + `js/catalog-nav.js` |
 | 工具 | `#mount-other` → `#page-other` | `data/other-content.js`（`OTHER_CONTENT`） | `js/render-other.js` + `js/catalog-nav.js` |
 | 費用 | `#mount-budget` → `#page-budget` | `data/budget-content.js`（`BUDGET_HTML`） | `js/budget.js`、`js/firebase-config.js` |
-| 極光 | `#mount-aurora` → `#page-aurora` | `js/render-aurora.js` 內的 `AURORA_LOCATIONS` | `js/render-aurora.js` |
+| 極光 | `#mount-aurora` → `#page-aurora` | `data/aurora-config.js`（`AURORA_CONFIG`）＋ NOAA SWPC／Open-Meteo 即時 API | `js/render-aurora.js` |
 
 頁籤切換由 `js/nav.js` 的 `switchTab(tab)` 負責，做法是找 `#page-{tab}` 並加上 `.active` class。
 
@@ -118,6 +118,18 @@ js/firebase-config.js (type=module)  ← 獨立於上面的順序，自己載完
 
 > **鐵律：`js/` 底下的主網站程式不得出現 `fetch`、`async`、`DOMContentLoaded`、`setTimeout` 重試。**
 > （`js/firebase-config.js` 與 `js/render-aurora.js` 的外部 API 呼叫是例外，它們本來就是非同步資料源、失敗也不影響其他頁籤。）
+
+#### 極光頁的非同步例外（範圍界定）
+
+`js/render-aurora.js` 是目前唯一在**資料層**大量使用 `fetch`/`async` 的主網站程式，資料源：
+
+- Kp 實測值／預報值：NOAA SWPC（`services.swpc.noaa.gov`），全域共用、與地點無關
+- 雲量、日出日落、八方位取樣：Open-Meteo（`api.open-meteo.com`），依地點座標查詢
+- OVATION 即時機率：NOAA SWPC，897 KB，**按需載入**（點按鈕才抓，開頁不自動抓）
+
+例外的範圍**僅限於「取資料」**，不含頁面骨架掛載：`initAuroraPage()` 掛載 `#page-aurora` 骨架與地點標籤列是同步執行的，之後才非同步抓資料、非同步渲染內容。任一 API 失敗時，對應區塊顯示「暫時取不到資料」，**不回退到亂數或編造數值**，其他頁籤與極光頁本身的其餘區塊不受影響。
+
+八方位雲況地圖與 OVATION 現在機率都額外做了「全域資料快取」：Kp 與 OVATION 跟地點無關，載入一次全域共用；切換地點通常只需重新查表或重新查詢該地點座標，不必每次都重新打全部 API。
 
 ---
 
@@ -228,6 +240,7 @@ manifest.webmanifest          PWA 設定
 
 css/style.css                 全站基礎版型
 css/catalog-editorial.css     體驗/工具頁 editorial 主題
+css/aurora.css                極光頁樣式（從 tools/aurora-preview.html 逐字複製，scoped 於 #page-aurora）
 
 data/trip-config.js           旅程名稱、日期、時區、主題色、封面
 data/trip-days.js             每日總覽
@@ -240,6 +253,7 @@ data/budget-content.js        費用頁 HTML 模板
 data/budget-config.js         同行者、幣別、匯率、類別
 data/docs-content.js          旅行文件清單
 data/firebase-settings.js     Firebase 開關與路徑
+data/aurora-config.js         極光頁地點座標、取樣半徑、外部連結（AURORA_CONFIG，見 DATA-SCHEMA.md）
 
 js/nav.js                     頁籤切換、日期選單、collapse toggle、燈箱
 js/catalog-nav.js             體驗/工具的總覽、分類切換、卡片與詳情 Sheet
@@ -248,7 +262,7 @@ js/render-other.js            工具頁渲染引擎（重用 renderCatalogPage�
 js/render-overview.js         行程總覽 + mountTabContent() 掛載三個頁籤
 js/render-itinerary.js        每日行程、景點詳情、相片輪播
 js/render-docs.js             旅行文件清單
-js/render-aurora.js           極光儀表板（含 AURORA_LOCATIONS 資料）
+js/render-aurora.js           極光儀表板（資料來源見 data/aurora-config.js 與 NOAA/Open-Meteo API）
 js/budget.js                  費用記帳
 js/firebase-config.js         費用雲端同步（ES module）
 js/spot-icons.js              景點 SVG 插圖

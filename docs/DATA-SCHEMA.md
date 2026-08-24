@@ -235,6 +235,38 @@ const TRAVEL_CONTENT = {
 
 ---
 
+## 9. aurora-config
+
+極光頁的觀測地點與外部連結，維護於 `data/aurora-config.js`（`AURORA_CONFIG`）。座標、逐時雲量、Kp、OVATION 等**即時資料一律來自 API**，這個檔案只放不會變的靜態設定。
+
+```js
+const AURORA_CONFIG = {
+  locations: [
+    { key:'reykjavik', name:'雷克雅未克', lat:63.1466, lon:-21.9426, nights:[] }
+  ],
+  sampleRadiusKm: 30,
+  sampleDistances: [10, 20, 30],
+  links: { vedur: '...', road: '...' }
+};
+```
+
+**`locations[]`**（必填）：
+
+- `key`：英文小寫代稱，唯一，`js/render-aurora.js` 用它對應 UI 圖示（`AURORA_LOCATION_EMOJI`）與快取（`auroraLocData[key]`）
+- `name`：顯示用地點名稱
+- `lat` / `lon`：座標，**改動前請先確認是否只是想改顯示名稱**——這兩個值同時決定 Kp 時區換算、日出日落、雲量取樣，牽動範圍很大
+- `nights`：對應 `TRIP_DATA.days[].id` 的陣列，用來判斷「今天是不是住這裡」以選出預設地點；沒有對應住宿夜（例如雷克雅未克只是參考點）就給空陣列 `[]`
+
+**`sampleRadiusKm`**（必填）：雲況地圖的取樣半徑，目前固定 30 公里。
+
+**`sampleDistances`**（必填）：八方位取樣的距離環，目前固定 `[10, 20, 30]`（公里），對應雲況地圖的三圈同心圓。
+
+**`links`**（必填）：`vedur`（冰島氣象局極光預報）與 `road`（Road.is 即時路況）兩個外部連結，顯示在極光頁底部。
+
+> ⚠️ 這個檔案**不包含**任何 Kp、雲量、極光機率的數值——那些一律即時向 NOAA SWPC 與 Open-Meteo 查詢，失敗時顯示「暫時取不到資料」，`js/render-aurora.js` 不會、也不應該回退到寫死的示例數值。
+
+---
+
 ## 資料檢查
 
 網站啟動時會檢查旅程名稱、時區、每日 `id/title/date`、景點名稱與同行者。缺少必填資料時會在瀏覽器主控台列出警告，但不會讓網站停止顯示。
