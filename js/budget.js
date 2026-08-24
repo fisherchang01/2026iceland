@@ -228,8 +228,19 @@ function saveExpense() {
     target.currency = currency; target.desc = desc; target.payer = selPayer;
     target.participants = selParticipants.slice();
     persistExpenses();
-    if (cloudOn && target._cloudId) {
-      window.cloudExpenses.update(target._cloudId, target);
+    if (cloudOn) {
+      // 更新第一份副本，其餘副本直接刪掉 —— 留著只會在下次同步把舊值蓋回來。
+      var ids = cloudIdsFor(target);
+      if (ids.length) {
+        window.cloudExpenses.update(ids[0], target);
+        ids.slice(1).forEach(function(cid){ window.cloudExpenses.remove(cid); });
+        target._cloudId = ids[0];
+        _cloudIdsById[target.id] = [ids[0]];
+      } else {
+        window.cloudExpenses.push(target, function(cloudId){
+          if (cloudId) { target._cloudId = cloudId; persistExpenses(); }
+        });
+      }
       showToast('✅ 已更新并同步给旅伴');
       flashSaved('✅ 已更新并同步');
     } else {
@@ -345,11 +356,16 @@ function deleteExpense(id) {
   var label = target.desc + '（' + target.amount.toLocaleString('en-US') + ' ' + target.currency + '）';
   if (!confirm('确定删除这笔消费？\n\n' + label + '\n\n删除后所有旅伴的记录也会一起移除，且无法复原。')) return;
   if (String(editingId) === String(id)) cancelEdit();
+  markDeleted(target.id);
   expenses = expenses.filter(function(e){ return String(e.id) !== String(id); });
   persistExpenses();
   renderExpenses(); renderSummary(); refreshDailyIfOpen();
-  if (target._cloudId && window.cloudExpenses && window.cloudExpenses.available) {
-    window.cloudExpenses.remove(target._cloudId);
+  if (window.cloudExpenses && window.cloudExpenses.available) {
+    var ids = cloudIdsFor(target);
+    ids.forEach(function(cid){ window.cloudExpenses.remove(cid); });
+    if (target.id != null) delete _cloudIdsById[target.id];
+    showToast(ids.length > 1 ? '已删除（含 ' + ids.length + ' 份云端副本）' : '已删除');
+    return;
   }
   showToast('已删除');
 }
@@ -365,6 +381,28 @@ function deleteExpense(id) {
 //   - 沒有 _cloudId 的是「還沒成功上傳」，保留下來並重新嘗試上傳
 var _syncInFlight = {};      // id -> true，正在送往雲端、還沒收到回呼的記錄
 var _cloudDupes = [];        // 雲端偵測到的重複記錄（同一個 id 多筆）
+var _cloudIdsById = {};      // id -> [cloudId, ...]　同一筆消費在雲端的所有副本
+var _deletedIds = {};        // id -> 刪除時間戳（墓碑）
+
+// 刪除一筆時，雲端每移除一份副本都會回呼一次同步。
+// 那些回呼裡還看得到尚未移除的副本，若不擋掉就會把剛刪掉的記錄又併回本機，
+// 甚至因為「雲端沒有、本機有」而被當成待上傳再送一次。
+// 因此刪除後在一分鐘內記下墓碑，同步時一律略過這個 id。
+var TOMBSTONE_MS = 60000;
+function markDeleted(id) { if (id != null) _deletedIds[id] = Date.now(); }
+function isDeleted(id) {
+  if (id == null || !_deletedIds[id]) return false;
+  if (Date.now() - _deletedIds[id] > TOMBSTONE_MS) { delete _deletedIds[id]; return false; }
+  return true;
+}
+
+// 取得某筆消費在雲端的所有副本 ID。
+// 迴圈 bug 曾在雲端留下同一筆的大量副本，刪除或更新時必須一次處理乾淨。
+function cloudIdsFor(expense) {
+  var ids = (expense.id != null && _cloudIdsById[expense.id]) ? _cloudIdsById[expense.id].slice() : [];
+  if (expense._cloudId && ids.indexOf(expense._cloudId) === -1) ids.push(expense._cloudId);
+  return ids;
+}
 
 function initCloudExpensesSync() {
   if (!(window.cloudExpenses && window.cloudExpenses.available)) return;
@@ -378,18 +416,29 @@ function initCloudExpensesSync() {
     // 每一輪至少翻倍，最後變成無限增生。
     //
     // id 是存檔當下就產生、並且會一起寫進雲端的欄位，用它比對才不會誤判。
+    // 剛刪除的記錄一律排除，避免被殘餘副本的同步回呼救回來
+    remoteList = remoteList.filter(function(e){ return !isDeleted(e.id); });
+
     var remoteIds = {};
     remoteList.forEach(function(e){ if (e.id != null) remoteIds[e.id] = true; });
 
     var pending = expenses.filter(function(e){
-      return e.id != null && !remoteIds[e.id] && !_syncInFlight[e.id];
+      return e.id != null && !remoteIds[e.id] && !_syncInFlight[e.id] && !isDeleted(e.id);
     });
 
-    // 雲端同一個 id 只保留第一筆，其餘視為重複（先前的迴圈殘留）
+    // 雲端同一個 id 只保留第一筆，其餘視為重複（先前的迴圈殘留）。
+    // 同時記下每個 id 對應的「所有」雲端副本 —— 刪除與更新必須作用在全部副本上，
+    // 否則只動到其中一份，下次同步又會被其他未處理的副本蓋回來，
+    // 看起來就像「刪不掉」「改不動」。
     var seen = {}, merged = [];
     _cloudDupes = [];
+    _cloudIdsById = {};
     remoteList.forEach(function(e){
       if (e.id != null) {
+        if (e._cloudId) {
+          if (!_cloudIdsById[e.id]) _cloudIdsById[e.id] = [];
+          _cloudIdsById[e.id].push(e._cloudId);
+        }
         if (seen[e.id]) { if (e._cloudId) _cloudDupes.push(e._cloudId); return; }
         seen[e.id] = true;
       }
