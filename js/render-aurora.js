@@ -579,13 +579,22 @@ function buildAuroraTonight(loc, weatherResult) {
   const sunriseStr = data.daily.sunrise[1] || data.daily.sunrise[0];
   const sunrise = sunriseStr ? auroraParseLocalTime(sunriseStr, offset) : null;
 
-  // 完全天黑時刻：日落後太陽仰角首次 <= -18 度（每 5 分鐘掃描一次，取精確時間）
+  // 完全天黑時刻：日落後太陽仰角首次 <= -18 度（每 5 分鐘掃描一次，取精確時間）。
+  // 掃描範圍必須到日出為止，不能只掃 3 小時——冰島經度偏西，太陽仰角最低點
+  // （約當地太陽子夜）比日落晚 4 小時以上才到，掃太短會誤判成「沒有完全天黑」。
+  // 夏天則是另一回事：緯度夠高時，太陽整晚都不會低於 -18 度（永昏／永曉），
+  // 這種情況下 darkStart 為 null 是天文事實，不是資料錯誤，UI 要分開講。
   let darkStart = null;
+  let noFullDarkness = false;
   if (sunset) {
-    for (let m = 0; m <= 180; m += 5) {
-      const t = new Date(sunset.getTime() + m * 60000);
-      if (auroraSolarElevationDeg(t, loc.lat, loc.lon) <= -18) { darkStart = t; break; }
+    const scanEnd = sunrise ? sunrise.getTime() : sunset.getTime() + 12 * 60 * 60000;
+    let minElev = Infinity;
+    for (let t = sunset.getTime(); t <= scanEnd; t += 5 * 60000) {
+      const elev = auroraSolarElevationDeg(new Date(t), loc.lat, loc.lon);
+      if (elev < minElev) minElev = elev;
+      if (darkStart === null && elev <= -18) darkStart = new Date(t);
     }
+    if (darkStart === null && minElev > -18) noFullDarkness = true;
   }
 
   // 全黑時段內（elevDeg <= -18）找出可見機率最高點
@@ -652,10 +661,23 @@ function buildAuroraTonight(loc, weatherResult) {
   }, -1);
   const mapCenterValue = (nowIdx !== -1 && hours[nowIdx].effLowMid !== null) ? hours[nowIdx].effLowMid : null;
 
+  // 「今晚這一條」SVG 只畫一個晚上（日落前一小時到日出後一小時），
+  // 不能塞整段 48 小時預報——天空漸層是照「一次日落到日出」的固定比例畫的，
+  // 塞兩天進去會讓漸層對不上真實天黑時間，而且兩天份的資料擠進同一張圖的
+  // 每格會變得很窄，鄰近格雲量本來就會有落差，格子一窄，落差看起來就變成
+  // 一格一格明顯的色塊，而不是原設計那種平滑的雲層漸層感。
+  let stripHours = hours;
+  if (sunset && sunrise) {
+    const winStart = new Date(sunset.getTime() - 60 * 60000);
+    const winEnd = new Date(sunrise.getTime() + 60 * 60000);
+    const windowed = hours.filter(h => h.time >= winStart && h.time <= winEnd);
+    if (windowed.length >= 2) stripHours = windowed;
+  }
+
   return {
     ok: true,
-    hours,
-    sunset, sunrise, darkStart,
+    hours, stripHours,
+    sunset, sunrise, darkStart, noFullDarkness,
     bestSlot, stars, say, nums, mapCenterValue,
     currentTemp: data.current.temperature_2m,
     currentWind: data.current.wind_speed_10m
@@ -856,7 +878,9 @@ function renderAuroraDashboardUiOnly() {
 
   document.getElementById('auroraTSunset').textContent = tonight.sunset ? auroraFmtHM(tonight.sunset) : '暫時取不到資料';
   document.getElementById('auroraTSunrise').textContent = tonight.sunrise ? auroraFmtHM(tonight.sunrise) : '暫時取不到資料';
-  document.getElementById('auroraTDark').textContent = tonight.darkStart ? auroraFmtHM(tonight.darkStart) : '暫時取不到資料';
+  document.getElementById('auroraTDark').textContent = tonight.darkStart
+    ? auroraFmtHM(tonight.darkStart)
+    : (tonight.noFullDarkness ? '本季無完全天黑' : '暫時取不到資料');
 
   document.getElementById('auroraStars').textContent = '★★★★★☆☆☆☆☆'.slice(5 - tonight.stars, 10 - tonight.stars);
   document.getElementById('auroraSay').textContent = tonight.say;
@@ -896,7 +920,7 @@ function drawAuroraStrip(tonight) {
   const axis = document.getElementById('auroraStripAxis');
   if (!strip) return;
 
-  const hours = tonight.hours;
+  const hours = tonight.stripHours || tonight.hours;
   if (!hours || hours.length === 0) { strip.innerHTML = ''; if (axis) axis.innerHTML = ''; return; }
 
   const W = 360, PAD = 26, PW = W - PAD;
