@@ -115,12 +115,12 @@ function buildAuroraShellHtml() {
               <span>完全天黑 <b class="mono" id="auroraTDark">--:--</b></span>
             </div>
             <svg class="strip" id="auroraStrip" viewBox="0 0 360 132" preserveAspectRatio="none"
-                 role="img" aria-label="今晚從日落到日出的暮光變化、Kp 活動強度與雲層遮蔽"></svg>
+                 role="img" aria-label="今晚從日落到日出的暮光變化、Kp 活動強度與低中雲量"></svg>
             <div class="strip-cap mono" id="auroraStripAxis" style="margin-top:5px;color:var(--ink-3)"></div>
 
             <div class="legend">
               <span><i style="background:#5FE3A1"></i>Kp 活動</span>
-              <span><i style="background:rgba(238,241,245,.55)"></i>雲層遮蔽</span>
+              <span><i style="background:#7C8BE8"></i>低中雲量</span>
               <span><i style="background:#2A4A6B"></i>天未黑</span>
             </div>
 
@@ -611,7 +611,8 @@ function buildAuroraTonight(loc, weatherResult) {
     const startT = fullDarkHours[s].time, endT = new Date(fullDarkHours[e].time.getTime() + 60 * 60000);
     bestSlot = {
       label: auroraFmtHM(startT) + '–' + auroraFmtHM(endT),
-      probPct: Math.round(peakProb * 100)
+      probPct: Math.round(peakProb * 100),
+      startT, endT
     };
   }
 
@@ -926,12 +927,15 @@ function drawAuroraStrip(tonight) {
   const W = 360, PAD = 26, PW = W - PAD;
   const N = hours.length;
   const x = i => i / (N - 1) * PW;
+  const t0 = hours[0].time.getTime(), t1 = hours[N - 1].time.getTime();
+  const xTime = t => Math.max(0, Math.min(PW, (t - t0) / (t1 - t0) * PW));
   const KMIN = 1, KMAX = 6;
   const ky = v => {
     const c = Math.max(KMIN, Math.min(KMAX, v === null ? KMIN : v));
     return 118 - (c - KMIN) / (KMAX - KMIN) * 98;
   };
-  const veilCol = auroraTheme === 'light' ? '#FFFFFF' : '#EEF1F5';
+  // 低中雲量虛線用自己的縱軸（跟 Kp 刻度分開），0% 貼近頂端、100% 落在中段
+  const cloudY = v => 12 + Math.max(0, Math.min(100, v === null ? 0 : v)) / 100 * 60;
   const axisCol = auroraTheme === 'light' ? 'rgba(255,255,255,.45)' : 'rgba(255,255,255,.38)';
 
   let g = '<defs><linearGradient id="auroraSky" x1="0" y1="0" x2="1" y2="0">'
@@ -959,17 +963,26 @@ function drawAuroraStrip(tonight) {
   s += '<text x="' + (PW + 6) + '" y="12" fill="' + axisCol
     + '" font-size="9.5" font-family="Noto Sans SC,sans-serif">Kp</text>';
 
+  // Kp 山脊：綠色折線 + 向下漸層填充
   let d = 'M' + x(0) + ',' + ky(hours[0].kp).toFixed(1);
   for (let i = 1; i < N; i++) d += ' L' + x(i).toFixed(1) + ',' + ky(hours[i].kp).toFixed(1);
   s += '<path d="' + d + ' L' + PW + ',132 L0,132 Z" fill="url(#auroraRidge)"/>';
   s += '<path d="' + d + '" fill="none" stroke="#5FE3A1" stroke-width="2" stroke-linejoin="round"/>';
 
-  for (let j = 0; j < N - 1; j++) {
-    const c1 = hours[j].total, c2 = hours[j + 1].total;
-    const c = (typeof c1 === 'number' && typeof c2 === 'number') ? (c1 + c2) / 2 / 100 : 0;
-    const op = c * c * (3 - 2 * c) * 0.82;
-    s += '<rect x="' + x(j).toFixed(1) + '" y="0" width="' + (PW / (N - 1) + 0.6).toFixed(1)
-      + '" height="132" fill="' + veilCol + '" opacity="' + op.toFixed(3) + '"/>';
+  // 低中雲量虛線：藍紫色、疊在山脊之上，跟 Kp 用不同縱軸不同視覺語彙，一眼分得出兩件事
+  let cd = 'M' + x(0) + ',' + cloudY(hours[0].effLowMid).toFixed(1);
+  for (let i = 1; i < N; i++) cd += ' L' + x(i).toFixed(1) + ',' + cloudY(hours[i].effLowMid).toFixed(1);
+  s += '<path d="' + cd + '" fill="none" stroke="#7C8BE8" stroke-width="1.3" stroke-dasharray="3 3" opacity=".85"/>';
+
+  // 建議時段高亮帶：半透明色塊＋兩條邊界線，疊在最上層，讀者一眼看到「就是這一段」
+  if (tonight.bestSlot && tonight.bestSlot.startT && tonight.bestSlot.endT) {
+    const xs = xTime(tonight.bestSlot.startT.getTime());
+    const xe = xTime(tonight.bestSlot.endT.getTime());
+    if (xe > xs) {
+      s += '<rect x="' + xs.toFixed(1) + '" y="0" width="' + (xe - xs).toFixed(1) + '" height="132" fill="#5FE3A1" opacity=".07"/>';
+      s += '<line x1="' + xs.toFixed(1) + '" y1="0" x2="' + xs.toFixed(1) + '" y2="132" stroke="#5FE3A1" stroke-width=".8" opacity=".5"/>';
+      s += '<line x1="' + xe.toFixed(1) + '" y1="0" x2="' + xe.toFixed(1) + '" y2="132" stroke="#5FE3A1" stroke-width=".8" opacity=".5"/>';
+    }
   }
 
   strip.innerHTML = g + s;
