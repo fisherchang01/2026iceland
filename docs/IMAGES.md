@@ -1,6 +1,6 @@
 # 圖片資料夾、規格與命名規則
 
-> 對應版本：**v1.0-stable**（2026-08-18）
+> 對應版本：**v1.1**（2026-08-27）
 > 本文取代舊的 `images/README.md`（該檔已改為指向本文）。
 
 ---
@@ -65,26 +65,37 @@
 - 使用可辨識名稱，例如 `thingvellir.webp`、`thingvellir-02.webp`
 - 路線圖用 `route-day1.webp` 格式
 - 同一景點的 `thumb` 與 `medium` **檔名必須完全相同**
-- `catalog/` 建議用「主題-序號」格式，例如 `flowerchild-01.webp`、`supermarket-shopping-02.webp`
+- `catalog/` 一律用「`{item.id}`-序號」格式，例如 `skyr-01.webp`、`parking-zones-02.webp`；
+  分類封面用 `{分類key}-cover-NN.webp`。由編輯器上傳時會自動照這個規則命名
+- 歷史檔案裡仍有不符規則的名字（`Svarta-*`、`Seabaron-*` 大寫開頭；`is_gas-*`、
+  `supermarket_food.webp` 用底線；少數 `.png`）。它們能正常運作，不急著改；
+  編輯器接號時已做不分大小寫比對，不會因為 `Svarta-06` 而讓新檔從 `svarta-01` 重來
 
 ---
 
 ## 4. 加圖片的流程
 
-### 體驗頁／工具頁
+### 體驗頁／工具頁（v1.1 起可直接在編輯器上傳）
 
-1. 圖片放進 `images/catalog/`，用 GitHub 網頁上傳或 git push
-2. 開編輯器 → 選分類／項目 → 「新增圖片」→ 從挑選器選（若剛上傳，先按「🔄 重新整理清單」）
-3. 上傳資料檔
+1. 開編輯器 → 選分類 → 找到項目 → 按「📷 上傳照片」，直接選本機檔案（可多選）
+2. 瀏覽器會自動縮成長邊 1200px 的 WebP（q0.82）、命名為 `{item.id}-NN.webp`、
+   commit 到 `images/catalog/`，並立刻附加成該項目的 img block
+3. 按「⬆️ 上傳到GitHub」把資料檔一起送上去
 
-編輯器**不能**上傳圖片，一定要先把檔案放上 GitHub。
+封面圖同理，檔名是 `{分類key}-cover-NN.webp`。
+
+要用**已經存在**的圖（例如同一張圖既當封面又當內文圖），改按「選擇現有圖片」，
+挑選器有「未使用／本頁已用／全部」三段篩選。詳見 [EDITORS.md](EDITORS.md)。
+
+手動放檔案仍然可行（GitHub 網頁上傳或 git push），放完記得在挑選器按「🔄 重新整理清單」。
 
 ### 行程頁景點
 
-1. 同一張圖做兩個尺寸，**檔名相同**，分別放 `images/spots/thumb/` 與 `images/spots/medium/`
-2. 手動在 `data/trip-details.js` 對應景點的 `images` 陣列補上檔名
+在行程編輯器選好景點，直接上傳本機照片即可：會自動產生 `medium`（長邊 960/q0.82）與
+`thumb`（長邊 480/q0.76）兩份**同名** WebP，命名為 `{spot.id}-NN.webp`。
 
-行程編輯器目前**不管理照片**，這一步只能手動。
+手動做的話：同一張圖做兩個尺寸、檔名相同，分別放 `images/spots/thumb/` 與
+`images/spots/medium/`，再到 `data/trip-details.js` 對應景點的 `images` 陣列補上檔名。
 
 ---
 
@@ -101,12 +112,18 @@
 
 ```bash
 # 列出 catalog 裡沒被任何資料檔引用的圖片
+# （必須同時掃 travel 與 other——只掃一份會把另一頁的圖誤判成孤兒）
+# 註：兩段 grep 的結果要「合併後再排序一次」，舊版文件把兩個各自 sort 過的清單直接
+#     串起來就餵給 comm，會噴 "input is not in sorted order" 並給出錯誤答案。
 comm -23 \
   <(ls images/catalog | sort) \
-  <(grep -oh 'images/catalog/[^"'"'"']*' data/*.js js/*.js | sed 's|.*/||' | sort -u;
-    grep -oh '"\(cover\|src\)": *"[^"]*"' data/travel-content.js data/other-content.js \
-      | sed 's/.*: *"//;s/"//' | sort -u)
+  <( { grep -oh 'images/catalog/[^"'"'"']*' data/*.js js/*.js | sed 's|.*/||';
+       grep -oh '"\(cover\|src\)": *"[^"]*"' data/travel-content.js data/other-content.js \
+         | sed 's/.*: *"//;s/"//'; } | sort -u )
 ```
+
+v1.1 清理時這條指令找出 8 張孤兒（`is_airport-01/02/03`、`kaviar-02`、`parkinga-02/04`、
+`skyx-cover-01`、`注音与拼音对照.jpg`），已全部刪除。目前 103 張圖全部有引用。
 
 ---
 

@@ -12,6 +12,7 @@ const TRAVEL_CONTENT = {
       "size": "2x2",
       "items": [
         {
+          "id": "iceland-intro",
           "name": "",
           "layout": "sm",
           "blocks": [
@@ -84,6 +85,7 @@ const TRAVEL_CONTENT = {
       "size": "2x4",
       "items": [
         {
+          "id": "skyr",
           "name": "Skyr 優格",
           "layout": "lg",
           "blocks": [
@@ -118,6 +120,7 @@ const TRAVEL_CONTENT = {
           ]
         },
         {
+          "id": "kaviar",
           "name": "魚子醬牙膏 (Kaviar)",
           "layout": "sm",
           "blocks": [
@@ -140,6 +143,7 @@ const TRAVEL_CONTENT = {
           ]
         },
         {
+          "id": "ora",
           "name": "Ora魚子醬",
           "layout": "sm",
           "blocks": [
@@ -166,6 +170,7 @@ const TRAVEL_CONTENT = {
           ]
         },
         {
+          "id": "glacier-water",
           "name": "冰川水",
           "layout": "sm",
           "blocks": [
@@ -188,6 +193,7 @@ const TRAVEL_CONTENT = {
           ]
         },
         {
+          "id": "einstok",
           "name": "Einstok 啤酒",
           "layout": "sm",
           "blocks": [
@@ -202,6 +208,7 @@ const TRAVEL_CONTENT = {
           ]
         },
         {
+          "id": "is-coke",
           "name": "冰島可口可樂",
           "layout": "sm",
           "blocks": [
@@ -222,6 +229,7 @@ const TRAVEL_CONTENT = {
       "size": "2x4",
       "items": [
         {
+          "id": "lakkris",
           "name": "甘草糖 Lakkris",
           "layout": "sm",
           "blocks": [
@@ -236,6 +244,7 @@ const TRAVEL_CONTENT = {
           ]
         },
         {
+          "id": "mills",
           "name": "Mills鱼子酱牙膏",
           "layout": "sm",
           "blocks": [
@@ -254,6 +263,7 @@ const TRAVEL_CONTENT = {
           ]
         },
         {
+          "id": "lava-salt",
           "name": "冰岛火山海盐",
           "layout": "sm",
           "blocks": [
@@ -268,6 +278,7 @@ const TRAVEL_CONTENT = {
           ]
         },
         {
+          "id": "lysi",
           "name": "冰岛鱼油 Lysi",
           "layout": "sm",
           "blocks": [
@@ -286,6 +297,7 @@ const TRAVEL_CONTENT = {
           ]
         },
         {
+          "id": "is-chocolate",
           "name": "巧克力",
           "layout": "sm",
           "blocks": [
@@ -306,6 +318,7 @@ const TRAVEL_CONTENT = {
       "size": "2x2",
       "items": [
         {
+          "id": "66north",
           "name": "66 NORTH",
           "layout": "sm",
           "blocks": [
@@ -324,6 +337,7 @@ const TRAVEL_CONTENT = {
           ]
         },
         {
+          "id": "icewear",
           "name": "ICEWEAR",
           "layout": "sm",
           "blocks": [
@@ -342,6 +356,7 @@ const TRAVEL_CONTENT = {
           ]
         },
         {
+          "id": "bluelagoon",
           "name": "Blue Lagoon 冰岛蓝湖护肤品",
           "layout": "sm",
           "blocks": [
@@ -362,11 +377,6 @@ const TRAVEL_CONTENT = {
               "src": "shopbuy-05.webp"
             }
           ]
-        },
-        {
-          "name": "",
-          "layout": "sm",
-          "blocks": []
         }
       ]
     },
@@ -379,6 +389,7 @@ const TRAVEL_CONTENT = {
       "size": "2x2",
       "items": [
         {
+          "id": "bonus",
           "name": "​​Bónus（粉红小猪超市）",
           "layout": "sm",
           "blocks": [
@@ -393,6 +404,7 @@ const TRAVEL_CONTENT = {
           ]
         },
         {
+          "id": "kronan",
           "name": "​​Krónan（笑脸超市）",
           "layout": "sm",
           "blocks": [
@@ -407,6 +419,7 @@ const TRAVEL_CONTENT = {
           ]
         },
         {
+          "id": "netto",
           "name": "Nettó（蓝色超市）",
           "layout": "sm",
           "blocks": [
@@ -421,6 +434,7 @@ const TRAVEL_CONTENT = {
           ]
         },
         {
+          "id": "pris",
           "name": "​​Prís​​",
           "layout": "sm",
           "blocks": [
@@ -435,6 +449,7 @@ const TRAVEL_CONTENT = {
           ]
         },
         {
+          "id": "costco",
           "name": "​​Costco",
           "layout": "sm",
           "blocks": [
@@ -468,6 +483,7 @@ const TRAVEL_CONTENT = {
       "size": "2x2",
       "items": [
         {
+          "id": "svarta",
           "name": "Svarta海鲜汤",
           "layout": "sm",
           "blocks": [
@@ -522,6 +538,7 @@ const TRAVEL_CONTENT = {
           ]
         },
         {
+          "id": "pylsur",
           "name": "热狗堡",
           "layout": "sm",
           "blocks": [
@@ -544,6 +561,7 @@ const TRAVEL_CONTENT = {
           ]
         },
         {
+          "id": "seabaron",
           "name": "Seabaron龙虾汤",
           "layout": "sm",
           "blocks": [
@@ -630,6 +648,7 @@ const TRAVEL_CONTENT = {
       "size": "2x2",
       "items": [
         {
+          "id": "thingvellir",
           "name": "辛格韦德利国家公园",
           "layout": "lg",
           "blocks": [
@@ -648,6 +667,7 @@ const TRAVEL_CONTENT = {
           ]
         },
         {
+          "id": "vatnajokull",
           "name": "瓦特纳冰川",
           "layout": "lg",
           "blocks": [
@@ -666,6 +686,7 @@ const TRAVEL_CONTENT = {
           ]
         },
         {
+          "id": "suomenlinna",
           "name": "芬蘭堡要塞",
           "layout": "lg",
           "blocks": [
@@ -694,6 +715,7 @@ const TRAVEL_CONTENT = {
       "size": "2x4",
       "items": [
         {
+          "id": "flowerchild",
           "name": "",
           "layout": "sm",
           "blocks": [
@@ -735,6 +757,7 @@ const TRAVEL_CONTENT = {
     }
   ]
 };
+
 
 
 

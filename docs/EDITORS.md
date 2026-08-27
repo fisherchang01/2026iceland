@@ -1,6 +1,6 @@
 # 編輯器使用指南
 
-> 對應版本：**v1.0-stable**（2026-08-18）
+> 對應版本：**v1.1**（2026-08-27）
 > 本文取代已刪除的 `EDITORS_QUICK_START.md`、`PHASE_1_EDITOR_GUIDE.md`、`TRIP_EDITOR_PRO_GUIDE.md`。
 
 ---
@@ -17,16 +17,30 @@
 
 > ⚠️ **每個編輯器只寫自己那一個資料檔。** 歷史上曾發生「編輯器寫的檔案跟網站讀的檔案不是同一個」的問題（編輯器寫 `travel-content.json`、網站讀 `travel-content.js`），造成「編了、上傳成功了、網站卻沒變」。上表的對應關係是硬約定，改動前務必確認。
 
-體驗編輯器與工具編輯器是**同一套程式**，只有頂部的設定常數不同：
+體驗編輯器與工具編輯器共用同一份程式。v1.0 時它們是兩份 1142 行、只差 15 行的複製檔，
+每個 bug 都要修兩遍；**v1.1 起改成「共用核心 + 薄外殼」**：
+
+| 檔案 | 行數 | 內容 |
+|---|---|---|
+| `tools/catalog-editor-core.js` | ~1290 | 全部邏輯 |
+| `tools/catalog-editor-core.css` | ~230 | 全部樣式 |
+| `tools/travel-editor-pro.html` | 90 | 外殼，只設定 `EDITOR_CONFIG` |
+| `tools/other-editor-pro.html` | 90 | 同上 |
+
+兩個外殼之間**只差 20 行**，全部是設定值：
 
 ```js
-const GITHUB_FILE = 'data/travel-content.js';   // 或 data/other-content.js
-const VAR_NAME    = 'TRAVEL_CONTENT';           // 或 OTHER_CONTENT
-const DRAFT_KEY   = 'travel_content_drafts';    // 或 other_content_drafts
-const LABEL       = '體驗內容';                  // 或 工具內容
+window.EDITOR_CONFIG = {
+    file:     'data/travel-content.js',   // 或 data/other-content.js
+    varName:  'TRAVEL_CONTENT',           // 或 OTHER_CONTENT
+    draftKey: 'travel_content_drafts',    // 或 other_content_drafts
+    label:    '體驗內容',                  // 或 工具內容
+    scope:    '體驗頁',                    // 顯示在工具列左側
+    peer: { ... }   // 另一頁的同組設定，用來判斷圖片是否「他頁已用」
+};
 ```
 
-修 bug 時記得**兩個檔案要同步改**。
+> ⚠️ 修 bug 一律改 `catalog-editor-core.js`。**不要**再把邏輯搬回外殼。
 
 ---
 
@@ -66,9 +80,9 @@ const LABEL       = '體驗內容';                  // 或 工具內容
 
 ### 標準流程
 
-1. **（若要加圖）先把圖片上傳到 GitHub `images/catalog/`** — 編輯器沒有上傳圖片的能力，它只寫資料檔
-2. 開啟編輯器，左欄選分類
-3. 編輯欄位、新增／刪除／搬移項目與 block
+1. 開啟編輯器，左欄選分類
+2. 編輯欄位、新增／刪除／搬移項目與 block
+3. 要加照片就在該項目按「📷 上傳照片」，直接選本機檔案（v1.1 起，見下方）
 4. **💾 本地保存** — 存進 `localStorage`，關掉瀏覽器也不會遺失
 5. **⬆️ 上傳到 GitHub** — 通過 Guard 檢查後，跳出 diff 摘要確認視窗
 6. 確認上傳 → GitHub Pages 約 1–2 分鐘後生效
@@ -101,13 +115,55 @@ const LABEL       = '體驗內容';                  // 或 工具內容
 
 > ⚠️ 渲染順序是**先 HTML-escape 再套用標記轉換**，因此內容裡的 `<`、`>`、`&` 會被安全處理，不會造成 XSS，也不會破壞標記本身。
 
+### 上傳照片（v1.1 新增）
+
+不用再自己開圖片軟體縮圖、想檔名、先推到 GitHub 再回來認領。三個入口：
+
+| 位置 | 檔名 | 上傳後 |
+|---|---|---|
+| 項目底部「📷 上傳照片」 | `{item.id}-NN.webp` | 依序附加成新的 img block |
+| 圖片 block 的「📷 從本機上傳」 | `{item.id}-NN.webp` | 換掉這個 block 的圖 |
+| 封面欄位的「📷 從本機上傳」 | `{分類key}-cover-NN.webp` | 設為分類封面 |
+
+可一次多選。瀏覽器端等比縮到**長邊 1200px、WebP q0.82**（不裁切——分類卡與項目卡的裁切由 CSS
+的 `object-fit` 負責），再直接 commit 到 `images/catalog/`。進度顯示在畫面右下角。
+
+幾個要知道的事：
+
+- 需要 PAT（跟資料檔上傳同一組）
+- 接號**不分大小寫**。既有檔案有 `Svarta-06.webp` 這種大寫開頭的，下一張會是 `svarta-07.webp`
+  而不是從 01 重來——否則在 GitHub 上會變成兩個不同的檔案
+- 上傳前會先查該路徑是否已存在，撞名直接中止
+- **照片是立刻 commit 的，資料檔不是。** 上傳成功會馬上把 block 掛上並寫進草稿，
+  縮短「檔案在 repo 裡、資料檔卻沒引用」的孤兒視窗；但如果你之後按「放棄」，那張照片就會變成孤兒
+- 項目沒有 `id` 時上傳入口是停用的（見 §項目 id）
+
+### 項目 id
+
+每個項目有一個 `id`，是照片檔名的前綴，格式為小寫英數與減號、**跨兩個資料檔全域唯一**。
+新增項目時會要求輸入，也可以在項目的 id 欄位直接改（重複或格式錯誤會即時擋下）。
+
+改 id 不會動到已存在的檔案，只影響之後新上傳的命名。詳見
+[DATA-SCHEMA.md](DATA-SCHEMA.md) §8.2。
+
 ### 圖片挑選器
 
-- 讀取 GitHub API 列出 `images/catalog/` 全部圖片（未帶 PAT 時每小時 60 次上限）
-- **預設只列出尚未被使用的圖片**，剛上傳的新照片會直接出現在視野裡，不用在幾十張已用過的圖裡找
-- 需要重複挑選同一張圖時（例如某張圖同時當分類封面與內文圖），勾選右上角的**「一併顯示已使用」**即可看到全部，已用過的會標上「已用」角標
-- 若所有圖片都已被使用，清單會顯示提示而不是一片空白
-- 清單有快取，**上傳新圖後要按「🔄 重新整理清單」**才看得到
+- 讀取 GitHub API 列出 `images/catalog/` 全部圖片。**有 PAT 時會自動帶上**，
+  速率上限從匿名的 60 次/小時提高到 5000 次/小時
+- 三段式篩選：**未使用｜本頁已用｜全部**，預設「未使用」
+- `images/catalog/` 是體驗頁與工具頁**共用的實體資料夾**，所以挑選器會同時掃描兩份資料檔
+  （含兩邊 localStorage 裡尚未上傳的草稿），把每張圖分成三態：
+
+  | 狀態 | 角標 | 說明 |
+  |---|---|---|
+  | 本頁已用 | 灰色「本頁」 | 這個編輯器的資料檔引用了它 |
+  | 他頁已用 | 橘色「工具頁」/「體驗頁」 | 另一頁引用了它——**不是**未使用 |
+  | 未使用 | 無 | 兩邊都沒引用 |
+
+  > v1.0 的 `computeUsedImages()` 只掃自己那一份，算出來的「未使用」其實是「本頁沒用到」。
+  > 工具編輯器因此把 80 張體驗頁的照片列成未使用（88 張裡只有 8 張是真的沒人用）。
+
+- 清單有快取，**在別處上傳新圖後要按「🔄 重新整理清單」**（從編輯器內上傳會自動清快取）
 - API 失敗時會退回手動輸入檔名
 
 ### 新增分類
@@ -128,6 +184,8 @@ const LABEL       = '體驗內容';                  // 或 工具內容
 1. 資料可序列化為 JSON
 2. `categories` 是陣列且至少 1 個
 3. 每個分類都有非空的 `key` 與 `title`，且 `key` 不重複
+3b. 每個項目都有非空、格式合法（`^[a-z0-9][a-z0-9-]*$`）且不重複的 `id`
+    （與另一頁撞名只警告，不阻擋）
 4. 分類數不得少於載入時的數量（真要刪需二次確認）
 5. 檔案 header 中確實找得到 `const {VAR_NAME}`
 6. 顯示 diff 摘要（分類 / 項目 / 圖片 數量前後對照）供人工確認
@@ -148,7 +206,9 @@ const LABEL       = '體驗內容';                  // 或 工具內容
 
 支援與體驗編輯器相同的四種文字標記。
 
-> ⚠️ 景點照片不由編輯器管理。要加照片需手動：把同名檔案分別放進 `images/spots/thumb/` 與 `images/spots/medium/`，再在 `data/trip-details.js` 的 `images` 陣列補上檔名。
+景點照片可直接在編輯器上傳（階段 D 起）：選檔案後自動縮成 `medium`（長邊 960/q0.82）與
+`thumb`（長邊 480/q0.76）兩份同名 WebP，命名為 `{spot.id}-NN.webp`，一次 commit 到
+`images/spots/medium/` 與 `images/spots/thumb/`。
 
 ---
 
@@ -178,7 +238,8 @@ const newContent = header + marker + JSON.stringify(data, null, 2) + ';\n' + foo
 
 **坑 1：`lastIndexOf('};')` 不是 `indexOf('};')`**
 資料是巢狀物件，`indexOf` 會從中間第一個 `};` 切斷，造成大量資料重複與語法錯誤。
-`trip-editor-pro.html` 目前用的是 `indexOf`，只因為 `trip-details.js` 整份剛好只有一個 `};` 才沒出事——這是運氣不是設計，日後若該檔結構改變就會爆。
+三個編輯器目前都已使用 `lastIndexOf`（`trip-editor-pro.html` 早期版本曾用 `indexOf`，
+只因為 `trip-details.js` 剛好只有一個 `};` 才沒出事——那是運氣不是設計）。
 
 **坑 2：中文編碼**
 必須用 `utf8ToBase64()`（`btoa(unescape(encodeURIComponent(str)))`，並備妥 `TextEncoder` fallback），不能直接 `btoa()`，否則中文內容會壞。

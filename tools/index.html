@@ -266,7 +266,7 @@
       <div class="tool-card" style="cursor: default; background: #f9f9f9;">
         <div class="tool-icon">📖</div>
         <div class="tool-title">編輯器使用指南</div>
-        <p class="tool-desc">三個編輯器的操作流程、Block 編輯、文字標記、圖片挑選器、上傳 Guard 與常見問題。</p>
+        <p class="tool-desc">三個編輯器的操作流程、Block 編輯、文字標記、照片上傳、圖片挑選器、上傳 Guard 與常見問題。</p>
         <a href="../docs/EDITORS.md" class="cta-button">查看文檔 →</a>
       </div>
 
@@ -298,7 +298,6 @@
     <h2 class="section-title">🚀 典型工作流</h2>
 
     <div class="info-box">
-      <p><strong>步驟 0：先傳圖片</strong> - 若這次要加圖，先把圖片上傳到 GitHub 的 <code>images/catalog/</code>（編輯器只寫資料檔，不能上傳圖片）</p>
       <p><strong>步驟 1：準備 PAT</strong> - GitHub Settings → Developer settings → Personal access tokens，生成新 token（勾選 repo 權限）。第一次上傳時編輯器會跳出輸入框，之後存在瀏覽器不用再輸入</p>
       <p><strong>步驟 2：打開編輯器</strong> - 選擇上面的編輯器之一，會自動讀取 GitHub 上的最新內容</p>
       <p><strong>步驟 3：編輯</strong> - 左欄選分類 → 中欄改欄位、增刪搬移項目與 block → 右欄看即時預覽</p>
@@ -320,7 +319,8 @@
       <p>✓ <strong>零部署成本</strong> - 無需本地開發環境，直接在瀏覽器中使用</p>
       <p>✓ <strong>即時預覽</strong> - 右側面板即時顯示編輯效果</p>
       <p>✓ <strong>Block 編輯</strong> - 小標題、文字、圖片可自由排序，順序即版面順序</p>
-      <p>✓ <strong>圖片挑選器</strong> - 直接從 <code>images/catalog/</code> 選圖，標示哪些已被使用</p>
+      <p>✓ <strong>直接上傳照片</strong> - 在項目裡選本機檔案即可，自動縮圖、命名、commit 並掛上，不必先線下處理</p>
+      <p>✓ <strong>圖片挑選器</strong> - 三段篩選（未使用／本頁已用／全部），同時掃描體驗頁與工具頁，不會把另一頁在用的圖列成未使用</p>
       <p>✓ <strong>本地草稿</strong> - 存在瀏覽器，關掉也不會遺失；有未上傳修改的分類會標上 ●</p>
       <p>✓ <strong>上傳 Guard</strong> - 五道檢查加 diff 摘要確認，防止一次上傳把資料清空</p>
       <p>✓ <strong>文字標記</strong> - 支援粗體、斜體、換行、指定顏色</p>

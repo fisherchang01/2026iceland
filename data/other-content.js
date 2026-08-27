@@ -14,6 +14,7 @@ const OTHER_CONTENT = {
       "size": "2x2",
       "items": [
         {
+          "id": "is-refund",
           "name": "退税条件与金额",
           "layout": "sm",
           "blocks": [
@@ -27,11 +28,11 @@ const OTHER_CONTENT = {
             },
             {
               "type": "img",
-              "src": "is_refund_a-02.webp"
+              "src": "is-refund-01.webp"
             },
             {
               "type": "img",
-              "src": "is_refund_a-01.webp"
+              "src": "is-refund-02.webp"
             },
             {
               "type": "text",
@@ -39,7 +40,7 @@ const OTHER_CONTENT = {
             },
             {
               "type": "img",
-              "src": "is_refund-01.webp"
+              "src": "is-refund-03.webp"
             }
           ]
         }
@@ -54,6 +55,7 @@ const OTHER_CONTENT = {
       "size": "2x2",
       "items": [
         {
+          "id": "fl-refund",
           "name": "先蓋章",
           "layout": "sm",
           "blocks": [
@@ -63,11 +65,11 @@ const OTHER_CONTENT = {
             },
             {
               "type": "img",
-              "src": "fl_refund-01.webp"
+              "src": "fl-refund-01.webp"
             },
             {
               "type": "img",
-              "src": "fl_refund-02.webp"
+              "src": "fl-refund-02.webp"
             },
             {
               "type": "heading",
@@ -83,11 +85,11 @@ const OTHER_CONTENT = {
             },
             {
               "type": "img",
-              "src": "fl_refund-03.webp"
+              "src": "fl-refund-03.webp"
             },
             {
               "type": "img",
-              "src": "fl_refund-04.webp"
+              "src": "fl-refund-04.webp"
             },
             {
               "type": "text",
@@ -124,6 +126,7 @@ const OTHER_CONTENT = {
       "size": "2x2",
       "items": [
         {
+          "id": "fuel-intro",
           "name": "摘要",
           "layout": "sm",
           "blocks": [
@@ -134,6 +137,7 @@ const OTHER_CONTENT = {
           ]
         },
         {
+          "id": "n1",
           "name": "N1加油站",
           "layout": "sm",
           "blocks": [
@@ -152,6 +156,7 @@ const OTHER_CONTENT = {
           ]
         },
         {
+          "id": "orkan",
           "name": "ORKAN加油站",
           "layout": "sm",
           "blocks": [
@@ -166,6 +171,7 @@ const OTHER_CONTENT = {
           ]
         },
         {
+          "id": "parka",
           "name": "使用Parka繳停車費",
           "layout": "sm",
           "blocks": [
@@ -190,6 +196,7 @@ const OTHER_CONTENT = {
       "size": "2x2",
       "items": [
         {
+          "id": "sauna",
           "name": "芬蘭洗浴",
           "layout": "sm",
           "blocks": [
@@ -214,6 +221,7 @@ const OTHER_CONTENT = {
       "size": "2x2",
       "items": [
         {
+          "id": "parking-zones",
           "name": "如何查看P1~P4？",
           "layout": "sm",
           "blocks": [
@@ -232,6 +240,7 @@ const OTHER_CONTENT = {
           ]
         },
         {
+          "id": "parking-app",
           "name": "应用选择",
           "layout": "sm",
           "blocks": [
@@ -254,6 +263,7 @@ const OTHER_CONTENT = {
           ]
         },
         {
+          "id": "parking-nature",
           "name": "自然景点停车及费用",
           "layout": "sm",
           "blocks": [
@@ -268,6 +278,7 @@ const OTHER_CONTENT = {
           ]
         },
         {
+          "id": "road-toll",
           "name": "道路里程费",
           "layout": "sm",
           "blocks": [
@@ -281,6 +292,7 @@ const OTHER_CONTENT = {
     }
   ]
 };
+
 
 
 
