@@ -55,7 +55,6 @@ const TRIP = {
     "num": "1",
     "dateLabel": "10月4日（周日）",
     "title": "雷市初见·地热启程",
-    "routeMapImg": "route-day1.webp",
     "driveSummary": {
       "total": "约 165 km",
       "time": "约 2小时45分钟（不含景点停留，市区路段为步行）"
@@ -396,13 +395,13 @@ const TRIP = {
         ],
         "note": "💡 {#ff0000}少数需要收门票的自然景点{/color}，门票每人ISK 600。\n💡 无停车费用，没有提供厕所。"
       }
-    ]
+    ],
+    "routeMapImg": "route-day1-01.webp"
   },
   "day2": {
     "num": "2",
     "dateLabel": "10月5日（周一）",
     "title": "追泉逐瀑·黄金圈巡礼",
-    "routeMapImg": "route-day2.webp",
     "driveSummary": {
       "total": "约 102 km",
       "time": "约 1小时45分钟（不含景点停留，不含备选景点绕行）"
@@ -610,13 +609,13 @@ const TRIP = {
         },
         "note": "🅿️ 停車：农场旁免费停车\n🚻 廁所：无"
       }
-    ]
+    ],
+    "routeMapImg": "route-day2-01.webp"
   },
   "day3": {
     "num": "3",
     "dateLabel": "10月6日（周二）",
     "title": "瀑布之路·南岸奇境",
-    "routeMapImg": "route-day3.webp",
     "driveSummary": {
       "total": "约 158 km",
       "time": "约 2小时25分钟（不含景点停留）"
@@ -876,7 +875,8 @@ const TRIP = {
           }
         ]
       }
-    ]
+    ],
+    "routeMapImg": "route-day3-01.webp"
   },
   "day4": {
     "num": "4",
@@ -1000,13 +1000,13 @@ const TRIP = {
         ],
         "note": "🅿️ 停車：100 ISK\n💡 三个停车场停车费皆为 ISK 100。"
       }
-    ]
+    ],
+    "routeMapImg": "route-day4-01.webp"
   },
   "day5": {
     "num": "5",
     "dateLabel": "10月8日（周四）",
     "title": "公路慢行·蓝湖疗愈",
-    "routeMapImg": "route-day5.webp",
     "driveSummary": {
       "total": "约 325 km",
       "time": "约 4小时50分钟（不含景点停留，这天是长途转场日）"
@@ -1073,7 +1073,8 @@ const TRIP = {
         ],
         "note": "🚻 廁所：温泉区内。务必导航「Blue Lagoon Iceland」，勿搜中文「蓝湖」以免误导至废弃地热厂区。"
       }
-    ]
+    ],
+    "routeMapImg": "route-day5-01.webp"
   },
   "day6": {
     "num": "6",
@@ -1102,7 +1103,6 @@ const TRIP = {
     "num": "7",
     "dateLabel": "10月10日（周六）",
     "title": "赫尔辛基·北欧漫游日",
-    "routeMapImg": "route-day7.webp",
     "hotel": {
       "name": "飞机上",
       "note": "当晚搭乘深夜航班返港（AY099，00:35起飞）"
@@ -1275,7 +1275,8 @@ const TRIP = {
         "deepDesc": "一、Kappeli Restaurant：位于海边码头公园的玻璃房餐厅，环境极佳。三文鱼汤约16.9-17.9欧，自助按人头收费，搭配店里的方块黄油面包非常绝，可无限续杯，本地人和游客都爱去。咖啡馆区域（进门左手边）周一至周六10:00-22:00，没有正餐，有各种蛋糕、饮品，还有自助三文鱼汤；正餐餐厅通常11:00才开始供应，包含前菜、主菜（煎三文鱼与烟熏三文鱼）和甜品。\n二、其他选择：（1）Merimakasiini——距离市中心步行约15分钟的码头旁，三文鱼汤分量足（Big Size约20欧），味道浓郁。（2）南码头露天市场（Kauppatori）——露天摊位众多，各家都卖三文鱼和三文鱼汤，价格相近（约11-15欧），建议直接去靠海的摊位，边吹海风边吃。（3）Cafe Regatta——赫尔辛基绝对不能错过的肉桂卷专卖店，也大推热巧克力（加一圈奶油），还可以买几个香肠在火炉旁边烤，配上湖边景色很享受，吃完还可以顺便到旁边的西贝流士公园走走。",
         "map": "Kappeli Restaurant Helsinki"
       }
-    ]
+    ],
+    "routeMapImg": "route-day7-01.webp"
   },
   "day8": {
     "num": "8",
@@ -1297,6 +1298,7 @@ const TRIP = {
     "note": "10月10日为「芬兰人的一天」行程，当晚无需住宿，深夜航班返港；10月11日傍晚抵达香港。"
   }
 };
+
 
 
 
