@@ -58,7 +58,8 @@ const TRIP = {
         "kind": "spot",
         "tags": [],
         "images": [
-          "hk-airport-lounge-02.webp"
+          "hk-airport-lounge-03.webp",
+          "hk-airport-lounge-04.webp"
         ],
         "desc": "国泰航空贵宾室",
         "deepDesc": "",
@@ -80,6 +81,10 @@ const TRIP = {
           {
             "type": "img",
             "src": "hk-airport-lounge-01.webp"
+          },
+          {
+            "type": "img",
+            "src": "hk-airport-lounge-02.webp"
           }
         ]
       },
