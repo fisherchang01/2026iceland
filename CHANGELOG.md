@@ -10,6 +10,22 @@ git diff v1.0-stable HEAD     # 跟目前狀態比對
 
 ---
 
+## v1.4.1-thumb-fix — 2026-08-28 🩹 補齊 21 張缺漏的景點縮圖
+
+**問題：`images/spots/medium/` 有 214 個檔案，`images/spots/thumb/` 只有 193 個，缺的 21 張全部正在被 `data/trip-details.js` 引用（27 處）。**
+
+缺漏清單：`bluelagoon-01`~`-11`（11 張）、`centralstation-01`~`-04`（4 張）、`diamond-beach-01`~`-06`（6 張）。推測是先前從 git history 救回照片時只救了 medium 這一層。
+
+**為什麼會壞：**
+- `render-itinerary.js` 的景點縮圖列（`buildSpotThumbRowHtml`）直接指 `thumb/`，路徑 404
+- 景點詳情大圖的 `srcset` 是 `thumb/... 480w, medium/... 960w`。瀏覽器一旦選中 480w 的候選檔而該檔 404，**不會退回 `src`**，整張圖直接壞掉——窄螢幕（手機）受影響最大
+
+**修法：** 由既有 medium 檔以編輯器同一組參數重新產出（長邊 480px、WebP q0.76、等比不裁切），與現有 193 張的規格一致（全站 thumb 長邊皆為 480）。共新增 373 KB。
+
+未動任何程式碼與資料檔，`sw.js` 快取版本字串因此不需要調整（照片不在 `SHELL_ASSETS` 內）。
+
+---
+
 ## v1.4-day-settings — 2026-08-28 ⭐ 刪除 transit 旗標，每一天的編輯入口統一
 
 **核心目的：v1.3 把飛機日的重複顯示清掉了，但規則仍寫死在渲染器裡——`if (d.transit) 不顯示路線圖`。這個 repo 要當成之後美國、泰國行程的範本，「這天是不是飛機日」不該是一種需要特別標記的類型。這一版把它拆成三個互不相干的資料條件，`transit` 因此可以整個刪除。**
