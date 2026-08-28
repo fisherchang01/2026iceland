@@ -450,7 +450,7 @@ function initCloudExpensesSync() {
 
     // 安全閥：正常情況待上傳不會很多。異常量體先停手並提示，不要盲目寫入雲端。
     if (pending.length > 20) {
-      console.warn('待上傳筆數異常（' + pending.length + '），已暫停自動補傳');
+      console.warn('待上传笔数异常（' + pending.length + '），已暂停自动补传');
       showToast('待上传笔数异常，已暂停自动补传');
     } else {
       pending.forEach(function(e) {

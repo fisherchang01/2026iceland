@@ -82,7 +82,7 @@ function initCatalogPage(key) {
     meta.overview + '</button><div class="catalog-pill-scroll">' + categories.map(function(cat, index){
       var title = cat.querySelector('.travel-collapse-title');
       return '<button class="catalog-pill" data-index="' + index + '" onclick="selectCatalogCategory(\'' + key + '\',' + index + ')">' +
-        (meta.labels[index] || (title ? title.textContent.trim() : '分類 ' + (index + 1))) + '</button>';
+        (meta.labels[index] || (title ? title.textContent.trim() : '分类 ' + (index + 1))) + '</button>';
     }).join('') + '</div>';
   inner.insertBefore(top, inner.firstChild);
 
@@ -105,15 +105,15 @@ function initCatalogPage(key) {
   units = shuffleArray(units);
   var order = big.concat.apply(big, units);
   if (trailingOrphan !== null) order.push(trailingOrphan);
-  overview.innerHTML = '<div class="catalog-overview-heading"><h2>' + meta.overview + '</h2><p>選擇分類查看完整內容</p></div><div class="catalog-overview-grid">' +
+  overview.innerHTML = '<div class="catalog-overview-heading"><h2>' + meta.overview + '</h2><p>选择分类查看完整内容</p></div><div class="catalog-overview-grid">' +
     order.map(function(index){
       var cat = categories[index];
       var emoji = cat.querySelector('.travel-collapse-emoji');
       var title = cat.querySelector('.travel-collapse-title');
       var sub = cat.querySelector('.travel-collapse-sub');
       var size = (meta.sizes && meta.sizes[index]) || '2x2';
-      var label = meta.labels[index] || (title ? title.textContent.trim() : '分類');
-      var subText = sub ? sub.textContent.trim() : '點選查看內容';
+      var label = meta.labels[index] || (title ? title.textContent.trim() : '分类');
+      var subText = sub ? sub.textContent.trim() : '点选查看内容';
       var emojiText = emoji ? emoji.textContent.trim() : '•';
       // v24：兩種尺寸（2x4／2x2）都需要封面圖；圖片讀取失敗時才退回 emoji 佔位，不是設計上的預設選項
       var coverUrl = catalogCoverFor(cat, label);
@@ -203,7 +203,7 @@ function makeCatalogCard(card) {
   card.setAttribute('role', 'button');
   card.setAttribute('tabindex', '0');
   var titleEl = card.querySelector('h4, strong');
-  var title = titleEl ? titleEl.textContent.trim() : '詳細內容';
+  var title = titleEl ? titleEl.textContent.trim() : '详细内容';
 
   var coverUrl = catalogCoverFor(card, title);
   var media = document.createElement('div');
@@ -237,7 +237,7 @@ function makeItemCard(card) {
   card.dataset.catalogCard = '1';
 
   var titleEl = card.querySelector(':scope > .item-card-title');
-  var title = titleEl ? titleEl.textContent.trim() : '詳細內容';
+  var title = titleEl ? titleEl.textContent.trim() : '详细内容';
 
   var detailEl = card.querySelector(':scope > .item-detail');
   var firstImg = detailEl && detailEl.querySelector('img');
@@ -293,7 +293,7 @@ function ensureCatalogSheet() {
   var wrap = document.createElement('div');
   wrap.innerHTML = '<div class="catalog-sheet-backdrop" id="catalogSheetBackdrop" onclick="closeCatalogDetail()"></div>' +
     '<section class="catalog-sheet" id="catalogSheet" aria-modal="true" role="dialog">' +
-    '<div class="catalog-sheet-handle"></div><button class="catalog-sheet-close" onclick="closeCatalogDetail()" aria-label="關閉">×</button>' +
+    '<div class="catalog-sheet-handle"></div><button class="catalog-sheet-close" onclick="closeCatalogDetail()" aria-label="关闭">×</button>' +
     '<div class="catalog-sheet-title" id="catalogSheetTitle"></div><div class="catalog-sheet-body" id="catalogSheetBody"></div></section>';
   document.body.appendChild(wrap);
 }

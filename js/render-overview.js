@@ -99,9 +99,9 @@ function buildNowDashboard(context) {
   if (!context) return '';
   var day = context.day;
   var stateLabel = context.state === 'today' ? '今天' :
-    (context.state === 'complete' ? '旅程已完成' : (context.countdown ? context.countdown + ' 天後' : '下一個行程日'));
-  var intro = context.state === 'today' ? '今天就照這裡開始' :
-    (context.state === 'complete' ? '保留這趟旅程的最後一天' : '下一個要準備的行程');
+    (context.state === 'complete' ? '旅程已完成' : (context.countdown ? context.countdown + ' 天后' : '下一个行程日'));
+  var intro = context.state === 'today' ? '今天就照这里开始' :
+    (context.state === 'complete' ? '保留这趟旅程的最后一天' : '下一个要准备的行程');
 
   return '<section class="now-dashboard">' +
     '<div class="now-top"><div class="now-top-text">' +
@@ -109,7 +109,7 @@ function buildNowDashboard(context) {
       '<h1>' + day.detailTitle + '</h1>' +
       '<p class="now-intro">' + intro + (day.summary ? '｜' + day.summary : '') + '</p>' +
     '</div>' + buildTripProgressRing(context) + '</div>' +
-    '<button class="now-primary-btn" onclick="showDay(\'' + day.id + '\')">查看' + (context.state === 'today' ? '今日' : '這日') + '完整行程</button>' +
+    '<button class="now-primary-btn" onclick="showDay(\'' + day.id + '\')">查看' + (context.state === 'today' ? '今日' : '这日') + '完整行程</button>' +
   '</section>';
 }
 
@@ -185,20 +185,20 @@ function mountTabContent() {
     const travelEl = document.getElementById('mount-travel');
     if (travelEl) travelEl.outerHTML = renderTravelHTML();
   } catch (e) {
-    console.error('❌ 掛載體驗頁內容失敗:', e);
+    console.error('❌ 挂载体验页内容失败:', e);
   }
   
   try {
     const budgetEl = document.getElementById('mount-budget');
     if (budgetEl) budgetEl.outerHTML = BUDGET_HTML;
   } catch (e) {
-    console.error('❌ 掛載費用頁內容失敗:', e);
+    console.error('❌ 挂载费用页内容失败:', e);
   }
   
   try {
     const otherEl = document.getElementById('mount-other');
     if (otherEl) otherEl.outerHTML = renderOtherHTML();
   } catch (e) {
-    console.error('❌ 掛載工具頁內容失敗:', e);
+    console.error('❌ 挂载工具页内容失败:', e);
   }
 }

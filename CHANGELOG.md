@@ -10,6 +10,53 @@ git diff v1.0-stable HEAD     # 跟目前狀態比對
 
 ---
 
+## v1.6.1-script-unify — 2026-08-28 🈶 使用者可見文字統一為簡體
+
+**問題：同一個畫面同時出現兩種字體。底部頁籤是「體驗／費用／極光」，點進去的內容卻是「关闭／今日景点」。**
+
+檢查結果並不是隨機混用，而是**照頁面分裂**：
+
+| 檔案 | 原本的使用者可見字串 |
+|---|---|
+| `render-itinerary.js`、`nav.js`、`init.js`、`render-docs.js` | 全簡體 |
+| `budget.js` | 172 簡 / 8 繁（頁面內混用） |
+| `render-overview.js` | 3 簡 / 29 繁 |
+| `catalog-nav.js`、`render-other.js` | 全繁體 |
+| `render-aurora.js` | 7 簡 / 462 繁 |
+
+**選擇轉成簡體的理由**（而非反過來）：
+
+1. `index.html` 宣告 `lang="zh-Hans"`
+2. `data/` 底下的行程內容本來就以簡體為主——那是給旅伴看的
+3. **繁→簡是安全方向**。`t2s` 一對一確定；`s2t` 有一對多（干 → 干／幹／乾），會出錯
+
+**只轉使用者看得到的字串，程式註解維持繁體。** 註解是寫給維護者看的，不是網站內容。作法是用 acorn 解析出每個檔案的註解區間，只對區間以外的部分做 phrase-aware 轉換。轉換後逐檔比對「原版註解」與「新版註解」，確認 0 個檔案的註解被改動。
+
+| 檔案 | 轉換字數 | 保留註解 |
+|---|---|---|
+| `render-aurora.js` | 462 | 87 段 |
+| `firebase-config.js` | 69 | 22 段 |
+| `render-other.js` | 60 | 14 段 |
+| `render-overview.js` | 29 | 15 段 |
+| `catalog-nav.js` | 17 | 39 段 |
+| `budget.js` | 8 | 75 段 |
+| `index.html` | 4 | 26 段 |
+
+> ⚠️ **這次動到了第 9 節的第一層不可動區**（`js/nav.js` 無變更，但 `js/catalog-nav.js` 有 17 字）。
+> 變更性質是**純顯示文字**——沒有動到任何選擇器、DOM 契約、函式或邏輯，`git diff --numstat`
+> 顯示每個檔案都是等量的增減行（7/7、107/107…），即逐行字元替換。
+> 若要回退，單獨 revert 這一個 commit 即可。
+
+**過程中修掉一個會造成靜默損壞的坑**：acorn 回報的 `start`/`end` 是 **UTF-16 code unit** 位移，Python 字串索引卻是 **code point**。`spot-icons.js` 這類檔案裡有大量 emoji（surrogate pair，UTF-16 算 2 個單位），直接拿 acorn 的位移去切 Python 字串會整段錯位——第一次執行就把一行註解誤轉成簡體。改成一律先轉 `utf-16-le` bytes、以 2 bytes = 1 code unit 切片後才正確。
+
+**驗證**：`js/` 全部檔案以 acorn 重新解析通過（`firebase-config.js` 以 module 模式）；全站使用者可見字串殘留繁體字 **0**；確認程式中沒有任何中文字串等值比較（不會因為轉換而比對失敗）。
+
+`sw.js` 快取版本字串已更新為 `2026-08-28-v1`（動到 `js/`，依規則必須更新）。
+
+`data/` 底下未動——那是內容，由編輯器維護。目前 `travel-content.js` 有 463 繁 / 2873 簡、`trip-details.js` 有 395 繁 / 4707 簡，若也要統一應該另外處理。
+
+---
+
 ## v1.6-pat-session — 2026-08-28 🔐 PAT 改存 sessionStorage
 
 **問題：編輯器跟正式網站同源（`fisherchang01.github.io`），而 `data/*.js` 是「會被編輯器改寫的可執行 JS」。一個有 repo 寫入權的 token 長期躺在同源的 `localStorage` 裡，等於任何能在該網域執行一行 JS 的東西都拿得到它——而拿到它就能改寫網站本身。**

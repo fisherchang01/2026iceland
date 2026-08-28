@@ -17,7 +17,7 @@ const RATES_PATH = settings.ratesPath || (EXPENSES_PATH ? EXPENSES_PATH.replace(
 
 try {
   if (!settings.enabled || !EXPENSES_PATH || !firebaseConfig.databaseURL) {
-    throw new Error('Firebase 費用同步尚未設定');
+    throw new Error('Firebase 费用同步尚未设定');
   }
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
@@ -38,11 +38,11 @@ try {
         set(newRef, payload).then(function () {
           if (onDone) onDone(newRef.key);
         }).catch(function (e) {
-          console.warn('雲端儲存失敗，這筆記錄暫時只存在本機：', e);
+          console.warn('云端储存失败，这笔记录暂时只存在本机：', e);
           if (onDone) onDone(null);
         });
       } catch (e) {
-        console.warn('雲端儲存失敗，這筆記錄暫時只存在本機：', e);
+        console.warn('云端储存失败，这笔记录暂时只存在本机：', e);
         if (onDone) onDone(null);
       }
     },
@@ -56,11 +56,11 @@ try {
         set(ref(db, EXPENSES_PATH + '/' + cloudId), payload).then(function () {
           if (onDone) onDone(true);
         }).catch(function (e) {
-          console.warn('雲端更新失敗：', e);
+          console.warn('云端更新失败：', e);
           if (onDone) onDone(false);
         });
       } catch (e) {
-        console.warn('雲端更新失敗：', e);
+        console.warn('云端更新失败：', e);
         if (onDone) onDone(false);
       }
     },
@@ -70,10 +70,10 @@ try {
       if (!cloudId) return;
       try {
         remove(ref(db, EXPENSES_PATH + '/' + cloudId)).catch(function (e) {
-          console.warn('雲端刪除失敗：', e);
+          console.warn('云端删除失败：', e);
         });
       } catch (e) {
-        console.warn('雲端刪除失敗：', e);
+        console.warn('云端删除失败：', e);
       }
     },
 
@@ -90,7 +90,7 @@ try {
           callback(list);
         });
       } catch (e) {
-        console.warn('雲端同步監聽失敗，將只使用本機記錄：', e);
+        console.warn('云端同步监听失败，将只使用本机记录：', e);
       }
     }
   };
@@ -106,10 +106,10 @@ try {
       set: function (ratesObj) {
         try {
           set(ratesRef, ratesObj).catch(function (e) {
-            console.warn('匯率同步失敗，暫時只存在本機：', e);
+            console.warn('汇率同步失败，暂时只存在本机：', e);
           });
         } catch (e) {
-          console.warn('匯率同步失敗，暫時只存在本機：', e);
+          console.warn('汇率同步失败，暂时只存在本机：', e);
         }
       },
       onChange: function (callback) {
@@ -119,15 +119,15 @@ try {
             if (val) callback(val);
           });
         } catch (e) {
-          console.warn('匯率同步監聽失敗，將只使用本機匯率：', e);
+          console.warn('汇率同步监听失败，将只使用本机汇率：', e);
         }
       }
     };
   }
 
-  console.log('✅ 費用同步（Firebase）已連線');
+  console.log('✅ 费用同步（Firebase）已连线');
 } catch (e) {
-  console.warn('⚠️ Firebase 初始化失敗，費用記錄將只儲存在本機（不會同步給旅伴）：', e);
+  console.warn('⚠️ Firebase 初始化失败，费用记录将只储存在本机（不会同步给旅伴）：', e);
   window.cloudExpenses = {
     available: false,
     push: function (e, onDone) { if (onDone) onDone(null); },
