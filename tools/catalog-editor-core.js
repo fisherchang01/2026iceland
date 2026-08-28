@@ -29,6 +29,23 @@ const IMAGE_DIR = 'images/catalog/';
 const UPLOAD_MAX_DIM = 1200;
 const UPLOAD_QUALITY = 0.82;
 
+// 貼上的截圖跟拍照不同：畫面裡通常有 UI 文字，lossy WebP 在 q0.82 會讓小字發糊，
+// 而 4K 螢幕的截圖縮到 1200px 也會讓字不能看。所以貼上走另一組較寬鬆的參數。
+// 代價是檔案略大，但實測仍只有原始 PNG 的 1/6 ~ 1/8。
+const PASTE_MAX_DIM = 1600;
+const PASTE_QUALITY = 0.92;
+
+// 共用底層（tools/editor-shared.js，必須先載入）。
+// 解構之後呼叫端的寫法跟以前完全一樣。
+if (!window.EditorShared) throw new Error('缺少 editor-shared.js，請檢查 HTML 外殼的載入順序');
+const {
+    escapeAttr, showNotif,
+    getPAT, peekPAT, ghHeaders,
+    computeNextAvailableNumber, resizeToWebpBlob, blobToBase64, uploadNewImageFile,
+    pasteZoneHtml,
+} = window.EditorShared;
+window.EditorShared.configure({ owner: GITHUB_OWNER, repo: GITHUB_REPO });
+
 const ID_PATTERN = /^[a-z0-9][a-z0-9-]*$/;
 
 let data = null;              // 本編輯器的資料（從 GitHub 載入的原始版本，未套草稿）
@@ -65,42 +82,6 @@ function parseMarkup(str) {
         .replace(/\{#([0-9a-fA-F]{6})\}([\s\S]*?)\{\/color\}/g, '<span style="color:#$1">$2</span>')
         .replace(/\{bold\}([\s\S]*?)\{\/bold\}/g, '<strong>$1</strong>')
         .replace(/\{italic\}([\s\S]*?)\{\/italic\}/g, '<em>$1</em>');
-}
-
-function escapeAttr(str) {
-    if (!str) return '';
-    return String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;')
-        .replace(/</g, '&lt;').replace(/>/g, '&gt;');
-}
-
-function showNotif(msg, type = 'success') {
-    const notif = document.createElement('div');
-    notif.className = `notification ${type}`;
-    notif.textContent = msg;
-    document.body.appendChild(notif);
-    setTimeout(() => notif.remove(), 4000);
-}
-
-// 會跳輸入框。只在使用者明確按下「上傳」類動作時呼叫。
-function getPAT() {
-    let pat = localStorage.getItem('github_pat');
-    if (!pat) {
-        pat = prompt('🔑 輸入 GitHub Personal Access Token');
-        if (pat) localStorage.setItem('github_pat', pat);
-        else throw new Error('需要 PAT');
-    }
-    return pat;
-}
-
-// 不跳輸入框。用於「順便帶上就好」的唯讀 API 呼叫（例如列圖片清單），
-// 有 PAT 時速率上限從匿名的 60 次/小時提高到 5000 次/小時。
-function peekPAT() {
-    return localStorage.getItem('github_pat') || null;
-}
-
-function ghHeaders() {
-    const pat = peekPAT();
-    return pat ? { 'Authorization': `token ${pat}` } : {};
 }
 
 function rawUrl(filename) {
@@ -376,6 +357,7 @@ function renderEditor() {
                             <label class="photo-upload-box">📷 從本機上傳
                                 <input type="file" accept="image/*" onchange="handleCoverUpload(this.files)">
                             </label>
+                            ${pasteZoneHtml('cover', `${cat.title || currentKey} · 分類封面`)}
                         </div>
                     </div>
                 </div>
@@ -479,12 +461,14 @@ function renderItems() {
                     <input type="file" accept="image/*" multiple ${hasId ? '' : 'disabled'}
                            onchange="handleItemPhotoUpload(${idx},this.files)">
                 </label>
+                ${pasteZoneHtml(`item:${idx}`, `${item.name || item.id || '項目 ' + (idx + 1)} · 項目照片`, { disabled: !hasId })}
                 <span class="upload-hint">${hasId ? `會存成 ${escapeAttr(item.id)}-NN.webp 並自動接在最後` : '設定 id 後才能上傳'}</span>
             </div>
         `;
         container.appendChild(box);
         renderBlocks(idx);
     });
+    window.EditorShared.refreshArmedHighlight();
 }
 
 function onItemIdChange(idx, input) {
@@ -602,6 +586,7 @@ function renderBlocks(itemIdx) {
                             <label class="photo-upload-box">📷 從本機上傳
                                 <input type="file" accept="image/*" onchange="handleBlockUpload(${itemIdx},${bIdx},this.files)">
                             </label>
+                            ${pasteZoneHtml(`block:${itemIdx}:${bIdx}`, `${item.name || '項目 ' + (itemIdx + 1)} · 第 ${bIdx + 1} 個圖片段`)}
                         </div>
                     </div>
                 </div>
@@ -884,75 +869,6 @@ function confirmManualImage() {
      若用區分大小寫的比對，下一張會拿到 svarta-01.webp，在 GitHub 上是另一個檔案。
    ============================================================ */
 
-function computeNextAvailableNumber(prefix, existingFiles) {
-    const re = new RegExp('^' + prefix.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '-(\\d{2,})\\.', 'i');
-    let max = 0;
-    existingFiles.forEach(f => {
-        const m = String(f).match(re);
-        if (m) max = Math.max(max, parseInt(m[1], 10));
-    });
-    return max + 1;
-}
-
-function resizeToWebpBlob(file, maxDim, quality) {
-    return new Promise((resolve, reject) => {
-        const img = new Image();
-        const url = URL.createObjectURL(file);
-        img.onload = () => {
-            URL.revokeObjectURL(url);
-            let { width, height } = img;
-            if (width >= height) {
-                if (width > maxDim) { height = Math.round(height * maxDim / width); width = maxDim; }
-            } else {
-                if (height > maxDim) { width = Math.round(width * maxDim / height); height = maxDim; }
-            }
-            const canvas = document.createElement('canvas');
-            canvas.width = width;
-            canvas.height = height;
-            canvas.getContext('2d').drawImage(img, 0, 0, width, height);
-            canvas.toBlob(blob => {
-                if (!blob) { reject(new Error('瀏覽器不支援輸出 WebP')); return; }
-                resolve(blob);
-            }, 'image/webp', quality);
-        };
-        img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('圖片讀取失敗')); };
-        img.src = url;
-    });
-}
-
-function blobToBase64(blob) {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result.split(',')[1]);
-        reader.onerror = () => reject(new Error('檔案讀取失敗'));
-        reader.readAsDataURL(blob);
-    });
-}
-
-// 上傳前一定先查該路徑是否已存在，避免用同一個檔名意外覆蓋掉別人剛好也在傳的檔案。
-async function uploadNewImageFile(path, blob, pat) {
-    const checkResp = await fetch(
-        `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${path}`,
-        { headers: { 'Authorization': `token ${pat}` } }
-    );
-    if (checkResp.ok) {
-        throw new Error(`${path} 已經存在，請按「🔄 重新整理清單」後重試`);
-    }
-    const base64 = await blobToBase64(blob);
-    const putResp = await fetch(
-        `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${path}`,
-        {
-            method: 'PUT',
-            headers: { 'Authorization': `token ${pat}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: `📷 新增照片 ${path}`, content: base64 })
-        }
-    );
-    if (!putResp.ok) {
-        const errBody = await putResp.json().catch(() => ({}));
-        throw new Error(`上傳失敗：${errBody.message || putResp.status}`);
-    }
-}
-
 // 進度面板固定在畫面右下角，不在項目 DOM 裡 —— 上傳完成會重繪編輯區，
 // 若把狀態放在項目內，錯誤訊息會跟著被清掉。
 function openProgress(title) {
@@ -991,9 +907,13 @@ async function gatherKnownFilenames() {
     return files.concat(Array.from(usage.here), Array.from(usage.peer));
 }
 
-async function runUpload(prefix, fileList, title, onDone) {
+// opts.maxDim / opts.quality 讓貼上的截圖能走另一組參數（見 PASTE_MAX_DIM / PASTE_QUALITY）。
+// 不給就沿用一般上傳的規格。
+async function runUpload(prefix, fileList, title, onDone, opts = {}) {
     const files = Array.from(fileList || []);
     if (!files.length) return;
+    const maxDim = opts.maxDim || UPLOAD_MAX_DIM;
+    const quality = opts.quality || UPLOAD_QUALITY;
 
     let pat;
     try {
@@ -1010,9 +930,11 @@ async function runUpload(prefix, fileList, title, onDone) {
     for (const file of files) {
         const n = computeNextAvailableNumber(prefix, known);
         const filename = `${prefix}-${String(n).padStart(2, '0')}.webp`;
-        const row = progressRow(`⏳ ${file.name} → ${filename} 處理中...`, 'pending');
+        // 剪貼簿來的 File，name 在 Chrome 是 image.png、有些瀏覽器是空字串
+        const srcName = file.name || '貼上的截圖';
+        const row = progressRow(`⏳ ${srcName} → ${filename} 處理中...`, 'pending');
         try {
-            const blob = await resizeToWebpBlob(file, UPLOAD_MAX_DIM, UPLOAD_QUALITY);
+            const blob = await resizeToWebpBlob(file, maxDim, quality);
             row.textContent = `⏳ ${filename} 上傳中...`;
             await uploadNewImageFile(`${IMAGE_DIR}${filename}`, blob, pat);
             row.className = 'up-row ok';
@@ -1021,7 +943,7 @@ async function runUpload(prefix, fileList, title, onDone) {
             uploaded.push(filename);
         } catch (e) {
             row.className = 'up-row err';
-            row.textContent = `❌ ${file.name}：${e.message}`;
+            row.textContent = `❌ ${srcName}：${e.message}`;
         }
     }
 
@@ -1032,7 +954,7 @@ async function runUpload(prefix, fileList, title, onDone) {
     }
 }
 
-function handleItemPhotoUpload(itemIdx, fileList) {
+function handleItemPhotoUpload(itemIdx, fileList, opts) {
     const item = getCategory(currentKey).items[itemIdx];
     if (!item.id) { showNotif('請先設定這個項目的 id', 'error'); return; }
     runUpload(item.id, fileList, `上傳到「${item.name || item.id}」`, uploaded => {
@@ -1043,22 +965,46 @@ function handleItemPhotoUpload(itemIdx, fileList) {
             if (!it.blocks) it.blocks = [];
             uploaded.forEach(f => it.blocks.push({ type: 'img', src: f }));
         }, `itemBox_${itemIdx}`);
-    });
+    }, opts);
 }
 
-function handleBlockUpload(itemIdx, bIdx, fileList) {
+function handleBlockUpload(itemIdx, bIdx, fileList, opts) {
     const item = getCategory(currentKey).items[itemIdx];
     if (!item.id) { showNotif('請先設定這個項目的 id', 'error'); return; }
     runUpload(item.id, fileList, `更換「${item.name || item.id}」的圖片`, uploaded => {
         setBlockImage(itemIdx, bIdx, uploaded[0]);
-    });
+    }, opts);
 }
 
-function handleCoverUpload(fileList) {
+function handleCoverUpload(fileList, opts) {
     const prefix = `${keyToSlug(currentKey)}-cover`;
     runUpload(prefix, fileList, `上傳「${getCategory(currentKey).title || currentKey}」的封面`, uploaded => {
         setCoverImage(uploaded[0]);
-    });
+    }, opts);
+}
+
+/* ============================================================
+   截圖貼上 / 拖放的出口
+   ------------------------------------------------------------
+   editor-shared.js 只負責「抓到圖、決定目標」，實際要送去哪個
+   handler 由各編輯器自己解讀 key。這裡的 key 格式：
+     item:<itemIdx>          項目照片（會 append 成新的 img block）
+     block:<itemIdx>:<bIdx>  取代某個圖片 block
+     cover                   分類封面
+   ============================================================ */
+
+function dispatchPastedFiles(key, files) {
+    const opts = { maxDim: PASTE_MAX_DIM, quality: PASTE_QUALITY };
+    const parts = String(key).split(':');
+    if (parts[0] === 'item') {
+        handleItemPhotoUpload(parseInt(parts[1], 10), files, opts);
+    } else if (parts[0] === 'block') {
+        handleBlockUpload(parseInt(parts[1], 10), parseInt(parts[2], 10), files, opts);
+    } else if (parts[0] === 'cover') {
+        handleCoverUpload(files, opts);
+    } else {
+        showNotif('❌ 未知的貼上目標：' + key, 'error');
+    }
 }
 
 /* ============================================================
@@ -1275,6 +1221,9 @@ async function confirmUpload() {
 /* ============================================================
    對外掛載（HTML 的 onclick 需要 global）
    ============================================================ */
+
+window.EditorShared.setPasteHandler(dispatchPastedFiles);
+window.EditorShared.initPasteSupport();
 
 Object.assign(window, {
     addCategory, deleteCategory, selectCategory,

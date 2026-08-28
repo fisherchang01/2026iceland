@@ -288,7 +288,7 @@ const TRAVEL_CONTENT = {
             },
             {
               "type": "img",
-              "src": "supermarket-shopping-04.png"
+              "src": "supermarket-shopping-04.webp"
             },
             {
               "type": "text",
@@ -505,7 +505,7 @@ const TRAVEL_CONTENT = {
             },
             {
               "type": "img",
-              "src": "svarta-kaffid-01.png"
+              "src": "svarta-kaffid-01.webp"
             },
             {
               "type": "text",
@@ -556,7 +556,7 @@ const TRAVEL_CONTENT = {
           "blocks": [
             {
               "type": "img",
-              "src": "b-jarins-beztu-pylsur-01.png"
+              "src": "b-jarins-beztu-pylsur-01.webp"
             },
             {
               "type": "text",
@@ -568,7 +568,7 @@ const TRAVEL_CONTENT = {
             },
             {
               "type": "img",
-              "src": "b-jarins-beztu-pylsur-02.png"
+              "src": "b-jarins-beztu-pylsur-02.webp"
             }
           ]
         },

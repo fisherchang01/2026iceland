@@ -846,9 +846,24 @@
         <button class="btn btn-success" id="uploadBtn" onclick="uploadToGitHub()" style="display: none;">⬆️ 上傳到GitHub</button>
     </div>
 
+    <script src="editor-shared.js"></script>
     <script>
         const GITHUB_OWNER = 'fisherchang01';
         const GITHUB_REPO = '2026iceland';
+
+        // 共用底層（tools/editor-shared.js）。解構之後呼叫端寫法跟以前完全一樣。
+        if (!window.EditorShared) throw new Error('缺少 editor-shared.js，請檢查載入順序');
+        const {
+            escapeAttr, showNotif, getPAT,
+            computeNextAvailableNumber, resizeToWebpBlob, blobToBase64, uploadNewImageFile,
+            pasteZoneHtml,
+        } = window.EditorShared;
+        window.EditorShared.configure({ owner: GITHUB_OWNER, repo: GITHUB_REPO });
+
+        // 貼上的截圖含 UI 文字，lossy WebP 在 q0.82 會讓小字發糊，所以提高品質。
+        // 但長邊維持既有的 960 / 480 —— 行程頁的 srcset 寫死了 480w / 960w，
+        // 產出一個 1600px 卻標成 960w 的檔案會讓瀏覽器選錯尺寸。
+        const PASTE_QUALITY = 0.92;
         const GITHUB_FILE = 'data/trip-details.js';
 
         let tripData = null;
@@ -901,15 +916,6 @@
                 .replace(/\{bold\}([^{]*?)\{\/bold\}/g, '<strong>$1</strong>')
                 .replace(/\{italic\}([^{]*?)\{\/italic\}/g, '<em>$1</em>');
             return html;
-        }
-
-        function escapeAttr(str) {
-            if (!str) return '';
-            return str
-                .replace(/&/g, '&amp;')
-                .replace(/"/g, '&quot;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;');
         }
 
         function insertToField(fieldId, before, after = '') {
@@ -1335,76 +1341,6 @@
         // 3) 直接呼叫 GitHub Contents API 建立這兩個檔案（跟 uploadToGitHub() 用同一組 PAT）
         // 4) 成功後清掉照片池快取、重新渲染面板，新照片會直接出現在待選區，不用使用者自己按重新整理
 
-        function computeNextAvailableNumber(spotId, existingFiles) {
-            const re = new RegExp(`^${spotId}-(\\d{2})\\.`);
-            let max = 0;
-            existingFiles.forEach(f => {
-                const m = f.match(re);
-                if (m) max = Math.max(max, parseInt(m[1], 10));
-            });
-            return max + 1;
-        }
-
-        function resizeToWebpBlob(file, maxDim, quality) {
-            return new Promise((resolve, reject) => {
-                const img = new Image();
-                const url = URL.createObjectURL(file);
-                img.onload = () => {
-                    URL.revokeObjectURL(url);
-                    let { width, height } = img;
-                    if (width >= height) {
-                        if (width > maxDim) { height = Math.round(height * maxDim / width); width = maxDim; }
-                    } else {
-                        if (height > maxDim) { width = Math.round(width * maxDim / height); height = maxDim; }
-                    }
-                    const canvas = document.createElement('canvas');
-                    canvas.width = width;
-                    canvas.height = height;
-                    canvas.getContext('2d').drawImage(img, 0, 0, width, height);
-                    canvas.toBlob(blob => {
-                        if (!blob) { reject(new Error('浏览器不支援輸出 WebP')); return; }
-                        resolve(blob);
-                    }, 'image/webp', quality);
-                };
-                img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('圖片讀取失敗')); };
-                img.src = url;
-            });
-        }
-
-        function blobToBase64(blob) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = () => resolve(reader.result.split(',')[1]);
-                reader.onerror = () => reject(new Error('檔案讀取失敗'));
-                reader.readAsDataURL(blob);
-            });
-        }
-
-        // 上傳前一定先查一次該路徑是否已存在，避免用同一個檔名意外覆蓋掉別人剛好也在傳的檔案
-        // （多分頁同時編輯、或照片池快取沒更新到最新狀態時的保護）。存在就直接中止、請使用者重新整理清單。
-        async function uploadNewImageFile(path, blob, pat) {
-            const checkResp = await fetch(
-                `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${path}`,
-                { headers: { 'Authorization': `token ${pat}` } }
-            );
-            if (checkResp.ok) {
-                throw new Error(`${path} 已經存在，可能有人同時在傳，請按「🔄 重新整理清單」後重試`);
-            }
-            const base64 = await blobToBase64(blob);
-            const putResp = await fetch(
-                `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${path}`,
-                {
-                    method: 'PUT',
-                    headers: { 'Authorization': `token ${pat}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: `📷 新增照片 ${path}`, content: base64 })
-                }
-            );
-            if (!putResp.ok) {
-                const errBody = await putResp.json().catch(() => ({}));
-                throw new Error(`上傳失敗：${errBody.message || putResp.status}`);
-            }
-        }
-
         function appendUploadStatus(text, cls) {
             const el = document.getElementById('photoUploadStatus');
             const row = document.createElement('div');
@@ -1414,9 +1350,12 @@
             return row;
         }
 
-        async function handlePhotoUpload(fileList) {
+        // opts.quality 讓貼上的截圖能用較高品質（見 PASTE_QUALITY）。不給就沿用一般拍照的規格。
+        async function handlePhotoUpload(fileList, opts = {}) {
             const files = Array.from(fileList || []);
             if (!files.length) return;
+            const qMedium = opts.quality || 0.82;
+            const qThumb = opts.quality || 0.76;
 
             const spot = tripData[currentDay].spots[currentSpotIndex];
             const statusEl = document.getElementById('photoUploadStatus');
@@ -1444,11 +1383,13 @@
             for (const file of files) {
                 const n = computeNextAvailableNumber(spot.id, knownFiles);
                 const filename = `${spot.id}-${String(n).padStart(2, '0')}.webp`;
-                const row = appendUploadStatus(`⏳ ${file.name} → ${filename} 處理中...`, 'pending');
+                // 剪貼簿來的 File，name 在 Chrome 是 image.png、有些瀏覽器是空字串
+                const srcName = file.name || '貼上的截圖';
+                const row = appendUploadStatus(`⏳ ${srcName} → ${filename} 處理中...`, 'pending');
                 try {
                     const [mediumBlob, thumbBlob] = await Promise.all([
-                        resizeToWebpBlob(file, 960, 0.82),
-                        resizeToWebpBlob(file, 480, 0.76),
+                        resizeToWebpBlob(file, 960, qMedium),
+                        resizeToWebpBlob(file, 480, qThumb),
                     ]);
                     row.textContent = `⏳ ${filename} 上傳中...`;
                     await uploadNewImageFile(`${SPOT_IMAGE_DIR}${filename}`, mediumBlob, pat);
@@ -1458,7 +1399,7 @@
                     knownFiles.push(filename); // 同一批下一張檔名才不會撞號
                 } catch (e) {
                     row.className = 'upload-row err';
-                    row.textContent = `❌ ${file.name}：${e.message}`;
+                    row.textContent = `❌ ${srcName}：${e.message}`;
                 }
             }
 
@@ -1961,6 +1902,7 @@
                             <label class="route-upload-box">🗺️ 從本機上傳
                                 <input type="file" accept="image/*" multiple onchange="handleRouteUpload(this.files)">
                             </label>
+                            ${pasteZoneHtml('route', `${day.title || currentDay} · 路線圖`)}
                             <button class="btn btn-secondary btn-mini" onclick="promptRouteFilename()">手動輸入檔名</button>
                         </div>
                         <div id="routeUploadStatus" style="margin-top:8px;font-size:11px;line-height:1.7;"></div>
@@ -2106,9 +2048,10 @@
             return row;
         }
 
-        async function handleRouteUpload(fileList) {
+        async function handleRouteUpload(fileList, opts = {}) {
             const files = Array.from(fileList || []);
             if (!files.length) return;
+            const quality = opts.quality || ROUTE_QUALITY;
             let pat;
             try { pat = getPAT(); } catch (e) { showNotif('❌ ' + e.message, 'error'); return; }
 
@@ -2125,9 +2068,10 @@
             for (const file of files) {
                 const n = computeNextRouteNumber(prefix, known);
                 const filename = `${prefix}-${String(n).padStart(2, '0')}.webp`;
-                const row = routeStatus(`⏳ ${file.name} → ${filename} 處理中...`, 'pending');
+                const srcName = file.name || '貼上的截圖';
+                const row = routeStatus(`⏳ ${srcName} → ${filename} 處理中...`, 'pending');
                 try {
-                    const blob = await resizeToWebpBlob(file, ROUTE_MAX_DIM, ROUTE_QUALITY);
+                    const blob = await resizeToWebpBlob(file, ROUTE_MAX_DIM, quality);
                     row.textContent = `⏳ ${filename} 上傳中...`;
                     await uploadNewImageFile(`${ROUTE_DIR}${filename}`, blob, pat);
                     row.style.color = '#218838';
@@ -2137,7 +2081,7 @@
                     added++;
                 } catch (e) {
                     row.style.color = '#c0392b';
-                    row.textContent = `❌ ${file.name}：${e.message}`;
+                    row.textContent = `❌ ${srcName}：${e.message}`;
                 }
             }
             if (added) {
@@ -2380,8 +2324,10 @@
                         </div>
                         <div id="poolThumbs" class="photo-thumb-row wrap"></div>
                         <div class="photo-upload-box">
-                            <div class="field-hint">上傳新照片：自動算出下一個檔名（{slug}-NN.webp）、自動產生 thumb 縮圖，直接建立兩個檔案到 GitHub，上傳完就會自動出現在上面的待選區。</div>
+                            <div class="field-hint">上傳新照片：自動算出下一個檔名（{slug}-NN.webp）、自動產生 thumb 縮圖，直接建立兩個檔案到 GitHub，上傳完就會自動出現在上面的待選區。<br>
+                            截圖也可以直接貼：按下右邊的「📋 貼上截圖」鎖定這裡，再按 Ctrl+V／⌘V；或把圖片直接拖進來。</div>
                             <input type="file" id="photoUploadInput" accept="image/*" multiple onchange="handlePhotoUpload(this.files)">
+                            <div style="margin-top:6px;">${pasteZoneHtml('spot', `${spot.name || spot.id} · 景點照片`)}</div>
                             <div id="photoUploadStatus"></div>
                         </div>
                     </div>
@@ -2673,26 +2619,24 @@
             }
         }
 
-        function getPAT() {
-            let pat = localStorage.getItem('github_pat');
-            if (!pat) {
-                pat = prompt('🔑 輸入 GitHub Personal Access Token');
-                if (pat) {
-                    localStorage.setItem('github_pat', pat);
-                } else {
-                    throw new Error('需要 PAT');
-                }
-            }
-            return pat;
+        /* ============================================================
+           截圖貼上 / 拖放的出口
+           ------------------------------------------------------------
+           editor-shared.js 只負責「抓到圖、決定目標」，實際要送去哪個
+           handler 由本檔自己解讀 key：
+             spot   目前編輯中的景點照片（medium + thumb 兩份）
+             route  當日路線圖
+           ============================================================ */
+
+        function dispatchPastedFiles(key, files) {
+            const opts = { quality: PASTE_QUALITY };
+            if (key === 'spot') handlePhotoUpload(files, opts);
+            else if (key === 'route') handleRouteUpload(files, opts);
+            else showNotif('❌ 未知的貼上目標：' + key, 'error');
         }
 
-        function showNotif(msg, type = 'success') {
-            const notif = document.createElement('div');
-            notif.className = `notification ${type}`;
-            notif.textContent = msg;
-            document.body.appendChild(notif);
-            setTimeout(() => notif.remove(), 4000);
-        }
+        window.EditorShared.setPasteHandler(dispatchPastedFiles);
+        window.EditorShared.initPasteSupport();
 
         window.addEventListener('load', init);
     </script>

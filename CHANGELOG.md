@@ -10,6 +10,65 @@ git diff v1.0-stable HEAD     # 跟目前狀態比對
 
 ---
 
+## v1.5-paste-screenshot — 2026-08-28 ⭐ 截圖可直接貼上；三個編輯器的底層收成一份
+
+**核心目的：截圖不該還要「先另存新檔 → 開檔案總管 → 選檔案」。剪貼簿的圖經 `getAsFile()` 拿到的本來就是 `File` 物件，既有的轉檔／接號／查重／上傳鏈一行都不用改，缺的只是「怎麼決定貼到哪裡」。**
+
+**1 — `tools/editor-shared.js`（新檔，~370 行）**
+
+在此之前 `catalog-editor-core.js` 與 `trip-editor-pro.html` 各帶一份同名同義的函式，而且已經漂移——`computeNextAvailableNumber` 的 catalog 版有 `/i`、有 regex 逸出、用 `{2,}`，trip 版三樣都沒有（目前 33 個 spot id 全是小寫乾淨字串所以還沒出事）。這一版把七個函式收成一份，三個編輯器都引用：
+
+`escapeAttr`、`showNotif`、`getPAT`／`peekPAT`／`ghHeaders`、`computeNextAvailableNumber`、`resizeToWebpBlob`、`blobToBase64`、`uploadNewImageFile`
+
+各編輯器在自己作用域頂端解構取用，**呼叫端寫法完全沒變**。載入順序：`editor-shared.js` 必須排在其他編輯器腳本之前，缺了會在載入時直接拋錯，不會靜默半殘。
+
+**2 — 截圖貼上 / 拖放**
+
+互動是「先鎖定、再貼上」：每個上傳位置旁邊多一顆「📋 貼上截圖」，按下去鎖定並高亮，然後 `Ctrl+V`／`⌘V`。
+
+- 拖放共用同一條出口：拖到貼上區直接放開即可，不需要先鎖定
+- **忘了先鎖定不會默默丟掉**——掃描畫面上所有 `[data-paste-key]`，列成面板讓使用者挑，附縮圖確認
+- 用掉即自動解鎖，避免下一次不相干的複製又跑進同一格
+- 貼上純文字完全不攔截（只在真的抓到 `kind==='file'` 且 `type` 是 `image/*` 時才 `preventDefault`）
+- 沒拖到貼上區的檔案拖放一律吃掉，避免瀏覽器把圖片當網址開走、離開編輯頁
+
+檔名規則沒有任何例外，走的是同一套 `{id}-NN` 接號。
+
+**3 — 截圖用另一組轉檔參數**
+
+截圖裡通常有 UI 文字，lossy WebP 在 q0.82 會讓小字發糊：
+
+| | 一般上傳（拍照） | 貼上／拖放（截圖） |
+|---|---|---|
+| 體驗／工具 | 長邊 1200px、q0.82 | 長邊 1600px、q0.92 |
+| 行程景點 | 960 + 480px、q0.82／0.76 | 960 + 480px、q0.92 |
+
+行程景點的長邊刻意維持 960／480 不動——行程頁的 `srcset` 寫死了 `480w` / `960w`，產出一個 1600px 卻標成 960w 的檔案會讓瀏覽器選錯尺寸。
+
+**4 — 修掉 `toBlob` 的靜默 fallback**
+
+規格上瀏覽器不支援要求的 type 時，`canvas.toBlob` 不會回 `null`，而是**改用 PNG**。舊寫法只檢查 `!blob`，因此在 Safari 16.4 以前會安靜產出一個副檔名 `.webp`、內容其實是 PNG 的檔案（大 3~5 倍）。改成檢查 `blob.type`，拿不到 WebP 就明確中止並提示換瀏覽器。
+
+**5 — 4 張手動貼上的 PNG 截圖轉成 WebP**
+
+`images/catalog/` 裡僅存的 4 張 PNG（正是「以前只能手動貼」的產物）以 v1.5 的貼上參數（1600 / q0.92，四張原圖都 < 1600 所以沒有縮放）重新輸出：
+
+| 檔案 | 尺寸 | 原始 | WebP |
+|---|---|---|---|
+| `svarta-kaffid-01` | 960×675 | 985 KB | 158 KB |
+| `b-jarins-beztu-pylsur-02` | 969×681 | 822 KB | 105 KB |
+| `b-jarins-beztu-pylsur-01` | 1374×696 | 678 KB | 104 KB |
+| `supermarket-shopping-04` | 768×711 | 565 KB | 81 KB |
+| **合計** | | **3.0 MB** | **450 KB（省 85%）** |
+
+`data/travel-content.js` 的 4 處引用同步更新，PNG 已刪除。`images/` 底下現在除了 `app-icon-*.png`（PWA 圖示）以外沒有非 WebP 的內容圖。
+
+**測試**：`computeNextAvailableNumber`（含大小寫、regex 逸出、`{2,}`、非字串元素）、`escapeAttr`、`pasteZoneHtml`、貼上分派、目標選擇面板、自動解鎖、純文字不攔截、多張同時貼、重繪後高亮恢復、拖放——共 23 項於 jsdom 下驗證通過。
+
+未動 `js/` 與 `css/`，`sw.js` 快取版本字串因此不需要調整。
+
+---
+
 ## v1.4.1-thumb-fix — 2026-08-28 🩹 補齊 21 張缺漏的景點縮圖
 
 **問題：`images/spots/medium/` 有 214 個檔案，`images/spots/thumb/` 只有 193 個，缺的 21 張全部正在被 `data/trip-details.js` 引用（27 處）。**

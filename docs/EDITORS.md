@@ -22,10 +22,11 @@
 
 | 檔案 | 行數 | 內容 |
 |---|---|---|
-| `tools/catalog-editor-core.js` | ~1290 | 全部邏輯 |
+| `tools/editor-shared.js` | ~370 | **三個編輯器**共用的底層（v1.5 新增，見下） |
+| `tools/catalog-editor-core.js` | ~1230 | 體驗／工具編輯器的全部邏輯 |
 | `tools/catalog-editor-core.css` | ~230 | 全部樣式 |
-| `tools/travel-editor-pro.html` | 90 | 外殼，只設定 `EDITOR_CONFIG` |
-| `tools/other-editor-pro.html` | 90 | 同上 |
+| `tools/travel-editor-pro.html` | 91 | 外殼，只設定 `EDITOR_CONFIG` |
+| `tools/other-editor-pro.html` | 91 | 同上 |
 
 兩個外殼之間**只差 20 行**，全部是設定值：
 
@@ -41,6 +42,33 @@ window.EDITOR_CONFIG = {
 ```
 
 > ⚠️ 修 bug 一律改 `catalog-editor-core.js`。**不要**再把邏輯搬回外殼。
+
+### `tools/editor-shared.js`（v1.5 新增）
+
+v1.2 把兩個 catalog 編輯器抽成共用核心，但 `trip-editor-pro.html` 沒跟上，
+於是同名同義的函式各有一份，而且已經漂移——例如 `computeNextAvailableNumber`，
+catalog 版有 `/i`、有 regex 逸出、用 `{2,}`，trip 版三樣都沒有。
+
+v1.5 把這一層收成一份，**三個編輯器都引用**：
+
+| 分類 | 內容 |
+|---|---|
+| 小工具 | `escapeAttr`、`showNotif` |
+| PAT | `getPAT`、`peekPAT`、`ghHeaders`、`clearPAT` |
+| 檔名 | `computeNextAvailableNumber`（採較嚴謹的 catalog 版） |
+| 圖片 | `resizeToWebpBlob`、`blobToBase64`、`uploadNewImageFile` |
+| 貼上 | `initPasteSupport`、`setPasteHandler`、`pasteZoneHtml`、`armPaste` |
+
+各編輯器在自己作用域頂端解構取用，**呼叫端寫法完全沒變**：
+
+```js
+const { escapeAttr, showNotif, getPAT, resizeToWebpBlob, ... } = window.EditorShared;
+window.EditorShared.configure({ owner: GITHUB_OWNER, repo: GITHUB_REPO });
+```
+
+> ⚠️ 載入順序：`editor-shared.js` 必須排在 `catalog-editor-core.js`
+> 與 `trip-editor-pro.html` 自己的 `<script>` **之前**。缺了會在載入時直接拋錯，
+> 不會靜默半殘。
 
 ---
 
@@ -137,6 +165,41 @@ window.EDITOR_CONFIG = {
 - **照片是立刻 commit 的，資料檔不是。** 上傳成功會馬上把 block 掛上並寫進草稿，
   縮短「檔案在 repo 裡、資料檔卻沒引用」的孤兒視窗；但如果你之後按「放棄」，那張照片就會變成孤兒
 - 項目沒有 `id` 時上傳入口是停用的（見 §項目 id）
+
+### 貼上截圖（v1.5 新增）
+
+每個上傳位置旁邊多了一顆 **📋 貼上截圖**。截圖不用先存檔再選檔案：
+
+1. 按一下「📋 貼上截圖」——按鈕變成實心紫底，表示已鎖定這個位置
+2. 按 `Ctrl+V`／`⌘V`
+
+圖片會走**跟選檔案完全同一條路**：轉 WebP → 依 `{id}-NN` 接號 → 查重 → commit
+到 GitHub → 掛上 block。檔名規則沒有任何例外。
+
+- **也可以直接拖放**：把圖片拖到「📋 貼上截圖」上放開即可，不需要先鎖定
+- **忘了先鎖定也沒關係**：直接貼上會跳出面板，列出畫面上所有可貼的位置讓你挑，
+  附一張縮圖確認貼的是哪張
+- **貼一次就自動解鎖**，避免下一次不相干的複製動作又跑進同一格
+- 貼上純文字不受影響，照常進輸入框
+
+**截圖用的是另一組轉檔參數**，因為截圖裡通常有 UI 文字，
+lossy WebP 在 q0.82 會讓小字發糊：
+
+| | 一般上傳（拍照） | 貼上／拖放（截圖） |
+|---|---|---|
+| 體驗／工具 | 長邊 1200px、q0.82 | 長邊 **1600px**、q**0.92** |
+| 行程景點 | 960 + 480px、q0.82／0.76 | 960 + 480px、q**0.92** |
+
+行程景點的長邊維持 960／480 不動——行程頁的 `srcset` 寫死了 `480w` / `960w`，
+產出一個 1600px 卻標成 960w 的檔案會讓瀏覽器選錯尺寸。
+
+實測 4 張 Google Maps／餐廳網頁截圖：原始 PNG 共 3.0 MB，轉成 WebP q0.92 後
+共 450 KB（省 85%），文字仍然清晰。
+
+> **瀏覽器需求**：Chrome／Edge／Firefox 都可以；Safari 需要 16.4 以上。
+> 舊 Safari 的 `canvas.toBlob` 遇到不支援的格式會**靜默改用 PNG**（不是回傳 null），
+> 所以 v1.5 起會檢查 `blob.type` 並明確擋下，不會再產出「副檔名 .webp、
+> 內容其實是 PNG」的檔案。
 
 ### 項目 id
 

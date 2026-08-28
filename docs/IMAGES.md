@@ -68,8 +68,12 @@
 - `catalog/` 一律用「`{item.id}`-序號」格式，例如 `skyr-01.webp`、`parking-zones-02.webp`；
   分類封面用 `{分類key}-cover-NN.webp`。由編輯器上傳時會自動照這個規則命名
 - 歷史檔案裡仍有不符規則的名字（`Svarta-*`、`Seabaron-*` 大寫開頭；`is_gas-*`、
-  `supermarket_food.webp` 用底線；少數 `.png`）。它們能正常運作，不急著改；
+  `supermarket_food.webp` 用底線）。它們能正常運作，不急著改；
   編輯器接號時已做不分大小寫比對，不會因為 `Svarta-06` 而讓新檔從 `svarta-01` 重來
+- **`images/` 底下不應該再出現 `.png`／`.jpg` 的內容圖**（`app-icon-*.png` 是 PWA 圖示，例外）。
+  v1.5 已把僅存的 4 張手動貼上的 PNG 截圖轉成 WebP（3.0 MB → 450 KB）。
+  截圖現在可以直接在編輯器裡 `Ctrl+V` 貼上，轉檔與命名都是自動的，
+  沒有理由再手動放 PNG 進來
 
 ---
 
