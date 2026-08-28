@@ -53,6 +53,38 @@ const TRIP = {
     "spots": [
       {
         "icon": "📍",
+        "name": "香港机场贵宾室",
+        "id": "hk-airport-lounge",
+        "kind": "spot",
+        "tags": [],
+        "images": [
+          "hk-airport-lounge-02.webp"
+        ],
+        "desc": "国泰航空贵宾室",
+        "deepDesc": "",
+        "note": "",
+        "map": "",
+        "deepBlocks": [
+          {
+            "type": "text",
+            "value": "玉衡堂商務貴賓室 (The Pier)位置：一號客運大樓6樓，近65號登機門。{#ff0000}特色：國泰最大的旗艦貴賓室{/color}。設有現做港式麵點的「風味坊」（Noodle Bar，提供擔擔麵、雲吞麵與燒肉飯）、西式輕食「嚐味坊」、{#ff0000}獨立茶館「茗茶坊」{/color}以及14間淋浴間與恬靜閣。"
+          },
+          {
+            "type": "text",
+            "value": "逸連堂 (The Bridge)位置：一號客運大樓35號登機門旁。特色：空間設計質感現代，分為南北兩翼，提供烘焙美食、中西熱食與吧台服務。設備：9個淋浴間"
+          },
+          {
+            "type": "text",
+            "value": "玲瓏堂 (The Deck)位置：一號客運大樓7樓，近6號登機門 [Table_content]。特色：規模較小但精緻，鄰近北面出境區域，適合於附近登機的旅客。設備：8個淋浴間"
+          },
+          {
+            "type": "img",
+            "src": "hk-airport-lounge-01.webp"
+          }
+        ]
+      },
+      {
+        "icon": "📍",
         "name": "新加坡机场过境",
         "id": "sin-airport-transfer",
         "kind": "spot",
@@ -1389,6 +1421,7 @@ const TRIP = {
     "note": "10月10日为「芬兰人的一天」行程，当晚无需住宿，深夜航班返港；10月11日傍晚抵达香港。"
   }
 };
+
 
 
 
