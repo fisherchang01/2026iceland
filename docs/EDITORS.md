@@ -78,7 +78,20 @@ window.EditorShared.configure({ owner: GITHUB_OWNER, repo: GITHUB_REPO });
 2. 產生新 token，勾選 `repo` 權限
 3. 複製 token（**只會顯示一次**）
 
-第一次上傳時編輯器會跳出輸入框，貼上後存在瀏覽器 `localStorage.github_pat`，之後不用再輸入。
+第一次上傳時編輯器會跳出輸入框，貼上後存在瀏覽器的 **`sessionStorage.github_pat`**——
+**只保留到這個分頁關閉為止**，關掉分頁就沒了，開新分頁要重輸一次。
+
+> **v1.6 起從 `localStorage` 改成 `sessionStorage`。**
+> 編輯器跟正式網站同源（`fisherchang01.github.io`），而 `data/*.js` 是「會被編輯器
+> 改寫的可執行 JS」。一個有 repo 寫入權的 token 長期躺在同源的 `localStorage` 裡，
+> 等於任何能在該網域執行一行 JS 的東西都拿得到它——而拿到它就能改寫網站本身。
+> 換成 `sessionStorage` 把暴露時間從「永久」縮到「這個分頁」。
+>
+> 舊版存在 `localStorage` 的 token，編輯器載入時會自動搬到 `sessionStorage`
+> 並把舊的那份刪掉，不用手動處理、也不用重輸。
+
+工具列上有一顆 **🔑** 按鈕顯示目前狀態（`🔑 未輸入 Token` / `🔑 清除 Token`），
+按下去立刻清除。離開共用電腦前按一下就好。
 
 > ⚠️ PAT 存在瀏覽器本機。不要在公用電腦使用；不慎外洩時到 GitHub 撤銷該 token 即可。
 

@@ -54,17 +54,41 @@ function showNotif(msg, type = 'success') {
 /* ============================================================
    §3 PAT
    ------------------------------------------------------------
-   維持既有行為（localStorage.github_pat），只是收成一份。
-   注意：編輯器與正式網站同源，而 data/*.js 是會被編輯器改寫的
-   可執行 JS，等於一個有 repo 寫入權的 token 長期躺在同源的
-   localStorage 裡。改成 sessionStorage 是另一件事，不在這次範圍。
+   v1.6 起改存 sessionStorage（原本是 localStorage）。
+
+   為什麼要改：編輯器跟正式網站同源（fisherchang01.github.io），
+   而 data/*.js 是「會被編輯器改寫的可執行 JS」。一個有 repo 寫入權
+   的 token 長期躺在同源的 localStorage 裡，等於任何能在該網域執行
+   一行 JS 的東西都拿得到它——而拿到它就能改寫網站本身。
+   sessionStorage 至少把暴露時間從「永久」縮到「這個分頁關掉為止」。
+
+   代價：每開一個新分頁要重輸一次。用「🔑 Token」按鈕可隨時手動清除。
+
+   遷移：舊版把 token 存在 localStorage，本檔載入時會把它搬到
+   sessionStorage 並從 localStorage 移除，使用者不用重輸，
+   舊的那份也不會繼續留著。
    ============================================================ */
 
+const PAT_KEY = 'github_pat';
+
+function migrateLegacyPAT() {
+    try {
+        const legacy = localStorage.getItem(PAT_KEY);
+        if (!legacy) return;
+        if (!sessionStorage.getItem(PAT_KEY)) sessionStorage.setItem(PAT_KEY, legacy);
+        localStorage.removeItem(PAT_KEY);
+        console.info('[editor-shared] 已把 PAT 從 localStorage 搬到 sessionStorage');
+    } catch (e) { /* 無痕模式等情境下 storage 可能整個不可用，忽略 */ }
+}
+
 function getPAT() {
-    let pat = localStorage.getItem('github_pat');
+    let pat = sessionStorage.getItem(PAT_KEY);
     if (!pat) {
-        pat = prompt('🔑 輸入 GitHub Personal Access Token');
-        if (pat) localStorage.setItem('github_pat', pat);
+        // 一定要 trim 之後才回傳。從網頁複製 token 常常會帶到前後空白，
+        // 直接塞進 Authorization header 會被 GitHub 判成無效憑證，
+        // 而錯誤訊息只會說 401，很難聯想到是空白造成的。
+        pat = (prompt('🔑 輸入 GitHub Personal Access Token\n（只保留到這個分頁關閉為止）') || '').trim();
+        if (pat) { sessionStorage.setItem(PAT_KEY, pat); updatePatButton(); }
         else throw new Error('需要 PAT');
     }
     return pat;
@@ -73,7 +97,7 @@ function getPAT() {
 // 不跳輸入框。用於「順便帶上就好」的唯讀 API 呼叫（例如列圖片清單），
 // 有 PAT 時速率上限從匿名的 60 次/小時提高到 5000 次/小時。
 function peekPAT() {
-    return localStorage.getItem('github_pat') || null;
+    return sessionStorage.getItem(PAT_KEY) || null;
 }
 
 function ghHeaders() {
@@ -81,9 +105,28 @@ function ghHeaders() {
     return pat ? { 'Authorization': `token ${pat}` } : {};
 }
 
+function hasPAT() {
+    return !!peekPAT();
+}
+
 function clearPAT() {
-    localStorage.removeItem('github_pat');
-    showNotif('🔑 已清除本機儲存的 PAT', 'success');
+    sessionStorage.removeItem(PAT_KEY);
+    localStorage.removeItem(PAT_KEY);   // 保險：把可能殘留的舊版也一起清掉
+    showNotif('🔑 已清除這個分頁的 PAT，下次上傳會重新詢問', 'success');
+    updatePatButton();
+}
+
+// 工具列上的 🔑 按鈕：顯示目前有沒有 token，按下去清除。
+// 由各編輯器在自己的工具列放一個 id="patBtn" 的按鈕，本函式負責更新它。
+function updatePatButton() {
+    const btn = document.getElementById('patBtn');
+    if (!btn) return;
+    const on = hasPAT();
+    btn.textContent = on ? '🔑 清除 Token' : '🔑 未輸入 Token';
+    btn.disabled = !on;
+    btn.title = on
+        ? 'Token 只存在這個分頁（sessionStorage），關閉分頁即失效。按此立即清除。'
+        : '尚未輸入 Token，第一次上傳時會詢問。';
 }
 
 /* ============================================================
@@ -410,7 +453,7 @@ function pasteZoneHtml(key, label, opts = {}) {
 window.EditorShared = {
     configure,
     escapeAttr, showNotif,
-    getPAT, peekPAT, ghHeaders, clearPAT,
+    getPAT, peekPAT, ghHeaders, hasPAT, clearPAT, updatePatButton,
     computeNextAvailableNumber,
     resizeToWebpBlob, blobToBase64, uploadNewImageFile,
     setPasteHandler, initPasteSupport, refreshArmedHighlight,
@@ -419,5 +462,9 @@ window.EditorShared = {
 
 // HTML 的 onclick 需要 global
 window.armPaste = armPaste;
+window.clearPAT = clearPAT;
+
+migrateLegacyPAT();
+window.addEventListener('load', updatePatButton);
 
 })();

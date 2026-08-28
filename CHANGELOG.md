@@ -10,6 +10,23 @@ git diff v1.0-stable HEAD     # 跟目前狀態比對
 
 ---
 
+## v1.6-pat-session — 2026-08-28 🔐 PAT 改存 sessionStorage
+
+**問題：編輯器跟正式網站同源（`fisherchang01.github.io`），而 `data/*.js` 是「會被編輯器改寫的可執行 JS」。一個有 repo 寫入權的 token 長期躺在同源的 `localStorage` 裡，等於任何能在該網域執行一行 JS 的東西都拿得到它——而拿到它就能改寫網站本身。**
+
+- `getPAT` / `peekPAT` / `clearPAT` 全部改用 `sessionStorage`，暴露時間從「永久」縮到「這個分頁關閉為止」
+- **自動遷移**：載入時若發現 `localStorage.github_pat` 還在，搬到 `sessionStorage` 並刪掉舊的那份。使用者不用重輸，舊的暴露也一併消除
+- 三個編輯器工具列都加了一顆 **🔑** 按鈕，顯示目前狀態並可立即清除；`clearPAT` 會把兩邊都清掉
+- 代價：每開一個新分頁要重輸一次 token
+
+**順手修掉一個 token 讀取的 bug**：舊寫法 `sessionStorage.setItem(KEY, pat.trim())` 存的是 trim 過的值，`return pat` 回傳的卻是**沒 trim 的原值**。從網頁複製 token 常會帶到前後空白，那次 session 的第一次上傳會直接拿未清理的字串去打 `Authorization` header，GitHub 回 401，而錯誤訊息完全看不出是空白造成的（下一次因為讀的是存好的值反而正常，更難查）。這個 bug 是寫測試時才發現的。
+
+**測試**：9 項於 jsdom 下驗證通過——乾淨啟動、舊 token 遷移、sessionStorage 已有值時不被覆蓋、`peekPAT` 不回頭讀 localStorage、prompt 輸入去空白、取消輸入不存空值、`clearPAT` 兩邊清乾淨、`ghHeaders` 有無 token、按鈕狀態切換。
+
+未動 `js/`、`css/` 與 `data/`，`sw.js` 快取版本字串不需調整。
+
+---
+
 ## v1.5-paste-screenshot — 2026-08-28 ⭐ 截圖可直接貼上；三個編輯器的底層收成一份
 
 **核心目的：截圖不該還要「先另存新檔 → 開檔案總管 → 選檔案」。剪貼簿的圖經 `getAsFile()` 拿到的本來就是 `File` 物件，既有的轉檔／接號／查重／上傳鏈一行都不用改，缺的只是「怎麼決定貼到哪裡」。**
