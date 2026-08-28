@@ -66,6 +66,7 @@ sw.js           PWA 離線快取
 | 文件 | 內容 |
 |---|---|
 | [架構總覽](docs/ARCHITECTURE.md) | 整站怎麼組起來、載入順序、DOM 契約、不可動區 ← **改程式前必讀** |
+| [CSS 死碼清單](docs/CSS-DEAD-CODE.md) | `style.css` 裡 42 個確認沒人用的 class，複製成新範本時再清 |
 | [統一資料 Schema](docs/DATA-SCHEMA.md) | 每個資料檔的欄位定義 |
 | [編輯器使用指南](docs/EDITORS.md) | 三個編輯器的操作與維護 |
 | [圖片規格](docs/IMAGES.md) | 資料夾分工、尺寸建議、命名規則 |
