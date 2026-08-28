@@ -437,11 +437,12 @@ function showDay(dayId) {
 
   setItinActive(dayId);
   updateItinMap(dayId);
-  // v22：飛機日不顯示路線圖。原本 images/routes/route-day0|6|8.webp 是手繪的航班資訊圖，
-  // 內容跟下面的航班卡完全重複，而且改航班就得重畫。這裡在 updateItinMap() 之後清空容器，
-  // 是為了不動 js/nav.js（不可動區）；.itin-map-scroll 本身沒有 padding/margin/min-height，
-  // 清空後高度歸零，不會留下空白區塊，也不會退回「地图准备中」佔位框。
-  if (d.transit) {
+  // v1.4：路線圖顯示與否，完全由「這天有沒有填 routeMapImg」決定，不再看 transit 旗標
+  //（transit 已於 v1.4 刪除）。沒填就整塊不顯示，不再退回「地图准备中」佔位框——
+  // 佔位框的提醒價值在編輯器裡（欄位空著就看得到），不需要出現在給旅伴看的頁面上。
+  // 這裡在 updateItinMap() 之後清空容器，是為了不動 js/nav.js（不可動區）；
+  // .itin-map-scroll 本身沒有 padding/margin/min-height，清空後高度歸零，不留空白。
+  if (!normalizeImgList(d.routeMapImg).length) {
     var mapMountEl = document.getElementById('itinMapScrollDay');
     if (mapMountEl) mapMountEl.innerHTML = '';
   }

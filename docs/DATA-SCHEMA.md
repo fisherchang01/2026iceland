@@ -140,17 +140,30 @@ DOM 契約與載入順序見 [ARCHITECTURE.md](ARCHITECTURE.md) 第 4、5 節。
 }
 ```
 
-#### `day.transit` 與 `day.flights`（v1.3 語意調整）
+#### 每一天的三個獨立開關（v1.4）
 
-`transit` 現在**只代表一件事：這天不顯示手繪路線圖 `images/routes/route-dayN.webp`**。
+`transit` 旗標已**移除**。以前它同時代表「這是飛機日」「不顯示路線圖」「編輯器要顯示航班區」，
+三件事綁在一起，導致「當日有飛機＋景點」這種組合做不出來。現在拆成三個互不相干的條件：
 
-- 要不要畫左邊那條時間軸，改由「這天有沒有 `spots` / `areas`」決定
-- 航班卡則是「有 `flights` 就畫」
+| 畫面元素 | 顯示條件 |
+|---|---|
+| 路線圖 | `routeMapImg` 有值 |
+| 航班卡 | `flights` 有值 |
+| 景點時間軸 | `spots` 或 `areas` 有值 |
 
-所以**一天可以同時有航班和景點**（例如去程日順便記機場貴賓室、退稅櫃檯），
-不需要再改渲染邏輯——這是為了讓這個 repo 當成其他旅程的範本時能直接沿用。
+「飛機日」不再是一種日子的類型，只是「有 `flights`、沒 `spots`」的自然結果。
+同一天可以同時有航班和景點，不需要任何旗標。這三項都可以在
+`tools/trip-editor-pro.html` 裡編輯，見 [EDITORS.md](EDITORS.md)。
 
-`flights` 每一段的欄位：
+#### `day.routeMapImg`
+
+`images/routes/` 底下的檔名。單張填字串，多張填陣列（會變成可左右滑動的輪播），
+留空或不設則整塊地圖區域不顯示（v1.4 起不再退回「地图准备中」佔位框）。
+
+規格：**建議 1200 × 900（4:3）**。編輯器上傳時會等比縮到長邊 1200px、轉成 WebP（q0.82）。
+行程頁的容器是 4:3 且 `object-fit: contain`，其他比例不會被裁切，但上下或左右會留白。
+
+#### `day.flights`
 
 | 欄位 | 必填 | 說明 |
 |---|---|---|
@@ -164,6 +177,13 @@ DOM 契約與載入順序見 [ARCHITECTURE.md](ARCHITECTURE.md) 第 4、5 節。
 
 `trip-schema.js` 的 `buildTripData()` 會把這些轉成正規的 `transport` 詞彙
 （`provider` / `number` / `departure` / `arrival`），資料檔本身維持 `flights` 寫法。
+
+#### `day.note` 與 `day.hotel`
+
+`note` 渲染成「行程备注」卡，每一行一個段落，支援文字標記。留空則不顯示。
+
+`hotel` 的 `name` 是關鍵：沒有 `name` 整張住宿卡不顯示。`map` 有值時卡片才可點開詳情，
+其餘 `note` / `address` / `checkIn` / `contact` 皆為選填。
 
 #### `item.id`（v1.1 起必填）
 

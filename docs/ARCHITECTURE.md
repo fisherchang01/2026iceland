@@ -300,7 +300,7 @@ template/trip-data.example.js TRIP_DATA 的空白範例
 - `js/render-itinerary.js`
 
 行程頁「該長什麼樣」本來就是這支檔案的職責。要改的是版面行為（例如 v1.3 讓飛機日
-也能顯示景點）而不是行程內容時，改這裡是對的，但必須在 CHANGELOG 記錄改了什麼、
-並且確認一般日的渲染沒有連帶改變。
+也能顯示景點、v1.4 把路線圖改成由資料決定）而不是行程內容時，改這裡是對的，
+但必須在 CHANGELOG 記錄改了什麼、並且確認一般日的渲染沒有連帶改變。
 
 若某個需求似乎必須動到第一層，先停下來確認是不是資料或渲染層可以解決。v1.0 有個好例子：「編輯器入口卡片只在工具總覽頁顯示」的需求，最後是用 `css/catalog-editorial.css` 搭配 `catalog-nav.js` 既有的 `.catalog-show-overview` class 解決的，一行 JS 都沒改。

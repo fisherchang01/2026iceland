@@ -142,6 +142,62 @@
             flex-direction: column;
             gap: 6px;
         }
+        /* ===== 階段 G：當日設定（路線圖／備註／住宿）===== */
+        .day-nav-btn {
+            width: 100%;
+            margin-bottom: 6px;
+            text-align: left;
+            padding: 8px 10px;
+            border: 1px solid #d8d8d8;
+            border-radius: 4px;
+            background: #fafafa;
+            color: #555;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .day-nav-btn:hover { background: #f0f0f0; border-color: #999; }
+        .day-nav-btn.active { background: #6b7280; color: white; border-color: #6b7280; }
+        .day-section {
+            border: 1px solid #d8d8d8;
+            border-left: 4px solid #9aa4b8;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 14px;
+            background: #fbfbfc;
+        }
+        .day-section h3 {
+            font-size: 13px; color: #444; margin-bottom: 4px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .day-section .sec-hint { font-size: 11px; color: #999; margin-bottom: 8px; line-height: 1.6; }
+        .day-section label {
+            display: flex; flex-direction: column; gap: 3px; margin-bottom: 8px;
+            font-size: 10px; font-weight: 700; color: #777;
+            text-transform: uppercase; letter-spacing: .4px;
+        }
+        .day-section input, .day-section textarea {
+            padding: 6px 8px; border: 1px solid #d0d0d0; border-radius: 4px;
+            font-size: 12px; font-family: monospace;
+        }
+        .day-section textarea { min-height: 120px; resize: vertical; line-height: 1.6; }
+        .day-section input:focus, .day-section textarea:focus {
+            outline: none; border-color: #667eea; box-shadow: 0 0 0 2px rgba(102,126,234,.12);
+        }
+        .route-thumb-row { display: flex; align-items: flex-start; gap: 10px; flex-wrap: wrap; }
+        .route-thumb {
+            width: 120px; height: 90px; object-fit: contain;
+            border: 1px solid #d0d0d0; border-radius: 4px; background: #f0f0f0;
+        }
+        .route-actions { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+        .route-upload-box {
+            display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px;
+            border: 1px dashed #7d8bd8; border-radius: 4px; background: #f5f7ff;
+            cursor: pointer; font-size: 11px; font-weight: 600; color: #4a56b8;
+        }
+        .route-upload-box:hover { background: #e9edff; }
+        .route-upload-box input[type="file"] { display: none; }
+
         /* ===== 階段 F：航班編輯 ===== */
         .flight-nav-btn {
             width: 100%;
@@ -816,6 +872,9 @@
         // 階段 F：目前主編輯區顯示的是「航班」還是「景點」。航班編輯跟結構變更一樣是
         // 記憶體內的變更（不進 localStorage 草稿），重新整理分頁會遺失，這點在畫面上有提示。
         let editingFlights = false;
+        // 階段 G：主編輯區顯示的是「當日設定」（路線圖／備註／住宿）
+        let editingDay = false;
+        let routeFileCache = null;   // images/routes/ 的檔案清單快取
         let initialSpotSnapshot = null; // { total, optional } 上傳前 Guard 用來比對數量變化
         let addSpotFormDayKey = null;   // 目前「新增景點」表單是開給哪一天用的（null 表示表單關閉）
 
@@ -1520,6 +1579,7 @@
             currentDay = dayKey;
             currentSpotIndex = null;
             editingFlights = false;
+            editingDay = false;
 
             document.querySelectorAll('.day-btn').forEach(btn => {
                 btn.classList.toggle('active', btn.textContent.includes(`Day ${tripData[dayKey].num}:`));
@@ -1552,15 +1612,25 @@
             const section = document.getElementById('spotsSection');
             const day = tripData[currentDay];
 
-            // 階段 F：航班入口。有 flights 或標記為 transit 的日子才顯示。
+            // 階段 G：每一天都有相同的三個入口，不再依「這天是不是飛機日」變化。
+            // transit 旗標已於 v1.4 移除——路線圖看 routeMapImg、航班卡看 flights、
+            // 時間軸看 spots，三者互相獨立，飛機日只是「有航班、沒景點」的自然結果。
             section.innerHTML = '';
-            if (day.transit || (day.flights && day.flights.length)) {
-                const fBtn = document.createElement('button');
-                fBtn.className = 'flight-nav-btn' + (editingFlights ? ' active' : '');
-                fBtn.textContent = `✈️ 航班（${(day.flights || []).length} 段）`;
-                fBtn.onclick = () => selectFlights();
-                section.appendChild(fBtn);
-            }
+
+            const dBtn = document.createElement('button');
+            dBtn.className = 'day-nav-btn' + (editingDay ? ' active' : '');
+            const routeCount = normalizeRouteList(day.routeMapImg).length;
+            dBtn.textContent = `⚙️ 當日設定（路線圖 ${routeCount ? routeCount + ' 張' : '無'}`
+                + `${day.note ? '・備註' : ''}${day.hotel && day.hotel.name ? '・住宿' : ''}）`;
+            dBtn.onclick = () => selectDaySettings();
+            section.appendChild(dBtn);
+
+            const fBtn = document.createElement('button');
+            fBtn.className = 'flight-nav-btn' + (editingFlights ? ' active' : '');
+            const fc = (day.flights || []).length;
+            fBtn.textContent = fc ? `✈️ 航班（${fc} 段）` : '✈️ 航班（尚無，可新增）';
+            fBtn.onclick = () => selectFlights();
+            section.appendChild(fBtn);
 
             section.insertAdjacentHTML('beforeend', `<div class="sidebar-title">🏔️ 景點</div>`);
 
@@ -1631,11 +1701,11 @@
             addBtn.onclick = () => toggleAddSpotForm();
             section.appendChild(addBtn);
 
-            // 飛機日（transit）不顯示手繪路線圖，這條提醒對它不適用。
-            if (!day.transit) {
+            // 有路線圖的日子才提醒「改了景點順序，圖不會自動更新」；路線圖本身現在在「⚙️ 當日設定」裡改。
+            if (normalizeRouteList(day.routeMapImg).length) {
                 const routeHint = document.createElement('div');
                 routeHint.className = 'field-hint route-hint';
-                routeHint.textContent = '⚠️ 調整順序或新增景點後，手繪路線圖 images/routes/route-dayN.webp 不會自動更新，需要人工重畫。';
+                routeHint.textContent = '⚠️ 調整順序或新增景點後，路線圖不會自動更新，需要重新繪製並在「⚙️ 當日設定」重新上傳。';
                 section.appendChild(routeHint);
             }
 
@@ -1822,6 +1892,263 @@
             renderSpots();
         }
 
+        // ===== 階段 G：當日設定（路線圖／備註／住宿）=====
+        // 這三項都是 day 層級的資料，以前只能手改 data/trip-details.js。
+        // 路線圖規格：images/routes/ 單一尺寸，長邊 1200px、WebP q0.82。
+        // 行程頁的容器是 4:3、object-fit: contain，所以任何比例都不會被裁切，
+        // 但用 4:3（1200x900）能把版面填滿、上下不留空白。
+        const ROUTE_DIR = 'images/routes/';
+        const ROUTE_MAX_DIM = 1200;
+        const ROUTE_QUALITY = 0.82;
+
+        // routeMapImg 允許填字串或陣列（多張會變成可左右滑的輪播），統一成陣列處理。
+        function normalizeRouteList(v) {
+            if (!v) return [];
+            return Array.isArray(v) ? v.slice() : [v];
+        }
+
+        // 陣列只有一個元素時寫回字串，維持既有資料檔的寫法，避免製造無謂的 diff。
+        function writeRouteList(day, list) {
+            if (!list.length) delete day.routeMapImg;
+            else if (list.length === 1) day.routeMapImg = list[0];
+            else day.routeMapImg = list;
+        }
+
+        function selectDaySettings() {
+            editingDay = true;
+            editingFlights = false;
+            currentSpotIndex = null;
+            renderSpots();
+            renderDaySettings();
+        }
+
+        function renderDaySettings() {
+            const day = tripData[currentDay];
+            const routes = normalizeRouteList(day.routeMapImg);
+            const hotel = day.hotel || {};
+
+            const routeThumbs = routes.length ? routes.map((f, i) => `
+                <div style="text-align:center;">
+                    <img class="route-thumb"
+                         src="https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/main/${ROUTE_DIR}${encodeURIComponent(f)}"
+                         onerror="this.style.opacity=.25">
+                    <div style="font-size:10px;color:#666;margin-top:3px;word-break:break-all;max-width:120px;">${escapeAttr(f)}</div>
+                    <button class="btn btn-danger btn-mini" style="margin-top:3px;" onclick="removeRouteImage(${i})">移除</button>
+                </div>`).join('') : '<div class="sec-hint">這一天沒有路線圖，行程頁不會顯示地圖區塊。</div>';
+
+            document.getElementById('editor').innerHTML = `
+                <div class="editor-header">
+                    <h2><span class="spot-icon">⚙️</span>${escapeAttr(day.title || currentDay)} · 當日設定</h2>
+                </div>
+                <div class="editor-content">
+                    <div class="field-hint route-hint">
+                        ⚠️ 當日設定跟航班、新增／排序景點一樣是記憶體內的變更，<strong>不會存進本地草稿</strong>，
+                        重新整理分頁會遺失。改完請直接按「⬆️ 上傳到GitHub」。
+                        （從本機上傳的圖片例外，會立刻 commit 到 GitHub。）
+                    </div>
+
+                    <div class="day-section">
+                        <h3>🗺️ 路線圖</h3>
+                        <div class="sec-hint">
+                            存放在 <code>${ROUTE_DIR}</code>，行程頁顯示在當天最上方。<br>
+                            <strong>建議尺寸 1200 × 900（4:3）</strong>；上傳時會自動等比縮到長邊 ${ROUTE_MAX_DIM}px、
+                            轉成 WebP（q${ROUTE_QUALITY}）。容器是 4:3 且 <code>object-fit: contain</code>，
+                            其他比例不會被裁切，但上下或左右會留白。<br>
+                            可以放多張，會變成可左右滑動的輪播。留空則整塊不顯示。
+                        </div>
+                        <div class="route-thumb-row">${routeThumbs}</div>
+                        <div class="route-actions" style="margin-top:10px;">
+                            <label class="route-upload-box">🗺️ 從本機上傳
+                                <input type="file" accept="image/*" multiple onchange="handleRouteUpload(this.files)">
+                            </label>
+                            <button class="btn btn-secondary btn-mini" onclick="promptRouteFilename()">手動輸入檔名</button>
+                        </div>
+                        <div id="routeUploadStatus" style="margin-top:8px;font-size:11px;line-height:1.7;"></div>
+                    </div>
+
+                    <div class="day-section">
+                        <h3>📝 當日備註（note）</h3>
+                        <div class="sec-hint">
+                            顯示為行程頁下方的「行程备注」卡。每一行會渲染成一個段落，空行自動略過。
+                            支援 <code>{bold}</code>、<code>{italic}</code>、<code>{#RRGGBB}…{/color}</code> 標記。留空則不顯示這張卡。
+                        </div>
+                        <textarea id="dayNoteInput" placeholder="例如：一、香港机场贵宾室：65号玉衡堂（优先）…"
+                                  oninput="onDayNoteInput(this.value)">${escapeAttr(day.note || '')}</textarea>
+                    </div>
+
+                    <div class="day-section">
+                        <h3>🏨 住宿（hotel）</h3>
+                        <div class="sec-hint">
+                            名稱留空則整張住宿卡不顯示。有填「地圖查詢字串」時卡片才可點開詳情。
+                        </div>
+                        <label>名稱 (name)
+                            <input type="text" id="hotelName" value="${escapeAttr(hotel.name || '')}"
+                                   placeholder="例如 Hilton Helsinki Airport" oninput="onHotelInput('name', this.value)">
+                        </label>
+                        <label>說明 (note)
+                            <input type="text" id="hotelNote" value="${escapeAttr(hotel.note || '')}"
+                                   placeholder="例如 機場旁，走路 5 分鐘" oninput="onHotelInput('note', this.value)">
+                        </label>
+                        <label>地圖查詢字串 (map)
+                            <input type="text" id="hotelMap" value="${escapeAttr(hotel.map || '')}"
+                                   placeholder="會被丟進 Google Maps 搜尋，留空則卡片不可點" oninput="onHotelInput('map', this.value)">
+                        </label>
+                        <label>地址 (address，選填)
+                            <input type="text" id="hotelAddress" value="${escapeAttr(hotel.address || '')}"
+                                   oninput="onHotelInput('address', this.value)">
+                        </label>
+                        <label>入住資訊 (checkIn，選填)
+                            <input type="text" id="hotelCheckIn" value="${escapeAttr(hotel.checkIn || '')}"
+                                   placeholder="例如 15:00 後入住，隔天 11:00 前退房" oninput="onHotelInput('checkIn', this.value)">
+                        </label>
+                        <label>聯絡方式 (contact，選填)
+                            <input type="text" id="hotelContact" value="${escapeAttr(hotel.contact || '')}"
+                                   oninput="onHotelInput('contact', this.value)">
+                        </label>
+                    </div>
+                </div>`;
+            document.getElementById('topBar').style.display = 'flex';
+            updateDayPreview();
+        }
+
+        function updateDayPreview() {
+            const day = tripData[currentDay] || {};
+            const el = document.getElementById('previewContent');
+            if (!el) return;
+            const routes = normalizeRouteList(day.routeMapImg);
+            const hotel = day.hotel || {};
+            const noteHtml = (day.note || '').split('\n').filter(l => l.trim())
+                .map(l => `<p style="margin:0 0 6px;">${parseMarkup(l)}</p>`).join('');
+            el.innerHTML = `
+                <div class="flight-preview">
+                    <div><strong>🗺️ 路線圖</strong>：${routes.length ? routes.map(escapeAttr).join('、') : '（不顯示）'}</div>
+                    <div style="margin-top:8px;"><strong>📝 備註</strong></div>
+                    ${noteHtml || '<div style="color:#999;">（不顯示）</div>'}
+                    <div style="margin-top:8px;"><strong>🏨 住宿</strong>：${hotel.name ? escapeAttr(hotel.name) : '（不顯示）'}</div>
+                    ${hotel.name && hotel.note ? `<div style="color:#666;">${escapeAttr(hotel.note)}</div>` : ''}
+                </div>`;
+        }
+
+        function markDayChanged() {
+            structuralChangeCount++;
+            updateDraftBadge();
+            updateDayPreview();
+        }
+
+        function onDayNoteInput(value) {
+            const day = tripData[currentDay];
+            if (value.trim()) day.note = value;
+            else delete day.note;
+            markDayChanged();
+        }
+
+        function onHotelInput(key, value) {
+            const day = tripData[currentDay];
+            if (!day.hotel) day.hotel = {};
+            const v = value.trim();
+            if (v) day.hotel[key] = v;
+            else delete day.hotel[key];
+            // 整個 hotel 物件都空了就移除，避免資料檔留下 "hotel": {}
+            if (!Object.keys(day.hotel).length) delete day.hotel;
+            markDayChanged();
+            renderSpots();   // 側欄的「當日設定」摘要要跟著更新
+        }
+
+        function promptRouteFilename() {
+            const name = (prompt(`輸入 ${ROUTE_DIR} 底下的檔名（例如 route-day1.webp）：`) || '').trim();
+            if (!name) return;
+            const day = tripData[currentDay];
+            const list = normalizeRouteList(day.routeMapImg);
+            if (list.includes(name)) { alert('這張圖已經在清單裡了'); return; }
+            list.push(name);
+            writeRouteList(day, list);
+            markDayChanged();
+            renderSpots();
+            renderDaySettings();
+        }
+
+        function removeRouteImage(idx) {
+            const day = tripData[currentDay];
+            const list = normalizeRouteList(day.routeMapImg);
+            const name = list[idx];
+            if (!confirm(`從這一天移除路線圖「${name}」？\n\n（只是取消引用，${ROUTE_DIR}${name} 這個檔案不會被刪除。）`)) return;
+            list.splice(idx, 1);
+            writeRouteList(day, list);
+            markDayChanged();
+            renderSpots();
+            renderDaySettings();
+        }
+
+        async function fetchRouteFileList(pat) {
+            const r = await fetch(
+                `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${ROUTE_DIR.replace(/\/$/, '')}`,
+                { headers: pat ? { 'Authorization': `token ${pat}` } : {} }
+            );
+            if (!r.ok) throw new Error('無法讀取 ' + ROUTE_DIR + ' 清單');
+            return (await r.json()).filter(f => /\.(webp|png|jpe?g)$/i.test(f.name)).map(f => f.name);
+        }
+
+        // 檔名用 route-{dayId}-NN.webp。既有的手繪圖叫 route-day1.webp（沒有序號），
+        // 所以序號從 01 開始不會撞名；接號時不分大小寫比對。
+        function computeNextRouteNumber(prefix, files) {
+            const re = new RegExp('^' + prefix.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '-(\\d{2,})\\.', 'i');
+            let max = 0;
+            files.forEach(f => { const m = String(f).match(re); if (m) max = Math.max(max, parseInt(m[1], 10)); });
+            return max + 1;
+        }
+
+        function routeStatus(text, cls) {
+            const el = document.getElementById('routeUploadStatus');
+            const row = document.createElement('div');
+            row.style.color = cls === 'ok' ? '#218838' : (cls === 'err' ? '#c0392b' : '#888');
+            row.textContent = text;
+            el.appendChild(row);
+            return row;
+        }
+
+        async function handleRouteUpload(fileList) {
+            const files = Array.from(fileList || []);
+            if (!files.length) return;
+            let pat;
+            try { pat = getPAT(); } catch (e) { showNotif('❌ ' + e.message, 'error'); return; }
+
+            document.getElementById('routeUploadStatus').innerHTML = '';
+            const day = tripData[currentDay];
+            const prefix = `route-${currentDay}`;
+            let known = [];
+            try { known = await fetchRouteFileList(pat); }
+            catch (e) { routeStatus('⚠ 無法取得現有檔案清單，改用當前引用推算序號', 'err'); }
+            known = known.concat(normalizeRouteList(day.routeMapImg));
+
+            const list = normalizeRouteList(day.routeMapImg);
+            let added = 0;
+            for (const file of files) {
+                const n = computeNextRouteNumber(prefix, known);
+                const filename = `${prefix}-${String(n).padStart(2, '0')}.webp`;
+                const row = routeStatus(`⏳ ${file.name} → ${filename} 處理中...`, 'pending');
+                try {
+                    const blob = await resizeToWebpBlob(file, ROUTE_MAX_DIM, ROUTE_QUALITY);
+                    row.textContent = `⏳ ${filename} 上傳中...`;
+                    await uploadNewImageFile(`${ROUTE_DIR}${filename}`, blob, pat);
+                    row.style.color = '#218838';
+                    row.textContent = `✅ ${filename}（${Math.round(blob.size / 1024)} KB）`;
+                    known.push(filename);
+                    list.push(filename);
+                    added++;
+                } catch (e) {
+                    row.style.color = '#c0392b';
+                    row.textContent = `❌ ${file.name}：${e.message}`;
+                }
+            }
+            if (added) {
+                writeRouteList(day, list);
+                markDayChanged();
+                renderSpots();
+                renderDaySettings();
+                showNotif(`✅ ${added} 張路線圖已上傳並引用（資料檔仍需按「⬆️ 上傳到GitHub」）`, 'success');
+            }
+        }
+
         // ===== 階段 F：航班編輯 =====
         // 欄位刻意沿用 data/trip-details.js 既有的 flights 詞彙（airline / flightNo / dep / arr …），
         // 不改成 trip-schema.js 宣告的 transport 詞彙（provider / number / departure / arrival）——
@@ -1842,6 +2169,7 @@
 
         function selectFlights() {
             editingFlights = true;
+            editingDay = false;
             currentSpotIndex = null;
             renderSpots();
             renderFlightEditor();
@@ -1924,8 +2252,6 @@
             const day = tripData[currentDay];
             if (!day.flights) day.flights = [];
             day.flights.push({ airline: '', flightNo: '', from: '', to: '', dep: '', arr: '', duration: '', date: '' });
-            // 新增第一段航班時同時標記 transit，行程頁才會隱藏手繪路線圖（見 js/render-itinerary.js）
-            if (day.flights.length === 1) day.transit = true;
             structuralChangeCount++;
             updateDraftBadge();
             renderSpots();
@@ -1957,6 +2283,7 @@
 
         function selectSpot(idx) {
             editingFlights = false;
+            editingDay = false;
             currentSpotIndex = idx;
             renderSpots(); // 重繪整個側欄，正確標記 active（新的區塊結構不能再靠 querySelectorAll 的順序對應 index）
             renderEditor();
@@ -2210,9 +2537,13 @@
                         return `${dayKey} 第 ${i + 1} 段航班缺少必填欄位：${missing.join('、')}`;
                     }
                 }
-                // 有航班卻沒標 transit，行程頁會照常顯示手繪路線圖（多半不是想要的結果）
-                if (flights.length && !day.transit) {
-                    return `${dayKey} 有 ${flights.length} 段航班但沒有 transit 標記，請重新新增航段或手動加上 "transit": true`;
+            }
+
+            // 4c) 階段 G：住宿填了內容卻沒填 name，buildHotelHtml() 會整張卡不顯示，
+            //     等於白填。這種多半是漏填而不是故意的，先擋下來問。
+            for (const [dayKey, day] of Object.entries(tripData)) {
+                if (day.hotel && !day.hotel.name && Object.keys(day.hotel).length) {
+                    return `${dayKey} 的住宿有填內容但缺少「名稱」，行程頁不會顯示住宿卡`;
                 }
             }
 
@@ -2278,6 +2609,8 @@
                 Object.values(tripData).forEach(day => {
                     if (Array.isArray(day.spots) && day.spots.length === 0) delete day.spots;
                     if (Array.isArray(day.flights) && day.flights.length === 0) delete day.flights;
+                    if (Array.isArray(day.routeMapImg) && day.routeMapImg.length === 0) delete day.routeMapImg;
+                    if (day.hotel && !Object.keys(day.hotel).length) delete day.hotel;
                 });
 
                 // 獲取舊內容並構建新內容
