@@ -227,25 +227,93 @@ function buildAttachedSpotCardHtml(s, onclickExpr) {
   return '<div class="attached-spot-row">' + cardHtml + '</div>';
 }
 
-// 飛行路線條（v15）：把「經過哪些機場」畫成一條橫向航點線，放在航班資訊卡最上面，
-// 一眼看完 HKG→SIN→HEL→KEF 這種多段轉機；下面原有的各段詳細卡片維持不變。
-// 機場代碼從 from/to 文字裡抓三碼英文（例如 '香港 HKG T1' → 'HKG'），資料不需新增欄位。
-function buildFlightStripHtml(flights) {
-  if (!flights || !flights.length) return '';
-  var airportCode = function(str) {
-    var m = (str || '').match(/[A-Z]{3}/);
-    return m ? m[0] : (str || '');
-  };
-  var html = '<div class="flight-strip">';
-  flights.forEach(function(f, i) {
-    if (i === 0) {
-      html += '<div class="fs-point"><div class="fs-code">' + airportCode(f.from) + '</div><div class="fs-time">' + f.dep + '</div></div>';
+// 航班資訊卡（v22 抽出）：原本這段內嵌在 showDay() 的 d.transit 分支裡，所以「有航班的那天」
+// 只能顯示航班、不能顯示景點。抽成函式之後，任何一天都能同時有航班卡與景點時間軸——
+// 你可以把機場貴賓室、退稅流程這類事情當成一般景點加進飛機日。
+// noTimeline=true 時回傳滿版卡片；否則包進 .timeline-row，避免左邊那條貫穿全天的虛線
+// 從卡片底下穿過去（跟住宿卡、里程小計同一個處理方式，見 v21 註解）。
+function buildFlightCardHtml(d, noTimeline) {
+  if (!d.flights || !d.flights.length) return '';
+  var segHtml = '';
+  d.flights.forEach(function(f, i) {
+    segHtml += '<div class="flight-segment">' +
+      '<div class="flight-header">' +
+      '<span class="flight-airline">✈️ ' + f.airline + ' ' + f.flightNo + '</span>' +
+      '<span class="flight-date">' + f.date + '</span>' +
+      '</div>' +
+      '<div class="flight-route">' +
+      '<div class="flight-dep"><div class="flight-time">' + f.dep + '</div><div class="flight-airport">' + f.from + '</div></div>' +
+      '<div class="flight-arrow">→</div>' +
+      '<div class="flight-arr"><div class="flight-time">' + f.arr + '</div><div class="flight-airport">' + f.to + '</div></div>' +
+      '<div class="flight-duration">' + f.duration + '</div>' +
+      '</div>' +
+      (f.note ? '<div class="flight-note">' + f.note + '</div>' : '') +
+      '</div>';
+    if (i < d.flights.length - 1) {
+      segHtml += '<div class="flight-transfer">🔄 转机等候' + (f.layoverAfter ? '　' + f.layoverAfter : '') + '</div>';
     }
-    html += '<div class="fs-leg"><div class="fs-leg-mid"><span class="fs-plane">✈️</span></div>' +
-      '<div class="fs-dur">' + stripEstimateWording(f.duration || '') + '</div></div>';
-    html += '<div class="fs-point"><div class="fs-code">' + airportCode(f.to) + '</div><div class="fs-time">' + f.arr + '</div></div>';
   });
-  html += '</div>';
+  if (noTimeline) {
+    return '<div class="info-card"><div class="card-label">航班资讯</div>' + segHtml + '</div>';
+  }
+  // 行內 flex:1;min-width:0 是必要的：flex 項目的 min-width 預設是 auto，不加的話卡片
+  // 會維持原寬度往右溢出、日期徽章被切掉。style.css 對 .spot-item / .hotel-card /
+  // .drive-summary-card 有同樣的規則，但 style.css 是不可動區，所以這裡寫成行內樣式。
+  return '<div class="timeline-row">' +
+    '<div class="timeline-node"><span class="timeline-dot type-general"></span></div>' +
+    '<div class="info-card" style="flex:1;min-width:0;"><div class="card-label">航班资讯</div>' + segHtml + '</div>' +
+    '</div>';
+}
+
+// 當日備註卡（v22 抽出，理由同上）。目前只有飛機日在用，但不再綁死在 transit 分支裡。
+function buildDayNoteHtml(d, noTimeline) {
+  if (!d.note) return '';
+  if (noTimeline) {
+    return '<div class="tips-card"><div class="card-label">行程备注</div>' + formatOutlineText(d.note) + '</div>';
+  }
+  return '<div class="timeline-row">' +
+    '<div class="timeline-node"><span class="timeline-dot type-general"></span></div>' +
+    '<div class="tips-card" style="flex:1;min-width:0;"><div class="card-label">行程备注</div>' + formatOutlineText(d.note) + '</div>' +
+    '</div>';
+}
+
+// 平鋪景點清單（v22 抽出）：原封不動搬自 showDay() 的 else 分支，邏輯一行未改，
+// 只是改成回傳字串，讓有航班的那天也能共用同一套景點卡與連接線。
+function buildDaySpotsHtml(d, dayId) {
+  var html = '';
+  var dayLabels = computeSpotLabels(d.spots);
+  var dayChildren = buildAttachedChildrenMap(d.spots);
+  (d.spots || []).forEach(function(s, i) {
+    if (s.attachTo) return; // 掛載的備選景點在母景點那一輪就已經渲染過了，這裡跳過
+    var onclickExpr = s.isShop ? null : "showSpot('" + dayId + "'," + i + ')';
+    html += buildSpotCardHtml(s, onclickExpr, dayLabels[i]);
+    (dayChildren[s.id] || []).forEach(function(childIdx) {
+      var child = d.spots[childIdx];
+      var childOnclick = child.isShop ? null : "showSpot('" + dayId + "'," + childIdx + ')';
+      html += buildAttachedSpotCardHtml(child, childOnclick);
+    });
+    var nextSpot = nextMainSpot(d.spots, i);
+    var destQuery = nextSpot ? encodeURIComponent(nextSpot.map || nextSpot.name) :
+      (d.hotel && d.hotel.map ? encodeURIComponent(d.hotel.map) : null);
+    if (d.drives && d.drives[i]) {
+      var dr = d.drives[i];
+      html += makeDriveConnector(dr.dist, dr.time, destQuery);
+    } else if (s.nextStops && s.nextStops.length) {
+      // 多段鏈式導航（例如 Kerið→超市→民宿，或 Reynisfjara→教堂→超市→民宿）：
+      // 依序把每一段都畫成一個 connector，各自導航到「這一段自己的地點」，不是統一導去下一個景點卡。
+      s.nextStops.forEach(function(leg) {
+        var legDest = encodeURIComponent(leg.address || leg.name);
+        var legText = (leg.distanceKm != null ? leg.distanceKm + ' km' : '') +
+          (leg.etaMin != null ? ' · 约 ' + leg.etaMin + ' 分钟' : '');
+        html += makeDriveConnector(leg.name + (legText ? '　' + legText : ''), '', legDest);
+      });
+    } else if (s.nextStop) {
+      var ns = s.nextStop;
+      if (ns.type === 'walk') html += makeWalkConnector(ns.text, ns.detail, destQuery);
+      else if (ns.type === 'tram') html += makeTramConnector(ns.text, ns.detail, destQuery);
+      else if (ns.type === 'drive') html += makeDriveConnector(ns.detail, '', destQuery);
+    }
+  });
   return html;
 }
 
@@ -300,39 +368,16 @@ function showDay(dayId) {
 
   var listEl = document.getElementById('spotList');
 
-  if (d.transit) {
-    var flightHtml = '';
-    if (d.flights && d.flights.length) {
-      d.flights.forEach(function(f, i) {
-        flightHtml += '<div class="flight-segment">' +
-          '<div class="flight-header">' +
-          '<span class="flight-airline">✈️ ' + f.airline + ' ' + f.flightNo + '</span>' +
-          '<span class="flight-date">' + f.date + '</span>' +
-          '</div>' +
-          '<div class="flight-route">' +
-          '<div class="flight-dep"><div class="flight-time">' + f.dep + '</div><div class="flight-airport">' + f.from + '</div></div>' +
-          '<div class="flight-arrow">→</div>' +
-          '<div class="flight-arr"><div class="flight-time">' + f.arr + '</div><div class="flight-airport">' + f.to + '</div></div>' +
-          '<div class="flight-duration">' + f.duration + '</div>' +
-          '</div>' +
-          (f.note ? '<div class="flight-note">' + f.note + '</div>' : '') +
-          '</div>';
-        if (i < d.flights.length - 1) {
-          flightHtml += '<div class="flight-transfer">🔄 转机等候' + (f.layoverAfter ? '　' + f.layoverAfter : '') + '</div>';
-        }
-      });
-    }
-    var hotelHtml = buildHotelHtml(d.hotel, dayId, true);
-    listEl.classList.add('no-timeline');
-    listEl.innerHTML =
-      (flightHtml ? '<div class="info-card"><div class="card-label">航班资讯</div>' + buildFlightStripHtml(d.flights) + flightHtml + '</div>' : '') +
-      (d.note ? '<div class="tips-card"><div class="card-label">行程备注</div>' + formatOutlineText(d.note) + '</div>' : '') +
-      hotelHtml;
-  } else if (d.areas && d.areas.length) {
-    listEl.classList.remove('no-timeline');
+  // v22：時間軸的有無改由「這天有沒有景點」決定，不再由 transit 旗標決定。
+  // 飛機日一樣可以有景點（貴賓室、退稅櫃檯之類），有景點就畫時間軸。
+  var hasSpots = !!((d.spots && d.spots.length) || (d.areas && d.areas.length));
+  var noTimeline = !hasSpots;
+  listEl.classList.toggle('no-timeline', noTimeline);
+
+  if (d.areas && d.areas.length) {
     // 分區折疊：任何旅程都可使用 areas，不依賴特定城市名稱。
     // 每一区预设收合，点击标题展开，跟其他页签的折叠行为一致（低风险：只是重新排版既有元件，非新增功能）。
-    var html = '';
+    var html = buildFlightCardHtml(d, noTimeline);
     d.areas.forEach(function(area, aIdx) {
       html += '<div class="travel-collapse area-collapse">' +
         '<div class="travel-collapse-header" onclick="toggleTravelCollapse(this)">' +
@@ -368,46 +413,14 @@ function showDay(dayId) {
       });
       html += '</div></div>'; // 关闭 travel-collapse-body 与 travel-collapse
     });
+    html += buildDayNoteHtml(d, noTimeline);
     html += buildHotelHtml(d.hotel, dayId);
     listEl.innerHTML = html;
   } else {
-    listEl.classList.remove('no-timeline');
-    var html = '';
-    var dayLabels = computeSpotLabels(d.spots);
-    var dayChildren = buildAttachedChildrenMap(d.spots);
-    (d.spots || []).forEach(function(s, i) {
-      if (s.attachTo) return; // 掛載的備選景點在母景點那一輪就已經渲染過了，這裡跳過
-      var onclickExpr = s.isShop ? null : "showSpot('" + dayId + "'," + i + ')';
-      html += buildSpotCardHtml(s, onclickExpr, dayLabels[i]);
-      (dayChildren[s.id] || []).forEach(function(childIdx) {
-        var child = d.spots[childIdx];
-        var childOnclick = child.isShop ? null : "showSpot('" + dayId + "'," + childIdx + ')';
-        html += buildAttachedSpotCardHtml(child, childOnclick);
-      });
-      var nextSpot = nextMainSpot(d.spots, i);
-      var destQuery = nextSpot ? encodeURIComponent(nextSpot.map || nextSpot.name) :
-        (d.hotel && d.hotel.map ? encodeURIComponent(d.hotel.map) : null);
-      if (d.drives && d.drives[i]) {
-        var dr = d.drives[i];
-        html += makeDriveConnector(dr.dist, dr.time, destQuery);
-      } else if (s.nextStops && s.nextStops.length) {
-        // 多段鏈式導航（例如 Kerið→超市→民宿，或 Reynisfjara→教堂→超市→民宿）：
-        // 依序把每一段都畫成一個 connector，各自導航到「這一段自己的地點」，不是統一導去下一個景點卡。
-        s.nextStops.forEach(function(leg) {
-          var legDest = encodeURIComponent(leg.address || leg.name);
-          var legText = (leg.distanceKm != null ? leg.distanceKm + ' km' : '') +
-            (leg.etaMin != null ? ' · 约 ' + leg.etaMin + ' 分钟' : '');
-          html += makeDriveConnector(leg.name + (legText ? '　' + legText : ''), '', legDest);
-        });
-      } else if (s.nextStop) {
-        var ns = s.nextStop;
-        if (ns.type === 'walk') html += makeWalkConnector(ns.text, ns.detail, destQuery);
-        else if (ns.type === 'tram') html += makeTramConnector(ns.text, ns.detail, destQuery);
-        else if (ns.type === 'drive') html += makeDriveConnector(ns.detail, '', destQuery);
-      }
-    });
-
-    html += buildHotelHtml(d.hotel, dayId);
+    var html = buildFlightCardHtml(d, noTimeline);
+    html += buildDaySpotsHtml(d, dayId);
+    html += buildDayNoteHtml(d, noTimeline);
+    html += buildHotelHtml(d.hotel, dayId, noTimeline);
 
     // v21：順序調整為「住宿 → 自駕里程小計 → 極光觀測卡」（原本極光卡在里程小計之上）。
     // 兩張卡都跟住宿卡一樣包進 timeline-row 內縮——原本直接滿版放在 #spotList 裡，
@@ -424,6 +437,14 @@ function showDay(dayId) {
 
   setItinActive(dayId);
   updateItinMap(dayId);
+  // v22：飛機日不顯示路線圖。原本 images/routes/route-day0|6|8.webp 是手繪的航班資訊圖，
+  // 內容跟下面的航班卡完全重複，而且改航班就得重畫。這裡在 updateItinMap() 之後清空容器，
+  // 是為了不動 js/nav.js（不可動區）；.itin-map-scroll 本身沒有 padding/margin/min-height，
+  // 清空後高度歸零，不會留下空白區塊，也不會退回「地图准备中」佔位框。
+  if (d.transit) {
+    var mapMountEl = document.getElementById('itinMapScrollDay');
+    if (mapMountEl) mapMountEl.innerHTML = '';
+  }
   initThumbRowLazyLoad(listEl);
   initScrollReveal(listEl);
 }

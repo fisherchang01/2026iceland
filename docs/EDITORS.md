@@ -1,6 +1,6 @@
 # 編輯器使用指南
 
-> 對應版本：**v1.1**（2026-08-27）
+> 對應版本：**v1.3**（2026-08-28）
 > 本文取代已刪除的 `EDITORS_QUICK_START.md`、`PHASE_1_EDITOR_GUIDE.md`、`TRIP_EDITOR_PRO_GUIDE.md`。
 
 ---
@@ -205,6 +205,24 @@ window.EDITOR_CONFIG = {
 草稿鍵格式 `{dayKey}_{spotIndex}`，例如 `day1_0`。
 
 支援與體驗編輯器相同的四種文字標記。
+
+### 航班編輯（v1.3 新增）
+
+有航班的日子，側欄會多一個「✈️ 航班（N 段）」入口。可以新增／刪除／上下排序航段，
+欄位就是 `data/trip-details.js` 既有的那組（`airline`、`flightNo`、`from`、`to`、
+`dep`、`arr`、`duration`、`date`、`layoverAfter`、`note`），右側即時預覽會把航段
+與轉機等候串起來，方便核對有沒有接錯段。
+
+- `airline` / `flightNo` / `from` / `to` / `dep` / `arr` 是必填，缺任何一個 Guard 會擋下上傳
+- `layoverAfter` 填的是**這一段之後**的轉機等候，最後一段留空
+- 在原本沒有航班的日子按「➕ 新增航段」，會自動補上 `transit: true`
+- 航班變更跟新增／排序景點一樣是**記憶體內的變更，不進本地草稿**，重新整理分頁會遺失
+
+**飛機日也可以加景點**（v1.3）。以前 `renderSpots()` 有一行 `if (!day.spots) return;`，
+沒有 `spots` 的日子連「➕ 新增景點」按鈕都不會出現，等於永遠加不了第一個景點。
+現在飛機日可以照常加景點，把機場貴賓室、退稅櫃檯這類事情當成一般景點卡管理。
+
+### 景點照片
 
 景點照片可直接在編輯器上傳（階段 D 起）：選檔案後自動縮成 `medium`（長邊 960/q0.82）與
 `thumb`（長邊 480/q0.76）兩份同名 WebP，命名為 `{spot.id}-NN.webp`，一次 commit 到

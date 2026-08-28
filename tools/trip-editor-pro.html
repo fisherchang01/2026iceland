@@ -142,6 +142,55 @@
             flex-direction: column;
             gap: 6px;
         }
+        /* ===== 階段 F：航班編輯 ===== */
+        .flight-nav-btn {
+            width: 100%;
+            margin-bottom: 8px;
+            text-align: left;
+            padding: 8px 10px;
+            border: 1px solid #d8d8e8;
+            border-radius: 4px;
+            background: #f5f7ff;
+            color: #4a56b8;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .flight-nav-btn:hover { background: #e9edff; border-color: #7d8bd8; }
+        .flight-nav-btn.active { background: #667eea; color: white; border-color: #667eea; }
+        .flight-seg-card {
+            border: 1px solid #d8d8d8;
+            border-left: 4px solid #7d8bd8;
+            border-radius: 6px;
+            padding: 10px;
+            margin-bottom: 12px;
+            background: #fbfbfe;
+        }
+        .flight-seg-head {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 8px; font-size: 12px; font-weight: 700; color: #444;
+        }
+        .flight-seg-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+        }
+        .flight-seg-grid .full { grid-column: 1 / -1; }
+        .flight-seg-grid label {
+            display: flex; flex-direction: column; gap: 3px;
+            font-size: 10px; font-weight: 700; color: #777;
+            text-transform: uppercase; letter-spacing: .4px;
+        }
+        .flight-seg-grid input {
+            padding: 6px 8px; border: 1px solid #d0d0d0; border-radius: 4px;
+            font-size: 12px; font-family: monospace;
+        }
+        .flight-seg-grid input:focus {
+            outline: none; border-color: #667eea; box-shadow: 0 0 0 2px rgba(102,126,234,.12);
+        }
+        .flight-preview {
+            background: #f5f7ff; border: 1px solid #cdd4f5; border-radius: 6px;
+            padding: 10px; font-size: 12px; line-height: 1.8;
+        }
+
         .add-spot-form input,
         .add-spot-form select {
             padding: 5px 6px;
@@ -764,6 +813,9 @@
         // drafts 只管內容欄位，可以跨重新整理保留在 localStorage；結構性變更沒有這層保留，
         // 只在這次編輯階段有效，重新整理分頁會遺失未上傳的結構變更，這點會在畫面上提示）。
         let structuralChangeCount = 0;
+        // 階段 F：目前主編輯區顯示的是「航班」還是「景點」。航班編輯跟結構變更一樣是
+        // 記憶體內的變更（不進 localStorage 草稿），重新整理分頁會遺失，這點在畫面上有提示。
+        let editingFlights = false;
         let initialSpotSnapshot = null; // { total, optional } 上傳前 Guard 用來比對數量變化
         let addSpotFormDayKey = null;   // 目前「新增景點」表單是開給哪一天用的（null 表示表單關閉）
 
@@ -1365,7 +1417,7 @@
         }
 
         function computeSpotSnapshot() {
-            let total = 0, optional = 0, images = 0;
+            let total = 0, optional = 0, images = 0, flights = 0;
             Object.values(tripData).forEach(day => {
                 const allSpots = (day.spots || []).concat(
                     (day.areas || []).reduce((acc, a) => acc.concat(a.spots || []), [])
@@ -1375,8 +1427,9 @@
                     if (s.isOptional) optional++;
                     images += (s.images || []).length;
                 });
+                flights += (day.flights || []).length;   // 階段 F：航班段數也納入異動摘要
             });
-            return { total, optional, images };
+            return { total, optional, images, flights };
         }
 
         async function loadTripData() {
@@ -1466,6 +1519,7 @@
         function selectDay(dayKey) {
             currentDay = dayKey;
             currentSpotIndex = null;
+            editingFlights = false;
 
             document.querySelectorAll('.day-btn').forEach(btn => {
                 btn.classList.toggle('active', btn.textContent.includes(`Day ${tripData[dayKey].num}:`));
@@ -1496,10 +1550,24 @@
 
         function renderSpots() {
             const section = document.getElementById('spotsSection');
-            section.innerHTML = `<div class="sidebar-title">🏔️ 景點</div>`;
-
             const day = tripData[currentDay];
-            if (!day.spots) return;
+
+            // 階段 F：航班入口。有 flights 或標記為 transit 的日子才顯示。
+            section.innerHTML = '';
+            if (day.transit || (day.flights && day.flights.length)) {
+                const fBtn = document.createElement('button');
+                fBtn.className = 'flight-nav-btn' + (editingFlights ? ' active' : '');
+                fBtn.textContent = `✈️ 航班（${(day.flights || []).length} 段）`;
+                fBtn.onclick = () => selectFlights();
+                section.appendChild(fBtn);
+            }
+
+            section.insertAdjacentHTML('beforeend', `<div class="sidebar-title">🏔️ 景點</div>`);
+
+            // 階段 F 修正：原本這裡是 `if (!day.spots) return;`，導致還沒有 spots 的日子
+            // （day0/day6/day8 這種飛機日）連下面的「➕ 新增景點」按鈕都不會出現，
+            // 等於永遠加不了第一個景點。改成先補一個空陣列再繼續。
+            if (!day.spots) day.spots = [];
 
             const blocks = buildTopLevelBlocks(day.spots);
             blocks.forEach((block) => {
@@ -1563,10 +1631,13 @@
             addBtn.onclick = () => toggleAddSpotForm();
             section.appendChild(addBtn);
 
-            const routeHint = document.createElement('div');
-            routeHint.className = 'field-hint route-hint';
-            routeHint.textContent = '⚠️ 調整順序或新增景點後，手繪路線圖 images/routes/route-dayN.webp 不會自動更新，需要人工重畫。';
-            section.appendChild(routeHint);
+            // 飛機日（transit）不顯示手繪路線圖，這條提醒對它不適用。
+            if (!day.transit) {
+                const routeHint = document.createElement('div');
+                routeHint.className = 'field-hint route-hint';
+                routeHint.textContent = '⚠️ 調整順序或新增景點後，手繪路線圖 images/routes/route-dayN.webp 不會自動更新，需要人工重畫。';
+                section.appendChild(routeHint);
+            }
 
             if (addSpotFormDayKey === currentDay) {
                 section.appendChild(buildAddSpotFormEl());
@@ -1751,7 +1822,141 @@
             renderSpots();
         }
 
+        // ===== 階段 F：航班編輯 =====
+        // 欄位刻意沿用 data/trip-details.js 既有的 flights 詞彙（airline / flightNo / dep / arr …），
+        // 不改成 trip-schema.js 宣告的 transport 詞彙（provider / number / departure / arrival）——
+        // 改詞彙就得同時動資料檔與渲染端，風險遠大於收益。兩套詞彙之間的轉換仍由
+        // trip-schema.js 的 buildTripData() 負責，維持原狀。
+        const FLIGHT_FIELDS = [
+            { key: 'airline',     label: '航空公司',   ph: '芬兰航空',            full: false },
+            { key: 'flightNo',    label: '航班號',     ph: 'AY991',              full: false },
+            { key: 'from',        label: '起點',       ph: '赫尔辛基万塔 HEL',    full: false },
+            { key: 'to',          label: '終點',       ph: '凯夫拉维克 KEF',      full: false },
+            { key: 'dep',         label: '起飛',       ph: '07:10',              full: false },
+            { key: 'arr',         label: '抵達',       ph: '07:50（跨日寫 06:00+1）', full: false },
+            { key: 'duration',    label: '飛行時長',   ph: '约3小时40分',         full: false },
+            { key: 'date',        label: '日期',       ph: '10月4日',            full: false },
+            { key: 'layoverAfter', label: '轉機等候（此段之後）', ph: '约 1 小时 10 分钟；最後一段留空', full: true },
+            { key: 'note',        label: '備註',       ph: '當地10月4日抵達（可留空）', full: true },
+        ];
+
+        function selectFlights() {
+            editingFlights = true;
+            currentSpotIndex = null;
+            renderSpots();
+            renderFlightEditor();
+        }
+
+        function renderFlightEditor() {
+            const day = tripData[currentDay];
+            if (!day.flights) day.flights = [];
+            const flights = day.flights;
+
+            const segsHtml = flights.map((f, i) => {
+                const fields = FLIGHT_FIELDS.map(fd => `
+                    <label class="${fd.full ? 'full' : ''}">${fd.label}
+                        <input type="text" value="${escapeAttr(f[fd.key] || '')}"
+                               placeholder="${escapeAttr(fd.ph)}"
+                               oninput="onFlightFieldInput(${i}, '${fd.key}', this.value)">
+                    </label>`).join('');
+                return `
+                    <div class="flight-seg-card">
+                        <div class="flight-seg-head">
+                            <span>第 ${i + 1} 段${flights.length > 1 ? `／共 ${flights.length} 段` : ''}</span>
+                            <span>
+                                <button class="btn btn-secondary btn-mini" onclick="moveFlight(${i},-1)">↑</button>
+                                <button class="btn btn-secondary btn-mini" onclick="moveFlight(${i},1)">↓</button>
+                                <button class="btn btn-danger btn-mini" onclick="deleteFlight(${i})">刪除</button>
+                            </span>
+                        </div>
+                        <div class="flight-seg-grid">${fields}</div>
+                    </div>`;
+            }).join('');
+
+            document.getElementById('editor').innerHTML = `
+                <div class="editor-header">
+                    <h2><span class="spot-icon">✈️</span>${escapeAttr(day.title || currentDay)} · 航班</h2>
+                </div>
+                <div class="editor-content">
+                    <div class="field-hint route-hint">
+                        ⚠️ 航班變更跟新增／排序景點一樣是記憶體內的變更，<strong>不會存進本地草稿</strong>，
+                        重新整理分頁會遺失。改完請直接按「⬆️ 上傳到GitHub」。
+                    </div>
+                    ${flights.length ? segsHtml : '<div class="empty-state">這一天還沒有航班，按下面的按鈕新增。</div>'}
+                    <button class="btn btn-secondary btn-mini spot-add-btn" onclick="addFlight()">➕ 新增航段</button>
+                </div>`;
+            document.getElementById('topBar').style.display = 'flex';
+            updateFlightPreview();
+        }
+
+        // 即時預覽：用跟網站相同的順序把航段串起來，方便核對轉機等候有沒有接錯段。
+        function updateFlightPreview() {
+            const flights = (tripData[currentDay] || {}).flights || [];
+            const el = document.getElementById('previewContent');
+            if (!el) return;
+            if (!flights.length) { el.innerHTML = '（這一天沒有航班）'; return; }
+            el.innerHTML = '<div class="flight-preview">' + flights.map((f, i) => {
+                const line = `✈️ <strong>${escapeAttr(f.airline || '?')} ${escapeAttr(f.flightNo || '?')}</strong>` +
+                    `　<span style="color:#888;">${escapeAttr(f.date || '')}</span><br>` +
+                    `${escapeAttr(f.dep || '??:??')} ${escapeAttr(f.from || '?')}` +
+                    ` → ${escapeAttr(f.arr || '??:??')} ${escapeAttr(f.to || '?')}` +
+                    `　<span style="color:#888;">${escapeAttr(f.duration || '')}</span>` +
+                    (f.note ? `<br><span style="color:#8a6d1a;">${escapeAttr(f.note)}</span>` : '');
+                const transfer = (i < flights.length - 1)
+                    ? `<div style="color:#667eea;margin:6px 0;">🔄 轉機等候　${escapeAttr(f.layoverAfter || '（未填）')}</div>`
+                    : '';
+                return `<div>${line}</div>${transfer}`;
+            }).join('') + '</div>';
+        }
+
+        function onFlightFieldInput(idx, key, value) {
+            const flights = tripData[currentDay].flights;
+            if (!flights || !flights[idx]) return;
+            const v = value.trim();
+            if (v) flights[idx][key] = v;
+            else delete flights[idx][key];   // 空字串不寫進資料檔，維持既有資料的乾淨程度
+            structuralChangeCount++;
+            updateDraftBadge();
+            updateFlightPreview();
+        }
+
+        function addFlight() {
+            const day = tripData[currentDay];
+            if (!day.flights) day.flights = [];
+            day.flights.push({ airline: '', flightNo: '', from: '', to: '', dep: '', arr: '', duration: '', date: '' });
+            // 新增第一段航班時同時標記 transit，行程頁才會隱藏手繪路線圖（見 js/render-itinerary.js）
+            if (day.flights.length === 1) day.transit = true;
+            structuralChangeCount++;
+            updateDraftBadge();
+            renderSpots();
+            renderFlightEditor();
+        }
+
+        function deleteFlight(idx) {
+            const day = tripData[currentDay];
+            const f = day.flights[idx];
+            if (!f) return;
+            const label = `${f.airline || ''} ${f.flightNo || ''}`.trim() || `第 ${idx + 1} 段`;
+            if (!confirm(`確定刪除航段「${label}」？上傳前重新整理頁面即可還原。`)) return;
+            day.flights.splice(idx, 1);
+            structuralChangeCount++;
+            updateDraftBadge();
+            renderSpots();
+            renderFlightEditor();
+        }
+
+        function moveFlight(idx, dir) {
+            const flights = tripData[currentDay].flights;
+            const j = idx + dir;
+            if (j < 0 || j >= flights.length) return;
+            const tmp = flights[idx]; flights[idx] = flights[j]; flights[j] = tmp;
+            structuralChangeCount++;
+            updateDraftBadge();
+            renderFlightEditor();
+        }
+
         function selectSpot(idx) {
+            editingFlights = false;
             currentSpotIndex = idx;
             renderSpots(); // 重繪整個側欄，正確標記 active（新的區塊結構不能再靠 querySelectorAll 的順序對應 index）
             renderEditor();
@@ -1994,6 +2199,23 @@
                 }
             }
 
+            // 4b) 階段 F：航班必填欄位檢查。缺 airline/flightNo/from/to/dep/arr 其中之一，
+            //     行程頁的航班卡就會印出 undefined，所以這裡直接擋下。
+            const FLIGHT_REQUIRED = ['airline', 'flightNo', 'from', 'to', 'dep', 'arr'];
+            for (const [dayKey, day] of Object.entries(tripData)) {
+                const flights = day.flights || [];
+                for (let i = 0; i < flights.length; i++) {
+                    const missing = FLIGHT_REQUIRED.filter(k => !flights[i][k]);
+                    if (missing.length) {
+                        return `${dayKey} 第 ${i + 1} 段航班缺少必填欄位：${missing.join('、')}`;
+                    }
+                }
+                // 有航班卻沒標 transit，行程頁會照常顯示手繪路線圖（多半不是想要的結果）
+                if (flights.length && !day.transit) {
+                    return `${dayKey} 有 ${flights.length} 段航班但沒有 transit 標記，請重新新增航段或手動加上 "transit": true`;
+                }
+            }
+
             // 5) 景點總數不得無故減少
             const current = computeSpotSnapshot();
             if (initialSpotSnapshot && current.total < initialSpotSnapshot.total) {
@@ -2005,9 +2227,12 @@
 
             // 6) 顯示 diff 摘要供人工確認
             if (initialSpotSnapshot) {
+                const flightTotal = Object.values(tripData)
+                    .reduce((n, day) => n + ((day.flights || []).length), 0);
                 const summary = `景點數：${initialSpotSnapshot.total} → ${current.total}\n` +
                     `備選數：${initialSpotSnapshot.optional} → ${current.optional}\n` +
-                    `照片引用數：${initialSpotSnapshot.images} → ${current.images}`;
+                    `照片引用數：${initialSpotSnapshot.images} → ${current.images}\n` +
+                    `航班段數：${initialSpotSnapshot.flights} → ${flightTotal}`;
                 if (!confirm(`即將上傳，異動摘要：\n\n${summary}\n\n確定上傳？`)) {
                     return '使用者取消上傳';
                 }
@@ -2048,6 +2273,13 @@
                     }
                 });
 
+                // renderSpots() 為了讓飛機日能新增景點，會替沒有 spots 的日子補一個空陣列。
+                // 那只是編輯器的內部需要，不該寫進資料檔，上傳前清掉。
+                Object.values(tripData).forEach(day => {
+                    if (Array.isArray(day.spots) && day.spots.length === 0) delete day.spots;
+                    if (Array.isArray(day.flights) && day.flights.length === 0) delete day.flights;
+                });
+
                 // 獲取舊內容並構建新內容
                 const getResp = await fetch(
                     `https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/main/${GITHUB_FILE}`
@@ -2071,7 +2303,7 @@
                 );
                 const fileData = await shaResp.json();
 
-                const structuralNote = structuralChangeCount > 0 ? `＋${structuralChangeCount} 個結構變更（新增/排序/刪除）` : '';
+                const structuralNote = structuralChangeCount > 0 ? `＋${structuralChangeCount} 個結構變更（新增/排序/刪除/航班）` : '';
                 // 上傳
                 const updateResp = await fetch(
                     `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_FILE}`,

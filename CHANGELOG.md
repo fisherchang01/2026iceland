@@ -10,6 +10,38 @@ git diff v1.0-stable HEAD     # 跟目前狀態比對
 
 ---
 
+## v1.3-flight-day — 2026-08-28 ⭐ 飛機日版面重整 + 航班編輯器
+
+**核心目的：第 1、7、9 日都是純航班日，畫面上同一份航班資料被顯示了三次——最上面一張手繪的 `route-dayN.webp`（裡面航空公司、航班號、起降時間、轉機等候全都有）、中間的機場航點條、下面的航段卡片。手繪圖改一次航班就要重畫一次，而它的每個字在 `trip-details.js` 裡都已經有了。另外飛機日的渲染分支從頭到尾沒讀過 `d.spots`，所以那天不可能加景點。**
+
+**1 — 拿掉重複的兩層**
+- 移除 day0/day6/day8 的 `routeMapImg`，刪除 `images/routes/route-day0|6|8.webp`
+- 移除整個機場航點條（`buildFlightStripHtml()` 連函式一起刪）——它講的內容跟下面的航段卡片一樣
+- `js/nav.js` 的 `updateItinMap()` 對空清單會渲染「地图准备中」佔位框，所以在 `showDay()` 結尾針對 transit 日清空容器。`.itin-map-scroll` 本身沒有 padding/margin/min-height，清空後高度歸零
+- `css/style.css` 裡的 `.flight-strip` / `.fs-*` 因此變成死碼，但該檔案是不可動區，保留不動
+
+**2 — `transit` 語意收斂，飛機日可以有景點**
+- `transit` 現在只代表「不顯示手繪路線圖」
+- 要不要畫時間軸改由「這天有沒有 spots/areas」決定；航班卡改由「有沒有 flights」決定
+- 抽出 `buildFlightCardHtml()`、`buildDayNoteHtml()`、`buildDaySpotsHtml()` 三個函式，讓三個分支共用同一套景點渲染（景點迴圈、連接線、里程小計邏輯一行未改）
+- 有時間軸時航班卡與備註卡包進 `.timeline-row`。flex 項目的 `min-width` 預設是 `auto`，卡片不加 `flex:1;min-width:0` 會往右溢出、日期徽章被切掉；`style.css` 對 `.spot-item` / `.hotel-card` / `.drive-summary-card` 有同樣的規則，但該檔不可動，故寫成行內樣式
+- 這一項是為了讓 repo 當成其他旅程（美國、泰國）的範本時，「當日有飛機＋景點」能直接支援
+
+**3 — 航班編輯器（`tools/trip-editor-pro.html` 階段 F）**
+- 側欄新增「✈️ 航班（N 段）」入口，可新增／刪除／排序航段，右側即時預覽串起航段與轉機等候
+- 欄位沿用既有的 `flights` 詞彙，不改成 `trip-schema.js` 宣告的 `transport` 詞彙（改詞彙要同時動資料檔與渲染端，風險大於收益；轉換仍由 `buildTripData()` 負責）
+- Guard 新增 4b：`airline`/`flightNo`/`from`/`to`/`dep`/`arr` 缺一即中止；有航班卻沒 `transit` 標記也中止。異動摘要加上航班段數
+- 修 bug：`renderSpots()` 的 `if (!day.spots) return;` 讓沒有 spots 的日子連「➕ 新增景點」按鈕都不出現，飛機日因此永遠加不了第一個景點。上傳前會清掉為此補出來的空陣列，不寫進資料檔
+- 手繪路線圖的提醒改為只在非飛機日顯示
+
+**4 — 文件**
+- `ARCHITECTURE.md` 第 9 節「不可動區」改成兩層：`catalog-nav.js` / `nav.js` / `style.css` 維持完全不可動；`render-itinerary.js` 改成「改內容時不可動，改渲染行為時這裡就是正確位置，但須記錄於 CHANGELOG」。這次的需求正是後者——改的是飛機日該長什麼樣，不是行程內容
+- `DATA-SCHEMA.md` 補上 `day.transit` 新語意與 `flights` 欄位表
+
+**驗證**：以 playwright 實跑 `index.html`，六個一般日（day1–5、day7）改動前後**逐像素完全相同**；420/360/900 三種寬度下卡片皆無溢出，飛機日路線圖容器高度 0px、一般日維持 294px；另模擬在飛機日加入景點，確認航班卡與景點卡在同一條時間軸上正常排版。編輯器以 playwright 跑 21 項端對端檢查（側欄入口、欄位帶入、排序、Guard 攔截、上傳打包重組後仍為合法 JSON）全數通過。
+
+---
+
 ## v1.2-catalog-upload — 2026-08-27 ⭐ 體驗／工具編輯器：共用核心 + 直接上傳照片
 
 **核心目的：`images/catalog/` 是體驗頁與工具頁共用的實體資料夾，但每個編輯器只掃自己那份資料檔，算出來的「未使用」其實是「本頁沒用到」——工具編輯器把 88 張圖列成未使用，其中 80 張是體驗頁在用的。更根本的問題是照片必須線下處理、先推到 GitHub、再回編輯器認領，所以「已上傳但還沒被引用」這個中間狀態一直存在。這次讓照片在編輯器裡直接上傳，中間狀態就不再產生。**

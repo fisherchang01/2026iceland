@@ -140,6 +140,31 @@ DOM 契約與載入順序見 [ARCHITECTURE.md](ARCHITECTURE.md) 第 4、5 節。
 }
 ```
 
+#### `day.transit` 與 `day.flights`（v1.3 語意調整）
+
+`transit` 現在**只代表一件事：這天不顯示手繪路線圖 `images/routes/route-dayN.webp`**。
+
+- 要不要畫左邊那條時間軸，改由「這天有沒有 `spots` / `areas`」決定
+- 航班卡則是「有 `flights` 就畫」
+
+所以**一天可以同時有航班和景點**（例如去程日順便記機場貴賓室、退稅櫃檯），
+不需要再改渲染邏輯——這是為了讓這個 repo 當成其他旅程的範本時能直接沿用。
+
+`flights` 每一段的欄位：
+
+| 欄位 | 必填 | 說明 |
+|---|---|---|
+| `airline` / `flightNo` | ✓ | 航空公司、航班號 |
+| `from` / `to` | ✓ | 起訖機場，字串裡的三碼大寫英文會被當成機場代碼 |
+| `dep` / `arr` | ✓ | 起降時間，跨日寫 `06:00+1` |
+| `duration` | | 飛行時長 |
+| `date` | | 日期標籤 |
+| `layoverAfter` | | **此段之後**的轉機等候，最後一段留空 |
+| `note` | | 單段備註 |
+
+`trip-schema.js` 的 `buildTripData()` 會把這些轉成正規的 `transport` 詞彙
+（`provider` / `number` / `departure` / `arrival`），資料檔本身維持 `flights` 寫法。
+
 #### `item.id`（v1.1 起必填）
 
 編輯器上傳照片時，檔名由這個欄位決定：`{id}-NN.webp`（兩位數補零，接在既有最大號之後）。因此：

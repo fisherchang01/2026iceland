@@ -287,11 +287,20 @@ template/trip-data.example.js TRIP_DATA 的空白範例
 
 ## 9. 不可動區
 
-以下檔案是核心互動邏輯，改內容時**不需要也不應該**動它們：
+分成兩層（v1.3 起）。
+
+**第一層：不可動。** 跨頁共用的地基，任何需求都不該從這裡下手：
 
 - `js/catalog-nav.js`
-- `js/render-itinerary.js`
 - `js/nav.js`
 - `css/style.css`
 
-若某個需求似乎必須改這幾個檔，先停下來確認是不是資料或渲染層可以解決。v1.0 有個好例子：「編輯器入口卡片只在工具總覽頁顯示」的需求，最後是用 `css/catalog-editorial.css` 搭配 `catalog-nav.js` 既有的 `.catalog-show-overview` class 解決的，一行 JS 都沒改。
+**第二層：改內容時不可動，改渲染行為時這裡就是正確位置。**
+
+- `js/render-itinerary.js`
+
+行程頁「該長什麼樣」本來就是這支檔案的職責。要改的是版面行為（例如 v1.3 讓飛機日
+也能顯示景點）而不是行程內容時，改這裡是對的，但必須在 CHANGELOG 記錄改了什麼、
+並且確認一般日的渲染沒有連帶改變。
+
+若某個需求似乎必須動到第一層，先停下來確認是不是資料或渲染層可以解決。v1.0 有個好例子：「編輯器入口卡片只在工具總覽頁顯示」的需求，最後是用 `css/catalog-editorial.css` 搭配 `catalog-nav.js` 既有的 `.catalog-show-overview` class 解決的，一行 JS 都沒改。

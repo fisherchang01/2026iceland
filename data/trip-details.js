@@ -15,7 +15,6 @@ const TRIP = {
     "dateLabel": "10月3日（周六）→ 10月4日（周日）",
     "title": "飞越北境·初抵冰岛",
     "transit": true,
-    "routeMapImg": "route-day0.webp",
     "flights": [
       {
         "airline": "国泰航空",
@@ -1082,7 +1081,6 @@ const TRIP = {
     "dateLabel": "10月9日（周五）",
     "title": "告别冰岛·飞向芬兰",
     "transit": true,
-    "routeMapImg": "route-day6.webp",
     "flights": [
       {
         "airline": "芬兰航空",
@@ -1286,7 +1284,6 @@ const TRIP = {
     "dateLabel": "10月10日（周六）深夜 → 10月11日（周日）",
     "title": "满载回忆·返回香港",
     "transit": true,
-    "routeMapImg": "route-day8.webp",
     "flights": [
       {
         "airline": "芬兰航空",
@@ -1303,6 +1300,7 @@ const TRIP = {
     "note": "10月10日为「芬兰人的一天」行程，当晚无需住宿，深夜航班返港；10月11日傍晚抵达香港。"
   }
 };
+
 
 
 
