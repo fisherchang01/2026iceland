@@ -297,6 +297,18 @@ const TRAVEL_CONTENT = {
             {
               "type": "img",
               "src": "lysi-01.webp"
+            },
+            {
+              "type": "img",
+              "src": "lysi-02.webp"
+            },
+            {
+              "type": "img",
+              "src": "lysi-03.webp"
+            },
+            {
+              "type": "img",
+              "src": "lysi-04.webp"
             }
           ]
         },
@@ -769,6 +781,7 @@ const TRAVEL_CONTENT = {
     }
   ]
 };
+
 
 
 
