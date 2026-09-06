@@ -619,13 +619,7 @@ const TRIP = {
         "images": [
           "bruarfoss-01.webp",
           "bruarfoss-02.webp",
-          "bruarfoss-03.webp",
-          "bruarfoss-04.webp",
-          "bruarfoss-05.webp",
-          "bruarfoss-06.webp",
-          "bruarfoss-07.webp",
-          "bruarfoss-09.webp",
-          "bruarfoss-10.webp"
+          "bruarfoss-03.webp"
         ],
         "tags": [
           "瀑布"
@@ -645,12 +639,28 @@ const TRIP = {
             "value": "一、{#ff0000}foss就是冰岛话「瀑布」的意思{/color}，冰岛可以说是世界上瀑布最多的地方，因为这里断崖很多，文本非常容易形成瀑布，与一些更著名的瀑布相比，这里更加宁静祥和。{#ff0000}「Brúarfoss」是拱橋的意思{/color}，名字源自於瀑布上方的天然石拱橋 (拱橋早已倒塌)；Brúarfoss為冰島金圈Golden Circle途中的景點之一，先前因為處於相對偏僻的位置，再加上瀑布顏色為夢幻的蒂芬妮藍Tiffany Blue，因此又被稱為「藍色秘境瀑布」。"
           },
           {
+            "type": "img",
+            "src": "bruarfoss-10.webp"
+          },
+          {
             "type": "text",
             "value": "二、蒂芙尼蓝瀑布之所以得名，是因为瀑布所呈现的颜色接近蒂芙尼蓝——瀑布高度不高，水量集中在一个水道，水道深度也不深，刚好反射阳光后呈现出这种颜色。"
           },
           {
+            "type": "img",
+            "src": "bruarfoss-09.webp"
+          },
+          {
             "type": "text",
             "value": "三、把瀑布拉近拍，仍然非常美！{#ff0000}瀑布上方的流水是正常的顏色，但瀑布下方的水就變成蒂芬妮藍(Tiffany Blue){/color}，大自然真的好神奇。"
+          },
+          {
+            "type": "img",
+            "src": "bruarfoss-06.webp"
+          },
+          {
+            "type": "img",
+            "src": "bruarfoss-07.webp"
           },
           {
             "type": "text",
