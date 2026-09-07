@@ -94,7 +94,7 @@ const TRIP = {
         "deepBlocks": [
           {
             "type": "text",
-            "value": "{#ff0000}運行時間：全天候，每 13 分鐘一班\n路線：T1 Gate C21 → T3 Arrival Immigration Hall A → T4 Transfer Lounge\n預估行車時間：T4 → T1 約 18 分鐘{/color}"
+            "value": "{bold}運行時間：全天候，每 13 分鐘一班\n路線：T1 Gate C21 → T3 Arrival Immigration Hall A → T4 Transfer Lounge\n預估行車時間：T4 → T1 約 18 分鐘{/bold}"
           },
           {
             "type": "text",
@@ -1724,6 +1724,7 @@ const TRIP = {
     "note": "10月10日为「芬兰人的一天」行程，当晚无需住宿，深夜航班返港；10月11日傍晚抵达香港。"
   }
 };
+
 
 
 
