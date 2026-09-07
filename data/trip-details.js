@@ -67,18 +67,6 @@ const TRIP = {
         "map": "",
         "deepBlocks": [
           {
-            "type": "text",
-            "value": "玉衡堂商務貴賓室 (The Pier)位置：一號客運大樓6樓，近65號登機門。{#ff0000}特色：國泰最大的旗艦貴賓室{/color}。設有現做港式麵點的「風味坊」（Noodle Bar，提供擔擔麵、雲吞麵與燒肉飯）、西式輕食「嚐味坊」、{#ff0000}獨立茶館「茗茶坊」{/color}以及14間淋浴間與恬靜閣。"
-          },
-          {
-            "type": "text",
-            "value": "逸連堂 (The Bridge)位置：一號客運大樓35號登機門旁。特色：空間設計質感現代，分為南北兩翼，提供烘焙美食、中西熱食與吧台服務。設備：9個淋浴間"
-          },
-          {
-            "type": "text",
-            "value": "玲瓏堂 (The Deck)位置：一號客運大樓7樓，近6號登機門 [Table_content]。特色：規模較小但精緻，鄰近北面出境區域，適合於附近登機的旅客。設備：8個淋浴間"
-          },
-          {
             "type": "img",
             "src": "hk-airport-lounge-01.webp"
           },
@@ -95,13 +83,43 @@ const TRIP = {
         "kind": "spot",
         "tags": [],
         "images": [
-          "sin-airport-transfer-01.webp"
+          "sin-airport-transfer-06.webp",
+          "sin-airport-transfer-04.webp",
+          "sin-airport-transfer-05.webp"
         ],
-        "desc": "T4 是一个独立的航厦，与 T1、T2、T3 相比，需要搭乘接驳巴士才能进出",
-        "deepDesc": "虽然樟宜机场官方网站常把四个航厦标示得很接近，但实际上 T4 与其他航厦之间的距离并不算短。\n【版权所有，禁止转载】\n文章出处: https://www.bring-you.info/zh-hans/changi-airport-terminal-4-guide\n\n\n{#ff0000}1.下飞机后跟著“Transfer”走{/color}\nCX在樟宜的T4停靠，到达登机口通常以G开头。 离开空中桥后，全程跟随黄色“换乘/转机”标志;不要走“到达/行李提取”方向。 一旦进入移民检查站，就等同于入境，之后你必须再次报到。\n\n{#ff0000}2.乘坐换乘区间车到1号航站楼{/color}\nT4没有天电车连接;只能乘坐公车接驳，线路为T4→T3，→T1环线，平均发车时间约13分钟，行程时间为10至18分钟。 \n登机前，会检查登机牌和护照，因此行李必须直接托运——没有这些，无法使用转机区。 \n\n{#ff0000}3/在 T1 下车{/color}\n直接进转机区巴士在 T1 的 C 闸口一带停靠，下车后你就已经在 T1 的转机区里，不需要过安检——樟宜 T1/T2/T3 没有集中式安检站，直接在登机口安检。",
+        "desc": "第四航站楼（T4）是独立建筑，没有轻轨（Skytrain）相连，往返其他航站楼必须搭乘免费接驳巴士。",
+        "deepDesc": "",
         "note": "转机时间2小时30分钟",
         "map": "",
         "deepBlocks": [
+          {
+            "type": "text",
+            "value": "{#ff0000}運行時間：全天候，每 13 分鐘一班\n路線：T1 Gate C21 → T3 Arrival Immigration Hall A → T4 Transfer Lounge\n預估行車時間：T4 → T1 約 18 分鐘{/color}"
+          },
+          {
+            "type": "text",
+            "value": "🚌 先搞懂最重要的事：T4 没有 Skytrain\n- T4 是独立航厦\n- 往返 T1/T2/T3 一定要搭免费接驳巴士\n- 分为「管制区」与「非管制区」两种接驳\n✔️ 管制区接驳需查验登机证、护照、行李安检"
+          },
+          {
+            "type": "text",
+            "value": "{#ff0000}1.下飞机后跟著“Transfer”走{/color}\nCX在樟宜的T4停靠，到达登机口通常以G开头。 离开空中桥后，全程跟随黄色“换乘/转机”标志;不要走“到达/行李提取”方向。 一旦进入移民检查站，就等同于入境，之后你必须再次报到。\n\n{#ff0000}2.乘坐换乘区间车到1号航站楼{/color}\nT4没有天电车连接;只能乘坐公车接驳，线路为T4→T3，→T1环线，平均发车时间约13分钟，行程时间为10至18分钟。\n登机前，会检查登机牌和护照，因此行李必须直接托运——没有这些，无法使用转机区。\n\n{#ff0000}3/在 T1 下车{/color}\n\n直接进转机区巴士在 T1 的 C 闸口一带停靠，下车后你就已经在 T1 的转机区里，不需要过安检——樟宜 T1/T2/T3 没有集中式安检站，直接在登机口安检。"
+          },
+          {
+            "type": "img",
+            "src": "sin-airport-transfer-01.webp"
+          },
+          {
+            "type": "img",
+            "src": "sin-airport-transfer-08.webp"
+          },
+          {
+            "type": "img",
+            "src": "sin-airport-transfer-09.webp"
+          },
+          {
+            "type": "img",
+            "src": "sin-airport-transfer-07.webp"
+          },
           {
             "type": "img",
             "src": "sin-airport-transfer-02.webp"
@@ -116,10 +134,8 @@ const TRIP = {
         "tags": [],
         "images": [
           "sin-airport-lounge-01.webp",
-          "sin-airport-lounge-02.webp",
           "sin-airport-lounge-03.webp",
           "sin-airport-lounge-04.webp",
-          "sin-airport-lounge-05.webp",
           "sin-airport-lounge-06.webp"
         ],
         "desc": "澳州航空贵宾室：第一航站楼（T1）三楼，靠近C转机点跟D转机点之间，沿途有指标。{#ff0000}有不少淋浴间。{/color}",
@@ -129,23 +145,7 @@ const TRIP = {
         "deepBlocks": [
           {
             "type": "text",
-            "value": "一走進 Qantas Lounge，整體氛圍非常「澳洲風」🌿木質調＋暖光燈設計，搭配大片落地窗，採光極好。"
-          },
-          {
-            "type": "text",
-            "value": "整個空間分成三大區域："
-          },
-          {
-            "type": "text",
-            "value": "1️⃣ 餐飲吧檯區：提供熱食與現點現做料理。"
-          },
-          {
-            "type": "text",
-            "value": "2️⃣ 沙發休息區：大片皮沙發與閱讀燈，非常適合長待。"
-          },
-          {
-            "type": "text",
-            "value": "3️⃣ 酒吧區：澳航招牌紅白酒＋雞尾酒檯整齊排列。"
+            "value": "一走進 Qantas Lounge，整體氛圍非常「澳洲風」🌿木質調＋暖光燈設計，搭配大片落地窗，採光極好。\n整個空間分成三大區域：\n1️⃣ 餐飲吧檯區：提供熱食與現點現做料理。\n2️⃣ 沙發休息區：大片皮沙發與閱讀燈，非常適合長待。\n3️⃣ 酒吧區：澳航招牌紅白酒＋雞尾酒檯整齊排列。"
           },
           {
             "type": "text",
@@ -153,23 +153,23 @@ const TRIP = {
           },
           {
             "type": "img",
+            "src": "sin-airport-lounge-02.webp"
+          },
+          {
+            "type": "img",
+            "src": "sin-airport-lounge-05.webp"
+          },
+          {
+            "type": "img",
             "src": "sin-airport-lounge-07.webp"
           },
           {
             "type": "text",
-            "value": "🍽️ 餐飲區亮點：炸花枝、真的神！\n必吃亮点：商务贵宾室招牌的炸花枝（Crispy Fried Calamari）外酥内嫩，极受旅客推崇。\n這間貴賓室最廣為人知的，就是那傳說中的——✨ 炸花枝（Crispy Fried Calamari） "
+            "value": "🍽️ 餐飲區亮點：炸花枝、真的神！\n必吃亮点：商务贵宾室招牌的炸花枝（Crispy Fried Calamari）外酥内嫩，极受旅客推崇。\n這間貴賓室最廣為人知的，就是那傳說中的——✨ 炸花枝（Crispy Fried Calamari） \n\n實測評價：「外酥內嫩，炸粉不油膩，熱度剛好，一口咬下香氣爆開，完全是水準以上的餐廳品質。」真的不是誇張！「為了這盤花枝，我會提早進 Lounge。\n\n有个酒吧可以点酒，酒精飲品：紅白酒外，吧檯還會有簡易調酒（Gin Tonic、Whisky Soda）"
           },
           {
             "type": "img",
             "src": "sin-airport-lounge-08.webp"
-          },
-          {
-            "type": "text",
-            "value": "實測評價：「外酥內嫩，炸粉不油膩，熱度剛好，一口咬下香氣爆開，完全是水準以上的餐廳品質。」真的不是誇張！「為了這盤花枝，我會提早進 Lounge。"
-          },
-          {
-            "type": "text",
-            "value": "有个酒吧可以点酒，酒精飲品：紅白酒外，吧檯還會有簡易調酒（Gin Tonic、Whisky Soda）"
           },
           {
             "type": "text",
@@ -1645,6 +1645,7 @@ const TRIP = {
     "note": "10月10日为「芬兰人的一天」行程，当晚无需住宿，深夜航班返港；10月11日傍晚抵达香港。"
   }
 };
+
 
 
 
