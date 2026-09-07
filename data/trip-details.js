@@ -1567,7 +1567,67 @@ const TRIP = {
       "name": "Hilton Helsinki Airport",
       "note": "赫尔辛基机场希尔顿酒店，抵达后入住，交通便利",
       "map": "Hilton Helsinki Airport"
-    }
+    },
+    "spots": [
+      {
+        "icon": "📍",
+        "name": "冰岛机场贵宾室",
+        "id": "kef-airport-lounge",
+        "kind": "spot",
+        "tags": [],
+        "images": [
+          "kef-airport-lounge-01.webp",
+          "kef-airport-lounge-03.webp",
+          "kef-airport-lounge-05.webp"
+        ],
+        "desc": "冰岛航空运营的 Saga Lounge，位于安检后、靠近 A15 登机口（二楼）。",
+        "deepDesc": "",
+        "note": "",
+        "map": "",
+        "deepBlocks": [
+          {
+            "type": "text",
+            "value": "Icelandair Saga 休息室位于凯夫拉维克机场{#ff0000}主航站楼 A15 登机口附近{/color}，休息室每日开放，时间为上午5点至下午5点。\n\nSaga Lounge 第一眼印象：\n木纹、暖黄灯、大片落地窗、外面就是冰岛航空的飞机 ✈️甚至还有类「火炉休息区」，整个北欧极简风被做到满分。\n空间非常大、座位间距宽、动线舒服，不会出现亚洲热门贵宾室那种「人贴人」的场景 😂如果你喜欢安静、干净又有自然光的环境，Saga Lounge 真的会让你很惊喜。\n\n空间与环境\n踏入 Saga 休息室，首先感受到的是宽敞开阔。设计为斯堪的纳维亚风格，但比典型北欧简约更为丰富。休息室分为多个区域，提供不同风格的高品质座位安排。温润的棕色为主色调。靠近前台处摆放着自助餐台，供应多样的餐食与冰岛特色小食；咖啡与其他饮品的取用台分布在休息室各处，无论坐在哪个角落取用都很方便。"
+          },
+          {
+            "type": "img",
+            "src": "kef-airport-lounge-04.webp"
+          },
+          {
+            "type": "img",
+            "src": "kef-airport-lounge-06.webp"
+          },
+          {
+            "type": "text",
+            "value": "早餐时间 buffet 超丰盛！\n这里的自助餐台提供丰富的冷、热菜品：沙拉、多种面包、脆饼、蛋黄黄油、奶酪、咖喱汤、肉丸、小披萨等。我们推荐尝尝由专门品牌 Nor 提供的脆饼与蛋黄黄油。甜点区另设一桌，提供水果、甜甜圈与传统冰岛松饼。冰岛松饼很好吃，别忘了回家时买些带上。"
+          },
+          {
+            "type": "img",
+            "src": "kef-airport-lounge-02.webp"
+          },
+          {
+            "type": "img",
+            "src": "kef-airport-lounge-07.webp"
+          },
+          {
+            "type": "img",
+            "src": "kef-airport-lounge-08.webp"
+          },
+          {
+            "type": "img",
+            "src": "kef-airport-lounge-10.webp"
+          },
+          {
+            "type": "text",
+            "value": "休息室中央的锥形熔岩石，让人立刻意识到自己身处冰岛。\n\n淋浴与洗手间\nIcelandair Saga 休息室内设男女洗手间，打理得很干净；同时提供淋浴设施，适合长途飞行前梳洗。使用淋浴可免费领取毛巾，并提供来自蓝湖温泉的洗浴用品。\n\nSaga 休息室除了空间宽敞，还配备亲子设施与儿童游乐区，确保不同年龄段的旅客都能享受在休息室的时光。此类设施在许多世界顶级休息室中并不常见。"
+          },
+          {
+            "type": "img",
+            "src": "kef-airport-lounge-09.webp"
+          }
+        ]
+      }
+    ]
   },
   "day7": {
     "num": "7",
@@ -1765,9 +1825,87 @@ const TRIP = {
         "note": "10月10日行程结束后深夜航班"
       }
     ],
-    "note": "10月10日为「芬兰人的一天」行程，当晚无需住宿，深夜航班返港；10月11日傍晚抵达香港。"
+    "note": "10月10日为「芬兰人的一天」行程，当晚无需住宿，深夜航班返港；10月11日傍晚抵达香港。",
+    "spots": [
+      {
+        "icon": "📍",
+        "name": "非申根区贵宾室",
+        "id": "hel-airport-lounge2",
+        "kind": "spot",
+        "tags": [],
+        "images": [
+          "hel-airport-transfer-06.webp",
+          "hel-airport-lounge2-01.webp",
+          "hel-airport-lounge2-15.webp",
+          "hel-airport-lounge2-03.webp"
+        ],
+        "desc": "芬兰航空商务贵宾室52登机门附近、Business Lounge、不是Platium Wing",
+        "deepDesc": "",
+        "note": "",
+        "map": "",
+        "deepBlocks": [
+          {
+            "type": "text",
+            "value": "芬兰航空商务贵宾室 Finnair {#ff0000}Business Lounge{/color}\n地点：赫尔辛基万塔机场52登机门附近  \n\t\n这区共有两间芬兰航空营运的贵宾室，一间是芬兰航空商务贵宾室，还有另一间开放给绿宝石会员的{#ff0000}Platium Wing{/color}（世界唯一设有桑拿浴的贵宾室，But我们不能进）\n\n芬兰航空非申根区商务贵宾室共有450个座位，占地宽敞，能容纳不少人\n"
+          },
+          {
+            "type": "img",
+            "src": "hel-airport-transfer-07.webp"
+          },
+          {
+            "type": "text",
+            "value": "在赫尔辛基机场（HEL）准备搭长途航班离开申根区？ 芬兰航空 （Finnair） 的非申根区商务舱贵宾室绝对会让你惊艳！ 这里简直就是一个大型的北欧家具展厅，无论你是想办公、社交还是闭目养神，都能找到最完美的专属角落✨。\n \n🪑 【芬兰国宝级设计打卡区】\n一进来绝对不能错过这几张超吸睛的白色「太空球椅 （Ball Chair）」，坐进去自带隔音效果，拍照打卡也超级出片。\n往里走的沙发休息区，竟然还藏着散发温暖光芒的「姆明 （Moomin） 造型灯」，满满的芬兰童话 DNA，真的太可爱了。 💻 【打工人友善：高效办公区】\n如果你需要在上飞机前开个语音会议，这里直接配备了专业的 Framery 隔音舱，里面有小桌板和高脚椅，完全不用担心被打扰。\n喜欢宽敞桌面的朋友，可以选择面墙的长条形木质工作台，安静且方便使用笔电。\n喜欢开阔视野的话，这里也有开放式的浅色木纹高脚长桌区可以选择。\n \n🛋️ 【I人最爱：极致隐私休息区】\nLounge 里规划了大量的「半包围式」座位，包含靠墙的一整排超高背深灰色沙发厢座。\n还有配备了专属木质宽扶手与小桌板的灰色单人沙发座，隐私度极高。\n另一区则是绿色单人沙发座，搭配超高的吸音毛毡隔板完美挡住视线，长途飞行前在这里安静看书或闭目养神最适合不过了。\n \n🥂 【宽敞社交与用餐区】\n如果和朋友一起出行，可以去中央的 S 型海军蓝沙发区，搭配水磨石质感的小圆桌，空间非常宽敞大气。\n另外也有沿着弧形隔板设计的海军蓝长条卡座区，搭配多个小圆桌，非常适合拿些食物在这里轻松用餐。 芬航真的把北欧的「人性化设计」发挥到了极致，各种需求都被完美照顾到！ "
+          },
+          {
+            "type": "img",
+            "src": "hel-airport-lounge2-12.webp"
+          },
+          {
+            "type": "img",
+            "src": "hel-airport-lounge2-14.webp"
+          },
+          {
+            "type": "img",
+            "src": "hel-airport-lounge2-13.webp"
+          },
+          {
+            "type": "img",
+            "src": "hel-airport-lounge2-11.webp"
+          },
+          {
+            "type": "text",
+            "value": "开放式厨房设计洗练，从沙拉、小点到热食，提供各种北欧风味\n\n餐厅旁展示了来自当地酒庄的酒桶\n热菜当天有香米饭、甜菜根、两种咖喱与肉丸意大利面\n切好的水果盘有葡萄柚、西瓜与哈密瓜、香蕉与小蜜柑、奇异果\n\n我认为不论是在飞机上或是在地面都好，餐饮都不是 Finnair 的强项。 或者换个表达，我的味蕾实在不懂欣赏 Finnair 的食物。\n\n* bar的酒种类还挺多的，应该是all u can drink - 我点了两杯cocktail🍸, 芬航特调 Bluesinki 和 Summer Splash，偏果味酒精度也不低\n餐食冷盘+面包+一些看不懂的乱炖为主，一言难尽，好在我包里有桶泡面hhhh\n"
+          },
+          {
+            "type": "img",
+            "src": "hel-airport-lounge2-07.webp"
+          },
+          {
+            "type": "img",
+            "src": "hel-airport-lounge2-08.webp"
+          },
+          {
+            "type": "img",
+            "src": "hel-airport-lounge2-09.webp"
+          },
+          {
+            "type": "text",
+            "value": "Finnair Business Lounge 设 5 间淋浴间，使用前不需要（也不能）预约。 我们只需要看到浴室空出来后，那就可以立即使用门禁系统帮忙锁起浴室 30 分钟，快手快脚地冲个身。贵宾室内的备品都来自瑞典品牌 L：A BRUKET，也是芬兰航空目前过夜包的合作品牌\n\n\nFinnair Business Lounge 浴室最大的问题是没有做好防水。 {bold}当你冲凉冲得正爽时，你会看到水会由门底流出门外，然后满地下都是积水{/bold}。如果你像我一样天才，大安旨意地将背囊放在门外地面、偷懒不挂起它的话，你的下场也会跟我一样⋯ 那就是背囊内的东东会被浸湿⋯而且这并不是单一问题，不只是我用的这间浴室是这样，另一间浴室也有同样的问题！\n\n🍽️ 餐饮和bar\n· 酒水全天免费供应，我点了两款特调：Bluesinki 和 Summer Splash，都很好喝！bluesinki最推荐👍\n· 我还看到装水的杯子都是Marimekko和iittala 瞬间感觉自己在喝的不是水，是北欧设计美学啊哈哈哈\n· 餐食就…很北欧。冷盘奶酪、全麦面包、一些看不出来历的炖菜。但是牛肉汉堡蛮不错的，配着奶香的土豆泥，就还行吧。（图9那个） 虽然看起来有点一言难尽，但真的，在白人饭里算很好吃的。\n\n"
+          },
+          {
+            "type": "img",
+            "src": "hel-airport-lounge2-04.webp"
+          },
+          {
+            "type": "img",
+            "src": "hel-airport-lounge2-02.webp"
+          }
+        ]
+      }
+    ]
   }
 };
+
 
 
 
