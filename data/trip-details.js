@@ -1626,6 +1626,98 @@ const TRIP = {
             "src": "kef-airport-lounge-09.webp"
           }
         ]
+      },
+      {
+        "icon": "📍",
+        "name": "赫尔辛基机场_希尔顿酒店",
+        "id": "hel-hilton",
+        "kind": "spot",
+        "tags": [],
+        "images": [
+          "hel-hilton-19.webp",
+          "hel-hilton-18.webp",
+          "hel-hilton-17.webp",
+          "hel-hilton-16.webp",
+          "hel-hilton-15.webp"
+        ],
+        "desc": "",
+        "deepDesc": "",
+        "note": "",
+        "map": "",
+        "deepBlocks": [
+          {
+            "type": "img",
+            "src": "hel-hilton-14.webp"
+          },
+          {
+            "type": "text",
+            "value": "希尔顿赫尔辛基机场饭店就在机场旁边，走路 10 分钟，而且赶路过程还是室内不用冒着风吹雪打。 但因为饭店并不是在机场里面，所以还是必须要出关。 \n不过沿途路况不佳，充满碎砂石，还有积水与融冰，拖着大行李的时候很不好走，位置没想象中近和便利。{#ff0000}（应该可以将行李车推过去）{/color}"
+          },
+          {
+            "type": "text",
+            "value": "客房走廊地毯是绿色系的~\n淡色的木头家具配上跟客房走廊一样绿色系的地毯和窗帘，完全北欧风无误~\n虽然只是来去匆匆睡一晚的机场饭店，但他们还是用心的帮我们折了天鹅~送了爱心巧克力和水~\n窗外就可以看的见机场~~所以真的是在旁边而已！\n\n{#ff0000}有些房間有私·人·桑·拿!!!{/color}\n这个桑拿虽然不大，但质感却非常好，木质的座椅，下面还有间接照明。除了舀水的勺子、也有增加蒸气的炭火炉，可说是麻雀虽小五脏俱全！ 我们是从来没有住过房间里就有自己桑拿的饭店，真的太酷了！ 洗完澡再做个桑拿感觉旅途下来的一身疲惫都消失殆尽~"
+          },
+          {
+            "type": "img",
+            "src": "hel-hilton-03.webp"
+          },
+          {
+            "type": "img",
+            "src": "hel-hilton-21.webp"
+          },
+          {
+            "type": "img",
+            "src": "hel-hilton-20.webp"
+          },
+          {
+            "type": "img",
+            "src": "hel-hilton-22.webp"
+          },
+          {
+            "type": "text",
+            "value": "有提供热食，没记错的话就是正常西式早餐会出现的那些香肠、马铃薯、炒蛋之类的。\n\n除了正常的培根和起司之外，在芬兰的饭店早餐出现他们的主食-鲑鱼好像是件稀松平常的事情~。 {#ff0000}除了熏鲑鱼之外，这么大的鲑鱼好像真的不常出现在其他饭店的早餐 buffet{/color}。\n\n除了鲑鱼令人惊艳之外，另外还有让人印象深刻果汁台！ 点果汁用平板按一下，果汁就从旁边像是水龙头的地方流出来~~~超酷的！ 不愧是芬兰，小地方就是就是要跟人家不一样!!"
+          },
+          {
+            "type": "img",
+            "src": "hel-hilton-07.webp"
+          },
+          {
+            "type": "img",
+            "src": "hel-hilton-04.webp"
+          },
+          {
+            "type": "img",
+            "src": "hel-hilton-01.webp"
+          },
+          {
+            "type": "img",
+            "src": "hel-hilton-06.webp"
+          },
+          {
+            "type": "text",
+            "value": "酒廊其实有的，HH晚上6-8点，白天13点开始有咖啡和饮料开放，刷行政房卡进出，没有什么管理员，靠自觉拿取。不过HH的种类有点少哦，主食一个春卷，一个小吃金枪鱼色拉涂面包，一个饼干，一个奶酪，一个水果黄瓜胡萝卜。酒倒是不少。老外看来喝酒胜过食品。咖啡可乐管够。总之充饥裹腹不用到外面吃就行要求不高能对付。"
+          },
+          {
+            "type": "img",
+            "src": "hel-hilton-11.webp"
+          },
+          {
+            "type": "img",
+            "src": "hel-hilton-09.webp"
+          },
+          {
+            "type": "img",
+            "src": "hel-hilton-08.webp"
+          },
+          {
+            "type": "img",
+            "src": "hel-hilton-10.webp"
+          },
+          {
+            "type": "img",
+            "src": "hel-hilton-12.webp"
+          }
+        ]
       }
     ]
   },
@@ -1905,6 +1997,7 @@ const TRIP = {
     ]
   }
 };
+
 
 
 
