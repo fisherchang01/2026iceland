@@ -1494,10 +1494,14 @@
             }
         }
 
+        let linkPickerLastAutoText = ''; // 記錄「上一次自動帶入」的文字，用來判斷使用者是否手動改過
+
         function openLinkPicker() {
             const panel = document.getElementById('linkPickerPanel');
             if (!panel) return;
             panel.style.display = 'block';
+            document.getElementById('linkPickerText').value = '';
+            linkPickerLastAutoText = '';
             renderLinkPickerItems();
         }
 
@@ -1530,12 +1534,17 @@
             onLinkPickerItemChange();
         }
 
+        // 顯示文字預設帶入目前選中的項目/分類標題（例如「熱狗堡」「龍蝦湯」），選單換到哪一項就跟著換；
+        // 但如果使用者已經手動把文字改成跟自動帶入的不一樣，就不再覆蓋，尊重使用者輸入。
         function onLinkPickerItemChange() {
             const select = document.getElementById('linkPickerItem');
             const textInput = document.getElementById('linkPickerText');
             const selectedOption = select.options[select.selectedIndex];
-            if (selectedOption && !textInput.value.trim()) {
-                textInput.value = selectedOption.textContent.replace(/^📁 整個分類：/, '');
+            if (!selectedOption) return;
+            const suggested = selectedOption.textContent.replace(/^📁 整個分類：/, '');
+            if (textInput.value.trim() === '' || textInput.value === linkPickerLastAutoText) {
+                textInput.value = suggested;
+                linkPickerLastAutoText = suggested;
             }
         }
 
