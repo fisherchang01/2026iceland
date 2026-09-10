@@ -1818,25 +1818,72 @@ const TRIP = {
     },
     "spots": [
       {
-        "icon": "✈️",
-        "name": "赫尔辛基机场",
-        "id": "helairport",
-        "kind": "general",
-        "tags": [
-          "机场"
-        ],
+        "icon": "📍",
+        "name": "机场前往赫尔辛基市区",
+        "id": "goto-helsinki",
+        "kind": "spot",
+        "tags": [],
         "images": [
-          "helairport-01.webp",
-          "helairport-02.webp",
-          "helairport-03.webp",
-          "helairport-04.webp",
-          "helairport-05.webp",
-          "helairport-06.webp",
-          "helairport-07.webp"
+          "goto-helsinki-12.webp",
+          "goto-helsinki-11.webp",
+          "goto-helsinki-10.webp",
+          "goto-helsinki-09.webp",
+          "goto-helsinki-04.webp"
         ],
-        "desc": "以北欧美学设计、高效转机动线以及浓厚芬兰文化闻名。",
-        "deepDesc": "一、Alepa超市：芬兰人最爱的国民超市，位于机场到达层（取完行李出来就能看到）汉堡王旁边，是机场性价比最高的选择。面包（如牛角包仅0.5欧）、牛奶、泡面和熟食都很便宜，且24小时营业。\n二、熟食与色拉吧：机场超市的秤重色拉和熟食区非常受欢迎，烟熏鲑鱼、烤鸡和小虾仁价格实惠，14.9欧/kg，还有金枪鱼、山羊干酪及各种种子和琳琅满目的蔬菜；咖啡和蛋糕套餐只需2欧元。超市内设有自助标签机和结帐机：选好不同种类的面包按类别分别装袋，记住号码，在旁边的标签打印机上先按绿色部分（面包件数），再按号码，价格标签就打出来了。\n三、购买交通一日卡进城：搭环状线铁道（Ring Rail Line），I线（逆时针）约32分钟、P线（顺时针）约27分钟，两线皆可前往市中心。班次：周一至周六每10分钟一班，周日每15分钟一班，夜间可能延后。单程票€4.10（需购买涵盖ABC区域车票），车站位于航厦下方。24小时（一日）无限搭乘票：ABC区10.60€，另有12.80€版本。\n四、赫尔辛基机场的整体设计充分体现了北欧和欧洲研究，从关注人性出发，表达对自然的热爱，从而提升了用户的生活质量，曾经被评比全球最好睡的机场。",
-        "map": "Helsinki Airport"
+        "desc": "从赫尔辛基机场到市区最推荐搭乘环状线铁道（I线或P线火车），约30分钟可直达赫尔辛基中央车站",
+        "deepDesc": "",
+        "note": "",
+        "map": "",
+        "deepBlocks": [
+          {
+            "type": "text",
+            "value": ""
+          },
+          {
+            "type": "text",
+            "value": "环状线铁道（{#ff0000}火车 I / P 线{/color}）：\n行车时间：约 30 分钟。\n班次频率：约 10 至 15 分钟一班。\n票价：单程 €4.10 至 €4.60（需购买涵盖 ABC 区域的车票）。\n搭乘位置：机场地下 1 楼的火车站，依航厦指标步行前往。\n\n{#ff0000}从机场直接下到地下一楼，搭乘🟣紫色线的「通勤列车 （Commuter Train）」！只要认明搭乘【 P 线】与【 I 线】就对了！{/color}"
+          },
+          {
+            "type": "img",
+            "src": "goto-helsinki-08.webp"
+          },
+          {
+            "type": "img",
+            "src": "goto-helsinki-07.webp"
+          },
+          {
+            "type": "text",
+            "value": "🔄 通勤列车P线、I线 （机场 ⇄ 中央车站）\n右边为P线、左边为I线。 从机场出发时，不用管它哪一条线，先来的就搭上去就对了！ 一条搭到市区约 28 分钟、另一条约 30 分钟，其实根本没差！\n两侧的火车都可以搭乘，基本上就只有l和P两种车，如果要去市区两边都可以坐，所以只要看到月台屏幕显示往市区（Helsinki 方向），不用特别挑车，放心搭上去吧！"
+          },
+          {
+            "type": "img",
+            "src": "goto-helsinki-03.webp"
+          },
+          {
+            "type": "text",
+            "value": "赫尔辛基 HSL 票价怎么看？\n赫尔辛基机场进市区的「通勤列车」车票，是用分区来划分价位（跟我们以前用目的地直觉购票不同）！ 整个分区是以赫尔辛基市中心为核心，向外划分为 A、B、C、D 四个同心圆\n\n{#ff0000}分区 （Zones）{/color}：\n{bold}A 区与 B 区{/bold}： 市区最核心地带。 几乎所有知名景点（如岩石教堂、赫尔辛基大教堂、市集广场）都在 A、B 区，赫尔辛基火车站也在这，这里的景点其实靠双腿或搭路面电车就能轻松到达，非常方便。\n{bold}C 区{/bold}： 万塔国际机场 （HSL） 所在地。\n{bold}D 区{/bold}： 更外围的郊区，一般观光客基本上不太会用到"
+          },
+          {
+            "type": "img",
+            "src": "goto-helsinki-02.webp"
+          },
+          {
+            "type": "text",
+            "value": "如果行程只是简单从点到点、一天只搭一次车，那买单程票即可; 但如果有要待在赫尔辛基玩耍，甚至去观光景点，那建议直接买「一日票」！\n\n日票三大优点：\n\n24 小时制超弹性：一日券是以「购票后」或「启用当下」起算完整的 24 小时。\n轻松回本：在市区只要搭满 3 次电车就直接回本！\n含芬兰堡渡轮：如果计划去芬兰堡观光，搭乘官方渡轮的船票是直接包含在内的！ 光是船票价格就立刻让一日票回本还倒赚。\n而且还有一个好处，就是可以避免「单程票只有 90 分钟期限」，很适合怕搭错车、找错方向迷路，或是带小孩容易拖延的家庭，我们后来就是决定买一日票啦！\n\n接着抵达市区，赫尔辛基的大众运输系统（HSL）主要由路面电车、地铁、巴士与渡轮组成。\n\n只要买对 Zone（通常是 AB 区），在车票效期内，这些交通工具都可以无限次互相转乘！"
+          },
+          {
+            "type": "img",
+            "src": "goto-helsinki-06.webp"
+          },
+          {
+            "type": "img",
+            "src": "goto-helsinki-05.webp"
+          },
+          {
+            "type": "text",
+            "value": "⚠️ 芬兰搭车重大注意：\n芬兰的捷运、电车和火车月台几乎全部都是「开放式、没有实体闸门」的，这完全是基于当地高水准的诚实信用原则！ 千万不要以为没人挡就等于免费。 车上经常会有随机查票员，如果被抓到没买票、或是买错 Zone 区间，现场会直接重罚 80 欧元！ 上车或进站前，请务必确认手上的车票已经生效囉！"
+          }
+        ]
       },
       {
         "icon": "🚉",
@@ -1889,6 +1936,24 @@ const TRIP = {
           "market-square-05.webp",
           "market-square-06.webp",
           "market-square-07.webp"
+        ]
+      },
+      {
+        "icon": "🛍️",
+        "name": "购物",
+        "id": "helsinki-lv",
+        "kind": "general",
+        "tags": [],
+        "isOptional": true,
+        "attachTo": "market-square",
+        "desc": "传说中是世界上最便宜LV的地方，原因是LV在欧盟统一订价，但芬兰享有极高的退税比例（最高可达约17%）。",
+        "deepDesc": "一、Helsinki Outlet：芬兰唯一的大型官方奥特莱斯，距离市中心约20公里，集合了40多个品牌，户外品牌如Helly Hansen、Haglöfs、Norrøna、Luhta折扣力度很大，设计品牌如Marimekko、Lumene以及厨具Le Creuset也很值得淘，园区是开放式小镇设计，逛起来很舒服。交通：市中心火车站旁乘坐75路巴士直达，约30分钟；或用HSL App绑定信用卡购买公交票。营业时间：周六10:00-20:00。\n二、LV门市：赫尔辛基有两家Louis Vuitton门市，在此购买是全球定价与退税后最便宜的地区之一，价格比中国专柜便宜约25%。（1）Helsinki Esplanadi旗舰店，周六营业时间10:00-18:00，款项最全，有中文店员服务。（2）Helsinki Stockmann百货分店，周六营业时间10:00-19:00。",
+        "map": "Helsinki Outlet",
+        "images": [
+          "helsinki-lv-01.webp",
+          "helsinki-lv-02.webp",
+          "helsinki-lv-03.webp",
+          "helsinki-lv-04.webp"
         ]
       },
       {
@@ -1953,24 +2018,6 @@ const TRIP = {
           "suomenlinna-08.webp"
         ],
         "note": "🚻 廁所：游客中心有厕所"
-      },
-      {
-        "icon": "🛍️",
-        "name": "购物",
-        "id": "helsinki-lv",
-        "kind": "general",
-        "tags": [],
-        "isOptional": true,
-        "attachTo": "market-square",
-        "desc": "传说中是世界上最便宜LV的地方，原因是LV在欧盟统一订价，但芬兰享有极高的退税比例（最高可达约17%）。",
-        "deepDesc": "一、Helsinki Outlet：芬兰唯一的大型官方奥特莱斯，距离市中心约20公里，集合了40多个品牌，户外品牌如Helly Hansen、Haglöfs、Norrøna、Luhta折扣力度很大，设计品牌如Marimekko、Lumene以及厨具Le Creuset也很值得淘，园区是开放式小镇设计，逛起来很舒服。交通：市中心火车站旁乘坐75路巴士直达，约30分钟；或用HSL App绑定信用卡购买公交票。营业时间：周六10:00-20:00。\n二、LV门市：赫尔辛基有两家Louis Vuitton门市，在此购买是全球定价与退税后最便宜的地区之一，价格比中国专柜便宜约25%。（1）Helsinki Esplanadi旗舰店，周六营业时间10:00-18:00，款项最全，有中文店员服务。（2）Helsinki Stockmann百货分店，周六营业时间10:00-19:00。",
-        "map": "Helsinki Outlet",
-        "images": [
-          "helsinki-lv-01.webp",
-          "helsinki-lv-02.webp",
-          "helsinki-lv-03.webp",
-          "helsinki-lv-04.webp"
-        ]
       },
       {
         "icon": "🍽️",
@@ -2084,6 +2131,7 @@ const TRIP = {
     ]
   }
 };
+
 
 
 
