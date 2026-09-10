@@ -288,6 +288,51 @@ function openItemDetail(card, title) {
   document.body.style.overflow = 'hidden';
 }
 
+// 供景點備注的 {link:頁籤:id} 標記使用（見 js/render-itinerary.js 的 parseMarkup）：
+// 不只是切到「體驗」或「工具」大頁籤，而是直接展開該項目所在的分類、並自動彈出該項目的詳情，
+// 使用者不用再自己找。pageKey 對應 CATALOG_PAGE_META 的 key（目前是 'travel' 或 'other'），
+// itemId 對應 data/travel-content.js 或 data/other-content.js 裡該項目的 "id" 欄位。
+function jumpToCatalogItem(pageKey, itemId) {
+  var meta = CATALOG_PAGE_META[pageKey];
+  var page = meta && document.getElementById(meta.pageId);
+  if (!page) return;
+
+  var card = page.querySelector('[data-item-id="' + itemId + '"]');
+  if (!card) { console.warn('jumpToCatalogItem: 找不到 id=' + itemId + '（頁籤 ' + pageKey + '）'); return; }
+
+  switchTab(pageKey);
+
+  var categoryEl = card.closest('.travel-collapse');
+  var categories = catalogDirectCategories(page);
+  var index = categories.indexOf(categoryEl);
+  if (index === -1) return;
+  selectCatalogCategory(pageKey, index);
+
+  var titleEl = card.querySelector(':scope > .item-card-title');
+  var title = titleEl ? titleEl.textContent.trim() : '详细内容';
+  // 等分類展開的 reflow 跑完再彈出詳情，避免跟 selectCatalogCategory 的 scrollIntoView 互相干擾。
+  setTimeout(function(){ openItemDetail(card, title); }, 0);
+}
+
+// 供備注 {link:頁籤:category:分類key} 標記使用：只展開分類、不強制指定哪一個項目，
+// 適合「這附近選擇很多，你自己挑」這種備注（例如整個「雷市的餐厅及美食」分類）。
+// 分類的 key 對應 data/travel-content.js 或 data/other-content.js 裡該分類的 "key" 欄位。
+function jumpToCatalogCategory(pageKey, categoryKey) {
+  var meta = CATALOG_PAGE_META[pageKey];
+  var page = meta && document.getElementById(meta.pageId);
+  if (!page) return;
+
+  switchTab(pageKey);
+
+  var categories = catalogDirectCategories(page);
+  var index = -1;
+  for (var i = 0; i < categories.length; i++) {
+    if (categories[i].getAttribute('data-category-key') === categoryKey) { index = i; break; }
+  }
+  if (index === -1) { console.warn('jumpToCatalogCategory: 找不到分類 key=' + categoryKey + '（頁籤 ' + pageKey + '）'); return; }
+  selectCatalogCategory(pageKey, index);
+}
+
 function ensureCatalogSheet() {
   if (document.getElementById('catalogSheet')) return;
   var wrap = document.createElement('div');

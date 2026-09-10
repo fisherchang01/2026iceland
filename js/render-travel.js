@@ -49,8 +49,10 @@
     var layoutClass = (item.layout === 'lg') ? 'item-lg' : 'item-sm';
     var blocksHtml = (item.blocks || []).map(renderBlock).join('\n');
     var titleHtml = item.name ? escapeHtml(item.name) : '';
+    // data-item-id：讓景點備注可以用 {link:頁籤:id} 直接跳到這一項的詳情（見 js/catalog-nav.js 的 jumpToCatalogItem）。
+    var idAttr = item.id ? ' data-item-id="' + escapeHtml(item.id) + '"' : '';
     return (
-      '<div class="item-card ' + layoutClass + '">\n' +
+      '<div class="item-card ' + layoutClass + '"' + idAttr + '>\n' +
       '  <h4 class="item-card-title">' + titleHtml + '</h4>\n' +
       '  <div class="item-detail">\n' +
       blocksHtml + '\n' +
@@ -94,7 +96,7 @@
 
   function renderCategory(cat) {
     return (
-      '<div class="travel-collapse" data-cover="' + escapeHtml(cat.cover) + '">\n' +
+      '<div class="travel-collapse" data-cover="' + escapeHtml(cat.cover) + '" data-category-key="' + escapeHtml(cat.key || '') + '">\n' +
       '  <div class="travel-collapse-header" onclick="toggleTravelCollapse(this)">\n' +
       '    <div class="travel-collapse-left">\n' +
       '      <div class="travel-collapse-emoji">' + cat.emoji + '</div>\n' +

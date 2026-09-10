@@ -824,9 +824,29 @@
             background: #f8d7da;
             color: #721c24;
         }
+
+        /* 「連結健檢」：跟一般 4 秒後自動消失的 .notification 不同，
+           這個要一直留著，直到你把失效連結修好或手動關掉為止。 */
+        #linkHealthBanner {
+            display: none;
+            margin: 10px;
+            padding: 10px 14px;
+            border-radius: 6px;
+            background: #f8d7da;
+            color: #721c24;
+            font-size: 13px;
+            line-height: 1.7;
+        }
+        #linkHealthBanner b { display: block; margin-bottom: 4px; }
+        #linkHealthBanner .close-btn {
+            float: right;
+            cursor: pointer;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
+    <div id="linkHealthBanner"><span class="close-btn" onclick="document.getElementById('linkHealthBanner').style.display='none'">✕</span></div>
     <div class="layout">
         <div class="sidebar" id="sidebar"></div>
         <div class="editor" id="editor">
@@ -915,7 +935,11 @@
                 .replace(/\/n/g, '<br>')
                 .replace(/\{#([0-9a-fA-F]{6})\}([^{]*?)\{\/color\}/g, '<span style="color: #$1;">$2</span>')
                 .replace(/\{bold\}([^{]*?)\{\/bold\}/g, '<strong>$1</strong>')
-                .replace(/\{italic\}([^{]*?)\{\/italic\}/g, '<em>$1</em>');
+                .replace(/\{italic\}([^{]*?)\{\/italic\}/g, '<em>$1</em>')
+                .replace(/\{link:(travel|other):category:([A-Za-z0-9_-]+)\}([^{]*?)\{\/link\}/g,
+                    '<span style="color:#4a8fa3;text-decoration:underline;" title="連結到 $1 頁的「$2」整個分類">$3 🔗</span>')
+                .replace(/\{link:(travel|other):([A-Za-z0-9_-]+)\}([^{]*?)\{\/link\}/g,
+                    '<span style="color:#4a8fa3;text-decoration:underline;" title="連結到 $1 頁 id=$2">$3 🔗</span>');
             return html;
         }
 
@@ -1415,6 +1439,167 @@
             loadDrafts();
             renderSidebar();
             updateDraftBadge();
+            await loadCatalogIndex();
+            validateNoteLinks();
+        }
+
+        // ===== 備注「插入連結」picker：讀取體驗（travel-content.js）／工具（other-content.js）
+        // 兩個資料檔，攤平成「id + 顯示名稱 + 所屬分類」的清單，只供選單用，不做任何寫入。 =====
+        let catalogIndex = { travel: [], other: [] };
+        let catalogCategories = { travel: [], other: [] }; // {key, title}[]，供「插入連結」picker 的整個分類選項＋連結健檢用
+
+        function flattenCatalogContent(content) {
+            const out = [];
+            (content.categories || []).forEach(cat => {
+                (cat.items || []).forEach(item => {
+                    if (!item.id) return;
+                    out.push({ id: item.id, name: item.name || `（無標題・${item.id}）`, categoryTitle: cat.title || '', categoryKey: cat.key || '' });
+                });
+            });
+            return out;
+        }
+
+        function extractCategories(content) {
+            return (content.categories || [])
+                .filter(cat => cat.key)
+                .map(cat => ({ key: cat.key, title: cat.title || `（未命名分類・${cat.key}）` }));
+        }
+
+        async function loadCatalogIndex() {
+            try {
+                const [travelRes, otherRes] = await Promise.all([
+                    fetch(`https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/main/data/travel-content.js`),
+                    fetch(`https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/main/data/other-content.js`)
+                ]);
+                const travelText = await travelRes.text();
+                const otherText = await otherRes.text();
+                const travelMatch = travelText.match(/const TRAVEL_CONTENT = ({[\s\S]*?});/);
+                const otherMatch = otherText.match(/const OTHER_CONTENT = ({[\s\S]*?});/);
+                if (travelMatch) {
+                    let TRAVEL_CONTENT; eval(`TRAVEL_CONTENT = ${travelMatch[1]}`);
+                    catalogIndex.travel = flattenCatalogContent(TRAVEL_CONTENT);
+                    catalogCategories.travel = extractCategories(TRAVEL_CONTENT);
+                }
+                if (otherMatch) {
+                    let OTHER_CONTENT; eval(`OTHER_CONTENT = ${otherMatch[1]}`);
+                    catalogIndex.other = flattenCatalogContent(OTHER_CONTENT);
+                    catalogCategories.other = extractCategories(OTHER_CONTENT);
+                }
+                // 如果 picker 已經打開（使用者手速很快），資料一到就馬上填選單
+                if (document.getElementById('linkPickerPanel') && document.getElementById('linkPickerPanel').style.display !== 'none') {
+                    renderLinkPickerItems();
+                }
+            } catch(e) {
+                console.error('讀取體驗/工具項目清單失敗:', e);
+            }
+        }
+
+        function openLinkPicker() {
+            const panel = document.getElementById('linkPickerPanel');
+            if (!panel) return;
+            panel.style.display = 'block';
+            renderLinkPickerItems();
+        }
+
+        function closeLinkPicker() {
+            const panel = document.getElementById('linkPickerPanel');
+            if (panel) panel.style.display = 'none';
+        }
+
+        function renderLinkPickerItems() {
+            const page = document.getElementById('linkPickerPage').value;
+            const select = document.getElementById('linkPickerItem');
+            const cats = catalogCategories[page] || [];
+            const items = catalogIndex[page] || [];
+            if (!cats.length) {
+                select.innerHTML = '<option value="">（讀取中或此頁目前沒有分類）</option>';
+                return;
+            }
+            const itemsByCategoryKey = {};
+            items.forEach(item => {
+                if (!itemsByCategoryKey[item.categoryKey]) itemsByCategoryKey[item.categoryKey] = [];
+                itemsByCategoryKey[item.categoryKey].push(item);
+            });
+            select.innerHTML = cats.map(cat => {
+                const catItems = itemsByCategoryKey[cat.key] || [];
+                const options = [`<option value="category::${escapeAttr(cat.key)}">📁 整個分類：${escapeAttr(cat.title)}</option>`]
+                    .concat(catItems.map(item => `<option value="${escapeAttr(item.id)}">${escapeAttr(item.name)}</option>`))
+                    .join('');
+                return `<optgroup label="${escapeAttr(cat.title)}">${options}</optgroup>`;
+            }).join('');
+            onLinkPickerItemChange();
+        }
+
+        function onLinkPickerItemChange() {
+            const select = document.getElementById('linkPickerItem');
+            const textInput = document.getElementById('linkPickerText');
+            const selectedOption = select.options[select.selectedIndex];
+            if (selectedOption && !textInput.value.trim()) {
+                textInput.value = selectedOption.textContent.replace(/^📁 整個分類：/, '');
+            }
+        }
+
+        function insertCatalogLinkTag() {
+            const page = document.getElementById('linkPickerPage').value;
+            const rawValue = document.getElementById('linkPickerItem').value;
+            const text = document.getElementById('linkPickerText').value.trim();
+            if (!rawValue) { showNotif('請先選擇要連結的項目或分類', 'error'); return; }
+            if (!text) { showNotif('請填寫連結顯示文字', 'error'); return; }
+            const field = document.getElementById('noteInput');
+            const start = field.selectionStart;
+            const end = field.selectionEnd;
+            const isCategory = rawValue.startsWith('category::');
+            const tag = isCategory
+                ? `{link:${page}:category:${rawValue.slice('category::'.length)}}${text}{/link}`
+                : `{link:${page}:${rawValue}}${text}{/link}`;
+            field.value = field.value.substring(0, start) + tag + field.value.substring(end);
+            field.focus();
+            updateAllPreviews();
+            closeLinkPicker();
+            document.getElementById('linkPickerText').value = '';
+        }
+
+        // ===== 連結健檢：景點備注裡的 {link:...} 標記，其對應的體驗/工具項目或分類
+        // 如果被刪掉或改了 id/key，這裡會抓出來、常駐提示，不會 4 秒後自動消失（跟 showNotif 不同）。=====
+        function validateNoteLinks() {
+            const banner = document.getElementById('linkHealthBanner');
+            if (!banner || !tripData) return;
+
+            const dump = JSON.stringify(tripData);
+            const broken = [];
+            const seen = new Set();
+            const pageLabel = { travel: '體驗', other: '工具' };
+
+            const itemRe = /\{link:(travel|other):(?!category:)([A-Za-z0-9_-]+)\}/g;
+            let m;
+            while ((m = itemRe.exec(dump))) {
+                const page = m[1], id = m[2];
+                const dedupeKey = 'item:' + page + ':' + id;
+                if (seen.has(dedupeKey)) continue;
+                seen.add(dedupeKey);
+                const exists = (catalogIndex[page] || []).some(it => it.id === id);
+                if (!exists) broken.push(`${pageLabel[page]}項目 id="${id}" 找不到（標記：{link:${page}:${id}}）`);
+            }
+
+            const catRe = /\{link:(travel|other):category:([A-Za-z0-9_-]+)\}/g;
+            while ((m = catRe.exec(dump))) {
+                const page = m[1], catKey = m[2];
+                const dedupeKey = 'cat:' + page + ':' + catKey;
+                if (seen.has(dedupeKey)) continue;
+                seen.add(dedupeKey);
+                const exists = (catalogCategories[page] || []).some(c => c.key === catKey);
+                if (!exists) broken.push(`${pageLabel[page]}分類 key="${catKey}" 找不到（標記：{link:${page}:category:${catKey}}）`);
+            }
+
+            if (broken.length) {
+                banner.innerHTML =
+                    '<span class="close-btn" onclick="document.getElementById(\'linkHealthBanner\').style.display=\'none\'">✕</span>' +
+                    '<b>⚠️ 發現 ' + broken.length + ' 個失效的備注連結（對應的體驗/工具項目或分類已被刪除或改了 id/key）：</b>' +
+                    broken.map(b => '・' + b).join('<br>');
+                banner.style.display = 'block';
+            } else {
+                banner.style.display = 'none';
+            }
         }
 
         function computeSpotSnapshot() {
@@ -2343,10 +2528,29 @@
                                 <button class="color-btn red" onclick="applyColorToField('noteInput', '#ff0000')" title="紅色">R</button>
                                 <button class="color-btn blue" onclick="applyColorToField('noteInput', '#0066cc')" title="藍色">B</button>
                                 <button class="color-btn green" onclick="applyColorToField('noteInput', '#00aa00')" title="綠色">G</button>
+                                <button class="mini-btn" onclick="openLinkPicker()" title="插入連結到體驗／工具頁的某個項目">🔗連結</button>
                             </div>
                         </div>
                         <textarea id="noteInput" rows="8" oninput="updateAllPreviews()">${escapeAttr(draft.note !== undefined ? draft.note : (spot.note || ''))}</textarea>
                         <div class="field-hint">設施資訊建議放前面（🅿️ 停車、🚻 廁所），提醒事項放後面（💡）</div>
+                        <div id="linkPickerPanel" style="display:none;margin-top:8px;padding:10px;border:1px solid #ddd;border-radius:6px;background:#fafafa;">
+                            <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+                                <select id="linkPickerPage" onchange="renderLinkPickerItems()" style="padding:4px;">
+                                    <option value="travel">體驗</option>
+                                    <option value="other">工具</option>
+                                </select>
+                                <select id="linkPickerItem" onchange="onLinkPickerItemChange()" style="padding:4px;flex:1;min-width:160px;">
+                                    <option value="">（讀取中…）</option>
+                                </select>
+                            </div>
+                            <div style="margin-top:8px;">
+                                <input id="linkPickerText" type="text" placeholder="連結顯示文字（例如：看看這附近的熱狗堡）" style="width:100%;padding:5px;box-sizing:border-box;">
+                            </div>
+                            <div style="margin-top:8px;display:flex;gap:8px;">
+                                <button class="mini-btn" onclick="insertCatalogLinkTag()">插入</button>
+                                <button class="mini-btn" onclick="closeLinkPicker()">取消</button>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="field-group">

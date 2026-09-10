@@ -759,6 +759,19 @@
         font-weight: 700;
     }
     .note-card p { font-size: var(--fs-sm); line-height: 1.8; color: #4a463e; }
+    /* 備注裡的 {link:...} 內嵌連結（跳到體驗／工具頁的某個項目），用底線＋主色跟一般文字區隔 */
+    .note-inline-link {
+        color: var(--accent);
+        text-decoration: underline;
+        text-underline-offset: 2px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+    .note-inline-link .note-inline-link-icon {
+        text-decoration: none;
+        font-size: 0.85em;
+        margin-left: 1px;
+    }
     .next-stop-card {
       background: linear-gradient(135deg, #e8f4f8, #d8eaf0);
       border: 1px solid #a8ccd8;

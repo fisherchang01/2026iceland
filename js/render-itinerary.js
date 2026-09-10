@@ -636,7 +636,16 @@ function parseMarkup(str) {
   str = str.replace(/\{#([0-9a-fA-F]{6})\}([^{]*?)\{\/color\}/g, '<span style="color: #$1;">$2</span>'); // 颜色
   str = str.replace(/\{bold\}([^{]*?)\{\/bold\}/g, '<strong>$1</strong>'); // 粗体
   str = str.replace(/\{italic\}([^{]*?)\{\/italic\}/g, '<em>$1</em>'); // 斜体
-  
+  // 連結到「體驗／工具」頁：{link:頁籤:項目id}顯示文字{/link} 連到單一項目（點了直接展開對應
+  // 分類＋彈出該項目詳情），或 {link:頁籤:category:分類key}顯示文字{/link} 只展開整個分類、不指定
+  // 哪一項（適合「這附近選擇很多」這種備注）。頁籤只能是 travel（體驗）或 other（工具）；
+  // 項目id／分類key 分別對應資料裡該項目／分類的 "id"／"key" 欄位。見 js/catalog-nav.js 的
+  // jumpToCatalogItem() 和 jumpToCatalogCategory()。文字後面固定加 🔗，讓使用者一眼看出可以點。
+  str = str.replace(/\{link:(travel|other):category:([A-Za-z0-9_-]+)\}([^{]*?)\{\/link\}/g,
+    '<a href="javascript:void(0)" class="note-inline-link" onclick="jumpToCatalogCategory(\'$1\',\'$2\')">$3 <span class="note-inline-link-icon">🔗</span></a>');
+  str = str.replace(/\{link:(travel|other):([A-Za-z0-9_-]+)\}([^{]*?)\{\/link\}/g,
+    '<a href="javascript:void(0)" class="note-inline-link" onclick="jumpToCatalogItem(\'$1\',\'$2\')">$3 <span class="note-inline-link-icon">🔗</span></a>');
+
   return str;
 }
 
