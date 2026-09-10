@@ -30,7 +30,7 @@ const TRIP = {
         "airline": "芬兰航空",
         "flightNo": "AY132",
         "from": "新加坡樟宜 SIN T1",
-        "to": "赫尔辛基万塔 HEL",
+        "to": "芬兰-赫尔辛基 HEL",
         "dep": "21:35",
         "arr": "06:00+1",
         "duration": "约12小时25分",
@@ -41,8 +41,8 @@ const TRIP = {
       {
         "airline": "芬兰航空",
         "flightNo": "AY991",
-        "from": "赫尔辛基万塔 HEL",
-        "to": "凯夫拉维克 KEF",
+        "from": "芬兰-赫尔辛基 HEL",
+        "to": "冰岛-凯夫拉维克 KEF",
         "dep": "07:10",
         "arr": "07:50",
         "duration": "约3小时40分",
@@ -1554,8 +1554,8 @@ const TRIP = {
       {
         "airline": "芬兰航空",
         "flightNo": "AY992",
-        "from": "凯夫拉维克 KEF",
-        "to": "赫尔辛基万塔 HEL",
+        "from": "冰岛-凯夫拉维克 KEF",
+        "to": "芬兰-赫尔辛基 HEL",
         "dep": "08:35",
         "arr": "15:00",
         "duration": "约3小时25分",
@@ -1995,7 +1995,7 @@ const TRIP = {
       {
         "airline": "芬兰航空",
         "flightNo": "AY099",
-        "from": "赫尔辛基万塔 HEL",
+        "from": "芬兰-赫尔辛基 HEL",
         "to": "香港 HKG",
         "dep": "00:35",
         "arr": "17:10",
@@ -2084,6 +2084,7 @@ const TRIP = {
     ]
   }
 };
+
 
 
 
