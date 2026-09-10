@@ -535,7 +535,34 @@ const TRAVEL_CONTENT = {
       "sub": "芬兰可购买Marimekko、Iittala及Fazer等品牌商品，适合自用或作为北欧伴手礼。",
       "cover": "finland_shopping.webp",
       "size": "2x2",
-      "items": []
+      "items": [
+        {
+          "id": "finland-shopping-1",
+          "name": "最便宜LV",
+          "layout": "sm",
+          "blocks": [
+            {
+              "type": "text",
+              "value": "传说中是世界上最便宜LV的地方，原因是LV在欧盟统一订价，但芬兰享有极高的退税比例（最高可达约17%）。\n"
+            },
+            {
+              "type": "text",
+              "value": "LV门市：\n\n赫尔辛基有两家Louis Vuitton门市，在此购买是全球定价与退税后最便宜的地区之一，价格比中国专柜便宜约25%。\n\n（1）Helsinki Esplanadi旗舰店，周六营业时间10:00-18:00，款项最全，有中文店员服务。\n（2）Helsinki Stockmann百货分店，周六营业时间10:00-19:00。"
+            }
+          ]
+        },
+        {
+          "id": "finland-shopping-2",
+          "name": "赫尔辛基Outlet",
+          "layout": "sm",
+          "blocks": [
+            {
+              "type": "text",
+              "value": "{#ff0000}Helsinki Outlet{/color}\n\n芬兰唯一的大型官方奥特莱斯，距离市中心约20公里，集合了40多个品牌，户外品牌如Helly Hansen、Haglöfs、Norrøna、Luhta折扣力度很大，设计品牌如Marimekko、Lumene以及厨具Le Creuset也很值得淘，园区是开放式小镇设计，逛起来很舒服。\n\n交通：市中心火车站旁乘坐75路巴士直达，约30分钟；或用HSL App绑定信用卡购买公交票。营业时间：周六10:00-20:00。"
+            }
+          ]
+        }
+      ]
     },
     {
       "key": "reykjavik_food",
@@ -1017,6 +1044,7 @@ const TRAVEL_CONTENT = {
     }
   ]
 };
+
 
 
 
