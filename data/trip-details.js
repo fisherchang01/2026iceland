@@ -1972,24 +1972,6 @@ const TRIP = {
         ]
       },
       {
-        "icon": "🛍️",
-        "name": "购物",
-        "id": "helsinki-lv",
-        "kind": "general",
-        "tags": [],
-        "isOptional": true,
-        "attachTo": "market-square",
-        "desc": "传说中是世界上最便宜LV的地方，原因是LV在欧盟统一订价，但芬兰享有极高的退税比例（最高可达约17%）。",
-        "deepDesc": "一、Helsinki Outlet：芬兰唯一的大型官方奥特莱斯，距离市中心约20公里，集合了40多个品牌，户外品牌如Helly Hansen、Haglöfs、Norrøna、Luhta折扣力度很大，设计品牌如Marimekko、Lumene以及厨具Le Creuset也很值得淘，园区是开放式小镇设计，逛起来很舒服。交通：市中心火车站旁乘坐75路巴士直达，约30分钟；或用HSL App绑定信用卡购买公交票。营业时间：周六10:00-20:00。\n二、LV门市：赫尔辛基有两家Louis Vuitton门市，在此购买是全球定价与退税后最便宜的地区之一，价格比中国专柜便宜约25%。（1）Helsinki Esplanadi旗舰店，周六营业时间10:00-18:00，款项最全，有中文店员服务。（2）Helsinki Stockmann百货分店，周六营业时间10:00-19:00。",
-        "map": "Helsinki Outlet",
-        "images": [
-          "helsinki-lv-01.webp",
-          "helsinki-lv-02.webp",
-          "helsinki-lv-03.webp",
-          "helsinki-lv-04.webp"
-        ]
-      },
-      {
         "icon": "🔴",
         "name": "红教堂 Uspenski Cathedral",
         "id": "uspenski",
@@ -2065,9 +2047,6 @@ const TRIP = {
         "deepDesc": "",
         "map": "Suomenlinna Helsinki",
         "images": [
-          "suomenlinna-01.webp",
-          "suomenlinna-02.webp",
-          "suomenlinna-03.webp",
           "suomenlinna-04.webp",
           "suomenlinna-05.webp",
           "suomenlinna-06.webp",
@@ -2089,6 +2068,18 @@ const TRIP = {
             "value": "三、门票：\n如果只是沿着经典路线四处走走看军事堡垒遗迹，不需要门票；若要参观岛上的博物馆群（共五座），除了海关博物馆免费之外，其他博物馆都要单独购票，可在各博物馆内购买。"
           },
           {
+            "type": "img",
+            "src": "suomenlinna-01.webp"
+          },
+          {
+            "type": "img",
+            "src": "suomenlinna-02.webp"
+          },
+          {
+            "type": "img",
+            "src": "suomenlinna-03.webp"
+          },
+          {
             "type": "text",
             "value": "四、经典蓝色路线：\n下船后沿指标先前往游客中心拿取地图（游客中心也有厕所）。\n{#0066cc}蓝色路线{/color}始于防波堤兵营前的主码头，终止于国王之门，路线长度约1.5公里。\n\n游客中心和小超市之间有条小路，是蓝色路线的起点，第一个景点就是芬兰堡教堂——建于1854年，最初是俄罗斯东正教驻军教堂，原建筑有五座洋葱顶尖塔；后来芬兰时代改建成福音路德教堂，圆顶不再是洋葱状，塔楼改为四方型。教堂尖塔内设有一座为空中和海上交通导航的灯塔，会发出四次连续闪光——摩斯电码中代表「H」，就是赫尔辛基的意思。如今芬兰堡教堂是举办婚礼、音乐会等活动的场所。"
           },
@@ -2099,30 +2090,6 @@ const TRIP = {
           {
             "type": "text",
             "value": "💡 小提醒：\n很多人走到这里会想直接开始逛市集，但欧洲的市集通常要到早上 10：30 或 11：00 才会完全开。 所以可以趁早上市集还没开，先冲芬兰堡玩一圈，回来刚好可以逛市集，完美零时差！"
-          }
-        ]
-      },
-      {
-        "icon": "🍽️",
-        "name": "餐厅",
-        "id": "helsinki-food",
-        "kind": "general",
-        "tags": [],
-        "isOptional": true,
-        "attachTo": "suomenlinna",
-        "desc": "码头热门三文鱼餐厅 Kappeli Restaurant，玻璃房子坐落在海边码头公园中央，喷泉环绕，仿佛置身童话世界。",
-        "deepDesc": "",
-        "map": "Kappeli Restaurant Helsinki",
-        "note": "",
-        "images": [],
-        "deepBlocks": [
-          {
-            "type": "text",
-            "value": "{#ff0000}一、Kappeli Restaurant{/color}：\n位于海边码头公园的玻璃房餐厅，环境极佳。三文鱼汤约16.9-17.9欧，自助按人头收费，搭配店里的方块黄油面包非常绝，可无限续杯，本地人和游客都爱去。咖啡馆区域（进门左手边）周一至周六10:00-22:00，没有正餐，有各种蛋糕、饮品，还有自助三文鱼汤；正餐餐厅通常11:00才开始供应，包含前菜、主菜（煎三文鱼与烟熏三文鱼）和甜品。"
-          },
-          {
-            "type": "text",
-            "value": "二、其他选择：\n{#ff0000}（1）Merimakasiini{/color}——距离市中心步行约15分钟的码头旁，三文鱼汤分量足（Big Size约20欧），味道浓郁。\n\n{#ff0000}（2）南码头露天市场{/color}（Kauppatori）——露天摊位众多，各家都卖三文鱼和三文鱼汤，价格相近（约11-15欧），建议直接去靠海的摊位，边吹海风边吃。\n\n{#ff0000}（3）Cafe Regatta{/color}——赫尔辛基绝对不能错过的肉桂卷专卖店，也大推热巧克力（加一圈奶油），还可以买几个香肠在火炉旁边烤，配上湖边景色很享受，吃完还可以顺便到旁边的西贝流士公园走走。"
           }
         ]
       }
@@ -2226,6 +2193,7 @@ const TRIP = {
     ]
   }
 };
+
 
 
 
