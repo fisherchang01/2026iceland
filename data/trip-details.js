@@ -540,7 +540,9 @@ const TRIP = {
           "laugavegur-03.webp",
           "laugavegur-04.webp",
           "laugavegur-05.webp"
-        ]
+        ],
+        "note": "{link:travel:svarta}冰島介紹{/link}\n{link:travel:pylsur}冰島介紹{/link}\n{link:travel:seabaron}冰島介紹{/link}\n{link:travel:reykjavik-food-4}冰島介紹{/link}",
+        "deepBlocks": []
       },
       {
         "icon": "🎼",
@@ -566,7 +568,7 @@ const TRIP = {
           "text": "🚗 前往辛格维利尔国家公园",
           "detail": "约 50 km · 约 50 分钟"
         },
-        "note": "",
+        "note": "{link:travel:svarta}冰島介紹{/link}\n{link:travel:pylsur}冰島介紹{/link}\n{link:travel:seabaron}冰島介紹{/link}\n{link:travel:reykjavik-food-4}冰島介紹{/link}",
         "deepBlocks": [
           {
             "type": "text",
@@ -2193,6 +2195,7 @@ const TRIP = {
     ]
   }
 };
+
 
 
 
