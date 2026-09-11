@@ -974,12 +974,24 @@ const TRAVEL_CONTENT = {
           "layout": "sm",
           "blocks": [
             {
+              "type": "img",
+              "src": "finland-food-2-05.webp"
+            },
+            {
               "type": "text",
               "value": "{#0066cc}三文鱼忌廉汤Lohikeitto便是家传户晓的芬兰美食，汤内有三文鱼块、薯仔、洋葱、红萝卜、莳萝，再配上黑麦面包或芬兰黑麦饼干食用，特别在冬天，芬兰人爱喝一碗三文鱼忌廉汤暖暖身。{/color}\n\n来到赫尔辛基一定吃到鲑鱼，常见的有这种以奶为基底加上马铃薯和胡萝卜的鲑鱼汤，另外番茄为基底加上其它海鲜的鲑鱼汤也是很美味，同时也可以尝试烤鲑鱼和鲑鱼生鱼片唷，在市场购买的鲑鱼生鱼片不同于亚洲的调味，别有一番风味。"
             },
             {
+              "type": "img",
+              "src": "finland-food-2-07.webp"
+            },
+            {
               "type": "text",
               "value": "鲑鱼汤的价格分布在11-18€之间，11€的是老农贸市场外面的广场（Kauppatori），有好几家摊子都有卖鲑鱼汤，有点像是夜市的摊子的感觉，汤比较小碗，但可以尝试看看。\n\n{#ff0000}老农贸市场 （Vanha kauppahalli）里面有很多家都有卖鲑鱼汤{/color}，11：00左右开始卖的店家会比较多，价格大约在14€左右。 \n\n来到赫尔辛基之前查询美食推荐，许多人都推荐来到老农贸市场内来寻宝，原来老农贸市场 Old Market Hall （ Vanha Kauppahalli ） 在海港旁，是已经超过一百年历史的老市场，当地居民也会前往的室内市场，距离赫尔辛基几个重要景点都不远，从白教堂走来大概 10 分钟内，许多游客来赫尔辛基旅游都会顺道拜访，今天要介绍的 SOUP + MORE 也是其中有名的店家之一！ \n\n{#ff0000}SOUP+MORE Vanha Kauppahalli{/color} （老农贸市场）\n{#ff0000}营业时间：11：00 – 16：00{/color} （ 周日公休 ）\n"
+            },
+            {
+              "type": "img",
+              "src": "finland-food-2-04.webp"
             },
             {
               "type": "img",
@@ -992,6 +1004,14 @@ const TRAVEL_CONTENT = {
             {
               "type": "img",
               "src": "finland-food-2-02.webp"
+            },
+            {
+              "type": "img",
+              "src": "finland-food-2-03.webp"
+            },
+            {
+              "type": "img",
+              "src": "finland-food-2-06.webp"
             }
           ]
         },
@@ -1149,6 +1169,7 @@ const TRAVEL_CONTENT = {
     }
   ]
 };
+
 
 
 
