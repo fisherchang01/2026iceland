@@ -1917,11 +1917,11 @@ const TRIP = {
           },
           {
             "type": "text",
-            "value": "二、周边购物中心：（1）Citycenter购物中心——位于车站对面，超过50家店铺、咖啡厅及餐厅，一楼有间2欧商店，每样商品都2欧。（2）Kamppi购物中心——市中心最繁忙的购物中心，超过90家店铺及近50家咖啡厅餐厅，分布七层楼；楼下有K market和Alepa market两间超市（K market较大较齐全），还有一条美食街，拉面、泰式料理、新加坡风味应有尽有。（3）Forum购物中心——约140家店铺，2楼有Moomin专卖店。（4）Sokos百货——设有LUMENE保养品、marimekko、iittala等芬兰本地品牌。（5）Stockmann百货——北欧最大百货公司，超过5万平方米零售空间，几乎都是复合式销售，结帐要到中央结帐台。"
+            "value": "二、周边购物中心：\n\n（1）Citycenter购物中心——位于车站对面，超过50家店铺、咖啡厅及餐厅，一楼有间2欧商店，每样商品都2欧。\n（2）Kamppi购物中心——市中心最繁忙的购物中心，超过90家店铺及近50家咖啡厅餐厅，分布七层楼；楼下有K market和Alepa market两间超市（K market较大较齐全），还有一条美食街，拉面、泰式料理、新加坡风味应有尽有。\n（3）Forum购物中心——约140家店铺，2楼有Moomin专卖店。\n（4）Sokos百货——设有LUMENE保养品、marimekko、iittala等芬兰本地品牌。\n（5）Stockmann百货——北欧最大百货公司，超过5万平方米零售空间，几乎都是复合式销售，结帐要到中央结帐台。"
           },
           {
             "type": "text",
-            "value": "三、延伸景点──静默教堂：位于Kamppi购物中心旁边，非常好找。外观是一个超大椭圆形木质建筑，温暖的木头色调，像一艘船或一滴水滴，非常吸睛，建材主要是芬兰云杉木，内部使用大量自然木材，给人温暖平静的感觉，免费入场。"
+            "value": "{#ff0000}三、延伸景点──静默教堂：{/color}\n\n位于Kamppi购物中心旁边，非常好找。外观是一个超大椭圆形木质建筑，温暖的木头色调，像一艘船或一滴水滴，非常吸睛，建材主要是芬兰云杉木，内部使用大量自然木材，给人温暖平静的感觉，免费入场。"
           }
         ]
       },
@@ -1934,9 +1934,7 @@ const TRIP = {
         "images": [
           "helsinki-cathedral-01.webp",
           "helsinki-cathedral-02.webp",
-          "helsinki-cathedral-03.webp",
-          "helsinki-cathedral-04.webp",
-          "helsinki-cathedral-05.webp"
+          "helsinki-cathedral-03.webp"
         ],
         "desc": "纯白色的新古典主义外观、醒目的绿顶设计以及宏伟的百级阶梯广场，内部简约而宁静，没有金箔或大理石的奢华，只有北欧风格的极致简洁。",
         "deepDesc": "",
@@ -1952,6 +1950,10 @@ const TRIP = {
             "value": "二、由于教堂以白色为主，旧时出海的水手看到教堂就代表离赫尔辛基越来越近，所以赫尔辛基又被称为「白都」。"
           },
           {
+            "type": "img",
+            "src": "helsinki-cathedral-05.webp"
+          },
+          {
             "type": "text",
             "value": "三、教堂外观简洁而宏大，拥有对称的立面和高耸的圆顶，正面由两侧的圆柱和六根高大的柱子支撑，白色外墙和绿色圆顶形成鲜明对比。"
           }
@@ -1965,19 +1967,41 @@ const TRIP = {
         "tags": [],
         "img": "market-square-08.webp",
         "desc": "赫尔辛基老农贸市场于1889年开幕，规模并不大，不过是赫尔辛基最具历史意义和人气的市场之一。",
-        "deepDesc": "一、位于市中心的海港附近，靠近芬兰湾。自1889年开业以来，成为当地居民和游客的热门去处，既是购买新鲜食材的地方，也是感受赫尔辛基传统饮食文化的好场所。市场内共有约20多间不同的摊贩和咖啡店，主要售卖食品，也有少量纪念品店。\n二、营业时间：大部分店铺约10:00-11:00开门，下午16:00左右就会提前关门，周日很多店铺休息。\n三、推荐好店：（1）SOUP+MORE——主打三文鱼汤（14欧），有中文菜单，面包免费续，座位较少，饭点容易排队。（2）E. Eriksson——市场内的人气老店，三文鱼汤、烟熏三文鱼、章鱼沙拉和生蚝都很受欢迎。",
+        "deepDesc": "",
         "map": "Vanha Kauppahalli Helsinki",
         "images": [
           "market-square-01.webp",
-          "market-square-02.webp",
           "market-square-03.webp",
-          "market-square-04.webp",
           "market-square-05.webp",
-          "market-square-06.webp",
-          "market-square-07.webp"
+          "market-square-06.webp"
         ],
         "note": "{link:travel:finland-food-1}海边码头的三文鱼汤{/link}\n\n{link:travel:finland-food-2}农贸市场的三文鱼汤{/link}",
-        "deepBlocks": []
+        "deepBlocks": [
+          {
+            "type": "text",
+            "value": "一、位于市中心的海港附近，靠近芬兰湾。自1889年开业以来，成为当地居民和游客的热门去处，既是购买新鲜食材的地方，也是感受赫尔辛基传统饮食文化的好场所。市场内共有约20多间不同的摊贩和咖啡店，主要售卖食品，也有少量纪念品店。"
+          },
+          {
+            "type": "text",
+            "value": "二、营业时间：大部分店铺约10:00-11:00开门，下午16:00左右就会提前关门，周日很多店铺休息。"
+          },
+          {
+            "type": "text",
+            "value": "三、推荐好店：\n（1）{#ff0000}SOUP+MORE{/color}——主打三文鱼汤（14欧），有中文菜单，面包免费续，座位较少，饭点容易排队。\n（2）{#ff0000}E. Eriksso{/color}n——市场内的人气老店，三文鱼汤、烟熏三文鱼、章鱼沙拉和生蚝都很受欢迎。"
+          },
+          {
+            "type": "img",
+            "src": "market-square-02.webp"
+          },
+          {
+            "type": "img",
+            "src": "market-square-04.webp"
+          },
+          {
+            "type": "img",
+            "src": "market-square-07.webp"
+          }
+        ]
       },
       {
         "icon": "🔴",
@@ -1991,14 +2015,10 @@ const TRIP = {
         "map": "Uspenski Cathedral Helsinki",
         "images": [
           "uspenski-01.webp",
-          "uspenski-02.webp",
           "uspenski-03.webp",
-          "uspenski-04.webp",
           "uspenski-05.webp",
           "uspenski-06.webp",
-          "uspenski-07.webp",
-          "uspenski-08.webp",
-          "uspenski-09.webp"
+          "uspenski-08.webp"
         ],
         "note": "💡 周六开放时间 10:00-15:00。",
         "deepBlocks": [
@@ -2007,12 +2027,24 @@ const TRIP = {
             "value": "一、乌斯佩斯基大教堂耗时6年完工，兴建于芬兰仍被俄国统治的1862-1868年，由俄国建筑师设计。建筑风格属于俄式拜占庭风格，外立面采用了70万块红色砖石堆砌而成，最大特色是大量金色圆顶和十字架，象征东正教的神圣。"
           },
           {
+            "type": "img",
+            "src": "uspenski-02.webp"
+          },
+          {
             "type": "text",
             "value": "二、从赫尔辛基大教堂走过去不到十分钟，大多数人拍摄都是在门口的广场，在拍摄点可以拍到爱情锁桥+乌斯佩斯基大教堂同框的角度，还满特别的。外观是典型的红砖绿圆顶拜占庭式建筑风格，共有十三座塔，所有尖塔上的十字架都朝向东方，象征耶稣与十二使徒。"
           },
           {
+            "type": "img",
+            "src": "uspenski-04.webp"
+          },
+          {
             "type": "text",
             "value": "三、内部最值得一看的是位在正中央的Iconostasis圣龛墙，每一位圣像都画得栩栩如生，金色为底的背景增添了几分华丽；教堂正上方挑高的穹顶描绘着华丽的饰画与宗教典故雕饰，建筑以蓝底代表天空、高挂着金色星星，还有壁面细腻的雕花，看似朴实的外观，内部却有着低调的华丽，是传统东正教堂的艺术风格。"
+          },
+          {
+            "type": "img",
+            "src": "uspenski-09.webp"
           }
         ]
       },
