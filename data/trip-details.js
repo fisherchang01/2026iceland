@@ -1583,7 +1583,7 @@ const TRIP = {
         "images": [],
         "desc": "冰岛购物退税的最低消费门槛为单笔消费满 12,000 ISK（含增值税）",
         "deepDesc": "",
-        "note": "",
+        "note": "{link:other:category:iceland_tax_refund}冰岛退税{/link}",
         "map": "",
         "deepBlocks": [
           {
@@ -1941,7 +1941,7 @@ const TRIP = {
         "desc": "纯白色的新古典主义外观、醒目的绿顶设计以及宏伟的百级阶梯广场，内部简约而宁静，没有金箔或大理石的奢华，只有北欧风格的极致简洁。",
         "deepDesc": "",
         "map": "Helsinki Cathedral",
-        "note": "",
+        "note": "{link:travel:finland-shopping-1}最便宜LV{/link}\n\n{link:travel:finland-shopping-2}赫尔辛基Outlet{/link}",
         "deepBlocks": [
           {
             "type": "text",
@@ -1975,7 +1975,9 @@ const TRIP = {
           "market-square-05.webp",
           "market-square-06.webp",
           "market-square-07.webp"
-        ]
+        ],
+        "note": "{link:travel:finland-food-1}海边码头的三文鱼汤{/link}\n\n{link:travel:finland-food-2}农贸市场的三文鱼汤{/link}",
+        "deepBlocks": []
       },
       {
         "icon": "🔴",
@@ -2135,7 +2137,7 @@ const TRIP = {
         ],
         "desc": "芬兰航空商务贵宾室52登机门附近、Business Lounge、不是Platium Wing",
         "deepDesc": "",
-        "note": "",
+        "note": "{link:other:category:finland_tax_refund}芬兰退税{/link}",
         "map": "",
         "deepBlocks": [
           {
@@ -2199,6 +2201,7 @@ const TRIP = {
     ]
   }
 };
+
 
 
 
