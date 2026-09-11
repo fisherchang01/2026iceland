@@ -474,7 +474,7 @@ const TRIP = {
           "花儿与少年"
         ],
         "desc": "冰岛首都雷克雅未克的著名地标，外观以火山爆发所呈现的玄武岩熔岩流为主要意象，前卫设计让人很难与传统欧洲教堂联想在一起。",
-        "deepDesc": "",
+        "deepDesc": "{link:travel:svarta}冰岛🇮🇸花少同款面包碗Kaffid{/link}\n{link:travel:pylsur}热狗堡{/link}\n{link:travel:seabaron}Seabaron龙虾汤{/link}\n{link:travel:reykjavik-food-4}冰岛🇮🇸花少同款冰淇淋店Valdis{/link}",
         "map": "Hallgrimskirkja Reykjavik",
         "nextStop": {
           "type": "walk",
@@ -541,7 +541,7 @@ const TRIP = {
           "laugavegur-04.webp",
           "laugavegur-05.webp"
         ],
-        "note": "{link:travel:svarta}冰島介紹{/link}\n{link:travel:pylsur}冰島介紹{/link}\n{link:travel:seabaron}冰島介紹{/link}\n{link:travel:reykjavik-food-4}冰島介紹{/link}",
+        "note": "{link:travel:svarta}冰岛🇮🇸花少同款面包碗Kaffid{/link}\n{link:travel:pylsur}热狗堡{/link}\n{link:travel:seabaron}Seabaron龙虾汤{/link}\n{link:travel:reykjavik-food-4}冰岛🇮🇸花少同款冰淇淋店Valdis{/link}",
         "deepBlocks": []
       },
       {
@@ -561,7 +561,7 @@ const TRIP = {
           "花儿与少年"
         ],
         "desc": "冰岛最重要的艺术场地，外观使用不规则玻璃片，灵感同样来自冰岛的六边形玄武岩地质。",
-        "deepDesc": "",
+        "deepDesc": "{link:travel:svarta}冰岛🇮🇸花少同款面包碗Kaffid{/link}\n{link:travel:pylsur}热狗堡{/link}\n{link:travel:seabaron}Seabaron龙虾汤{/link}\n{link:travel:reykjavik-food-4}冰岛🇮🇸花少同款冰淇淋店Valdis{/link}",
         "map": "Harpa Reykjavik",
         "nextStop": {
           "type": "drive",
@@ -605,7 +605,10 @@ const TRIP = {
           "tjornin-03.webp"
         ],
         "desc": "离开哈帕音乐厅后，不走回头路，改沿旧港区海滨及托宁湖，徒步感受不同路径返回大教堂。",
-        "deepDesc": "一、托宁湖是雷克雅未克市内最大的湖泊，沿湖畔走一圈，好多天鹅、海鸥、野鸭漫游其中，有些游客还会带饲料或面包来场喂食秀，景色相当美。\n二、托宁湖算是比较小众的冰岛秘境，不是每个到雷克雅未克的人都会去。湖里有超多天鹅、鸭子，很多人会直接带饲料或面包来喂食，所以被当地人称为「世界最大面包汤」。"
+        "deepDesc": "一、托宁湖是雷克雅未克市内最大的湖泊，沿湖畔走一圈，好多天鹅、海鸥、野鸭漫游其中，有些游客还会带饲料或面包来场喂食秀，景色相当美。\n\n二、托宁湖算是比较小众的冰岛秘境，不是每个到雷克雅未克的人都会去。湖里有超多天鹅、鸭子，很多人会直接带饲料或面包来喂食，所以被当地人称为「世界最大面包汤」。",
+        "note": "{link:travel:svarta}冰岛🇮🇸花少同款面包碗Kaffid{/link}\n{link:travel:pylsur}热狗堡{/link}\n{link:travel:seabaron}Seabaron龙虾汤{/link}\n{link:travel:reykjavik-food-4}冰岛🇮🇸花少同款冰淇淋店Valdis{/link}",
+        "map": "",
+        "deepBlocks": []
       },
       {
         "icon": "🏞️",
@@ -820,7 +823,7 @@ const TRIP = {
           "text": "🚗 前往 Gullfoss",
           "detail": "约 10 km · 约 10 分钟"
         },
-        "note": "🅿️ 停車：1000 ISK\n🚻 廁所：游客中心内免费，环境不错。",
+        "note": "🅿️ 停車：1000 ISK\n🚻 廁所：游客中心内免费，环境不错。\n\n{link:travel:iceland-food-1}黄金圈最赞休息区GRYSIR Center！！！{/link}",
         "deepBlocks": [
           {
             "type": "text",
@@ -1327,7 +1330,7 @@ const TRIP = {
           "vik-01.webp",
           "vik-02.webp"
         ],
-        "note": "维克镇红顶教堂/路德教会Víkurkirkja 抵达教堂后继续往上开一段，就能到最佳观景点，可以停几辆车",
+        "note": "维克镇红顶教堂/路德教会Víkurkirkja 抵达教堂后继续往上开一段，就能到最佳观景点，可以停几辆车\n\n{link:travel:iceland-food-2}Vik的The Soup Company{/link}\n{link:travel:iceland-food-3}Vik的黑披萨Black Crust Pizzeria{/link}",
         "deepBlocks": [
           {
             "type": "text",
@@ -1509,7 +1512,8 @@ const TRIP = {
           "fjadrargljufur-02.webp",
           "fjadrargljufur-03.webp"
         ],
-        "note": "🅿️ 停車：1000 ISK\n🚻 廁所：下方停车场设有免费简易厕所\n💡 下方停车场设有免费的简易厕所。\n💡 停车费 ISK 1000。"
+        "note": "🅿️ 停車：1000 ISK\n🚻 廁所：下方停车场设有免费简易厕所\n💡 下方停车场设有免费的简易厕所。\n💡 停车费 ISK 1000。\n\n{link:travel:iceland-food-2}Vik的The Soup Company{/link}\n{link:travel:iceland-food-3}Vik的黑披萨Black Crust Pizzeria{/link}",
+        "deepBlocks": []
       },
       {
         "icon": "♨️",
@@ -2195,6 +2199,7 @@ const TRIP = {
     ]
   }
 };
+
 
 
 
