@@ -153,6 +153,10 @@ const TRIP = {
           },
           {
             "type": "img",
+            "src": "sin-airport-lounge-09.webp"
+          },
+          {
+            "type": "img",
             "src": "sin-airport-lounge-02.webp"
           },
           {
@@ -160,12 +164,12 @@ const TRIP = {
             "src": "sin-airport-lounge-05.webp"
           },
           {
-            "type": "img",
-            "src": "sin-airport-lounge-07.webp"
+            "type": "text",
+            "value": "🍽️ 餐飲區亮點：炸花枝、真的神！\n必吃亮点：商务贵宾室招牌的炸花枝（Crispy Fried Calamari）外酥内嫩，极受旅客推崇。\n這間貴賓室最廣為人知的，就是那傳說中的——✨ 炸花枝（Crispy Fried Calamari） \n\n實測評價：「外酥內嫩，炸粉不油膩，熱度剛好，一口咬下香氣爆開，完全是水準以上的餐廳品質。」真的不是誇張！「為了這盤花枝，我會提早進 Lounge。\n\n澳航商務艙貴賓室裡供應的叻沙一向來都是我的必點餐點 (樟宜機場裡許多間貴賓室也都有供應)\n\n有个酒吧可以点酒，酒精飲品：紅白酒外，吧檯還會有簡易調酒（Gin Tonic、Whisky Soda）"
           },
           {
-            "type": "text",
-            "value": "🍽️ 餐飲區亮點：炸花枝、真的神！\n必吃亮点：商务贵宾室招牌的炸花枝（Crispy Fried Calamari）外酥内嫩，极受旅客推崇。\n這間貴賓室最廣為人知的，就是那傳說中的——✨ 炸花枝（Crispy Fried Calamari） \n\n實測評價：「外酥內嫩，炸粉不油膩，熱度剛好，一口咬下香氣爆開，完全是水準以上的餐廳品質。」真的不是誇張！「為了這盤花枝，我會提早進 Lounge。\n\n有个酒吧可以点酒，酒精飲品：紅白酒外，吧檯還會有簡易調酒（Gin Tonic、Whisky Soda）"
+            "type": "img",
+            "src": "sin-airport-lounge-07.webp"
           },
           {
             "type": "img",
@@ -174,6 +178,10 @@ const TRIP = {
           {
             "type": "text",
             "value": "小貼心是——吧檯中段有一個「冰鎮檸檬水＋小點餅乾區」，方便趕登機的旅客快速補水。"
+          },
+          {
+            "type": "text",
+            "value": "🛀 卫浴：6/5 给到夯\n卫生间就是全场最佳，超大面的镜子玻璃隔断和到地的水槽，还是很有设计感的，备品也都是Grown Alchemist，好像是墨尔本的洗护品牌，感觉这些航司都很喜欢把本国的备品往外宣传，好奇要是CA在国外开个休息室是不是应该放美加净的备品😅\n{#ff0000}淋浴间数量非常多（约 20 间）{/color}，空间很大有马桶！完全不用排队，还找了阿姨问能不能拍照，她还帮忙布置了一下地巾的位置；btw这家航司休息室好多华人阿姨的感觉，都很好说话没啥距离感；"
           }
         ]
       },
@@ -2257,6 +2265,7 @@ const TRIP = {
     ]
   }
 };
+
 
 
 
