@@ -8,7 +8,7 @@
 // 正常运作，只是费用记录会退回「只存在自己手机」，不会整个网站坏掉。
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
-import { getDatabase, ref, push, set, remove, onValue } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-database.js";
+import { getDatabase, ref, push, set, remove, onValue, query, orderByChild, equalTo, get } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-database.js";
 
 const settings = window.FIREBASE_SETTINGS || {};
 const firebaseConfig = settings.config || {};
@@ -77,6 +77,36 @@ try {
       }
     },
 
+    // 直接向雲端查詢「id 欄位等於這個值」的所有記錄並整批刪除。
+    // ⚠️ 不依賴本機記憶體裡的雲端 ID 對照表（_cloudIdsById）——
+    // 那份對照表要等第一次跟雲端同步完成才會有內容，如果使用者在同步完成前
+    // 就按下刪除，對照表是空的，舊邏輯會誤判「雲端沒有這筆」而完全不送出
+    // 刪除指令，雲端那份資料就會在稍後同步時被錯誤地救回來。
+    // 這裡改成當下即時查詢雲端現況，查到幾筆就刪幾筆，才是可靠的做法。
+    removeByAppId: function (appId, onDone) {
+      try {
+        const q = query(expensesRef, orderByChild('id'), equalTo(appId));
+        get(q).then(function (snapshot) {
+          const jobs = [];
+          snapshot.forEach(function (child) {
+            jobs.push(remove(ref(db, EXPENSES_PATH + '/' + child.key)));
+          });
+          Promise.all(jobs).then(function () {
+            if (onDone) onDone(jobs.length);
+          }).catch(function (e) {
+            console.warn('云端删除失败：', e);
+            if (onDone) onDone(-1);
+          });
+        }).catch(function (e) {
+          console.warn('查询云端记录失败：', e);
+          if (onDone) onDone(-1);
+        });
+      } catch (e) {
+        console.warn('云端删除失败：', e);
+        if (onDone) onDone(-1);
+      }
+    },
+
     // 訂閱即時更新：只要任何人（含自己）新增/刪除消費，callback 就會收到最新的完整清單
     onChange: function (callback) {
       try {
@@ -133,6 +163,7 @@ try {
     push: function (e, onDone) { if (onDone) onDone(null); },
     update: function (id, e, onDone) { if (onDone) onDone(false); },
     remove: function () {},
+    removeByAppId: function (id, onDone) { if (onDone) onDone(0); },
     onChange: function () {}
   };
 }

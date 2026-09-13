@@ -361,10 +361,28 @@ function deleteExpense(id) {
   persistExpenses();
   renderExpenses(); renderSummary(); refreshDailyIfOpen();
   if (window.cloudExpenses && window.cloudExpenses.available) {
-    var ids = cloudIdsFor(target);
-    ids.forEach(function(cid){ window.cloudExpenses.remove(cid); });
     if (target.id != null) delete _cloudIdsById[target.id];
-    showToast(ids.length > 1 ? '已删除（含 ' + ids.length + ' 份云端副本）' : '已删除');
+    // 直接向雲端查詢並整批刪除，不再只靠本機記憶體裡的對照表——
+    // 對照表要等第一次同步完成才有內容，太早按刪除會查到空清單，
+    // 導致刪除鍵沒有真的送出任何刪除指令，那筆記錄之後又被同步救回來。
+    if (typeof window.cloudExpenses.removeByAppId === 'function' && target.id != null) {
+      window.cloudExpenses.removeByAppId(target.id, function(count) {
+        if (count > 0) {
+          showToast(count > 1 ? '已删除（含 ' + count + ' 份云端副本）' : '已删除');
+        } else if (count === 0) {
+          showToast('已删除');
+        } else {
+          // 直接查詢失敗（例如離線），退回舊方法用本機已知的雲端 ID 補刪一次
+          var ids = cloudIdsFor(target);
+          ids.forEach(function(cid){ window.cloudExpenses.remove(cid); });
+          showToast('已删除');
+        }
+      });
+    } else {
+      var ids = cloudIdsFor(target);
+      ids.forEach(function(cid){ window.cloudExpenses.remove(cid); });
+      showToast(ids.length > 1 ? '已删除（含 ' + ids.length + ' 份云端副本）' : '已删除');
+    }
     return;
   }
   showToast('已删除');
