@@ -1398,12 +1398,46 @@ const TRIP = {
           "icehiking-01.webp",
           "icehiking-02.webp",
           "icehiking-03.webp",
-          "icehiking-04.webp",
-          "icehiking-05.webp",
-          "icehiking-06.webp",
-          "icehiking-07.webp",
-          "icehiking-08.webp",
-          "icehiking-09.webp"
+          "icehiking-04.webp"
+        ],
+        "note": "在參加旅遊之前使用洗手間，我們強烈建議在距離集{#ff0000}合地點 10 分鐘路程的 Orkan 加油站停靠。{/color}\n\n集合地點在 Troll Expeditions Skaftafell（Troll Expeditions Skaftafell - Google 地圖）。您需要在出發時間前 20 分鐘到達！\n注意：我們的集合地點不在斯卡夫塔山遊客中心（Skaftafell Visitors Center）！",
+        "deepBlocks": [
+          {
+            "type": "text",
+            "value": "一、行程流程与时间分配：4小时包含「集合前置＋车程＋冰上活动」，实际在冰上行走的时间约2.5~3小时，整体体力负担适中，属于兼具挑战性与赏景的最佳比例。"
+          },
+          {
+            "type": "text",
+            "value": "二、步骤：\n（1）集合与领取装备（约30分钟）：于 Skaftafell 服务中心报到，工作人员发放安全帽、安全绑带、冰爪与冰斧。\n（2）搭乘巨轮越野车（约15~20分钟）前往冰川舌边缘。\n（3）穿着冰爪与安全教学（约15分钟），导游示范如何正确穿上冰爪，并教导冰上行走步态与注意事项。\n（4）冰川健行与蓝冰洞探险（约2~2.5小时）：穿梭于千年的瓦特纳冰原分支上，欣赏蓝色冰川裂隙，进入天然蓝冰洞拍照，体验原汁原味的冰川纯净水。\n（5）卸下装备与接驳返回（约30分钟）。"
+          },
+          {
+            "type": "img",
+            "src": "icehiking-05.webp"
+          },
+          {
+            "type": "img",
+            "src": "icehiking-06.webp"
+          },
+          {
+            "type": "img",
+            "src": "icehiking-07.webp"
+          },
+          {
+            "type": "img",
+            "src": "icehiking-08.webp"
+          },
+          {
+            "type": "img",
+            "src": "icehiking-09.webp"
+          },
+          {
+            "type": "text",
+            "value": "三、出发前一日准备：\n装备打包入包（空水壶/保温瓶、高热量小零食、晕车药），电子设备充饱电（携带行动电源），充分休息。当日准备：直接穿上洋葱式保暖层＋防水外衣裤＋高筒健行鞋，吃晕车药。\n\n冰上安全三口诀：\n（1）企鹅步——双脚开立与肩同宽，防冰爪互勾。\n（2）踩剉冰——全脚掌垂直重踩下压，防滑倒。\n（3）不脱队。"
+          },
+          {
+            "type": "text",
+            "value": "四、冰岛蓝冰洞呈现梦幻蓝色的原因：冰川历经数百年极大压力，内部气泡几乎完全被挤出，形成密度极高、纯净的「压缩冰」。\n当光线穿过这种致密的冰层时，会吸收光谱中的红色与黄色光波，唯有蓝色光波能穿透并折射出来，造就了宛如蓝宝石般的天然色彩。"
+          }
         ]
       },
       {
@@ -2325,6 +2359,7 @@ const TRIP = {
     ]
   }
 };
+
 
 
 
