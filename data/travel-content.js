@@ -640,7 +640,19 @@ const TRAVEL_CONTENT = {
             },
             {
               "type": "text",
-              "value": "LV门市：\n\n赫尔辛基有两家Louis Vuitton门市，在此购买是全球定价与退税后最便宜的地区之一，价格比中国专柜便宜约25%。\n\n（1）Helsinki Esplanadi旗舰店，周六营业时间10:00-18:00，款项最全，有中文店员服务。\n（2）Helsinki Stockmann百货分店，周六营业时间10:00-19:00。"
+              "value": "LV门市：\n\n赫尔辛基确实有 2 家 LV 门店，两家距离很近，步行大概 2 分钟即可到达，且都离中央火车站不远（步行约 10-12 分钟）。\n因为芬兰的退税政策非常友好，这里被很多游客称为“买 LV 的天堂”。\n\n赫尔辛基有两家Louis Vuitton门市，在此购买是全球定价与退税后最便宜的地区之一，价格比中国专柜便宜约25%。\n\n1️⃣Louis Vuitton Helsinki Esplanadi：\n第一家如图一在市中心街边\n🈺业时间周一到周六10点到晚上6点！ ❗️❗️❗️周天不开门，，款项最全，有中文店员服务。"
+            },
+            {
+              "type": "img",
+              "src": "finland-shopping-1-01.webp"
+            },
+            {
+              "type": "text",
+              "value": "2️⃣ Louis Vuitton Helsinki Stockmann\n第二家如图二在stockmann商场里\n🈺业时间周一到周五10点到晚上8点！\n周六10点到晚上7点！周天12点到晚上6点！"
+            },
+            {
+              "type": "img",
+              "src": "finland-shopping-1-02.webp"
             }
           ]
         },
@@ -1262,6 +1274,7 @@ const TRAVEL_CONTENT = {
     }
   ]
 };
+
 
 
 
