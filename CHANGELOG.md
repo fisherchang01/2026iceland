@@ -10,6 +10,21 @@ git diff v1.0-stable HEAD     # 跟目前狀態比對
 
 ---
 
+## v1.7-nav-unify — 2026-09-26 🧭 導航按鈕併入景點卡本身 + 支援多個導航目的地
+
+**問題：「距離/時間 + 導航」是卡片下方另一條獨立的時間軸列，視覺上跟它所屬的景點卡是分開的兩塊；而且一個景點永遠只能導去一個目的地（`nextStops` 雖然支援多段，但只能手動改資料檔，編輯器完全碰不到）。**
+
+改動（`js/render-itinerary.js`，屬於 §9 第二層「改渲染行為時這裡是正確位置」）：
+
+1. `buildSpotCardHtml()` / `buildSpotCardInnerHtml()` 新增 `navBlockHtml` 參數，導航區塊直接印在 `.spot-item` 卡片內部（thumb／標題內文之後），不再是另一個 `.timeline-row.connector-row`。`makeDriveConnector()`／`makeWalkConnector()`／`makeTramConnector()` 三個舊函式已移除，改由 `computeSpotNavTargets()` + `buildSpotNavBlockHtml()` 取代。
+2. 新增資料欄位 `spot.navTargets`（陣列，可在行程編輯器景點編輯頁直接新增/修改，見 [DATA-SCHEMA.md §3.1](docs/DATA-SCHEMA.md)）。填兩筆以上時，行程頁會自動在每一筆前面加上這個景點自己的字母＋序號（例如 A1、A2）。
+3. 完全向下相容：沒有 `navTargets` 的既有景點，沿用原本 `nextStops`／`drives[i]`／`nextStop` 的邏輯，一行資料都不用改。
+4. `tools/trip-editor-pro.html` 新增「導航目的地 (navTargets)」欄位群組（新增/刪除/修改，含名稱、地圖地址、交通方式、距離、時間），存草稿與上傳流程沿用既有的 `Object.assign(spot, data)` 機制，未另外調整上傳邏輯。
+
+已確認：一般日（有 `drives`/`nextStop` 的景點）與分區日（`day.areas[].spots`）渲染皆正常，`nextStops` 多段鏈式導航（Kerið→超市→民宿）視覺上合併成同一張卡、正確顯示 E1／E2 編號徽章。`css/style.css`（第一層不可動區）未變動，新增樣式一律用行內 style 搭配既有 CSS 變數（`var(--sp-4)` 等）。
+
+---
+
 ## v1.6.2-css-audit — 2026-08-28 📋 CSS 死碼盤點（只記錄，不刪除）
 
 **結論：`css/style.css` 有 42 個確認的死碼 class（約 58 條規則、7 KB），但這一版不刪，改成寫進 [docs/CSS-DEAD-CODE.md](docs/CSS-DEAD-CODE.md)。**

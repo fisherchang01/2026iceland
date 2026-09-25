@@ -96,8 +96,7 @@ function stripEstimateWording(str) {
   return (str || '').replace(/约\s*/g, '');
 }
 
-// 導航小圖示連結（Phase 2 調整）：不再放在每個景點詳情頁裡，改附掛在「距離/時間」這一行本身，
-// 點了直接開Google/Apple地圖導航去下一站。destQuery 沒有值（例如最後一站沒有下一站資料）就不顯示。
+// 導航小圖示連結：點了直接開Google/Apple地圖導航。destQuery 沒有值（例如最後一站沒有下一站資料）就不顯示。
 function buildNavIconsHtml(destQuery, mode) {
   if (!destQuery) return '';
   var appleFlag = mode === 'w' ? 'w' : (mode === 'r' ? 'r' : 'd');
@@ -107,26 +106,70 @@ function buildNavIconsHtml(destQuery, mode) {
   '</span>';
 }
 
-function makeDriveConnector(dist, time, destQuery) {
-  return '<div class="timeline-row connector-row">' +
-    '<div class="timeline-node"><span class="timeline-dot connector-dot-drive"></span></div>' +
-    '<div class="drive-connector">' +
-    '<div class="drive-info">' + carIcon + '<span>' + stripEstimateWording(dist) + (time ? ' &nbsp;·&nbsp; ' + stripEstimateWording(time) : '') + '</span>' + buildNavIconsHtml(destQuery, 'd') + '</div>' +
-    '</div></div>';
+// ===== 景點卡內附掛的導航區塊（取代舊版「兩景點卡之間獨立一行」的做法）=====
+// 目的：讓 A 景點卡片跟「A 的導航」在視覺上是同一張卡（同一個外框、同一個底色），
+// 不再是卡片下方另外飄一條獨立的時間軸列。同時把「目的地」從單一個放寬成一個陣列，
+// 陣列有兩筆以上時，每一筆前面會自動加上 A1、A2… 的編號徽章。
+//
+// 目的地陣列的來源，依優先順序（向下相容，既有資料完全不用改）：
+//   1. s.navTargets  —— 新欄位，手動指定、可在行程編輯器新增/修改，一筆一個導航按鈕
+//   2. s.nextStops   —— 既有的多段鏈式導航（例如 Kerið→超市→民宿），沿用舊格式
+//   3. drives[i]     —— 既有的自駕距離/時間，目的地自動抓「下一個主景點」
+//   4. s.nextStop    —— 既有的步行/輕軌/自駕單一備註，目的地自動抓「下一個主景點」
+function buildDistTimeSuffix(nt) {
+  var parts = [];
+  if (nt.dist) parts.push(stripEstimateWording(nt.dist));
+  if (nt.time) parts.push(stripEstimateWording(nt.time));
+  return parts.length ? '　' + parts.join(' · ') : '';
 }
-function makeWalkConnector(text, detail, destQuery) {
-  return '<div class="timeline-row connector-row">' +
-    '<div class="timeline-node"><span class="timeline-dot connector-dot-walk"></span></div>' +
-    '<div class="walk-connector">' +
-    '<div class="walk-info">' + walkIcon + '<span>' + stripEstimateWording(detail || text) + '</span>' + buildNavIconsHtml(destQuery, 'w') + '</div>' +
-    '</div></div>';
+function computeSpotNavTargets(s, list, i, hotel, drives) {
+  if (s.navTargets && s.navTargets.length) {
+    return s.navTargets.map(function(nt) {
+      var mode = nt.type === 'walk' ? 'w' : (nt.type === 'tram' ? 'r' : 'd');
+      return {
+        mode: mode,
+        text: (nt.name || '') + buildDistTimeSuffix(nt),
+        destQuery: encodeURIComponent(nt.map || nt.name || '')
+      };
+    });
+  }
+  var nextSpot = nextMainSpot(list, i);
+  var destQuery = nextSpot ? encodeURIComponent(nextSpot.map || nextSpot.name) :
+    (hotel && hotel.map ? encodeURIComponent(hotel.map) : null);
+  if (drives && drives[i]) {
+    var dr = drives[i];
+    return [{ mode: 'd', text: stripEstimateWording(dr.dist) + (dr.time ? ' · ' + stripEstimateWording(dr.time) : ''), destQuery: destQuery }];
+  }
+  if (s.nextStops && s.nextStops.length) {
+    return s.nextStops.map(function(leg) {
+      var legText = leg.name + ((leg.distanceKm != null ? '　' + leg.distanceKm + ' km' : '') + (leg.etaMin != null ? ' · 约 ' + leg.etaMin + ' 分钟' : ''));
+      return { mode: 'd', text: legText, destQuery: encodeURIComponent(leg.address || leg.name) };
+    });
+  }
+  if (s.nextStop) {
+    var ns = s.nextStop;
+    var nsMode = ns.type === 'walk' ? 'w' : (ns.type === 'tram' ? 'r' : 'd');
+    return [{ mode: nsMode, text: stripEstimateWording(ns.detail || ns.text), destQuery: destQuery }];
+  }
+  return [];
 }
-function makeTramConnector(text, detail, destQuery) {
-  return '<div class="timeline-row connector-row">' +
-    '<div class="timeline-node"><span class="timeline-dot connector-dot-tram"></span></div>' +
-    '<div class="tram-connector">' +
-    '<div class="tram-info">' + tramIcon + '<span>' + stripEstimateWording(detail || text) + '</span>' + buildNavIconsHtml(destQuery, 'r') + '</div>' +
-    '</div></div>';
+function buildNavRowHtml(target, label) {
+  var icon = target.mode === 'w' ? walkIcon : (target.mode === 'r' ? tramIcon : carIcon);
+  var pillClass = target.mode === 'w' ? 'walk-info' : (target.mode === 'r' ? 'tram-info' : 'drive-info');
+  var labelBadge = label ? '<strong style="margin-right:4px;">' + label + '</strong>' : '';
+  return '<div style="display:flex;align-items:center;gap:var(--sp-3);padding:var(--sp-2) 0 0;">' +
+    '<div class="' + pillClass + '">' + icon + '<span>' + labelBadge + target.text + '</span>' + buildNavIconsHtml(target.destQuery, target.mode) + '</div>' +
+    '</div>';
+}
+// spotLabel（母景點的 A／B／C 字母編號）只有在目的地不只一筆時才會拿來組 A1／A2 徽章；
+// 只有一筆目的地時維持跟舊版一樣單純，不多加編號徽章。
+function buildSpotNavBlockHtml(navTargets, spotLabel) {
+  if (!navTargets || !navTargets.length) return '';
+  var showLabel = navTargets.length > 1 && !!spotLabel;
+  var rows = navTargets.map(function(t, idx) {
+    return buildNavRowHtml(t, showLabel ? (spotLabel + (idx + 1)) : null);
+  }).join('');
+  return '<div class="spot-nav-block" style="padding:0 var(--sp-4) var(--sp-3);margin-top:var(--sp-1);border-top:1px dashed var(--border-light);">' + rows + '</div>';
 }
 
 // 卡片縮圖列（v11 改版，v13 加上延遲載入）：整列 4:3 橫式縮圖放在卡片最上面，可左右滑動看更多張。
@@ -191,7 +234,7 @@ function initThumbRowLazyLoad(containerEl) {
 // showDay() 裡三種情境（一般行程、分區行程、住宿）都呼叫這個函式產生卡片，不用各自重寫一份。
 // 卡片外面包一層 timeline-row（節點欄 + 卡片），節點欄裡的圓點才是真正對齊左側貫穿線的定位點，
 // 不能直接畫在卡片自己身上（卡片有 overflow:hidden 讓圓角裁切正常，圓點疊在上面會被連帶裁掉）。=====
-function buildSpotCardInnerHtml(s, onclickExpr, computedLabel) {
+function buildSpotCardInnerHtml(s, onclickExpr, computedLabel, navBlockHtml) {
   var isShop = s.isShop || false;
   var clickable = !isShop && !!onclickExpr;
   var scheduleParts = [];
@@ -209,10 +252,14 @@ function buildSpotCardInnerHtml(s, onclickExpr, computedLabel) {
     '<div class="spot-card-row">' +
       '<div class="spot-card-copy"' + copyClickAttr + '><h4 class="spot-card-title">' + spotPrefixHtml(s, computedLabel) + spotTitleHtml(s.name) + optionalBadge + '</h4>' + scheduleHtml + summaryHtml + '</div>' +
     '</div>' +
+    (navBlockHtml || '') +
     '</div>';
 }
-function buildSpotCardHtml(s, onclickExpr, computedLabel) {
-  var cardHtml = buildSpotCardInnerHtml(s, onclickExpr, computedLabel);
+// navBlockHtml：這個景點自己的導航按鈕區塊（見上面 buildSpotNavBlockHtml），
+// 附掛在同一張 .spot-item 卡片裡面（thumb／標題內文之後），跟景點卡是同一個外框、
+// 同一塊底色，不再是卡片下方另外飄一條獨立的時間軸列。
+function buildSpotCardHtml(s, onclickExpr, computedLabel, navBlockHtml) {
+  var cardHtml = buildSpotCardInnerHtml(s, onclickExpr, computedLabel, navBlockHtml);
   return '<div class="timeline-row">' +
     '<div class="timeline-node"><span class="timeline-dot ' + spotTypeClass(s) + '"></span></div>' +
     cardHtml +
@@ -222,8 +269,9 @@ function buildSpotCardHtml(s, onclickExpr, computedLabel) {
 // （沒有 .timeline-node 圓點），左側縮排＋細線跟時間軸區隔開，一看就知道是
 // 「順路可加的選項」而不是行程主線的下一步。灰階／備選樣式完全沿用
 // .spot-item.spot-optional，這裡只多包一層縮排容器（E.1：視覺層不需重做）。
+// 備選景點本身不附掛導航區塊（跟改版前行為一致）。
 function buildAttachedSpotCardHtml(s, onclickExpr) {
-  var cardHtml = buildSpotCardInnerHtml(s, onclickExpr, null);
+  var cardHtml = buildSpotCardInnerHtml(s, onclickExpr, null, null);
   return '<div class="attached-spot-row">' + cardHtml + '</div>';
 }
 
@@ -286,33 +334,16 @@ function buildDaySpotsHtml(d, dayId) {
   (d.spots || []).forEach(function(s, i) {
     if (s.attachTo) return; // 掛載的備選景點在母景點那一輪就已經渲染過了，這裡跳過
     var onclickExpr = s.isShop ? null : "showSpot('" + dayId + "'," + i + ')';
-    html += buildSpotCardHtml(s, onclickExpr, dayLabels[i]);
+    // 導航區塊改成附掛在景點卡自己身上（見 computeSpotNavTargets／buildSpotNavBlockHtml），
+    // 不再是卡片下方另一條獨立的時間軸列，所以要在 buildSpotCardHtml 之前就算好。
+    var navTargets = computeSpotNavTargets(s, d.spots, i, d.hotel, d.drives);
+    var navBlockHtml = buildSpotNavBlockHtml(navTargets, dayLabels[i]);
+    html += buildSpotCardHtml(s, onclickExpr, dayLabels[i], navBlockHtml);
     (dayChildren[s.id] || []).forEach(function(childIdx) {
       var child = d.spots[childIdx];
       var childOnclick = child.isShop ? null : "showSpot('" + dayId + "'," + childIdx + ')';
       html += buildAttachedSpotCardHtml(child, childOnclick);
     });
-    var nextSpot = nextMainSpot(d.spots, i);
-    var destQuery = nextSpot ? encodeURIComponent(nextSpot.map || nextSpot.name) :
-      (d.hotel && d.hotel.map ? encodeURIComponent(d.hotel.map) : null);
-    if (d.drives && d.drives[i]) {
-      var dr = d.drives[i];
-      html += makeDriveConnector(dr.dist, dr.time, destQuery);
-    } else if (s.nextStops && s.nextStops.length) {
-      // 多段鏈式導航（例如 Kerið→超市→民宿，或 Reynisfjara→教堂→超市→民宿）：
-      // 依序把每一段都畫成一個 connector，各自導航到「這一段自己的地點」，不是統一導去下一個景點卡。
-      s.nextStops.forEach(function(leg) {
-        var legDest = encodeURIComponent(leg.address || leg.name);
-        var legText = (leg.distanceKm != null ? leg.distanceKm + ' km' : '') +
-          (leg.etaMin != null ? ' · 约 ' + leg.etaMin + ' 分钟' : '');
-        html += makeDriveConnector(leg.name + (legText ? '　' + legText : ''), '', legDest);
-      });
-    } else if (s.nextStop) {
-      var ns = s.nextStop;
-      if (ns.type === 'walk') html += makeWalkConnector(ns.text, ns.detail, destQuery);
-      else if (ns.type === 'tram') html += makeTramConnector(ns.text, ns.detail, destQuery);
-      else if (ns.type === 'drive') html += makeDriveConnector(ns.detail, '', destQuery);
-    }
   });
   return html;
 }
@@ -396,20 +427,16 @@ function showDay(dayId) {
       area.spots.forEach(function(s, sIdx) {
         if (s.attachTo) return; // 掛載的備選景點在母景點那一輪就已經渲染過了，這裡跳過
         var onclickExpr = s.isShop ? null : "showAreaSpot('" + dayId + "'," + aIdx + ',' + sIdx + ')';
-        html += buildSpotCardHtml(s, onclickExpr, areaLabels[sIdx]);
+        // area 底下沒有 day.hotel／day.drives 的概念，維持原本行為：hotel 傳 null 就好
+        // （分區裡最後一個景點本來就不會退回導去住宿）。
+        var navTargets = computeSpotNavTargets(s, area.spots, sIdx, null, null);
+        var navBlockHtml = buildSpotNavBlockHtml(navTargets, areaLabels[sIdx]);
+        html += buildSpotCardHtml(s, onclickExpr, areaLabels[sIdx], navBlockHtml);
         (areaChildren[s.id] || []).forEach(function(childIdx) {
           var child = area.spots[childIdx];
           var childOnclick = child.isShop ? null : "showAreaSpot('" + dayId + "'," + aIdx + ',' + childIdx + ')';
           html += buildAttachedSpotCardHtml(child, childOnclick);
         });
-        if (s.nextStop) {
-          var ns = s.nextStop;
-          var nextSpot = nextMainSpot(area.spots, sIdx);
-          var destQuery = nextSpot ? encodeURIComponent(nextSpot.map || nextSpot.name) : null;
-          if (ns.type === 'drive') html += makeDriveConnector(ns.detail, '', destQuery);
-          else if (ns.type === 'walk') html += makeWalkConnector(ns.text, ns.detail, destQuery);
-          else if (ns.type === 'tram') html += makeTramConnector(ns.text, ns.detail, destQuery);
-        }
       });
       html += '</div></div>'; // 关闭 travel-collapse-body 与 travel-collapse
     });

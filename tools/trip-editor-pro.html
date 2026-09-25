@@ -898,6 +898,12 @@
         let currentDeepBlocks = [];
         let currentSpotImages = [];
         let photoPoolFilter = 'spot'; // 'spot' | 'unused' | 'all'
+
+        // 導航目的地清單的編輯狀態（同上一批：複本，不直接改 tripData，
+        // 只在切換景點或按「本地保存」時才寫回 drafts）。
+        // 每一筆格式：{ name, map, type, dist, time }；type 為 'drive'|'walk'|'tram'，省略視為 drive。
+        // 只有一筆以上時，行程頁才會在每一筆前面加上 A1／A2 這種編號徽章。
+        let currentSpotNavTargets = [];
         let photoPoolCache = null;    // images/spots/medium/ 目錄列表快取（跨景點共用，同一個目錄）
         const SPOT_IMAGE_DIR = 'images/spots/medium/';
 
@@ -2445,6 +2451,7 @@
             // （深拷貝，避免直接改到 tripData / spot 本身）。
             currentDeepBlocks = JSON.parse(JSON.stringify(draft.deepBlocks !== undefined ? draft.deepBlocks : (spot.deepBlocks || [])));
             currentSpotImages = JSON.parse(JSON.stringify(draft.images !== undefined ? draft.images : (spot.images || [])));
+            currentSpotNavTargets = JSON.parse(JSON.stringify(draft.navTargets !== undefined ? draft.navTargets : (spot.navTargets || [])));
             photoPoolFilter = 'spot';
 
             const editor = document.getElementById('editor');
@@ -2566,13 +2573,67 @@
                         <label class="field-label">地圖 (map)</label>
                         <input type="text" id="mapInput" value="${escapeAttr(draft.map !== undefined ? draft.map : (spot.map || ''))}" oninput="updateAllPreviews()">
                     </div>
+
+                    <div class="field-group">
+                        <div class="field-header">
+                            <label class="field-label">導航目的地 (navTargets)</label>
+                            <button class="btn btn-secondary btn-mini" onclick="addNavTarget()">＋新增導航目的地</button>
+                        </div>
+                        <div class="field-hint">
+                            離開這個景點之後可以導航去的地方，例如超市、下一站、民宿。只填一筆時行程頁只顯示一組導航按鈕；
+                            填兩筆以上時，行程頁會自動在每一筆前面加上這個景點自己的字母＋序號（例如 A1、A2）。
+                            不填的話，行程頁會自動抓「下一個主景點」當導航目的地（維持原本行為）。
+                        </div>
+                        <div id="navTargetsList"></div>
+                    </div>
                 </div>
             `;
 
             updateAllPreviews();
             renderBlocksList();
             renderPhotoPanel();
+            renderNavTargetsList();
             document.getElementById('topBar').style.display = 'flex';
+        }
+
+        // ===== 導航目的地清單編輯（field-group「導航目的地 (navTargets)」）=====
+        function renderNavTargetsList() {
+            const wrap = document.getElementById('navTargetsList');
+            if (!wrap) return;
+            if (!currentSpotNavTargets.length) {
+                wrap.innerHTML = '<div class="field-hint" style="margin-top:6px;">（尚未新增，行程頁會自動導去下一個主景點）</div>';
+                return;
+            }
+            wrap.innerHTML = currentSpotNavTargets.map((nt, idx) => `
+                <div style="display:flex;gap:6px;align-items:center;margin-top:8px;flex-wrap:wrap;">
+                    <select onchange="updateNavTargetField(${idx}, 'type', this.value)" style="padding:5px;">
+                        <option value="drive" ${(!nt.type || nt.type === 'drive') ? 'selected' : ''}>🚗 開車</option>
+                        <option value="walk" ${nt.type === 'walk' ? 'selected' : ''}>🚶 步行</option>
+                        <option value="tram" ${nt.type === 'tram' ? 'selected' : ''}>🚊 大眾運輸</option>
+                    </select>
+                    <input type="text" placeholder="名稱（例如：超市）" value="${escapeAttr(nt.name || '')}"
+                        oninput="updateNavTargetField(${idx}, 'name', this.value)" style="flex:1;min-width:110px;padding:5px;">
+                    <input type="text" placeholder="地圖地址／查詢字串" value="${escapeAttr(nt.map || '')}"
+                        oninput="updateNavTargetField(${idx}, 'map', this.value)" style="flex:2;min-width:160px;padding:5px;">
+                    <input type="text" placeholder="距離（例如 15 km）" value="${escapeAttr(nt.dist || '')}"
+                        oninput="updateNavTargetField(${idx}, 'dist', this.value)" style="width:110px;padding:5px;">
+                    <input type="text" placeholder="時間（例如 15 分钟）" value="${escapeAttr(nt.time || '')}"
+                        oninput="updateNavTargetField(${idx}, 'time', this.value)" style="width:110px;padding:5px;">
+                    <button class="btn btn-secondary btn-mini" onclick="removeNavTarget(${idx})">🗑</button>
+                </div>
+            `).join('');
+        }
+        function addNavTarget() {
+            currentSpotNavTargets.push({ name: '', map: '', type: 'drive', dist: '', time: '' });
+            renderNavTargetsList();
+        }
+        function removeNavTarget(idx) {
+            currentSpotNavTargets.splice(idx, 1);
+            renderNavTargetsList();
+        }
+        function updateNavTargetField(idx, field, value) {
+            if (!currentSpotNavTargets[idx]) return;
+            currentSpotNavTargets[idx][field] = value;
         }
 
         function updateAllPreviews() {
@@ -2632,7 +2693,9 @@
                 note: noteInput.value.trim(),
                 map: mapInput.value.trim(),
                 images: currentSpotImages.slice(),
-                deepBlocks: JSON.parse(JSON.stringify(currentDeepBlocks))
+                deepBlocks: JSON.parse(JSON.stringify(currentDeepBlocks)),
+                // 濾掉名稱跟地圖都空白的整筆，避免存一堆空殼；type/dist/time 有值才留著。
+                navTargets: JSON.parse(JSON.stringify(currentSpotNavTargets)).filter(nt => nt.name || nt.map)
             };
 
             saveDrafts();
