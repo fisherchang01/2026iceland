@@ -111,11 +111,18 @@ function buildNavIconsHtml(destQuery, mode) {
 // 不再是卡片下方另外飄一條獨立的時間軸列。同時把「目的地」從單一個放寬成一個陣列，
 // 陣列有兩筆以上時，每一筆前面會自動加上 A1、A2… 的編號徽章。
 //
+// v1.7.1 修正：目的地預設值改成「這個景點自己」，不再是「下一個主景點」。
+// 舊版邏輯是 A 卡片下面的導航鈕其實導去 B（下一站），視覺上按鈕明明長在 A 卡片裡、
+// 點下去卻是去 B，例如某天第一個景點是秘境瀑布，導航卻是去地熱噴泉——這是誤導。
+// 現在 drives[i] 跟 nextStop 這兩種「沒有明確填目的地」的舊資料，一律自動帶入
+// 「這個景點自己的 map/name」，跟卡片本身徹底對齊。s.nextStops（多段鏈式導航）跟
+// s.navTargets（新欄位）本來每一筆就有自己明確填的地址，不受這次修正影響。
+//
 // 目的地陣列的來源，依優先順序（向下相容，既有資料完全不用改）：
 //   1. s.navTargets  —— 新欄位，手動指定、可在行程編輯器新增/修改，一筆一個導航按鈕
-//   2. s.nextStops   —— 既有的多段鏈式導航（例如 Kerið→超市→民宿），沿用舊格式
-//   3. drives[i]     —— 既有的自駕距離/時間，目的地自動抓「下一個主景點」
-//   4. s.nextStop    —— 既有的步行/輕軌/自駕單一備註，目的地自動抓「下一個主景點」
+//   2. s.nextStops   —— 既有的多段鏈式導航（例如 Kerið→超市→民宿），每一筆本來就有自己的地址
+//   3. drives[i]     —— 既有的自駕距離/時間，目的地改成這個景點自己
+//   4. s.nextStop    —— 既有的步行/輕軌/自駕單一備註，目的地改成這個景點自己
 function buildDistTimeSuffix(nt) {
   var parts = [];
   if (nt.dist) parts.push(stripEstimateWording(nt.dist));
@@ -133,12 +140,12 @@ function computeSpotNavTargets(s, list, i, hotel, drives) {
       };
     });
   }
-  var nextSpot = nextMainSpot(list, i);
-  var destQuery = nextSpot ? encodeURIComponent(nextSpot.map || nextSpot.name) :
-    (hotel && hotel.map ? encodeURIComponent(hotel.map) : null);
+  // 這個景點自己的地圖查詢字串，沒填 map 就退回用景點名稱查詢——跟卡片本身、
+  // 詳情頁一直以來的規則一致（見 splitSpotName 之外，其餘地方都是 s.map || s.name）。
+  var selfDestQuery = encodeURIComponent(s.map || s.name || '');
   if (drives && drives[i]) {
     var dr = drives[i];
-    return [{ mode: 'd', text: stripEstimateWording(dr.dist) + (dr.time ? ' · ' + stripEstimateWording(dr.time) : ''), destQuery: destQuery }];
+    return [{ mode: 'd', text: stripEstimateWording(dr.dist) + (dr.time ? ' · ' + stripEstimateWording(dr.time) : ''), destQuery: selfDestQuery }];
   }
   if (s.nextStops && s.nextStops.length) {
     return s.nextStops.map(function(leg) {
@@ -149,7 +156,7 @@ function computeSpotNavTargets(s, list, i, hotel, drives) {
   if (s.nextStop) {
     var ns = s.nextStop;
     var nsMode = ns.type === 'walk' ? 'w' : (ns.type === 'tram' ? 'r' : 'd');
-    return [{ mode: nsMode, text: stripEstimateWording(ns.detail || ns.text), destQuery: destQuery }];
+    return [{ mode: nsMode, text: stripEstimateWording(ns.detail || ns.text), destQuery: selfDestQuery }];
   }
   return [];
 }
