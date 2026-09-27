@@ -752,6 +752,14 @@ const TRIP = {
         "id": "bruarfoss",
         "kind": "spot",
         "label": "A",
+        "navTargets": [
+          {
+            "name": "",
+            "map": "",
+            "dist": "约 15 km",
+            "time": "约 15-20 分钟"
+          }
+        ],
         "images": [
           "bruarfoss-01.webp",
           "bruarfoss-02.webp",
@@ -1115,6 +1123,14 @@ const TRIP = {
         "id": "seljalandsfoss",
         "kind": "spot",
         "label": "A",
+        "navTargets": [
+          {
+            "name": "",
+            "map": "",
+            "dist": "约 108 km",
+            "time": "约 1小时25分钟"
+          }
+        ],
         "images": [
           "seljalandsfoss-01.webp",
           "seljalandsfoss-02.webp",
@@ -1381,6 +1397,14 @@ const TRIP = {
         "id": "icehiking",
         "kind": "spot",
         "label": "A",
+        "navTargets": [
+          {
+            "name": "",
+            "map": "",
+            "dist": "约 130 km",
+            "time": "约 1.5小时"
+          }
+        ],
         "img": "icehiking-10.webp",
         "tags": [
           "花儿与少年",
@@ -1650,6 +1674,14 @@ const TRIP = {
         "id": "fjadrargljufur",
         "kind": "spot",
         "label": "A",
+        "navTargets": [
+          {
+            "name": "",
+            "map": "",
+            "dist": "约 68 km",
+            "time": "约 1小时"
+          }
+        ],
         "tags": [],
         "desc": "冰岛南部最壮丽的自然奇观之一，拥有「世界最美峡谷」的美誉。",
         "deepDesc": "",

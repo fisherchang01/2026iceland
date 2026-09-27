@@ -168,7 +168,10 @@ function computeSpotNavTargets(s, list, i, drives) {
       return {
         mode: mode,
         text: (nt.name || '') + buildDistTimeSuffix(nt),
-        destQuery: encodeURIComponent(nt.map || nt.name || '')
+        // name／map 都留空時（例如只是想手動填「上一站到這裡」的距離，目的地就是
+        // 這個景點自己），退回用這個景點自己的 map/name，不能真的變成空字串——
+        // 空字串會讓 buildNavIconsHtml() 判定「沒有目的地」，整顆導航按鈕都不見。
+        destQuery: encodeURIComponent(nt.map || nt.name || s.map || s.name || '')
       };
     });
   }
@@ -178,12 +181,18 @@ function computeSpotNavTargets(s, list, i, drives) {
       return { mode: 'd', text: legText, destQuery: encodeURIComponent(leg.address || leg.name) };
     });
   }
+  // 這個景點自己的地圖查詢字串，沒填 map 就退回用景點名稱查詢——跟卡片本身、
+  // 詳情頁一直以來的規則一致。
+  var selfDestQuery = encodeURIComponent(s.map || s.name || '');
   var incoming = computeIncomingLeg(list, i, drives);
   if (incoming) {
-    // 這個景點自己的地圖查詢字串，沒填 map 就退回用景點名稱查詢——跟卡片本身、
-    // 詳情頁一直以來的規則一致。
-    var selfDestQuery = encodeURIComponent(s.map || s.name || '');
     return [{ mode: incoming.mode, text: incoming.text, destQuery: selfDestQuery }];
+  }
+  // v1.7.3 修正：沒有「上一個主景點」可以自動抓距離時（例如當天第一個景點），
+  // 不能因為缺距離資料就整排導航都不見——按鈕本身（導去這個景點自己）永遠都該在，
+  // 距離/時間只是「有的話錦上添花」，沒有就先空著，等行程編輯器補上 navTargets。
+  if (selfDestQuery) {
+    return [{ mode: 'd', text: '', destQuery: selfDestQuery }];
   }
   return [];
 }
@@ -203,7 +212,7 @@ function computeHotelNavTargets(hotel, list, drives) {
   }
   var incoming = computeIncomingLeg(list, list.length, drives);
   if (incoming) return [{ mode: incoming.mode, text: incoming.text, destQuery: selfDestQuery }];
-  return [];
+  return [{ mode: 'd', text: '', destQuery: selfDestQuery }];
 }
 function buildNavRowHtml(target, label) {
   var icon = target.mode === 'w' ? walkIcon : (target.mode === 'r' ? tramIcon : carIcon);
