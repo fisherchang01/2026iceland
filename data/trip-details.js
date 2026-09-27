@@ -369,9 +369,10 @@ const TRIP = {
       "time": "约 2小时45分钟（不含景点停留，市区路段为步行）"
     },
     "hotel": {
-      "name": "South Central Country Apartment 民宿",
+      "name": "Laugarvatn 民宿",
       "note": "黄金圈地区，舒适乡村民宿环境",
-      "map": "South Central Country Apartment Iceland"
+      "map": "Torfholt 16, Laugarvatn, Bláskógabyggð 840",
+      "address": "Torfholt 16, Laugarvatn, Bláskógabyggð 840, Iceland"
     },
     "spots": [
       {
@@ -722,9 +723,7 @@ const TRIP = {
           },
           {
             "name": "民宿",
-            "address": "South Central Country Apartment Iceland",
-            "distanceKm": 20,
-            "etaMin": 25
+            "address": "Torfholt 16, Laugarvatn, Bláskógabyggð 840"
           }
         ],
         "note": "💡 {#ff0000}少数需要收门票的自然景点{/color}，门票每人ISK 600。\n💡 无停车费用，没有提供厕所。"
@@ -741,9 +740,10 @@ const TRIP = {
       "time": "约 1小时45分钟（不含景点停留，不含备选景点绕行）"
     },
     "hotel": {
-      "name": "South Central Country Apartment 民宿",
+      "name": "Laugarvatn 民宿",
       "note": "连住，黄金圈地区",
-      "map": "South Central Country Apartment Iceland"
+      "map": "Torfholt 16, Laugarvatn, Bláskógabyggð 840",
+      "address": "Torfholt 16, Laugarvatn, Bláskógabyggð 840, Iceland"
     },
     "spots": [
       {

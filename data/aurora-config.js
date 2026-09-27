@@ -2,7 +2,7 @@
 const AURORA_CONFIG = {
   locations: [
     { key:'reykjavik', name:'雷克雅未克', lat:63.1466, lon:-21.9426, nights:[] },
-    { key:'selfoss',   name:'南部民宿 Selfoss', lat:63.93, lon:-20.85, nights:['day1','day2'] },
+    { key:'selfoss',   name:'南部民宿 Laugarvatn', lat:64.2111, lon:-20.7111, nights:['day1','day2'] },
     { key:'lakeview',  name:'Lakeview Cabin',  lat:63.79, lon:-18.06, nights:['day3','day4'] },
     { key:'gardur',    name:'Garður',          lat:64.07, lon:-22.70, nights:['day5'] }
   ],

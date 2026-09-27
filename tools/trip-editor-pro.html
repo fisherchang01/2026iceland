@@ -2148,6 +2148,18 @@
                             <input type="text" id="hotelContact" value="${escapeAttr(hotel.contact || '')}"
                                    oninput="onHotelInput('contact', this.value)">
                         </label>
+                        <label>抵達距離 / 時間 (arriveDist / arriveTime，選填)
+                            <div style="display:flex;gap:6px;">
+                                <input type="text" id="hotelArriveDist" value="${escapeAttr(hotel.arriveDist || '')}"
+                                       placeholder="例如 20 km" style="flex:1;" oninput="onHotelInput('arriveDist', this.value)">
+                                <input type="text" id="hotelArriveTime" value="${escapeAttr(hotel.arriveTime || '')}"
+                                       placeholder="例如 25 分钟" style="flex:1;" oninput="onHotelInput('arriveTime', this.value)">
+                            </div>
+                        </label>
+                        <div class="sec-hint">
+                            從當天最後一個景點開到住宿的距離/時間。留空的話，行程頁會自動抓最後一個景點自己填的
+                            「前往住宿」距離/時間；這兩格只在需要手動覆寫（或最後一個景點沒填）時才需要填。
+                        </div>
                     </div>
                 </div>`;
             document.getElementById('topBar').style.display = 'flex';
@@ -2581,8 +2593,11 @@
                         </div>
                         <div class="field-hint">
                             離開這個景點之後可以導航去的地方，例如超市、下一站、民宿。只填一筆時行程頁只顯示一組導航按鈕；
-                            填兩筆以上時，行程頁會自動在每一筆前面加上這個景點自己的字母＋序號（例如 A1、A2）。
-                            不填的話，行程頁會自動抓「下一個主景點」當導航目的地（維持原本行為）。
+                            填兩筆以上時，行程頁會自動在每一筆前面加上這個景點自己的字母＋序號（例如 A1、A2）。<br>
+                            不填的話，行程頁預設顯示「上一個景點開到這裡」的距離/時間（自動抓上一個景點自己填的
+                            nextStop／drives），導航目的地是這個景點自己，不是下一站。當天第一個景點沒有上一站可以抓，
+                            這裡會是空的——如果知道從前一晚住宿開過來的距離，可以在這裡新增一筆手動填上（名稱、地圖都可以
+                            留空，填距離/時間就好）。
                         </div>
                         <div id="navTargetsList"></div>
                     </div>
