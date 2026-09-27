@@ -95,6 +95,10 @@ function buildTripProgressRing(context) {
 
 // 今日卡（v18）：依用戶要求精簡——只留 狀態 + 標題 + 兩行摘要 + 進度環 + 主按鈕，
 // 刪除「下一站 / 今日住宿 / 今日提醒」資訊區（這些資訊在每日詳情頁本來就有完整呈現）。
+// v1.8：.now-intro 這個兩三行摘要，多了一個非同步掛載點——renderOverview() 之後
+// 會呼叫 applyWeatherAlertToNowCard()（見 js/render-weather-alerts.js），如果冰島
+// 氣象局那天有相關分區的黃/橙/紅色警戒，會把這段文字整個換成警戒摘要；抓不到
+// 或沒有警戒就維持這裡原本產生的行程摘要文字，不用等它。
 function buildNowDashboard(context) {
   if (!context) return '';
   var day = context.day;
@@ -147,6 +151,14 @@ function renderOverview() {
   var context = getTripDayContext();
   var topEl = document.getElementById('overviewContent');
   topEl.innerHTML = buildTripHero() + buildNowDashboard(context);
+  // v1.8：今日卡掛載後，非同步向冰島氣象局要目前生效中的警戒，比對這一天的
+  // 行程分區。只在「今天」或「下一個行程日快到了」這兩種狀態查，因為警戒本來
+  // 就是反映當下天氣，出發前太久或旅程已結束時查也沒有意義；抓不到就維持原狀，
+  // 見 js/render-weather-alerts.js 的容錯設計。
+  if (context && (context.state === 'today' || context.state === 'between') &&
+      typeof applyWeatherAlertToNowCard === 'function') {
+    applyWeatherAlertToNowCard(context.day.id, context.day.summary);
+  }
 
   var html = '<div class="overview-section-title"><h2>完整行程</h2><p>也可以直接选择任一天查看</p></div>';
   var todayKey = context ? context.today : '';
