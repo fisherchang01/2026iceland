@@ -1407,6 +1407,16 @@ const TRIP = {
             "src": "vik-04.webp"
           }
         ]
+      },
+      {
+        "icon": "📍",
+        "name": "埃爾德熔岩原",
+        "id": "eldhraun",
+        "kind": "spot",
+        "tags": [],
+        "images": [],
+        "desc": "",
+        "isOptional": true
       }
     ],
     "routeMapImg": "route-day3-01.webp"
@@ -2575,6 +2585,7 @@ const TRIP = {
     ]
   }
 };
+
 
 
 
