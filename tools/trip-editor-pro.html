@@ -904,6 +904,7 @@
         // 每一筆格式：{ name, map, type, dist, time }；type 為 'drive'|'walk'|'tram'，省略視為 drive。
         // 只有一筆以上時，行程頁才會在每一筆前面加上 A1／A2 這種編號徽章。
         let currentSpotNavTargets = [];
+        let currentSpotNextStop = null; // { type, text, detail } 或 null
         let photoPoolCache = null;    // images/spots/medium/ 目錄列表快取（跨景點共用，同一個目錄）
         const SPOT_IMAGE_DIR = 'images/spots/medium/';
 
@@ -1798,7 +1799,8 @@
                 const draftKey = `${currentDay}_${parent.id}`;
                 if (drafts[draftKey]) btn.classList.add('modified');
                 if (currentSpotIndex === block.parentIdx) btn.classList.add('active');
-                btn.innerHTML = `<span class="spot-drag-handle">⠿</span> ${parent.icon || ''} ${escapeAttr(parent.name)}`;
+                const pd = drafts[draftKey] || {};
+                btn.innerHTML = `<span class="spot-drag-handle">⠿</span> ${pd.icon !== undefined ? pd.icon : (parent.icon || '')} ${escapeAttr(pd.name !== undefined ? pd.name : parent.name)}`;
                 btn.title = parent.name;
                 btn.onclick = () => selectSpot(block.parentIdx);
                 row.appendChild(btn);
@@ -1836,6 +1838,15 @@
                     section.appendChild(childRow);
                 });
             });
+
+            // 住宿是當天時間軸的最後一站（行程頁的住宿卡），編輯器也把它放在景點清單最後，
+            // 點開直接跳到「當日設定」裡的住宿欄位（名稱、地圖、抵達距離／時間）。
+            const hBtn = document.createElement('button');
+            hBtn.className = 'day-nav-btn hotel-nav-btn';
+            hBtn.textContent = day.hotel && day.hotel.name
+                ? `🏨 住宿：${day.hotel.name}` : '🏨 住宿（尚未設定，點此新增）';
+            hBtn.onclick = () => selectHotel();
+            section.appendChild(hBtn);
 
             const addBtn = document.createElement('button');
             addBtn.className = 'btn btn-secondary btn-mini spot-add-btn';
@@ -2064,6 +2075,17 @@
             renderDaySettings();
         }
 
+        // 側欄「🏨 住宿」：開啟當日設定並捲到住宿欄位。
+        function selectHotel() {
+            selectDaySettings();
+            const el = document.getElementById('hotelSection');
+            if (el) {
+                el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                el.style.outline = '2px solid #6c5ce7';
+                setTimeout(() => { el.style.outline = ''; }, 1600);
+            }
+        }
+
         function renderDaySettings() {
             const day = tripData[currentDay];
             const routes = normalizeRouteList(day.routeMapImg);
@@ -2087,6 +2109,27 @@
                         ⚠️ 當日設定跟航班、新增／排序景點一樣是記憶體內的變更，<strong>不會存進本地草稿</strong>，
                         重新整理分頁會遺失。改完請直接按「⬆️ 上傳到GitHub」。
                         （從本機上傳的圖片例外，會立刻 commit 到 GitHub。）
+                    </div>
+
+                    <div class="day-section">
+                        <h3>📅 當日基本資料</h3>
+                        <div class="sec-hint">標題會顯示在行程頁標題、總覽今日卡與側欄；行車總計顯示在當天路線圖區塊。</div>
+                        <label>標題 (title)
+                            <input type="text" id="dayTitle" value="${escapeAttr(day.title || '')}"
+                                   oninput="onDayFieldInput('title', this.value)">
+                        </label>
+                        <label>日期文字 (dateLabel)
+                            <input type="text" id="dayDateLabel" value="${escapeAttr(day.dateLabel || '')}"
+                                   placeholder="例如 10月5日（周一）" oninput="onDayFieldInput('dateLabel', this.value)">
+                        </label>
+                        <label>行車總計 (driveSummary)，選填
+                            <div style="display:flex;gap:6px;">
+                                <input type="text" id="dayDriveTotal" value="${escapeAttr((day.driveSummary || {}).total || '')}"
+                                       placeholder="例如 约 102 km" style="flex:1;" oninput="onDriveSummaryInput('total', this.value)">
+                                <input type="text" id="dayDriveTime" value="${escapeAttr((day.driveSummary || {}).time || '')}"
+                                       placeholder="例如 约 1小时45分钟" style="flex:2;" oninput="onDriveSummaryInput('time', this.value)">
+                            </div>
+                        </label>
                     </div>
 
                     <div class="day-section">
@@ -2119,7 +2162,7 @@
                                   oninput="onDayNoteInput(this.value)">${escapeAttr(day.note || '')}</textarea>
                     </div>
 
-                    <div class="day-section">
+                    <div class="day-section" id="hotelSection">
                         <h3>🏨 住宿（hotel）</h3>
                         <div class="sec-hint">
                             名稱留空則整張住宿卡不顯示。有填「地圖查詢字串」時卡片才可點開詳情。
@@ -2188,6 +2231,28 @@
             structuralChangeCount++;
             updateDraftBadge();
             updateDayPreview();
+        }
+
+        function onDayFieldInput(key, value) {
+            const day = tripData[currentDay];
+            const v = value.trim();
+            if (v) day[key] = v;
+            else if (key !== 'title') delete day[key];   // 標題不允許被清空
+            markDayChanged();
+            if (key === 'title') {
+                const active = document.querySelector('.day-btn.active');
+                if (active) active.textContent = `Day ${day.num}: ${day.title}`;
+            }
+        }
+
+        function onDriveSummaryInput(key, value) {
+            const day = tripData[currentDay];
+            const v = value.trim();
+            if (!day.driveSummary) day.driveSummary = {};
+            if (v) day.driveSummary[key] = v;
+            else delete day.driveSummary[key];
+            if (!Object.keys(day.driveSummary).length) delete day.driveSummary;
+            markDayChanged();
         }
 
         function onDayNoteInput(value) {
@@ -2464,16 +2529,39 @@
             currentDeepBlocks = JSON.parse(JSON.stringify(draft.deepBlocks !== undefined ? draft.deepBlocks : (spot.deepBlocks || [])));
             currentSpotImages = JSON.parse(JSON.stringify(draft.images !== undefined ? draft.images : (spot.images || [])));
             currentSpotNavTargets = JSON.parse(JSON.stringify(draft.navTargets !== undefined ? draft.navTargets : (spot.navTargets || [])));
+            currentSpotNextStop = JSON.parse(JSON.stringify(draft.nextStop !== undefined ? draft.nextStop : (spot.nextStop || null)));
             photoPoolFilter = 'spot';
 
             const editor = document.getElementById('editor');
 
             editor.innerHTML = `
                 <div class="editor-header">
-                    <h2><span class="spot-icon">${spot.icon}</span>${spot.name}</h2>
+                    <h2><span class="spot-icon">${draft.icon !== undefined ? draft.icon : spot.icon}</span>${escapeAttr(draft.name !== undefined ? draft.name : spot.name)}</h2>
                 </div>
 
                 <div class="editor-content">
+                    <div class="field-group">
+                        <label class="field-label">基本資料（名稱、圖示、時間、標籤）</label>
+                        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;">
+                            <input type="text" id="nameInput" placeholder="名稱 (name)" style="flex:3;min-width:180px;"
+                                   value="${escapeAttr(draft.name !== undefined ? draft.name : (spot.name || ''))}">
+                            <input type="text" id="iconInput" placeholder="圖示" style="width:70px;"
+                                   value="${escapeAttr(draft.icon !== undefined ? draft.icon : (spot.icon || ''))}">
+                            <input type="text" id="timeInput" placeholder="時間（例如 09:30）" style="flex:1;min-width:110px;"
+                                   value="${escapeAttr(draft.time !== undefined ? draft.time : (spot.time || ''))}">
+                            <input type="text" id="durationInput" placeholder="停留（例如 1 小時）" style="flex:1;min-width:110px;"
+                                   value="${escapeAttr(draft.duration !== undefined ? draft.duration : (spot.duration || ''))}">
+                        </div>
+                        <div style="display:flex;gap:10px;align-items:center;margin-top:8px;flex-wrap:wrap;">
+                            <input type="text" id="tagsInput" placeholder="標籤，用逗號分隔（例如 瀑布,拍照）" style="flex:1;min-width:200px;"
+                                   value="${escapeAttr((draft.tags !== undefined ? draft.tags : (spot.tags || [])).join(','))}">
+                            <label style="font-size:12px;white-space:nowrap;">
+                                <input type="checkbox" id="optionalInput" ${(draft.isOptional !== undefined ? draft.isOptional : spot.isOptional) ? 'checked' : ''}>
+                                備選景點（行程頁顯示「备选」徽章）
+                            </label>
+                        </div>
+                    </div>
+
                     <div class="field-group desc">
                         <div class="field-header">
                             <label class="field-label">簡短介紹 (desc)</label>
@@ -2588,18 +2676,41 @@
 
                     <div class="field-group">
                         <div class="field-header">
-                            <label class="field-label">導航目的地 (navTargets)</label>
-                            <button class="btn btn-secondary btn-mini" onclick="addNavTarget()">＋新增導航目的地</button>
+                            <label class="field-label">🧭 導航列（行程頁這張景點卡下方顯示的每一列）</label>
                         </div>
                         <div class="field-hint">
-                            離開這個景點之後可以導航去的地方，例如超市、下一站、民宿。只填一筆時行程頁只顯示一組導航按鈕；
-                            填兩筆以上時，行程頁會自動在每一筆前面加上這個景點自己的字母＋序號（例如 A1、A2）。<br>
-                            不填的話，行程頁預設顯示「上一個景點開到這裡」的距離/時間（自動抓上一個景點自己填的
-                            nextStop／drives），導航目的地是這個景點自己，不是下一站。當天第一個景點沒有上一站可以抓，
-                            這裡會是空的——如果知道從前一晚住宿開過來的距離，可以在這裡新增一筆手動填上（名稱、地圖都可以
-                            留空，填距離/時間就好）。
+                            這裡的每一列就是行程頁這個景點卡下方的一列導航，改什麼、行程頁就顯示什麼。<br>
+                            • <strong>名稱、地圖都留空</strong> ＝ 導航到這個景點自己，距離／時間填「<strong>上一站 → 這裡</strong>」（當天第一個景點就填前一晚住宿到這裡）。<br>
+                            • 填了名稱或地圖 ＝ 額外的目的地（超市、民宿…），導航到那裡。<br>
+                            • 兩列以上時，行程頁會自動在每列前面加上這個景點的字母＋序號（例如 E1、E2）。<br>
+                            • 完全沒有任何一列：行程頁只顯示一顆導去這個景點自己的按鈕。
+                        </div>
+                        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;">
+                            <button class="btn btn-secondary btn-mini" onclick="addNavTarget('self')">＋到這裡（上一站→本景點）</button>
+                            <button class="btn btn-secondary btn-mini" onclick="addNavTarget('hotel')">＋本日住宿</button>
+                            <select id="navAddSpotSelect" onchange="addNavTargetFromSpot(this.value); this.value='';" style="padding:4px;font-size:12px;">
+                                <option value="">＋從本日其他景點加入…</option>
+                            </select>
+                            <button class="btn btn-secondary btn-mini" onclick="addNavTarget('blank')">＋自訂目的地</button>
                         </div>
                         <div id="navTargetsList"></div>
+                    </div>
+
+                    <div class="field-group">
+                        <div class="field-header">
+                            <label class="field-label">➡️ 景點詳情頁的「前往下一站」小卡 (nextStop)</label>
+                            <button class="btn btn-secondary btn-mini" onclick="clearNextStop()">清除</button>
+                        </div>
+                        <div class="field-hint">點進景點詳情頁最下方會顯示「前往下一站：…」。跟上面的導航列是兩個獨立的地方，留空則不顯示。</div>
+                        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;">
+                            <select id="nsType" onchange="onNextStopInput()" style="padding:5px;">
+                                <option value="drive">🚗 開車</option>
+                                <option value="walk">🚶 步行</option>
+                                <option value="tram">🚊 大眾運輸</option>
+                            </select>
+                            <input type="text" id="nsText" placeholder="說明（例如 🚗 前往 Geysir）" style="flex:2;min-width:160px;" oninput="onNextStopInput()">
+                            <input type="text" id="nsDetail" placeholder="距離／時間（例如 约 35 km · 约 35 分钟）" style="flex:2;min-width:160px;" oninput="onNextStopInput()">
+                        </div>
                     </div>
                 </div>
             `;
@@ -2608,47 +2719,133 @@
             renderBlocksList();
             renderPhotoPanel();
             renderNavTargetsList();
+            populateNavSpotSelect();
+            {
+                const ns = currentSpotNextStop || {};
+                document.getElementById('nsType').value = ns.type || 'drive';
+                document.getElementById('nsText').value = ns.text || '';
+                document.getElementById('nsDetail').value = ns.detail || '';
+            }
             document.getElementById('topBar').style.display = 'flex';
         }
 
-        // ===== 導航目的地清單編輯（field-group「導航目的地 (navTargets)」）=====
+        // ===== 導航列編輯（field-group「🧭 導航列」）=====
         function renderNavTargetsList() {
             const wrap = document.getElementById('navTargetsList');
             if (!wrap) return;
             if (!currentSpotNavTargets.length) {
-                wrap.innerHTML = '<div class="field-hint" style="margin-top:6px;">（尚未新增，行程頁會自動導去下一個主景點）</div>';
+                wrap.innerHTML = '<div class="field-hint" style="margin-top:8px;">（目前沒有任何一列：行程頁只會顯示一顆導去這個景點自己的按鈕。）</div>';
                 return;
             }
+            const last = currentSpotNavTargets.length - 1;
             wrap.innerHTML = currentSpotNavTargets.map((nt, idx) => `
-                <div style="display:flex;gap:6px;align-items:center;margin-top:8px;flex-wrap:wrap;">
+                <div style="display:flex;gap:6px;align-items:center;margin-top:8px;flex-wrap:wrap;padding:6px;border:1px solid #e5e5e5;border-radius:8px;">
+                    <strong style="min-width:22px;">#${idx + 1}</strong>
                     <select onchange="updateNavTargetField(${idx}, 'type', this.value)" style="padding:5px;">
                         <option value="drive" ${(!nt.type || nt.type === 'drive') ? 'selected' : ''}>🚗 開車</option>
                         <option value="walk" ${nt.type === 'walk' ? 'selected' : ''}>🚶 步行</option>
                         <option value="tram" ${nt.type === 'tram' ? 'selected' : ''}>🚊 大眾運輸</option>
                     </select>
-                    <input type="text" placeholder="名稱（例如：超市）" value="${escapeAttr(nt.name || '')}"
+                    <input type="text" placeholder="名稱（留空＝本景點）" value="${escapeAttr(nt.name || '')}"
                         oninput="updateNavTargetField(${idx}, 'name', this.value)" style="flex:1;min-width:110px;padding:5px;">
-                    <input type="text" placeholder="地圖地址／查詢字串" value="${escapeAttr(nt.map || '')}"
+                    <input type="text" placeholder="地圖地址（留空＝本景點）" value="${escapeAttr(nt.map || '')}"
                         oninput="updateNavTargetField(${idx}, 'map', this.value)" style="flex:2;min-width:160px;padding:5px;">
-                    <input type="text" placeholder="距離（例如 15 km）" value="${escapeAttr(nt.dist || '')}"
-                        oninput="updateNavTargetField(${idx}, 'dist', this.value)" style="width:110px;padding:5px;">
-                    <input type="text" placeholder="時間（例如 15 分钟）" value="${escapeAttr(nt.time || '')}"
-                        oninput="updateNavTargetField(${idx}, 'time', this.value)" style="width:110px;padding:5px;">
+                    <input type="text" placeholder="距離（例如 约 15 km）" value="${escapeAttr(nt.dist || '')}"
+                        oninput="updateNavTargetField(${idx}, 'dist', this.value)" style="width:120px;padding:5px;">
+                    <input type="text" placeholder="時間（例如 约 15 分钟）" value="${escapeAttr(nt.time || '')}"
+                        oninput="updateNavTargetField(${idx}, 'time', this.value)" style="width:120px;padding:5px;">
+                    <button class="btn btn-secondary btn-mini" onclick="moveNavTarget(${idx}, -1)" ${idx === 0 ? 'disabled' : ''}>↑</button>
+                    <button class="btn btn-secondary btn-mini" onclick="moveNavTarget(${idx}, 1)" ${idx === last ? 'disabled' : ''}>↓</button>
                     <button class="btn btn-secondary btn-mini" onclick="removeNavTarget(${idx})">🗑</button>
                 </div>
             `).join('');
         }
-        function addNavTarget() {
-            currentSpotNavTargets.push({ name: '', map: '', type: 'drive', dist: '', time: '' });
+        function addNavTarget(kind) {
+            const day = tripData[currentDay] || {};
+            if (kind === 'hotel') {
+                const h = day.hotel;
+                if (!h || !(h.map || h.name)) {
+                    showNotif('這一天還沒有設定住宿，請先到側欄「🏨 住宿」新增', 'error');
+                    return;
+                }
+                currentSpotNavTargets.push({ type: 'drive', name: '民宿', map: h.map || h.name, dist: '', time: '' });
+            } else {
+                currentSpotNavTargets.push({ type: 'drive', name: '', map: '', dist: '', time: '' });
+            }
             renderNavTargetsList();
+            updateAllPreviews();
+        }
+        function addNavTargetFromSpot(spotId) {
+            if (!spotId) return;
+            const day = tripData[currentDay] || {};
+            const sp = (day.spots || []).find(x => x.id === spotId);
+            if (!sp) return;
+            currentSpotNavTargets.push({ type: 'drive', name: sp.name, map: sp.map || sp.name, dist: '', time: '' });
+            renderNavTargetsList();
+            updateAllPreviews();
+        }
+        function populateNavSpotSelect() {
+            const sel = document.getElementById('navAddSpotSelect');
+            if (!sel) return;
+            const day = tripData[currentDay] || {};
+            const cur = (day.spots || [])[currentSpotIndex];
+            (day.spots || []).forEach(sp => {
+                if (cur && sp.id === cur.id) return;
+                const o = document.createElement('option');
+                o.value = sp.id;
+                o.textContent = `${sp.icon || ''} ${sp.name}`;
+                sel.appendChild(o);
+            });
         }
         function removeNavTarget(idx) {
             currentSpotNavTargets.splice(idx, 1);
             renderNavTargetsList();
+            updateAllPreviews();
+        }
+        function moveNavTarget(idx, dir) {
+            const j = idx + dir;
+            if (j < 0 || j >= currentSpotNavTargets.length) return;
+            const t = currentSpotNavTargets[idx];
+            currentSpotNavTargets[idx] = currentSpotNavTargets[j];
+            currentSpotNavTargets[j] = t;
+            renderNavTargetsList();
+            updateAllPreviews();
         }
         function updateNavTargetField(idx, field, value) {
             if (!currentSpotNavTargets[idx]) return;
             currentSpotNavTargets[idx][field] = value;
+            updateAllPreviews();
+        }
+        // 詳情頁「前往下一站」小卡
+        function onNextStopInput() {
+            const type = document.getElementById('nsType').value;
+            const text = document.getElementById('nsText').value.trim();
+            const detail = document.getElementById('nsDetail').value.trim();
+            currentSpotNextStop = (text || detail) ? { type, text, detail } : null;
+        }
+        function clearNextStop() {
+            currentSpotNextStop = null;
+            document.getElementById('nsText').value = '';
+            document.getElementById('nsDetail').value = '';
+        }
+        // 一列導航在行程頁長什麼樣子（跟 js/render-itinerary.js 的 computeSpotNavTargets 同規則）
+        function navRowsPreviewHtml(spot) {
+            const rows = currentSpotNavTargets.filter(nt => nt.name || nt.map || nt.dist || nt.time);
+            const icon = t => t === 'walk' ? '🚶' : (t === 'tram' ? '🚊' : '🚗');
+            const strip = v => String(v || '').replace(/约\s*/g, '').trim();
+            const selfDest = spot.map || spot.name || '';
+            if (!rows.length) {
+                return `<div style="color:#666;">🚗 <em>只有導航按鈕</em> → ${escapeAttr(selfDest)}</div>`;
+            }
+            const letter = spot.label || '';
+            const multi = rows.length > 1;
+            return rows.map((nt, i) => {
+                const self = !nt.name && !nt.map;
+                const head = nt.name || (self && multi ? '到这里' : '');
+                const dt = [strip(nt.dist), strip(nt.time)].filter(Boolean).join(' · ');
+                const lab = multi && letter ? `<strong>${escapeAttr(letter)}${i + 1}</strong> ` : '';
+                return `<div style="margin-bottom:3px;">${icon(nt.type)} ${lab}${escapeAttr(head)}${head && dt ? '　' : ''}${escapeAttr(dt)} <span style="color:#888;">→ ${escapeAttr(nt.map || nt.name || selfDest)}</span></div>`;
+            }).join('');
         }
 
         function updateAllPreviews() {
@@ -2683,6 +2880,14 @@
                 `;
             }
 
+            const spotNow = (tripData[currentDay] && tripData[currentDay].spots[currentSpotIndex]) || {};
+            html += `
+                <div class="preview-section">
+                    <div class="preview-section-title">導航列（行程頁卡片下方）</div>
+                    <div class="preview-content">${navRowsPreviewHtml(spotNow)}</div>
+                </div>
+            `;
+
             document.getElementById('previewContent').innerHTML = html;
         }
 
@@ -2702,15 +2907,26 @@
             const mapInput = document.getElementById('mapInput');
 
             const draftKey = `${currentDay}_${spot.id}`;
+            const nameVal = document.getElementById('nameInput').value.trim();
+            if (!nameVal) { showNotif('名稱不能是空的', 'error'); return; }
+            onNextStopInput();
             drafts[draftKey] = {
+                name: nameVal,
+                icon: document.getElementById('iconInput').value.trim(),
+                time: document.getElementById('timeInput').value.trim(),
+                duration: document.getElementById('durationInput').value.trim(),
+                tags: document.getElementById('tagsInput').value.split(/[,，]/).map(t => t.trim()).filter(Boolean),
+                isOptional: document.getElementById('optionalInput').checked,
+                nextStop: currentSpotNextStop,
                 desc: descInput.value.trim(),
                 deepDesc: deepDescInput.value.trim(),
                 note: noteInput.value.trim(),
                 map: mapInput.value.trim(),
                 images: currentSpotImages.slice(),
                 deepBlocks: JSON.parse(JSON.stringify(currentDeepBlocks)),
-                // 濾掉名稱跟地圖都空白的整筆，避免存一堆空殼；type/dist/time 有值才留著。
-                navTargets: JSON.parse(JSON.stringify(currentSpotNavTargets)).filter(nt => nt.name || nt.map)
+                // 名稱、地圖、距離、時間全空的列才丟掉。（名稱跟地圖都空、只填距離/時間的列是有意義的：
+                // 代表「導航到本景點自己」，之前這裡誤把它們濾掉，會讓「上一站→這裡」存不進去。）
+                navTargets: JSON.parse(JSON.stringify(currentSpotNavTargets)).filter(nt => nt.name || nt.map || nt.dist || nt.time)
             };
 
             saveDrafts();
@@ -2839,6 +3055,14 @@
                     const spot = day && day.spots && day.spots.find(s => s.id === spotId);
                     if (spot) {
                         Object.assign(spot, data);
+                        // 清空的選填欄位不要留在資料檔裡
+                        ['time', 'duration'].forEach(k => { if (!spot[k]) delete spot[k]; });
+                        if (!spot.nextStop) delete spot.nextStop;
+                        if (!spot.isOptional) delete spot.isOptional;
+                        if (!spot.navTargets || !spot.navTargets.length) delete spot.navTargets;
+                        else spot.navTargets.forEach(nt => {
+                            ['name', 'map', 'dist', 'time'].forEach(k => { if (!nt[k]) delete nt[k]; });
+                        });
                     }
                 });
 

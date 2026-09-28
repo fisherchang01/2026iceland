@@ -524,6 +524,13 @@ const TRIP = {
             "type": "img",
             "src": "hallgrimskirkja-07.webp"
           }
+        ],
+        "navTargets": [
+          {
+            "type": "drive",
+            "dist": "约 50 km",
+            "time": "约 45 分钟"
+          }
         ]
       },
       {
@@ -551,7 +558,13 @@ const TRIP = {
           "laugavegur-05.webp"
         ],
         "note": "{link:travel:svarta}冰岛🇮🇸花少同款面包碗Kaffid{/link}\n{link:travel:pylsur}热狗堡{/link}\n{link:travel:seabaron}Seabaron龙虾汤{/link}\n{link:travel:reykjavik-food-4}冰岛🇮🇸花少同款冰淇淋店Valdis{/link}",
-        "deepBlocks": []
+        "deepBlocks": [],
+        "navTargets": [
+          {
+            "type": "walk",
+            "time": "约 5 分钟步行"
+          }
+        ]
       },
       {
         "icon": "🎼",
@@ -598,6 +611,12 @@ const TRIP = {
           {
             "type": "img",
             "src": "harpa-08.webp"
+          }
+        ],
+        "navTargets": [
+          {
+            "type": "walk",
+            "time": "约 10–15 分钟步行"
           }
         ]
       },
@@ -690,6 +709,13 @@ const TRIP = {
             "type": "img",
             "src": "thingvellir-03.webp"
           }
+        ],
+        "navTargets": [
+          {
+            "type": "drive",
+            "dist": "约 50 km",
+            "time": "约 50 分钟"
+          }
         ]
       },
       {
@@ -709,18 +735,6 @@ const TRIP = {
         "desc": "这座漂亮的火口湖形成于6500年前的火山爆发，深度达50公尺，从山顶看相当壮观，沿着步道可以绕火山口一整圈。",
         "deepDesc": "",
         "map": "Kerid Crater Iceland",
-        "nextStops": [
-          {
-            "name": "超市",
-            "address": "Bónus Selfoss Iceland",
-            "distanceKm": 15,
-            "etaMin": 15
-          },
-          {
-            "name": "民宿",
-            "address": "Torfholt 16, Laugarvatn, Bláskógabyggð 840"
-          }
-        ],
         "note": "💡 {#ff0000}少数需要收门票的自然景点{/color}，门票每人ISK 600。\n💡 无停车费用，没有提供厕所。",
         "deepBlocks": [
           {
@@ -760,7 +774,25 @@ const TRIP = {
             "src": "kerid-07.webp"
           }
         ],
-        "navTargets": []
+        "navTargets": [
+          {
+            "type": "drive",
+            "dist": "约 30 km",
+            "time": "约 30 分钟"
+          },
+          {
+            "type": "drive",
+            "name": "超市",
+            "map": "Bónus Selfoss Iceland",
+            "dist": "约 15 km",
+            "time": "约 15 分钟"
+          },
+          {
+            "type": "drive",
+            "name": "民宿",
+            "map": "Torfholt 16, Laugarvatn, Bláskógabyggð 840"
+          }
+        ]
       }
     ],
     "routeMapImg": "route-day1-01.webp"
@@ -777,7 +809,9 @@ const TRIP = {
       "name": "Laugarvatn 民宿",
       "note": "连住，黄金圈地区",
       "map": "Torfholt 16, Laugarvatn, Bláskógabyggð 840",
-      "address": "Torfholt 16, Laugarvatn, Bláskógabyggð 840, Iceland"
+      "address": "Torfholt 16, Laugarvatn, Bláskógabyggð 840, Iceland",
+      "arriveDist": "约 2 km",
+      "arriveTime": "约 5 分钟"
     },
     "spots": [
       {
@@ -788,10 +822,9 @@ const TRIP = {
         "label": "A",
         "navTargets": [
           {
-            "name": "",
-            "map": "",
             "dist": "约 15 km",
-            "time": "约 15-20 分钟"
+            "time": "约 15-20 分钟",
+            "type": "drive"
           }
         ],
         "images": [
@@ -939,6 +972,13 @@ const TRIP = {
             "type": "img",
             "src": "gullfoss-14.webp"
           }
+        ],
+        "navTargets": [
+          {
+            "type": "drive",
+            "dist": "约 35 km",
+            "time": "约 35 分钟"
+          }
         ]
       },
       {
@@ -1010,6 +1050,13 @@ const TRIP = {
           {
             "type": "text",
             "value": "六、游客中心：\n上方靠近游客中心的停车场有洗手间、咖啡馆、餐厅和纪念品店，适合中途休息用餐，直接跟店员点 Lamb Soup 羊肉汤就能听懂，一碗 ISK 2490，凭发票还可以免费续一次汤。停车场旁边就是一家很大的商店，东西不比首都市中心来得少。/n/n五、遊客可以到上下兩層觀看瀑布，上層可以觀看全景，把整個瀑布包括峽谷兩岸都一次看清楚，下層則可以近距離跟瀑布拍照，水霧不小，可能要注意衣服褲子鞋子眼鏡手機相機的防水。\n\n{#ff0000}餐廳、咖啡廳的羊肉湯{/color}\n\n--喝起來羊騷味偏重，但由於我們都是喜歡吃羊肉的人，因此可以接受；第一口吃起來很有「清燉羊肉爐」的感覺，但口味上偏鹹一點，裡面有塊狀羊肉、高麗菜、些許番茄，我們很喜歡高麗菜煮的軟軟的口感，整體來說除了口味上偏鹹之外(冰島的食物都偏鹹)，我們滿喜歡黃金瀑布的羊肉湯，而且冷冷的天氣來碗暖暖的熱湯，非常幸福。\n\n-麵包的部分，是口感偏硬、比較有嚼勁的麵包，我們一致覺得麵包沾羊肉湯吃比塗奶油還好吃，大家若有點黃金瀑布的羊肉湯可以沾著湯吃吃看。\n\n⭐群友經驗分享，黃金瀑布的羊肉湯可以續湯一次，記得帶著點餐的收據到櫃台請店員續湯哦！\n\n"
+          }
+        ],
+        "navTargets": [
+          {
+            "type": "drive",
+            "dist": "约 10 km",
+            "time": "约 10 分钟"
           }
         ]
       },
@@ -1132,6 +1179,13 @@ const TRIP = {
             "type": "img",
             "src": "bruhorsefarm-04.webp"
           }
+        ],
+        "navTargets": [
+          {
+            "type": "drive",
+            "dist": "约 24 km",
+            "time": "约 20 分钟"
+          }
         ]
       }
     ],
@@ -1148,7 +1202,9 @@ const TRIP = {
     "hotel": {
       "name": "Lakeview Cabin 民宿",
       "note": "南岸地区，湖景小屋，有机会观赏极光",
-      "map": "Lakeview Cabin Iceland"
+      "map": "Lakeview Cabin Iceland",
+      "arriveDist": "约 72 km",
+      "arriveTime": "约 60 分钟"
     },
     "spots": [
       {
@@ -1159,10 +1215,9 @@ const TRIP = {
         "label": "A",
         "navTargets": [
           {
-            "name": "",
-            "map": "",
             "dist": "约 108 km",
-            "time": "约 1小时25分钟"
+            "time": "约 1小时25分钟",
+            "type": "drive"
           }
         ],
         "images": [
@@ -1246,6 +1301,13 @@ const TRIP = {
             "type": "img",
             "src": "skogafoss-07.webp"
           }
+        ],
+        "navTargets": [
+          {
+            "type": "drive",
+            "dist": "约 30 km",
+            "time": "约 25 分钟"
+          }
         ]
       },
       {
@@ -1292,6 +1354,13 @@ const TRIP = {
             "type": "img",
             "src": "dyrholaey-04.webp"
           }
+        ],
+        "navTargets": [
+          {
+            "type": "drive",
+            "dist": "约 35 km",
+            "time": "约 30 分钟"
+          }
         ]
       },
       {
@@ -1316,20 +1385,6 @@ const TRIP = {
         "desc": "冰岛很多地方都有黑沙滩，但只有这里的黑沙滩有玄武岩岩石群和人形岩石群可以欣赏。",
         "deepDesc": "",
         "map": "Reynisfjara Black Sand Beach",
-        "nextStops": [
-          {
-            "name": "超市",
-            "address": "Kronan Vik Iceland",
-            "distanceKm": 1,
-            "etaMin": 5
-          },
-          {
-            "name": "教堂",
-            "address": "Vík í Mýrdal Church",
-            "distanceKm": 1,
-            "etaMin": 5
-          }
-        ],
         "note": "🅿️ 停車：1000 ISK",
         "deepBlocks": [
           {
@@ -1363,6 +1418,27 @@ const TRIP = {
           {
             "type": "text",
             "value": "四、传说如果把黑沙滩的石头带回家就会招来厄运，来这里时请静静欣赏美丽的景色就好，不要将石头捡回家。"
+          }
+        ],
+        "navTargets": [
+          {
+            "type": "drive",
+            "dist": "约 10 km",
+            "time": "约 10 分钟"
+          },
+          {
+            "type": "drive",
+            "name": "超市",
+            "map": "Kronan Vik Iceland",
+            "dist": "约 1 km",
+            "time": "约 5 分钟"
+          },
+          {
+            "type": "drive",
+            "name": "教堂",
+            "map": "Vík í Mýrdal Church",
+            "dist": "约 1 km",
+            "time": "约 5 分钟"
           }
         ]
       },
@@ -1432,7 +1508,9 @@ const TRIP = {
     "hotel": {
       "name": "Lakeview Cabin 民宿",
       "note": "连住，南岸湖景小屋",
-      "map": "Lakeview Cabin Iceland"
+      "map": "Lakeview Cabin Iceland",
+      "arriveDist": "约 90 km",
+      "arriveTime": "约 75 分钟"
     },
     "spots": [
       {
@@ -1443,10 +1521,9 @@ const TRIP = {
         "label": "A",
         "navTargets": [
           {
-            "name": "",
-            "map": "",
             "dist": "约 130 km",
-            "time": "约 1.5小时"
+            "time": "约 1.5小时",
+            "type": "drive"
           }
         ],
         "img": "icehiking-10.webp",
@@ -1594,6 +1671,13 @@ const TRIP = {
             "type": "img",
             "src": "jokulsarlon-14.webp"
           }
+        ],
+        "navTargets": [
+          {
+            "type": "drive",
+            "dist": "约 15 km",
+            "time": "约 15 分钟"
+          }
         ]
       },
       {
@@ -1635,6 +1719,13 @@ const TRIP = {
           {
             "type": "text",
             "value": "从停车场步行几分钟就能直接到湖边，湖面上漂浮着巨大冰块，岸边还有很多冰块被冲上来，类似于钻石沙滩💎不知道为啥这里的水很浑浊，不如大冰河湖那边干净😂\n"
+          }
+        ],
+        "navTargets": [
+          {
+            "type": "drive",
+            "dist": "约 15 km",
+            "time": "约 20 分钟"
           }
         ]
       },
@@ -1693,6 +1784,13 @@ const TRIP = {
             "type": "text",
             "value": "{#ff0000}10月初钻石沙滩的真实体验{/color}\n\n​​冰块数量与质感​​：\n10月初属于初冬，冰块数量比深冬（12月-2月）少一些，但比夏季多。\n冰块在阳光照射下会折射出耀眼的钻石光芒，配合黑色火山沙，视觉对比度极高。如果遇到阴天或刚下过雪，冰块会呈现出高级的冷调银灰，非常适合拍情绪片。\n​​日照与光线​​：\n\n10月初冰岛每天约有 9-10 小时的日照，下午 4 点左右天就开始暗了。建议​​下午 2 点到 4 点​​到达，此时光线柔和，能拍到冰块通透的质感；拍完日落后，如果天气好，晚上还可以直接去追极光。\n\n​​天气与体感​​：气温在 0℃-7℃ 之间，但冰岛的风非常大，体感温度可能接近零下。天气变化极快，可能一小时经历晴天、下雨和大风。"
           }
+        ],
+        "navTargets": [
+          {
+            "type": "walk",
+            "dist": "约 1 km",
+            "time": "约 10 分钟（过桥即达）"
+          }
         ]
       }
     ],
@@ -1709,7 +1807,9 @@ const TRIP = {
     "hotel": {
       "name": "Garður Apartments 民宿",
       "note": "Garður 地区公寓式民宿，邻近蓝湖与机场",
-      "map": "Gardur Apartments Iceland"
+      "map": "Gardur Apartments Iceland",
+      "arriveDist": "约 20 km",
+      "arriveTime": "约 20 分钟"
     },
     "spots": [
       {
@@ -1720,10 +1820,9 @@ const TRIP = {
         "label": "A",
         "navTargets": [
           {
-            "name": "",
-            "map": "",
             "dist": "约 68 km",
-            "time": "约 1小时"
+            "time": "约 1小时",
+            "type": "drive"
           }
         ],
         "tags": [],
@@ -1874,6 +1973,13 @@ const TRIP = {
           {
             "type": "text",
             "value": "{#ff0000}入园流程与注意事项{/color}\n\n​​入场流程​​：到达后凭预订二维码核验，领取专属电子手环。手环用于开启储物柜、店内消费记账以及最终结账。\n​​必须淋浴​​：根据冰岛温泉的严格卫生规定，在穿好泳衣进入温泉池之前，​​必须在不穿泳衣的状态下彻底淋浴清洗身体​​。\n​​头发保护​​：温泉水富含二氧化硅和矿物质，泡久了会让头发变得干涩。建议将头发扎起，或者在淋浴时使用温泉提供的护发素，尽量避免头发长时间浸泡在温泉水中。\n​​摘掉首饰​​：千万不要戴金银首饰泡温泉，矿物质会导致首饰氧化变黑。\n\n{#ff0000}规定入场时间在预定时间前后半小时。{/color}"
+          }
+        ],
+        "navTargets": [
+          {
+            "type": "drive",
+            "dist": "约 295 km",
+            "time": "约 4 小时 15 分钟"
           }
         ]
       }

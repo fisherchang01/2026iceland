@@ -106,113 +106,57 @@ function buildNavIconsHtml(destQuery, mode) {
   '</span>';
 }
 
-// ===== 景點卡內附掛的導航區塊（取代舊版「兩景點卡之間獨立一行」的做法）=====
-// 目的：讓 A 景點卡片跟「A 的導航」在視覺上是同一張卡（同一個外框、同一個底色），
-// 不再是卡片下方另外飄一條獨立的時間軸列。同時把「目的地」從單一個放寬成一個陣列，
-// 陣列有兩筆以上時，每一筆前面會自動加上 A1、A2… 的編號徽章。
-//
-// v1.7.1：目的地改成「這個景點自己」，不再是「下一個主景點」（按鈕長在 A 卡片裡卻導去 B）。
-//
-// v1.7.2：修正「距離/時間」這個數字本身的歸屬。行車距離的物理意義從來是「兩點之間」，
-// 沒有天生該掛在起點卡片還是終點卡片上；但既有資料（nextStop／drives）是寫在「起點」
-// 景點身上、描述「起點→下一站」的這段路，跟卡片本身現在導去「自己」已經對不上了——
-// 卡片 B 要顯示的應該是「A→B」這段距離，不是「B→C」。
-// 做法：對「沒有明確填目的地」的舊資料（nextStop／drives），改成往回抓「上一個主景點」
-// 存的那筆資料來顯示在「這一張」卡片上，導航目的地仍然是這張卡片自己。
-// 每天第一個主景點（前面沒有上一站）沒有自動來源，距離會是空的，這時可以在行程編輯器
-// 用 navTargets 手動填一筆（名稱可留空、地圖留空即預設導去自己，只填距離/時間）。
-// 住宿卡也比照辦理：抓「當天最後一個主景點」存的那筆資料，見 computeHotelNavTargets()。
-// s.nextStops（多段鏈式導航，例如 Kerið→超市→民宿）跟 s.navTargets（新欄位）本來
-// 每一筆就有自己明確填的地址／距離，這兩種是「手動指定的多個目的地」，不受這次修正影響。
-//
-// 目的地陣列的來源，依優先順序（向下相容，既有資料完全不用改）：
-//   1. s.navTargets  —— 新欄位，手動指定、可在行程編輯器新增/修改，一筆一個導航按鈕
-//   2. s.nextStops   —— 既有的多段鏈式導航（例如 Kerið→超市→民宿），每一筆本來就有自己的地址
-//   3. 上一個主景點的 drives[]／nextStop —— 自動預設的「上一站到這裡」距離/時間，目的地是這個景點自己
-function buildDistTimeSuffix(nt) {
-  var parts = [];
-  if (nt.dist) parts.push(stripEstimateWording(nt.dist));
-  if (nt.time) parts.push(stripEstimateWording(nt.time));
-  return parts.length ? '　' + parts.join(' · ') : '';
-}
-// 找「上一個主景點」在陣列裡的 index：跳過所有掛載在別人底下的備選景點（有 attachTo 者），
-// 跟 nextMainSpot() 是同一組規則，方向相反。i 可以傳 list.length，代表「住宿」這個
-// 排在所有主景點之後的虛擬位置（見 computeHotelNavTargets()）。
-function prevMainSpotIndex(list, i) {
-  for (var k = i - 1; k >= 0; k--) {
-    if (!list[k].attachTo) return k;
-  }
-  return -1;
-}
-// 「上一個主景點」自己填的那筆距離/時間資料（drives[] 優先，其次 nextStop），
-// 沒有上一站或上一站沒填就回傳 null（沒有東西可以自動帶出來）。
-function computeIncomingLeg(list, i, drives) {
-  var prevIdx = prevMainSpotIndex(list, i);
-  if (prevIdx < 0) return null;
-  if (drives && drives[prevIdx]) {
-    var dr = drives[prevIdx];
-    return { mode: 'd', text: stripEstimateWording(dr.dist) + (dr.time ? ' · ' + stripEstimateWording(dr.time) : '') };
-  }
-  var prev = list[prevIdx];
-  if (prev.nextStop) {
-    var ns = prev.nextStop;
-    var mode = ns.type === 'walk' ? 'w' : (ns.type === 'tram' ? 'r' : 'd');
-    return { mode: mode, text: stripEstimateWording(ns.detail || ns.text) };
-  }
-  return null;
-}
-function computeSpotNavTargets(s, list, i, drives) {
+// ===== 景點卡內附掛的導航區塊 =====
+// 讓 A 景點卡片跟「A 的導航」在視覺上是同一張卡。卡片上每一列導航 = spot.navTargets 的一筆，
+// 行程編輯器「導航」區塊改什麼、這裡就顯示什麼（v1.11 起不再有任何「自動去上一個景點抓」的隱藏來源）。
+//   每一筆：{ type: drive|walk|tram, name, map, dist, time }
+//   - 名稱／地圖都留空 = 導航到這個景點自己，dist/time 就是「上一站 → 這裡」
+//   - 填了名稱／地圖 = 額外的目的地（例如超市、民宿），導航到那裡
+//   - 兩筆以上時，每一列前面會自動加上這個景點的字母＋序號（A1、A2…）
+//   - 完全沒有 navTargets：只有一顆導去這個景點自己的按鈕（沒有距離）
+// 住宿卡同理，見 computeHotelNavTargets()。
+function computeSpotNavTargets(s) {
   if (s.navTargets && s.navTargets.length) {
+    var multi = s.navTargets.length > 1;
     return s.navTargets.map(function(nt) {
       var mode = nt.type === 'walk' ? 'w' : (nt.type === 'tram' ? 'r' : 'd');
+      var isSelf = !nt.name && !nt.map;
+      var parts = [];
+      if (nt.dist) parts.push(stripEstimateWording(nt.dist));
+      if (nt.time) parts.push(stripEstimateWording(nt.time));
+      var distTime = parts.join(' · ');
+      // 名稱／地圖都留空 = 導航到這個景點自己（「上一站→這裡」的距離就是這種）；
+      // 同一張卡片有多列時，這一列前面補一個「到这里」，才分得出來跟超市、民宿的差別。
+      var head = nt.name || (isSelf && multi ? '到这里' : '');
       return {
         mode: mode,
-        text: (nt.name || '') + buildDistTimeSuffix(nt),
-        // name／map 都留空時（例如只是想手動填「上一站到這裡」的距離，目的地就是
-        // 這個景點自己），退回用這個景點自己的 map/name，不能真的變成空字串——
-        // 空字串會讓 buildNavIconsHtml() 判定「沒有目的地」，整顆導航按鈕都不見。
+        text: head + (head && distTime ? '　' : '') + distTime,
+        // 名稱／地圖都空 → 退回這個景點自己的 map/name，不能變成空字串
+        // （空字串會讓 buildNavIconsHtml() 判定沒有目的地，整顆導航按鈕都不見）。
         destQuery: encodeURIComponent(nt.map || nt.name || s.map || s.name || '')
       };
     });
   }
+  // 舊資料相容：nextStops（多段鏈式）。現有資料已全部搬進 navTargets，這裡只是保險。
   if (s.nextStops && s.nextStops.length) {
     return s.nextStops.map(function(leg) {
       var legText = leg.name + ((leg.distanceKm != null ? '　' + leg.distanceKm + ' km' : '') + (leg.etaMin != null ? ' · 约 ' + leg.etaMin + ' 分钟' : ''));
       return { mode: 'd', text: legText, destQuery: encodeURIComponent(leg.address || leg.name) };
     });
   }
-  // 這個景點自己的地圖查詢字串，沒填 map 就退回用景點名稱查詢——跟卡片本身、
-  // 詳情頁一直以來的規則一致。
+  // 沒有任何導航設定：至少要有一顆導去這個景點自己的按鈕，距離/時間留空，
+  // 到行程編輯器「導航」區塊補上即可。
   var selfDestQuery = encodeURIComponent(s.map || s.name || '');
-  var incoming = computeIncomingLeg(list, i, drives);
-  if (incoming) {
-    return [{ mode: incoming.mode, text: incoming.text, destQuery: selfDestQuery }];
-  }
-  // v1.7.3 修正：沒有「上一個主景點」可以自動抓距離時（例如當天第一個景點），
-  // 不能因為缺距離資料就整排導航都不見——按鈕本身（導去這個景點自己）永遠都該在，
-  // 距離/時間只是「有的話錦上添花」，沒有就先空著，等行程編輯器補上 navTargets。
-  if (selfDestQuery) {
-    return [{ mode: 'd', text: '', destQuery: selfDestQuery }];
-  }
-  return [];
+  return selfDestQuery ? [{ mode: 'd', text: '', destQuery: selfDestQuery }] : [];
 }
-// 住宿卡的導航區塊：跟景點卡同一套規則，把住宿當成「排在當天所有主景點之後的
-// 最後一站」，自動抓「當天最後一個主景點」存的距離/時間；hotel.arriveDist／
-// hotel.arriveTime 是手動覆寫欄位（行程編輯器「住宿」區塊可以填），有填就優先用。
-function computeHotelNavTargets(hotel, list, drives) {
+// 住宿卡：hotel.arriveDist／arriveTime（行程編輯器「住宿」區塊可填）＝「上一站→住宿」的距離/時間，
+// 沒填就只有一顆導去住宿的按鈕。
+function computeHotelNavTargets(hotel) {
   if (!hotel || !(hotel.map || hotel.name)) return [];
-  var selfDestQuery = encodeURIComponent(hotel.map || hotel.name || '');
-  if (hotel.arriveDist || hotel.arriveTime) {
-    return [{
-      mode: 'd',
-      text: (hotel.arriveDist ? stripEstimateWording(hotel.arriveDist) : '') +
-        (hotel.arriveTime ? ' · ' + stripEstimateWording(hotel.arriveTime) : ''),
-      destQuery: selfDestQuery
-    }];
-  }
-  var incoming = computeIncomingLeg(list, list.length, drives);
-  if (incoming) return [{ mode: incoming.mode, text: incoming.text, destQuery: selfDestQuery }];
-  return [{ mode: 'd', text: '', destQuery: selfDestQuery }];
+  var parts = [];
+  if (hotel.arriveDist) parts.push(stripEstimateWording(hotel.arriveDist));
+  if (hotel.arriveTime) parts.push(stripEstimateWording(hotel.arriveTime));
+  return [{ mode: 'd', text: parts.join(' · '), destQuery: encodeURIComponent(hotel.map || hotel.name || '') }];
 }
 function buildNavRowHtml(target, label) {
   var icon = target.mode === 'w' ? walkIcon : (target.mode === 'r' ? tramIcon : carIcon);
@@ -397,7 +341,7 @@ function buildDaySpotsHtml(d, dayId) {
     var onclickExpr = s.isShop ? null : "showSpot('" + dayId + "'," + i + ')';
     // 導航區塊改成附掛在景點卡自己身上（見 computeSpotNavTargets／buildSpotNavBlockHtml），
     // 不再是卡片下方另一條獨立的時間軸列，所以要在 buildSpotCardHtml 之前就算好。
-    var navTargets = computeSpotNavTargets(s, d.spots, i, d.drives);
+    var navTargets = computeSpotNavTargets(s);
     var navBlockHtml = buildSpotNavBlockHtml(navTargets, dayLabels[i]);
     html += buildSpotCardHtml(s, onclickExpr, dayLabels[i], navBlockHtml);
     (dayChildren[s.id] || []).forEach(function(childIdx) {
@@ -488,8 +432,7 @@ function showDay(dayId) {
       area.spots.forEach(function(s, sIdx) {
         if (s.attachTo) return; // 掛載的備選景點在母景點那一輪就已經渲染過了，這裡跳過
         var onclickExpr = s.isShop ? null : "showAreaSpot('" + dayId + "'," + aIdx + ',' + sIdx + ')';
-        // area 底下沒有 day.drives 的概念，維持原本行為：drives 傳 null 就好。
-        var navTargets = computeSpotNavTargets(s, area.spots, sIdx, null);
+        var navTargets = computeSpotNavTargets(s);
         var navBlockHtml = buildSpotNavBlockHtml(navTargets, areaLabels[sIdx]);
         html += buildSpotCardHtml(s, onclickExpr, areaLabels[sIdx], navBlockHtml);
         (areaChildren[s.id] || []).forEach(function(childIdx) {
@@ -501,14 +444,13 @@ function showDay(dayId) {
       html += '</div></div>'; // 关闭 travel-collapse-body 与 travel-collapse
     });
     html += buildDayNoteHtml(d, noTimeline);
-    var areaLastSpots = (d.areas && d.areas.length) ? d.areas[d.areas.length - 1].spots : [];
-    html += buildHotelHtml(d.hotel, dayId, false, buildSpotNavBlockHtml(computeHotelNavTargets(d.hotel, areaLastSpots, null), null));
+    html += buildHotelHtml(d.hotel, dayId, false, buildSpotNavBlockHtml(computeHotelNavTargets(d.hotel), null));
     listEl.innerHTML = html;
   } else {
     var html = buildFlightCardHtml(d, noTimeline);
     html += buildDaySpotsHtml(d, dayId);
     html += buildDayNoteHtml(d, noTimeline);
-    var hotelNavBlockHtml = buildSpotNavBlockHtml(computeHotelNavTargets(d.hotel, d.spots || [], d.drives), null);
+    var hotelNavBlockHtml = buildSpotNavBlockHtml(computeHotelNavTargets(d.hotel), null);
     html += buildHotelHtml(d.hotel, dayId, noTimeline, hotelNavBlockHtml);
 
     // v21：順序調整為「住宿 → 自駕里程小計 → 極光觀測卡」（原本極光卡在里程小計之上）。
