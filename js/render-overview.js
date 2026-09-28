@@ -12,6 +12,28 @@ function getTripDateKey(date) {
   return values.year + '-' + values.month + '-' + values.day;
 }
 
+// 冰島當地「現在幾點」（用行程時區，不用使用者裝置時區）。
+function getIcelandHour(date) {
+  var f = new Intl.DateTimeFormat('en-GB', { timeZone: TRIP_DATA.config.timezone, hour: '2-digit', hour12: false });
+  var h = parseInt(f.format(date || new Date()), 10);
+  return h === 24 ? 0 : h;
+}
+// 今日卡專用（v1.9）：冰島當地 18 點後直接改看「隔天」的資料，方便晚上跟團友說明。
+// 只有今日卡用這個；時間軸「今天」圓點等其他地方仍用 getTripDayContext() 的真實日期。
+// 旅程最後一天 18 點後不換（否則會提早顯示「旅程已完成」）。
+// context.dayOffset：卡片顯示的那天距離真實今天幾天（0 今天、1 明天…），給天氣/極光判斷用。
+function getNowCardContext(referenceDate) {
+  var now = referenceDate || new Date();
+  var realToday = getTripDateKey(now);
+  var rolled = getIcelandHour(now) >= 18;
+  var ctx = rolled ? getTripDayContext(new Date(now.getTime() + 86400000)) : getTripDayContext(now);
+  if (rolled && ctx && ctx.state === 'complete') { ctx = getTripDayContext(now); rolled = false; }
+  if (!ctx) return null;
+  ctx.rolled = rolled;
+  ctx.realToday = realToday;
+  ctx.dayOffset = Math.round((Date.parse(ctx.day.date + 'T00:00:00Z') - Date.parse(realToday + 'T00:00:00Z')) / 86400000);
+  return ctx;
+}
 function getTripDayContext(referenceDate) {
   var days = TRIP_DATA.days;
   if (!days.length) return null;
@@ -93,27 +115,47 @@ function buildTripProgressRing(context) {
     '<span class="np-num">' + elapsed + '/' + total + '</span></div>';
 }
 
-// 今日卡（v18）：依用戶要求精簡——只留 狀態 + 標題 + 兩行摘要 + 進度環 + 主按鈕，
-// 刪除「下一站 / 今日住宿 / 今日提醒」資訊區（這些資訊在每日詳情頁本來就有完整呈現）。
-// v1.8：.now-intro 這個兩三行摘要，多了一個非同步掛載點——renderOverview() 之後
-// 會呼叫 applyWeatherAlertToNowCard()（見 js/render-weather-alerts.js），如果冰島
-// 氣象局那天有相關分區的黃/橙/紅色警戒，會把這段文字整個換成警戒摘要；抓不到
-// 或沒有警戒就維持這裡原本產生的行程摘要文字，不用等它。
+// 今日卡（v1.9）：狀態 + 標題 + 天氣預警（或說明文字）+ 進度環 + 兩顆按鈕（完整行程／極光預測）。
+// 不再顯示行程摘要——要看行程請點「完整行程」。
+// .now-intro 是非同步掛載點：renderOverview() 之後會呼叫 applyWeatherAlertToNowCard()
+// （js/render-weather-alerts.js）填入天氣預警結果。
+// 冰島當地 18 點後整張卡改看隔天（見 getNowCardContext）。
 function buildNowDashboard(context) {
   if (!context) return '';
   var day = context.day;
-  var stateLabel = context.state === 'today' ? '今天' :
+  var isToday = context.state === 'today';
+  var dayWord = context.rolled ? '明天' : '今天';
+  var stateLabel = isToday ? dayWord :
     (context.state === 'complete' ? '旅程已完成' : (context.countdown ? context.countdown + ' 天后' : '下一个行程日'));
-  var intro = context.state === 'today' ? '今天就照这里开始' :
-    (context.state === 'complete' ? '保留这趟旅程的最后一天' : '下一个要准备的行程');
+
+  // 天氣預警只在「那天在冰島、且距離真實今天 0～2 天內」才查（預警本來就只有短期）
+  var hasRegions = typeof WEATHER_ALERT_CONFIG !== 'undefined' && WEATHER_ALERT_CONFIG.dayRegions &&
+    WEATHER_ALERT_CONFIG.dayRegions[day.id];
+  var inWindow = context.state !== 'complete' && context.dayOffset >= 0 && context.dayOffset <= 2;
+  var introText;
+  if (context.state === 'complete') introText = '旅程已结束，谢谢这一路的陪伴。';
+  else if (!hasRegions) introText = '这一天不在冰岛，冰岛气象局的天气预警不适用。';
+  else if (!inWindow) introText = '天气预警会在行程日前 2 天开始显示。';
+  else introText = '天气预警查询中…';
+
+  // 極光預測：那天住宿地有對應的極光觀測點，且是今晚或明晚（Open-Meteo 只有短期預報）
+  var auroraLoc = (typeof AURORA_CONFIG !== 'undefined')
+    ? AURORA_CONFIG.locations.filter(function(l){ return l.nights.indexOf(day.id) !== -1; })[0] : null;
+  var auroraBtn = '';
+  if (auroraLoc && context.state !== 'complete' && (context.dayOffset === 0 || context.dayOffset === 1)) {
+    auroraBtn = '<button class="now-primary-btn now-aurora-btn" onclick="toggleNowAuroraPanel(\'' + auroraLoc.key + '\',' + context.dayOffset + ')">' +
+      (context.dayOffset === 1 ? '明晚' : '今晚') + '极光预测</button>' +
+      '<div id="nowAuroraPanel" style="display:none;margin-top:8px;padding:10px 12px;border:1px solid var(--line, #ddd);border-radius:10px;font-size:13px;line-height:1.75;white-space:pre-line;text-align:left;"></div>';
+  }
 
   return '<section class="now-dashboard">' +
     '<div class="now-top"><div class="now-top-text">' +
       '<div class="now-eyebrow">' + stateLabel + ' · 第' + (context.index + 1) + '日</div>' +
       '<h1>' + day.detailTitle + '</h1>' +
-      '<p class="now-intro">' + intro + (day.summary ? '｜' + day.summary : '') + '</p>' +
+      '<p class="now-intro">' + introText + '</p>' +
     '</div>' + buildTripProgressRing(context) + '</div>' +
-    '<button class="now-primary-btn" onclick="showDay(\'' + day.id + '\')">查看' + (context.state === 'today' ? '今日' : '这日') + '完整行程</button>' +
+    '<button class="now-primary-btn" onclick="showDay(\'' + day.id + '\')">查看' + (isToday ? (context.rolled ? '明日' : '今日') : '这日') + '完整行程</button>' +
+    auroraBtn +
   '</section>';
 }
 
@@ -148,20 +190,17 @@ function buildChapterCardHtml(chapterIdx, label) {
 function renderOverview() {
   // v16：首屏拆成兩個掛載點——hero + 今日卡放 #overviewContent（頁面最頂），
   // 地圖橫幅由 updateItinMap 填在中間，時間軸放 #overviewTimeline。
-  var context = getTripDayContext();
+  var context = getNowCardContext();
   var topEl = document.getElementById('overviewContent');
   topEl.innerHTML = buildTripHero() + buildNowDashboard(context);
-  // v1.8：今日卡掛載後，非同步向冰島氣象局要目前生效中的警戒，比對這一天的
-  // 行程分區。只在「今天」或「下一個行程日快到了」這兩種狀態查，因為警戒本來
-  // 就是反映當下天氣，出發前太久或旅程已結束時查也沒有意義；抓不到就維持原狀，
-  // 見 js/render-weather-alerts.js 的容錯設計。
-  if (context && (context.state === 'today' || context.state === 'between') &&
+  // 今日卡掛載後，非同步向冰島氣象局要預警（只查那天在冰島、且 0～2 天內的行程日）。
+  if (context && context.state !== 'complete' && context.dayOffset >= 0 && context.dayOffset <= 2 &&
       typeof applyWeatherAlertToNowCard === 'function') {
-    applyWeatherAlertToNowCard(context.day.id, context.day.summary);
+    applyWeatherAlertToNowCard(context.day.id, context.day.date);
   }
 
   var html = '<div class="overview-section-title"><h2>完整行程</h2><p>也可以直接选择任一天查看</p></div>';
-  var todayKey = context ? context.today : '';
+  var todayKey = context ? context.realToday : ''; // 時間軸「今天」永遠用真實日期，不跟今日卡 18 點換日
   var chapterIdx = 0;
   html += '<div class="ov-timeline">';
   TRIP_DATA.days.forEach(function(d, index){

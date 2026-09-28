@@ -129,6 +129,7 @@ function buildAuroraShellHtml() {
               <div class="stars" id="auroraStars">☆☆☆☆☆</div>
               <div class="say" id="auroraSay">计算中…</div>
               <div class="nums" id="auroraNums"></div>
+              <div class="plain" id="auroraPlain" style="margin-top:14px;padding-top:12px;border-top:1px solid var(--line);font-size:13px;line-height:1.75;white-space:pre-line"></div>
             </div>
 
             <div class="row2">
@@ -456,13 +457,13 @@ async function fetchAuroraKpData() {
   }
 }
 
-async function fetchAuroraWeather(loc) {
+async function fetchAuroraWeather(loc, forecastDays) {
   try {
     const url = 'https://api.open-meteo.com/v1/forecast'
       + '?latitude=' + loc.lat + '&longitude=' + loc.lon
       + '&current=temperature_2m,wind_speed_10m,cloud_cover,cloud_cover_low,cloud_cover_mid,cloud_cover_high'
       + '&hourly=cloud_cover_low,cloud_cover_mid,cloud_cover_high,cloud_cover'
-      + '&daily=sunrise,sunset&timezone=auto&forecast_days=2';
+      + '&daily=sunrise,sunset&timezone=auto&forecast_days=' + (forecastDays || 2);
     const res = await fetch(url);
     if (!res.ok) throw new Error('Open-Meteo 回应非 200（' + res.status + '）');
     const data = await res.json();
@@ -552,7 +553,10 @@ async function fetchAuroraRingData(loc) {
 
 // ---------- 綜合推算：今晚每小時的可見機率、星級、最佳時段 ----------
 
-function buildAuroraTonight(loc, weatherResult) {
+// dayOffset：0 = 今晚（預設），1 = 明晚（今日卡晚上 18 點後改看明天時用，呼叫端要用
+// forecast_days=3 抓資料，否則明天日出那筆不存在）。
+function buildAuroraTonight(loc, weatherResult, dayOffset) {
+  dayOffset = dayOffset || 0;
   if (!weatherResult.ok) return { ok: false };
 
   const data = weatherResult.data;
@@ -575,8 +579,8 @@ function buildAuroraTonight(loc, weatherResult) {
     return { time, elevDeg, low, mid, high, total, kp, dark, clear, activity, prob, effLowMid };
   });
 
-  const sunset = data.daily.sunset[0] ? auroraParseLocalTime(data.daily.sunset[0], offset) : null;
-  const sunriseStr = data.daily.sunrise[1] || data.daily.sunrise[0];
+  const sunset = data.daily.sunset[dayOffset] ? auroraParseLocalTime(data.daily.sunset[dayOffset], offset) : null;
+  const sunriseStr = data.daily.sunrise[dayOffset + 1] || data.daily.sunrise[dayOffset];
   const sunrise = sunriseStr ? auroraParseLocalTime(sunriseStr, offset) : null;
 
   // 完全天黑時刻：日落後太陽仰角首次 <= -18 度（每 5 分鐘掃描一次，取精確時間）。
@@ -603,10 +607,15 @@ function buildAuroraTonight(loc, weatherResult) {
   // 變成「暫時取不到資料」——但那不是真的沒資料，是門檻設太嚴。
   // 退一步改用航海暮光（elevDeg <= -12，對應 auroraDarkFactor 的 0.8 那一檔）
   // 來評估，並在結論文字裡誠實註明用的是哪一種暗度，不要讓使用者誤以為是完全天黑。
-  let fullDarkHours = hours.filter(h => h.elevDeg <= -18 && h.prob !== null);
+  // 只看「目標那一晚」（日落到隔天日出）的小時：hours 是連續 48 小時（甚至 72 小時），
+  // 不切窗的話會把「今天凌晨已過去的深夜」跟「明晚」也算進來，最佳時段可能是別晚的。
+  const nightHours = (sunset && sunrise)
+    ? hours.filter(h => h.time >= sunset && h.time <= sunrise)
+    : hours;
+  let fullDarkHours = nightHours.filter(h => h.elevDeg <= -18 && h.prob !== null);
   let darkTierUsed = 'astronomical';
   if (fullDarkHours.length === 0) {
-    fullDarkHours = hours.filter(h => h.elevDeg <= -12 && h.prob !== null);
+    fullDarkHours = nightHours.filter(h => h.elevDeg <= -12 && h.prob !== null);
     darkTierUsed = 'nautical';
   }
   if (fullDarkHours.length === 0) darkTierUsed = 'none';
@@ -725,6 +734,99 @@ function auroraCloudDesc(v) {
   if (v < 40) return '部分多云';
   if (v < 70) return '多云';
   return '阴天';
+}
+
+// ---------- 極光「大白話」摘要（今日卡按鈕 + 極光頁共用）----------
+// 全部由 buildAuroraTonight() 已算好的真實資料組成（Kp、低中云、日落/天黑、最佳時段、
+// 方向），不另外編造任何數值；只是把數字翻成「白話」。dayOffset 0 = 今晚、1 = 明晚。
+function buildAuroraPlainLanguage(tonight, loc, dayOffset) {
+  if (!tonight || !tonight.ok) {
+    return '暂时取不到极光资料，请稍后再试，或到「极光」页查看即时资讯。';
+  }
+  const night = dayOffset === 1 ? '明晚' : '今晚';
+  const kpN = tonight.nums[0], cloudN = tonight.nums[1];
+  const kpVal = parseFloat(kpN[1]);
+  const cloudVal = parseFloat(cloudN[1]);
+  const lines = [];
+
+  lines.push('★'.repeat(tonight.stars) + '☆'.repeat(5 - tonight.stars) + '　' + tonight.say);
+
+  let kpTalk = '';
+  if (!isNaN(kpVal)) {
+    if (kpVal < 2) kpTalk = '活动偏弱，就算天空晴朗，极光也不会太活跃。';
+    else if (kpVal < 4) kpTalk = '放在冰岛其实够用，只要天够黑、头顶够晴，肉眼有机会看到。';
+    else kpTalk = '活动很强，只要不被云挡住，机会很大。';
+  }
+  lines.push('极光强度：Kp ' + kpN[1] + '（' + kpN[2] + '）。' + kpTalk);
+
+  let cloudTalk = '';
+  if (!isNaN(cloudVal)) {
+    if (cloudVal >= 70) cloudTalk = '云层偏厚，极光就算在跳也多半被挡在云后面。';
+    else if (cloudVal >= 40) cloudTalk = '云不少，要靠云缝碰运气，可以边看云图边移动。';
+    else if (cloudVal >= 15) cloudTalk = '有些云但不算多，留意云缝就好。';
+    else cloudTalk = '天空大致晴朗，云不是问题。';
+  }
+  lines.push('云况：' + loc.name + ' 低中云 ' + cloudN[1] + '（' + cloudN[2] + '）。' + cloudTalk);
+
+  if (tonight.sunset) {
+    let dk = tonight.darkStart
+      ? '完全天黑约 ' + auroraFmtHM(tonight.darkStart) + '，建议这之后再开始追'
+      : (tonight.noFullDarkness ? '本季没有完全天黑' : '');
+    lines.push('天黑时间：日落 ' + auroraFmtHM(tonight.sunset) + (dk ? '，' + dk : '') + '。');
+  }
+
+  lines.push(tonight.bestSlot
+    ? night + '最佳时段：' + tonight.bestSlot.label + '（本站换算可见机率约 ' + tonight.bestSlot.probPct + '%）。'
+    : night + '暂时没有明显的最佳时段。');
+
+  if (tonight.direction && tonight.direction.bestLine && tonight.ring && tonight.ring.ok) {
+    lines.push('值得蹲的方向：' + tonight.direction.bestLine + '。' + (tonight.direction.bestSub || ''));
+  }
+
+  lines.push('※ 极光活动来自 NOAA、云量来自 Open-Meteo，为预测值，本站换算仅供参考。');
+  return lines.join('\n');
+}
+
+// 今日卡用：不依賴極光頁 DOM，自己抓資料算一遍（15 分鐘快取）。
+// dayOffset 0 = 今晚（同時取八方位雲況做方向建議），1 = 明晚（八方位取樣是「現在」的雲況，
+// 對明晚沒有意義，所以不提供方向，不編造）。
+const auroraPlainCache = {};
+async function loadAuroraPlainForDay(loc, dayOffset) {
+  const key = loc.key + ':' + dayOffset;
+  const hit = auroraPlainCache[key];
+  if (hit && Date.now() - hit.t < 15 * 60 * 1000) return hit.text;
+  const kpStale = !auroraKpFetchedAt || (Date.now() - auroraKpFetchedAt) > 5 * 60 * 1000;
+  if (kpStale) await fetchAuroraKpData();
+  const weatherP = fetchAuroraWeather(loc, dayOffset === 0 ? 2 : 3);
+  const ringP = dayOffset === 0 ? fetchAuroraRingData(loc) : Promise.resolve(null);
+  const [weather, ring] = await Promise.all([weatherP, ringP]);
+  const tonight = buildAuroraTonight(loc, weather, dayOffset);
+  if (tonight.ok && ring) {
+    tonight.ring = ring;
+    tonight.direction = auroraBuildDirectionConclusion(loc, ring);
+  }
+  const text = buildAuroraPlainLanguage(tonight, loc, dayOffset);
+  if (tonight.ok) auroraPlainCache[key] = { t: Date.now(), text };
+  return text;
+}
+
+// 今日卡「極光預測」按鈕：展開/收合面板，第一次展開才去抓資料。
+async function toggleNowAuroraPanel(locKey, dayOffset) {
+  const panel = document.getElementById('nowAuroraPanel');
+  if (!panel) return;
+  if (panel.dataset.open === '1') { panel.style.display = 'none'; panel.dataset.open = '0'; return; }
+  panel.style.display = 'block';
+  panel.dataset.open = '1';
+  if (panel.dataset.loaded === '1') return;
+  panel.textContent = '极光预测计算中…';
+  const loc = AURORA_CONFIG.locations.find(l => l.key === locKey);
+  if (!loc) { panel.textContent = '找不到这一天的观测地点。'; return; }
+  try {
+    panel.textContent = await loadAuroraPlainForDay(loc, dayOffset);
+    panel.dataset.loaded = '1';
+  } catch (e) {
+    panel.textContent = '暂时取不到极光资料，请稍后再试。';
+  }
 }
 
 // ---------- OVATION「現在機率」（階段 D，按需載入）----------
@@ -884,6 +986,7 @@ function renderAuroraDashboardUiOnly() {
     document.getElementById('auroraStars').textContent = '☆☆☆☆☆';
     document.getElementById('auroraSay').textContent = '暂时取不到资料';
     document.getElementById('auroraNums').innerHTML = '';
+    document.getElementById('auroraPlain').textContent = '';
     document.getElementById('auroraBest').textContent = '—';
     document.getElementById('auroraBestP').textContent = '暂时取不到资料';
     document.getElementById('auroraStrip').innerHTML = '';
@@ -898,6 +1001,7 @@ function renderAuroraDashboardUiOnly() {
 
   document.getElementById('auroraStars').textContent = '★★★★★☆☆☆☆☆'.slice(5 - tonight.stars, 10 - tonight.stars);
   document.getElementById('auroraSay').textContent = tonight.say;
+  document.getElementById('auroraPlain').textContent = buildAuroraPlainLanguage(tonight, loc, 0);
   document.getElementById('auroraNums').innerHTML = tonight.nums.map(n =>
     '<div class="n"><span class="nk">' + n[0] + '</span>'
     + '<span class="nv mono ' + n[3] + '">' + n[1] + '</span>'
