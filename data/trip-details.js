@@ -386,11 +386,6 @@ const TRIP = {
         "desc": "欢迎来到冰岛！抵达机场后可先在入境免税店采买酒类，出境后搭接驳车前往 MyCar 办理租车手续，正式展开冰岛自驾之旅。",
         "deepDesc": "",
         "map": "Keflavik International Airport",
-        "nextStop": {
-          "type": "drive",
-          "text": "🚗 前往雷克雅未克市区",
-          "detail": "约 50 km · 约 45 分钟"
-        },
         "images": [
           "kefairport-01.webp",
           "kefairport-02.webp"
@@ -485,11 +480,6 @@ const TRIP = {
         "desc": "冰岛首都雷克雅未克的著名地标，外观以火山爆发所呈现的玄武岩熔岩流为主要意象，前卫设计让人很难与传统欧洲教堂联想在一起。",
         "deepDesc": "{link:travel:svarta}冰岛🇮🇸花少同款面包碗Kaffid{/link}\n{link:travel:pylsur}热狗堡{/link}\n{link:travel:seabaron}Seabaron龙虾汤{/link}\n{link:travel:reykjavik-food-4}冰岛🇮🇸花少同款冰淇淋店Valdis{/link}",
         "map": "Hallgrimskirkja Reykjavik",
-        "nextStop": {
-          "type": "walk",
-          "text": "🚶 沿彩虹步道步行前往彩虹街",
-          "detail": "约 5 分钟步行"
-        },
         "note": "🅿️ 教堂周边原先有一些免费停车场，若找不到，亦有许多收费停车场。\n🚻 教堂内免费。",
         "deepBlocks": [
           {
@@ -545,11 +535,6 @@ const TRIP = {
         "desc": "从大教堂正门沿彩虹步道缓坡下行，直接汇入热闹购物主街，一路逛至旧港边的哈帕音乐厅。",
         "deepDesc": "一、彩虹街位在雷克雅未克中心地段，是冰岛精华中的精华——想吃冰岛美食、买伴手礼，甚至想找间酒吧、餐酒馆坐下来，通通都在这里解决，不只好拍还很好玩。\n二、劳德威格尔购物街（Laugavegur）是冰岛最古老、也最热闹繁华的一条街，纪念品种类比沿途各景点附设商店齐全得多：蓝湖温泉保养品、各种羊毛制品、帕芬鸟造型娃娃、冰箱贴、明信片、巧克力应有尽有，只是价格不算便宜。\n三、冰岛不像欧洲其他国家可以买精品（LV、香奈儿并不适合来这里找），这里主要是 Geysir、Icewear、Lopapeysa、66°North 这类本土保暖品牌。\n四、花儿与少年同款店：MJÚK 帽子店（各种彩色羊毛帽子围巾）、Icewear 分店（冰岛常见连锁户外品牌）、Valdís 冰淇淋店、Icelandic Street Food（羊肉汤跟海鲜汤面包碗）。",
         "map": "Laugavegur Reykjavik",
-        "nextStop": {
-          "type": "walk",
-          "text": "🚶 步行前往哈帕音乐厅",
-          "detail": "约 10–15 分钟步行"
-        },
         "images": [
           "laugavegur-01.webp",
           "laugavegur-02.webp",
@@ -585,11 +570,6 @@ const TRIP = {
         "desc": "冰岛最重要的艺术场地，外观使用不规则玻璃片，灵感同样来自冰岛的六边形玄武岩地质。",
         "deepDesc": "{link:travel:svarta}冰岛🇮🇸花少同款面包碗Kaffid{/link}\n{link:travel:pylsur}热狗堡{/link}\n{link:travel:seabaron}Seabaron龙虾汤{/link}\n{link:travel:reykjavik-food-4}冰岛🇮🇸花少同款冰淇淋店Valdis{/link}",
         "map": "Harpa Reykjavik",
-        "nextStop": {
-          "type": "drive",
-          "text": "🚗 前往辛格维利尔国家公园",
-          "detail": "约 50 km · 约 50 分钟"
-        },
         "note": "{link:travel:svarta}冰島介紹{/link}\n{link:travel:pylsur}冰島介紹{/link}\n{link:travel:seabaron}冰島介紹{/link}\n{link:travel:reykjavik-food-4}冰島介紹{/link}",
         "deepBlocks": [
           {
@@ -662,11 +642,6 @@ const TRIP = {
         "desc": "游客可在北美板块与欧亚板块之间行走，这里也是冰岛国会的诞生地，历史可追溯至西元930年。",
         "deepDesc": "",
         "map": "Thingvellir National Park Iceland",
-        "nextStop": {
-          "type": "drive",
-          "text": "🚗 前往 Kerið 火山口湖",
-          "detail": "约 30 km · 约 30 分钟"
-        },
         "note": "🚻 廁所：游客中心 200 ISK。\n💡 共有五个收费停车场（P1、P2、P3、P4、P5），ISK 1000/天。\n💡 推荐将车停在P1（游客中心）或P5（近潜水集合点）或P2（Öxarárfoss瀑布）。",
         "deepBlocks": [
           {
@@ -838,11 +813,6 @@ const TRIP = {
         "desc": "这是冰岛最美的瀑布之一，河水因玄武岩地质呈现黄金圈隐藏版的蒂芙尼蓝绿色。",
         "deepDesc": "",
         "map": "Bruarfoss Iceland",
-        "nextStop": {
-          "type": "drive",
-          "text": "🚗 前往 Geysir",
-          "detail": "约 35 km · 约 35 分钟"
-        },
         "note": "🅿️ 停車：750 ISK（私人停车场，Parka app）\n🚻 廁所：无。\n💡 Brúarfoss Parking 为私人经营，开车从37号公路转进来后有3公里的碎石路，停车费750 ISK。\n💡 没有厕所，旁边有禁止大便的告示牌。",
         "deepBlocks": [
           {
@@ -901,11 +871,6 @@ const TRIP = {
         "desc": "Strokkur 间歇泉大约每5–10分钟就会把热水柱直冲天空几十公尺，/n不应该错过的「现场Live表演」。",
         "deepDesc": "",
         "map": "Geysir Iceland",
-        "nextStop": {
-          "type": "drive",
-          "text": "🚗 前往 Gullfoss",
-          "detail": "约 10 km · 约 10 分钟"
-        },
         "note": "🅿️ 停車：1000 ISK\n🚻 廁所：游客中心内免费，环境不错。\n\n{link:travel:iceland-food-1}黄金圈最赞休息区GRYSIR Center！！！{/link}",
         "deepBlocks": [
           {
@@ -1000,11 +965,6 @@ const TRIP = {
         "desc": "黄金瀑布是冰岛第二大瀑布，晴天很容易拍到「黄金瀑布＋彩虹」的经典画面，是整个黄金圈里最具震撼力的一站。",
         "deepDesc": "",
         "map": "Gullfoss Iceland",
-        "nextStop": {
-          "type": "drive",
-          "text": "🚗 前往 Faxi 瀑布（备选）",
-          "detail": "约 24 km · 约 20 分钟"
-        },
         "note": "🅿️ 停車：免费（上、下两个停车场）\n🚻 廁所：游客中心内。\n💡 {#ff0000}上、下两个主要停车场均可免费停车。{/color}\\n上方靠近游客中心，下方停车场则更接近部分步道入口，空间相对朴素，但走到瀑布会更快。",
         "deepBlocks": [
           {
@@ -1140,11 +1100,6 @@ const TRIP = {
         "desc": "超可爱、一直想靠近人的冰岛马，却也是世界上最孤独的马。",
         "deepDesc": "",
         "map": "Bru Horsefarm Iceland",
-        "nextStop": {
-          "type": "drive",
-          "text": "🚗 前往民宿",
-          "detail": "约 2 km · 约 5 分钟"
-        },
         "note": "🅿️ 停車：农场旁免费停车\n🚻 廁所：无",
         "deepBlocks": [
           {
@@ -1233,11 +1188,6 @@ const TRIP = {
         "desc": "又称水帘洞瀑布，后方有一条步道可以穿过瀑布，从瀑布里面往外拍照，景色更为优美。",
         "deepDesc": "",
         "map": "Seljalandsfoss Iceland",
-        "nextStop": {
-          "type": "drive",
-          "text": "🚗 前往 Skógafoss",
-          "detail": "约 30 km · 约 25 分钟"
-        },
         "note": "🅿️ 停車：700 ISK\n🚻 廁所：有（免费）\n\n💡 有简单轻食吧、纪念品店。\n💡 {bold}{#ff0000}准备「全身的防水装备」{/color}{/bold}",
         "deepBlocks": [
           {
@@ -1278,11 +1228,6 @@ const TRIP = {
         "desc": "又称「彩虹瀑布」，因为有阳光的时候，约有九成的机率可以在这里看到彩虹。",
         "deepDesc": "",
         "map": "Skogafoss Iceland",
-        "nextStop": {
-          "type": "drive",
-          "text": "🚗 前往 Dyrhólaey",
-          "detail": "约 35 km · 约 30 分钟"
-        },
         "note": "🅿️ 停車：1000 ISK/天\n🚻 廁所：有（免费）\n💡 停车费 1000 ISK/天。\n💡 有厕所（免费）。",
         "deepBlocks": [
           {
@@ -1327,11 +1272,6 @@ const TRIP = {
         "desc": "著名特色是一座横跨在海面上的巨型火成岩拱桥、灯塔、黑沙滩与黑色玄武岩柱，对面就是黑沙滩。",
         "deepDesc": "",
         "map": "Dyrholaey Iceland",
-        "nextStop": {
-          "type": "drive",
-          "text": "🚗 前往 Reynisfjara 黑沙滩",
-          "detail": "约 10 km · 约 10 分钟"
-        },
         "note": "",
         "deepBlocks": [
           {
@@ -1455,11 +1395,6 @@ const TRIP = {
         "desc": "冰岛本岛最南部的小镇，也是南部海岸线最适合停留加油、住宿、采买食材的地方。",
         "deepDesc": "",
         "map": "Vík í Mýrdal Church",
-        "nextStop": {
-          "type": "drive",
-          "text": "🚗 前往民宿",
-          "detail": "约 72 km · 约 60 分钟"
-        },
         "images": [
           "vik-01.webp",
           "vik-02.webp"
@@ -1534,11 +1469,6 @@ const TRIP = {
         "desc": "踩上万年冰川、走进梦幻蓝冰洞，再亲口喝一口超甜的冰川水，这绝对是整趟旅程最酷、最值得的冒险。",
         "deepDesc": "",
         "map": "Troll Expeditions Skaftafel",
-        "nextStop": {
-          "type": "drive",
-          "text": "🚗 前往 Jökulsárlón",
-          "detail": "约 15 km · 约 15 分钟"
-        },
         "images": [
           "icehiking-01.webp",
           "icehiking-02.webp",
@@ -1599,11 +1529,6 @@ const TRIP = {
         "desc": "冰岛最大、最著名的冰河湖，以布满漂浮巨型冰块的湛蓝湖水、岸边慵懒的野生海豹，以及对面闪闪发光的钻石沙滩闻名，是冰岛招牌景点。",
         "deepDesc": "",
         "map": "Jokulsarlon Glacier Lagoon",
-        "nextStop": {
-          "type": "drive",
-          "text": "🚗 前往小冰河湖 Fjallsárlón",
-          "detail": "约 15 km · 约 20 分钟"
-        },
         "images": [
           "jokulsarlon-01.webp",
           "jokulsarlon-02.webp",
@@ -1692,11 +1617,6 @@ const TRIP = {
         "desc": "小冰河湖，名字叫Fjallsárlón，整体面积只有杰古沙龙冰河湖的五分之一，但距离冰川更近，好看小众且出片！！！",
         "deepDesc": "",
         "map": "Fjallsarlon Iceland",
-        "nextStop": {
-          "type": "walk",
-          "text": "🚶 前往钻石海滩",
-          "detail": "约 1 km · 约 10 分钟（过桥即达）"
-        },
         "note": "🅿️ 停车信息：导航到Viewpoint of Fjallsjökull\n💡 三个停车场停车费皆为 ISK 1000。",
         "images": [],
         "deepBlocks": [
@@ -1743,11 +1663,6 @@ const TRIP = {
         "desc": "因黑沙滩上布满晶莹的冰块而闻名，整个景色是由火山与海洋共创的，黑沙是火山活动的产物，冰块则是从瓦特纳冰川的冰舌尾端断落而来。",
         "deepDesc": "",
         "map": "Diamond Beach Iceland",
-        "nextStop": {
-          "type": "drive",
-          "text": "🚗 前往民宿",
-          "detail": "约 90 km · 约 75 分钟"
-        },
         "images": [
           "diamond-beach-01.webp",
           "diamond-beach-02.webp",
@@ -1829,11 +1744,6 @@ const TRIP = {
         "desc": "冰岛南部最壮丽的自然奇观之一，拥有「世界最美峡谷」的美誉。",
         "deepDesc": "",
         "map": "Fjadrargljufur Canyon Iceland",
-        "nextStop": {
-          "type": "drive",
-          "text": "🚗 前往 Blue Lagoon 蓝湖",
-          "detail": "约 295 km · 约 4 小时 15 分钟"
-        },
         "images": [
           "fjadrargljufur-01.webp",
           "fjadrargljufur-02.webp",
@@ -1897,11 +1807,6 @@ const TRIP = {
         "desc": "世界知名的蓝湖温泉，并非天然湖泊也非自然温泉，这片梦幻乳蓝色温泉其实来自地热发电后排出的矿物热水，却意外变成冰岛最传奇的景观之一。",
         "deepDesc": "",
         "map": "Blue Lagoon Iceland",
-        "nextStop": {
-          "type": "drive",
-          "text": "🚗 前往民宿",
-          "detail": "约 20 km · 约 20 分钟"
-        },
         "images": [
           "bluelagoon-01.webp",
           "bluelagoon-02.webp",

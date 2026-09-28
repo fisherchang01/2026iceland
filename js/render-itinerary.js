@@ -778,12 +778,6 @@ function renderSpotDetail(s, d) {
   if (s.booking) facts.push('<div><strong>预订：</strong>' + s.booking + '</div>');
   var factsHtml = facts.length ? '<div class="info-card"><div class="card-label">参观资讯</div>' + facts.join('') + '</div>' : '';
 
-  var nextStopHtml = '';
-  if (s.nextStop) {
-    var ns = s.nextStop;
-    var nsIcon = ns.type === 'walk' ? walkIcon : (ns.type === 'tram' ? tramIcon : carIcon);
-    nextStopHtml = '<div class="next-stop-card"><div class="next-stop-icon">' + nsIcon + '</div><div class="next-stop-info"><strong>前往下一站：</strong>' + stripEstimateWording(ns.detail || ns.text) + '</div></div>';
-  }
 
   // v11：標籤（tags）改移到上面固定不動的標題框（spot-hero）裡，放在景點標題下方，
   // 跟著標題一起固定，不再放在下面可捲動的內容區。
@@ -803,7 +797,7 @@ function renderSpotDetail(s, d) {
     (s.desc ? '<div class="info-card"><div class="card-label">景点介绍</div><p>' + parseMarkup(s.desc) + '</p></div>' : '') +
     buildDeepDescHtml(s) +
     (s.note ? '<div class="note-card"><div class="card-label">备注</div>' + formatOutlineText(s.note) + '</div>' : '') +
-    nextStopHtml;
+    '';
   // 注意（Phase 2 調整）：景點詳情頁不再放導航按鈕，導航改附掛在列表卡片之間「距離/時間」那一行
   // （見 buildNavIconsHtml），這裡只留景點本身的介紹內容。住宿詳情頁的導航按鈕不受影響，維持原樣。
 }

@@ -43,7 +43,7 @@
 - `desc`、`deepDesc`
 - `parking`、`toilet`
 - `price`、`booking`
-- `tips`、`tags`、`nextStop`
+- `tips`、`tags`
 - `navTargets`：這個景點的導航目的地清單（見下方說明），可在行程編輯器的景點編輯頁直接新增/修改，不用手動改資料檔
 
 ### 3.1 景點卡導航列（navTargets）與住宿抵達距離（v1.11 起）
@@ -63,7 +63,7 @@
 
 住宿卡：`hotel.arriveDist`／`hotel.arriveTime` ＝ 「當天最後一個景點 → 住宿」，沒填就只有導去住宿的按鈕。
 
-`spot.nextStop` 現在**只**用在景點詳情頁最下方的「前往下一站」小卡（編輯器「➡️ 前往下一站」欄位可改），跟導航列無關。舊的 `nextStops`／`drives` 已全部搬進 `navTargets`，渲染器僅保留 `nextStops` 的向下相容。
+v1.12 起 `nextStop`（景點詳情頁「前往下一站」小卡）已整個移除，行程頁與編輯器都不再有這個欄位。舊的 `nextStops`／`drives` 已全部搬進 `navTargets`，渲染器僅保留 `nextStops` 的向下相容。
 
 ## 4. transport
 

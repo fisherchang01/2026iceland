@@ -10,6 +10,16 @@ git diff v1.0-stable HEAD     # 跟目前狀態比對
 
 ---
 
+## v1.12 — 2026-09-28 🗑️ 移除「前往下一站」小卡 (nextStop)
+
+景點詳情頁最下方的「前往下一站：xx km · xx 分钟」小卡，跟卡片下方的導航列是兩個獨立的地方、容易搞混，且已用不到，整個移除：
+- `js/render-itinerary.js`：`renderSpotDetail()` 不再組這張卡片
+- `tools/trip-editor-pro.html`：移除「➡️ 前往下一站」欄位群組與對應的狀態/函式
+- `data/trip-details.js`：19 個景點的 `nextStop` 欄位一併刪除
+- `docs/DATA-SCHEMA.md` 同步更新
+
+---
+
 ## v1.11 — 2026-09-28 🛠️ 行程編輯器 = 行程頁（導航列全面可編輯）
 
 - **資料搬家**：舊的 `nextStop`（上一站的距離）／`nextStops`（多目的地）全部轉成每張景點卡自己的 `navTargets`，住宿的距離寫進 `hotel.arriveDist/arriveTime`。行程頁顯示不變，只有下列修正：Kerið、黑沙滩補上自己的「到这里」一列（原本被多目的地蓋掉，點不到本景點）；備選景點不再卡在「上一站」鏈上，辛格維利尔、住宿卡（第 3 天）的距離回到正確的那一張卡。

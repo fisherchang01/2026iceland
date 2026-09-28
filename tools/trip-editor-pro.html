@@ -904,7 +904,6 @@
         // 每一筆格式：{ name, map, type, dist, time }；type 為 'drive'|'walk'|'tram'，省略視為 drive。
         // 只有一筆以上時，行程頁才會在每一筆前面加上 A1／A2 這種編號徽章。
         let currentSpotNavTargets = [];
-        let currentSpotNextStop = null; // { type, text, detail } 或 null
         let photoPoolCache = null;    // images/spots/medium/ 目錄列表快取（跨景點共用，同一個目錄）
         const SPOT_IMAGE_DIR = 'images/spots/medium/';
 
@@ -2529,7 +2528,6 @@
             currentDeepBlocks = JSON.parse(JSON.stringify(draft.deepBlocks !== undefined ? draft.deepBlocks : (spot.deepBlocks || [])));
             currentSpotImages = JSON.parse(JSON.stringify(draft.images !== undefined ? draft.images : (spot.images || [])));
             currentSpotNavTargets = JSON.parse(JSON.stringify(draft.navTargets !== undefined ? draft.navTargets : (spot.navTargets || [])));
-            currentSpotNextStop = JSON.parse(JSON.stringify(draft.nextStop !== undefined ? draft.nextStop : (spot.nextStop || null)));
             photoPoolFilter = 'spot';
 
             const editor = document.getElementById('editor');
@@ -2696,22 +2694,6 @@
                         <div id="navTargetsList"></div>
                     </div>
 
-                    <div class="field-group">
-                        <div class="field-header">
-                            <label class="field-label">➡️ 景點詳情頁的「前往下一站」小卡 (nextStop)</label>
-                            <button class="btn btn-secondary btn-mini" onclick="clearNextStop()">清除</button>
-                        </div>
-                        <div class="field-hint">點進景點詳情頁最下方會顯示「前往下一站：…」。跟上面的導航列是兩個獨立的地方，留空則不顯示。</div>
-                        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;">
-                            <select id="nsType" onchange="onNextStopInput()" style="padding:5px;">
-                                <option value="drive">🚗 開車</option>
-                                <option value="walk">🚶 步行</option>
-                                <option value="tram">🚊 大眾運輸</option>
-                            </select>
-                            <input type="text" id="nsText" placeholder="說明（例如 🚗 前往 Geysir）" style="flex:2;min-width:160px;" oninput="onNextStopInput()">
-                            <input type="text" id="nsDetail" placeholder="距離／時間（例如 约 35 km · 约 35 分钟）" style="flex:2;min-width:160px;" oninput="onNextStopInput()">
-                        </div>
-                    </div>
                 </div>
             `;
 
@@ -2720,12 +2702,6 @@
             renderPhotoPanel();
             renderNavTargetsList();
             populateNavSpotSelect();
-            {
-                const ns = currentSpotNextStop || {};
-                document.getElementById('nsType').value = ns.type || 'drive';
-                document.getElementById('nsText').value = ns.text || '';
-                document.getElementById('nsDetail').value = ns.detail || '';
-            }
             document.getElementById('topBar').style.display = 'flex';
         }
 
@@ -2816,18 +2792,6 @@
             currentSpotNavTargets[idx][field] = value;
             updateAllPreviews();
         }
-        // 詳情頁「前往下一站」小卡
-        function onNextStopInput() {
-            const type = document.getElementById('nsType').value;
-            const text = document.getElementById('nsText').value.trim();
-            const detail = document.getElementById('nsDetail').value.trim();
-            currentSpotNextStop = (text || detail) ? { type, text, detail } : null;
-        }
-        function clearNextStop() {
-            currentSpotNextStop = null;
-            document.getElementById('nsText').value = '';
-            document.getElementById('nsDetail').value = '';
-        }
         // 一列導航在行程頁長什麼樣子（跟 js/render-itinerary.js 的 computeSpotNavTargets 同規則）
         function navRowsPreviewHtml(spot) {
             const rows = currentSpotNavTargets.filter(nt => nt.name || nt.map || nt.dist || nt.time);
@@ -2909,7 +2873,6 @@
             const draftKey = `${currentDay}_${spot.id}`;
             const nameVal = document.getElementById('nameInput').value.trim();
             if (!nameVal) { showNotif('名稱不能是空的', 'error'); return; }
-            onNextStopInput();
             drafts[draftKey] = {
                 name: nameVal,
                 icon: document.getElementById('iconInput').value.trim(),
@@ -2917,7 +2880,6 @@
                 duration: document.getElementById('durationInput').value.trim(),
                 tags: document.getElementById('tagsInput').value.split(/[,，]/).map(t => t.trim()).filter(Boolean),
                 isOptional: document.getElementById('optionalInput').checked,
-                nextStop: currentSpotNextStop,
                 desc: descInput.value.trim(),
                 deepDesc: deepDescInput.value.trim(),
                 note: noteInput.value.trim(),
@@ -3057,7 +3019,7 @@
                         Object.assign(spot, data);
                         // 清空的選填欄位不要留在資料檔裡
                         ['time', 'duration'].forEach(k => { if (!spot[k]) delete spot[k]; });
-                        if (!spot.nextStop) delete spot.nextStop;
+                        delete spot.nextStop;
                         if (!spot.isOptional) delete spot.isOptional;
                         if (!spot.navTargets || !spot.navTargets.length) delete spot.navTargets;
                         else spot.navTargets.forEach(nt => {
