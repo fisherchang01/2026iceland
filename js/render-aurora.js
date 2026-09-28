@@ -97,7 +97,7 @@ function buildAuroraShellHtml() {
             <h1>今晚的天空</h1>
             <div style="display:flex;align-items:center;gap:10px">
               <button id="auroraThemeBtn">◑ 浅色</button>
-              <span class="upd mono" id="auroraUpdTime">更新中</span>
+              <span class="upd mono" id="auroraUpdTime" role="button" style="cursor:pointer" onclick="refreshAuroraDashboard()" title="点一下手动更新">更新中</span>
             </div>
           </div>
 
@@ -791,11 +791,11 @@ function buildAuroraPlainLanguage(tonight, loc, dayOffset) {
 // dayOffset 0 = 今晚（同時取八方位雲況做方向建議），1 = 明晚（八方位取樣是「現在」的雲況，
 // 對明晚沒有意義，所以不提供方向，不編造）。
 const auroraPlainCache = {};
-async function loadAuroraPlainForDay(loc, dayOffset) {
+async function loadAuroraPlainForDay(loc, dayOffset, force) {
   const key = loc.key + ':' + dayOffset;
   const hit = auroraPlainCache[key];
-  if (hit && Date.now() - hit.t < 15 * 60 * 1000) return hit.text;
-  const kpStale = !auroraKpFetchedAt || (Date.now() - auroraKpFetchedAt) > 5 * 60 * 1000;
+  if (!force && hit && Date.now() - hit.t < 15 * 60 * 1000) return hit.text;
+  const kpStale = force || !auroraKpFetchedAt || (Date.now() - auroraKpFetchedAt) > 5 * 60 * 1000;
   if (kpStale) await fetchAuroraKpData();
   const weatherP = fetchAuroraWeather(loc, dayOffset === 0 ? 2 : 3);
   const ringP = dayOffset === 0 ? fetchAuroraRingData(loc) : Promise.resolve(null);
@@ -811,6 +811,24 @@ async function loadAuroraPlainForDay(loc, dayOffset) {
 }
 
 // 今日卡「極光預測」按鈕：展開/收合面板，第一次展開才去抓資料。
+// 「更新」按鈕會呼叫 reloadNowAuroraPanel()：不論面板開著或收著都強制重抓，
+// 開著就立刻換上新內容，收著就下次展開時看到新的。
+async function reloadNowAuroraPanel(locKey, dayOffset) {
+  const panel = document.getElementById('nowAuroraPanel');
+  if (!panel) return;
+  panel.dataset.loaded = '0';
+  if (panel.dataset.open !== '1') return;
+  panel.textContent = '极光预测更新中…';
+  const loc = AURORA_CONFIG.locations.find(l => l.key === locKey);
+  if (!loc) return;
+  try {
+    panel.textContent = await loadAuroraPlainForDay(loc, dayOffset, true);
+    panel.dataset.loaded = '1';
+  } catch (e) {
+    panel.textContent = '暂时取不到极光资料，请稍后再试。';
+  }
+}
+
 async function toggleNowAuroraPanel(locKey, dayOffset) {
   const panel = document.getElementById('nowAuroraPanel');
   if (!panel) return;
@@ -959,6 +977,14 @@ async function renderAuroraDashboard() {
   renderAuroraDashboardUiOnly();
 }
 
+// 手動更新（點右上角的更新時間）：強制重抓 Kp 與天氣，不吃 5 分鐘快取。
+function refreshAuroraDashboard() {
+  const el = document.getElementById('auroraUpdTime');
+  if (el) el.textContent = '更新中…';
+  auroraKpFetchedAt = null;
+  return renderAuroraDashboard();
+}
+
 // 只重繪畫面（不重新打 API），用於切主題、初次掛載已抓好資料後的重繪
 function renderAuroraDashboardUiOnly() {
   const loc = AURORA_CONFIG.locations[auroraCurrentLocation];
@@ -975,7 +1001,7 @@ function renderAuroraDashboardUiOnly() {
     (auroraCurrentLocation === resolveDefaultAuroraLocation() && isAuroraTripActive()) ? 'inline-block' : 'none';
 
   document.getElementById('auroraUpdTime').textContent = auroraLastUpdate
-    ? auroraFmtHM(auroraLastUpdate) + ' 更新' : '更新中';
+    ? auroraFmtHM(auroraLastUpdate) + ' 更新 ↻' : '更新中';
 
   renderAuroraNowCell(); // OVATION 現在機率與資料流程獨立，不論今晚判斷是否成功都要更新
 

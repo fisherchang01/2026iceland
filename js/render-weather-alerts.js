@@ -27,7 +27,8 @@ var WEATHER_REGION_ZH = {
   'Northeast Iceland': '东北部',
   'East Iceland': '东部',
   'Eastfjords': '东峡湾',
-  'Central highlands - Uninhabited part of Iceland': '中部高地'
+  'Central highlands - Uninhabited part of Iceland': '中部高地',
+  'Iceland': '全冰岛'
 };
 
 // 警戒類型 → 白話中文（用結構化欄位 event_en，不去翻譯自由文字，避免誤譯）
@@ -76,6 +77,8 @@ function fetchIcelandWeatherAlertsForDay(dayId, dayDate) {
   var cfg = (typeof WEATHER_ALERT_CONFIG !== 'undefined') ? WEATHER_ALERT_CONFIG : null;
   var regions = cfg && cfg.dayRegions ? cfg.dayRegions[dayId] : null;
   if (!cfg || !regions || !regions.length) return Promise.resolve({ status: 'na' });
+  // 「全冰島」等級的預警（分區名 Iceland）也涵蓋這天的行程區域，一併比對。
+  regions = regions.concat('Iceland');
   if (typeof fetch !== 'function') return Promise.resolve({ status: 'failed' });
   var win = weatherDayWindow(dayDate);
   var controller = (typeof AbortController !== 'undefined') ? new AbortController() : null;
@@ -120,7 +123,7 @@ function weatherRenderBox(el, style, html) {
 
 // 把結果套進今日卡 .now-intro；找不到節點（使用者已切走分頁）就什麼都不做。
 function applyWeatherAlertToNowCard(dayId, dayDate) {
-  fetchIcelandWeatherAlertsForDay(dayId, dayDate).then(function (result) {
+  return fetchIcelandWeatherAlertsForDay(dayId, dayDate).then(function (result) {
     var el = document.querySelector('.now-dashboard .now-intro');
     if (!el || result.status === 'na') return;
     var areaZh = weatherRegionsZh(WEATHER_ALERT_CONFIG.dayRegions[dayId] || []);

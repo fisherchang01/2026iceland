@@ -148,7 +148,18 @@ function buildNowDashboard(context) {
       '<div id="nowAuroraPanel" style="display:none;margin-top:8px;padding:10px 12px;border:1px solid var(--line, #ddd);border-radius:10px;font-size:13px;line-height:1.75;white-space:pre-line;text-align:left;"></div>';
   }
 
-  return '<section class="now-dashboard">' +
+  // 手動更新列（v1.10）：顯示上次更新時間 + 「更新」按鈕，同時更新天氣預警與極光預測。
+  // 只有這張卡上真的有東西可更新（有預警查詢或有極光按鈕）才顯示。
+  var updateRow = '';
+  if ((hasRegions && inWindow) || auroraBtn) {
+    updateRow = '<div style="margin-top:10px;display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--sub);">' +
+      '<span id="nowUpdatedAt">更新中…</span>' +
+      '<button id="nowUpdateBtn" onclick="refreshNowCard()" style="border:1px solid var(--primary);background:#fff;color:var(--primary);border-radius:999px;padding:4px 12px;font:inherit;font-size:12px;font-weight:700;cursor:pointer;"' +
+      (auroraLoc && auroraBtn ? ' data-aurora-loc="' + auroraLoc.key + '" data-aurora-offset="' + context.dayOffset + '"' : '') +
+      '>↻ 更新</button></div>';
+  }
+
+  return '<section class="now-dashboard" data-day-id="' + day.id + '">' +
     '<div class="now-top"><div class="now-top-text">' +
       '<div class="now-eyebrow">' + stateLabel + ' · 第' + (context.index + 1) + '日</div>' +
       '<h1>' + day.detailTitle + '</h1>' +
@@ -156,6 +167,7 @@ function buildNowDashboard(context) {
     '</div>' + buildTripProgressRing(context) + '</div>' +
     '<button class="now-primary-btn" onclick="showDay(\'' + day.id + '\')">查看' + (isToday ? (context.rolled ? '明日' : '今日') : '这日') + '完整行程</button>' +
     auroraBtn +
+    updateRow +
   '</section>';
 }
 
@@ -187,6 +199,40 @@ function buildChapterCardHtml(chapterIdx, label) {
 // 總覽「完整行程」時間軸（v15）：9 天卡片從獨立堆疊改成一條垂直時間軸串起來。
 // 每張日卡左邊多一根節點欄（圓點 + 貫穿線），線與點的顏色跟著章節走（冰島段藍、芬蘭段暖金），
 // 今天當天的圓點放大發光、已過去的日子淡化——狀態沿用 getTripDayContext() 的 today，不需新欄位。
+// 今日卡「上次更新」時間（冰島時間）。
+function markNowCardUpdated() {
+  var el = document.getElementById('nowUpdatedAt');
+  if (el && typeof weatherFmtTime === 'function') el.textContent = '更新于 ' + weatherFmtTime(new Date()) + '（冰岛时间）';
+}
+// 手動更新：重抓天氣預警 + 極光預測。如果從上次渲染後已經跨過 18 點（該換日了），
+// 直接整張重繪。
+function refreshNowCard() {
+  var context = getNowCardContext();
+  var section = document.querySelector('.now-dashboard');
+  if (!context || !section) return;
+  if (section.getAttribute('data-day-id') !== context.day.id) { renderOverview(); return; }
+  var btn = document.getElementById('nowUpdateBtn');
+  var stamp = document.getElementById('nowUpdatedAt');
+  if (stamp) stamp.textContent = '更新中…';
+  if (btn) btn.disabled = true;
+  var tasks = [];
+  var intro = document.querySelector('.now-dashboard .now-intro');
+  var weatherApplies = typeof WEATHER_ALERT_CONFIG !== 'undefined' && WEATHER_ALERT_CONFIG.dayRegions &&
+    WEATHER_ALERT_CONFIG.dayRegions[context.day.id] && context.dayOffset >= 0 && context.dayOffset <= 2;
+  if (weatherApplies && intro && typeof applyWeatherAlertToNowCard === 'function') {
+    intro.removeAttribute('style');
+    intro.textContent = '天气预警更新中…';
+    tasks.push(applyWeatherAlertToNowCard(context.day.id, context.day.date));
+  }
+  if (btn && btn.getAttribute('data-aurora-loc') && typeof reloadNowAuroraPanel === 'function') {
+    tasks.push(reloadNowAuroraPanel(btn.getAttribute('data-aurora-loc'), parseInt(btn.getAttribute('data-aurora-offset'), 10)));
+  }
+  Promise.all(tasks).then(function() {
+    markNowCardUpdated();
+    if (btn) btn.disabled = false;
+  });
+}
+
 function renderOverview() {
   // v16：首屏拆成兩個掛載點——hero + 今日卡放 #overviewContent（頁面最頂），
   // 地圖橫幅由 updateItinMap 填在中間，時間軸放 #overviewTimeline。
@@ -196,7 +242,9 @@ function renderOverview() {
   // 今日卡掛載後，非同步向冰島氣象局要預警（只查那天在冰島、且 0～2 天內的行程日）。
   if (context && context.state !== 'complete' && context.dayOffset >= 0 && context.dayOffset <= 2 &&
       typeof applyWeatherAlertToNowCard === 'function') {
-    applyWeatherAlertToNowCard(context.day.id, context.day.date);
+    applyWeatherAlertToNowCard(context.day.id, context.day.date).then(markNowCardUpdated);
+  } else {
+    markNowCardUpdated();
   }
 
   var html = '<div class="overview-section-title"><h2>完整行程</h2><p>也可以直接选择任一天查看</p></div>';
