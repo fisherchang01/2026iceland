@@ -1977,6 +1977,40 @@ const TRIP = {
         ]
       },
       {
+        "icon": "📍",
+        "name": "横跨两大洲之桥",
+        "id": "bridge",
+        "kind": "spot",
+        "tags": [],
+        "images": [
+          "bridge-05.webp",
+          "bridge-03.webp",
+          "bridge-01.webp"
+        ],
+        "desc": "一座象征性人行小桥，它横跨在大西洋中脊的裂谷上，连接着欧亚板块和北美板块。",
+        "deepDesc": "",
+        "note": "",
+        "map": "",
+        "deepBlocks": [
+          {
+            "type": "text",
+            "value": "这处令人惊叹的冰岛景点象征着两大构造板块的交汇，也让游客能够亲眼看到由此形成的火山地貌。 \n想要五秒钟内从欧亚板块旅行到美洲板块，最快的方式就是：前往Bridge Between Continents一趟就行。\n地表撕开一条十来公尺宽的裂缝，形成一座迷你峡谷。 峡谷一边是欧亚板块，另一头是美洲板块，短短的铁桥一肩串起。\n这里正两个大陆交会之处。 桥下无水，两端是乱石累累的火山岩，柔软黑沙躺卧其间。\n步行过铁桥，可以立马跨越两个大陆; 或是钻入桥底，以手碰触两侧岩石，瞬间来回穿梭板块间。"
+          },
+          {
+            "type": "img",
+            "src": "bridge-06.webp"
+          },
+          {
+            "type": "img",
+            "src": "bridge-04.webp"
+          },
+          {
+            "type": "img",
+            "src": "bridge-02.webp"
+          }
+        ]
+      },
+      {
         "icon": "♨️",
         "name": "蓝湖温泉 Blue Lagoon",
         "id": "bluelagoon",
@@ -2779,6 +2813,7 @@ const TRIP = {
     ]
   }
 };
+
 
 
 
