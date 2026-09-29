@@ -1938,6 +1938,45 @@ const TRIP = {
         "deepBlocks": []
       },
       {
+        "icon": "📍",
+        "name": "Garour 灯塔",
+        "id": "garour",
+        "kind": "spot",
+        "tags": [],
+        "images": [
+          "garour-04.webp",
+          "garour-03.webp",
+          "garour-06.webp"
+        ],
+        "desc": "",
+        "isOptional": true,
+        "deepDesc": "",
+        "note": "",
+        "map": "Garður Old Lighthouse",
+        "deepBlocks": [
+          {
+            "type": "img",
+            "src": "garour-02.webp"
+          },
+          {
+            "type": "text",
+            "value": "两座灯塔站在海边，风很大，海很蓝，像电影里的画面。这里是冰岛看海和看日落很有名的地方，很多人会特地开车来拍照。"
+          },
+          {
+            "type": "img",
+            "src": "garour-05.webp"
+          },
+          {
+            "type": "text",
+            "value": "古老的加尔杜尔灯塔（Garðskagaviti）建于1897年，位于冰岛雷克雅内斯半岛西北端，旨在保护船只免受暗礁的侵袭。 \n其建筑风格体现了19世纪末的实用主义特色：一座相对低矮的方形建筑，由白色石材和混凝土建造，顶部是醒目的红色圆顶。\n 然而，由于海岸侵蚀加剧以及灯光信号覆盖范围有限，这座灯塔在数十年间逐渐不堪负荷。\n1944年，附近一座更高大的新灯塔取代了它，旧灯塔也随之退役。 如今，这座历史遗迹已成为热门的摄影题材，也是观赏海鸟和北极光的绝佳地点。"
+          },
+          {
+            "type": "img",
+            "src": "garour-01.webp"
+          }
+        ]
+      },
+      {
         "icon": "♨️",
         "name": "蓝湖温泉 Blue Lagoon",
         "id": "bluelagoon",
@@ -2740,6 +2779,7 @@ const TRIP = {
     ]
   }
 };
+
 
 
 
