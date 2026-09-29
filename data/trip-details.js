@@ -1923,6 +1923,21 @@ const TRIP = {
         ]
       },
       {
+        "icon": "📍",
+        "name": "小猪超市",
+        "id": "bonus",
+        "kind": "spot",
+        "tags": [
+          "离开冰岛前的大采购"
+        ],
+        "images": [],
+        "desc": "",
+        "deepDesc": "",
+        "note": "{link:travel:category:supermarket_shopping}超市纪念品{/link}",
+        "map": "",
+        "deepBlocks": []
+      },
+      {
         "icon": "♨️",
         "name": "蓝湖温泉 Blue Lagoon",
         "id": "bluelagoon",
