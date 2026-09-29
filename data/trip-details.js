@@ -1924,18 +1924,25 @@ const TRIP = {
       },
       {
         "icon": "📍",
-        "name": "小猪超市",
+        "name": "小猪超市(离开冰岛前的大采购)",
         "id": "bonus",
         "kind": "spot",
         "tags": [
           "离开冰岛前的大采购"
         ],
-        "images": [],
+        "images": [
+          "bonus-02.webp"
+        ],
         "desc": "",
         "deepDesc": "",
         "note": "{link:travel:category:supermarket_shopping}超市纪念品{/link}",
         "map": "",
-        "deepBlocks": []
+        "deepBlocks": [
+          {
+            "type": "img",
+            "src": "bonus-01.webp"
+          }
+        ]
       },
       {
         "icon": "📍",
@@ -2813,6 +2820,7 @@ const TRIP = {
     ]
   }
 };
+
 
 
 
