@@ -1494,6 +1494,19 @@ const TRIP = {
             "type": "img",
             "src": "vik-04.webp"
           }
+        ],
+        "navTargets": [
+          {
+            "type": "drive",
+            "dist": "距离黑沙滩约 10公里",
+            "time": "约 12 分钟"
+          },
+          {
+            "type": "drive",
+            "name": "Krónan Vík超市",
+            "map": "Krónan Vík",
+            "dist": "距离教堂約 1 公里"
+          }
         ]
       }
     ],
@@ -2820,6 +2833,7 @@ const TRIP = {
     ]
   }
 };
+
 
 
 
