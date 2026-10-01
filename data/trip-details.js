@@ -1263,8 +1263,7 @@ const TRIP = {
         "images": [
           "seljalandsfoss-01.webp",
           "seljalandsfoss-02.webp",
-          "seljalandsfoss-03.webp",
-          "seljalandsfoss-04.webp"
+          "seljalandsfoss-03.webp"
         ],
         "tags": [
           "需带雨衣",
@@ -1275,6 +1274,10 @@ const TRIP = {
         "map": "Seljalandsfoss Iceland",
         "note": "🅿️ 停車：700 ISK\n🚻 廁所：有（免费）\n\n💡 有简单轻食吧、纪念品店。\n💡 {bold}{#ff0000}准备「全身的防水装备」{/color}{/bold}",
         "deepBlocks": [
+          {
+            "type": "img",
+            "src": "seljalandsfoss-04.webp"
+          },
           {
             "type": "text",
             "value": "一、塞里雅兰瀑布在冰岛景点中相当有名，虽然不像其他几个大型瀑布那么壮观，但因为可以顺着步道走进瀑布后面，瞬间很像来到孙悟空的花果山水帘洞，所以也被叫做「水帘洞瀑布」，甚至被选为冰岛最美的瀑布之一，是很多人喜欢的冰岛摄影点。地点就在主要环岛公路上，来冰岛租车自驾的话肯定会经过，造就了这里游客如织的高人气。/n"
@@ -1304,12 +1307,24 @@ const TRIP = {
             "src": "seljalandsfoss-06.webp"
           },
           {
+            "type": "img",
+            "src": "seljalandsfoss-07.webp"
+          },
+          {
             "type": "text",
             "value": "四、瀑布很漂亮，特色是人可以走到瀑布後面的步道之中，{#ff0000}基本上一定會濕，所以除非你不想走到後面，不然防水裝備請下車就準備好{/color}，一路上可以拍的景色太多，所以請保護好你的拍攝裝置，瀑布繞完一圈之後，{#ff0000}若時間足夠且有防水鞋的話，可以往右邊繼續走，走到底有一個洞口，裡面有個隱藏瀑布，但要走進去需要涉水而過，鞋子如果不防水就一定全濕，請自行衡量{/color}，進去只能單側通行，大家會一批一批進去，然後輪流爬上巨石拍照，這時候請用力各種角度各種焦段狂拍就對，另外就算不站上石頭，角度拉低開廣角也是很氣勢磅礴，{#ff0000}很值得來一趟，算是老少皆宜又出片的景點，值得推推{/color}{#ff0000}{/color}"
           },
           {
             "type": "img",
-            "src": "seljalandsfoss-07.webp"
+            "src": "seljalandsfoss-12.webp"
+          },
+          {
+            "type": "img",
+            "src": "seljalandsfoss-11.webp"
+          },
+          {
+            "type": "img",
+            "src": "seljalandsfoss-10.webp"
           }
         ]
       },
