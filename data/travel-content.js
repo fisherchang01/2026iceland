@@ -959,7 +959,7 @@ const TRAVEL_CONTENT = {
         },
         {
           "id": "iceland-food-4",
-          "name": "Jokulsarlon-food",
+          "name": "冰河湖的三家餐车",
           "layout": "sm",
           "blocks": [
             {
