@@ -36,6 +36,15 @@ body {
 .cat-btn.active .cat-meta { color: #dde0ff; }
 .cat-btn.modified::after { content: ' ●'; color: #ff6b6b; font-weight: 700; }
 .cat-btn.empty-cat { opacity: .65; }
+.sidebar-hint { font-size: 10px; color: #999; font-weight: 400; }
+.cat-row { display: flex; align-items: stretch; gap: 4px; margin-bottom: 4px; }
+.cat-row .cat-btn { margin-bottom: 0; flex: 1; min-width: 0; }
+.cat-move-btn {
+    width: 22px; flex-shrink: 0; border: 1px solid #e5e5e5; background: white; border-radius: 4px;
+    cursor: pointer; font-size: 11px; color: #666;
+}
+.cat-move-btn:hover:not(:disabled) { border-color: #667eea; color: #667eea; }
+.cat-move-btn:disabled { opacity: .3; cursor: default; }
 .add-cat-btn {
     display: block; width: 100%; padding: 8px 10px; margin-top: 8px;
     border: 1px dashed #999; background: white; border-radius: 4px;

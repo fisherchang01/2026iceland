@@ -146,12 +146,24 @@ function saveDrafts() {
     updateDraftBadge();
 }
 
+// drafts['__order__']（分類顯示順序，見「調整分類順序」）不是某個分類的草稿，
+// 徽章數字跟「有沒有東西可以上傳」的判斷都要把它排除在外、另外算。
+function realDraftCount() {
+    return Object.keys(drafts).filter(k => k !== '__order__').length;
+}
+function hasOrderChange() {
+    return Array.isArray(drafts['__order__']);
+}
 function updateDraftBadge() {
-    const count = Object.keys(drafts).length;
+    const count = realDraftCount();
+    const orderChanged = hasOrderChange();
     const badge = document.getElementById('draftBadge');
     const uploadBtn = document.getElementById('uploadBtn');
-    if (count > 0) {
-        badge.textContent = `${count} 個草稿`;
+    if (count > 0 || orderChanged) {
+        const parts = [];
+        if (count > 0) parts.push(`${count} 個草稿`);
+        if (orderChanged) parts.push('順序已調整');
+        badge.textContent = parts.join('、');
         badge.style.display = 'block';
         uploadBtn.style.display = 'block';
         document.getElementById('topBar').classList.add('has-unsaved');
@@ -160,7 +172,7 @@ function updateDraftBadge() {
         uploadBtn.style.display = 'none';
         document.getElementById('topBar').classList.remove('has-unsaved');
     }
-    document.getElementById('topBar').style.display = currentKey ? 'flex' : (count > 0 ? 'flex' : 'none');
+    document.getElementById('topBar').style.display = currentKey ? 'flex' : ((count > 0 || orderChanged) ? 'flex' : 'none');
 }
 
 function getCategory(key) {
@@ -168,10 +180,34 @@ function getCategory(key) {
     return data.categories.find(c => c.key === key);
 }
 
+// 分類的顯示順序＝行程頁左到右／上到下出現的順序。預設是 data.categories 原本的陣列順序
+// （新分類排在最後）；調過順序後存成 drafts['__order__']，這裡優先採用，並自動濾掉已經
+// 不存在的 key（例如被刪除的分類），新出現但順序清單裡還沒有的 key 一律補到最後。
 function allCategoryKeysInOrder() {
     const orig = data.categories.map(c => c.key);
-    const extra = Object.keys(drafts).filter(k => !orig.includes(k));
-    return orig.concat(extra);
+    const extra = Object.keys(drafts).filter(k => k !== '__order__' && !orig.includes(k));
+    const all = orig.concat(extra);
+    const saved = drafts['__order__'];
+    if (!Array.isArray(saved)) return all;
+    const known = new Set(all);
+    const ordered = saved.filter(k => known.has(k));
+    all.forEach(k => { if (!ordered.includes(k)) ordered.push(k); });
+    return ordered;
+}
+// 把分類往前/往後移一位（dir：-1 往左／往上一位、+1 往右／往下一位），已刪除的分類不計入。
+function moveCategory(key, dir) {
+    const order = allCategoryKeysInOrder().filter(k => { const c = getCategory(k); return c && !c.__deleted; });
+    const i = order.indexOf(key);
+    const j = i + dir;
+    if (i < 0 || j < 0 || j >= order.length) return;
+    const tmp = order[i]; order[i] = order[j]; order[j] = tmp;
+    drafts['__order__'] = order;
+    saveDrafts();
+    renderSidebar();
+}
+// 「放棄」要連順序一起還原，不然放棄完畫面照舊是調過的順序。
+function discardOrderChange() {
+    delete drafts['__order__'];
 }
 
 /* ============================================================
@@ -180,11 +216,22 @@ function allCategoryKeysInOrder() {
 
 function renderSidebar() {
     const sidebar = document.getElementById('sidebar');
-    sidebar.innerHTML = '<div class="sidebar-title">📁 分類（共 ' + allCategoryKeysInOrder().length + ' 個）</div>';
+    sidebar.innerHTML = '<div class="sidebar-title">📁 分類（共 ' + allCategoryKeysInOrder().length + ' 個）'
+        + '　<span class="sidebar-hint">用 ↑↓ 調整左右順序</span></div>';
+    if (hasOrderChange()) {
+        const restoreBtn = document.createElement('button');
+        restoreBtn.className = 'add-cat-btn';
+        restoreBtn.style.marginBottom = '8px';
+        restoreBtn.textContent = '↺ 恢復原始順序';
+        restoreBtn.onclick = () => { discardOrderChange(); saveDrafts(); renderSidebar(); };
+        sidebar.appendChild(restoreBtn);
+    }
 
+    const visibleKeys = allCategoryKeysInOrder().filter(k => { const c = getCategory(k); return c && !c.__deleted; });
     allCategoryKeysInOrder().forEach(key => {
         const cat = getCategory(key);
         if (!cat || cat.__deleted) return;
+        const posInVisible = visibleKeys.indexOf(key);
         const btn = document.createElement('button');
         btn.className = 'cat-btn';
         if (key === currentKey) btn.classList.add('active');
@@ -194,7 +241,25 @@ function renderSidebar() {
         btn.innerHTML = `<span class="cat-label">${cat.emoji || ''} ${escapeAttr(cat.title || '(未命名)')}</span>` +
             `<div class="cat-meta">${(cat.items || []).length} 個項目 · ${cat.size || '2x2'}</div>`;
         btn.onclick = () => selectCategory(key);
-        sidebar.appendChild(btn);
+
+        const row = document.createElement('div');
+        row.className = 'cat-row';
+        const up = document.createElement('button');
+        up.className = 'cat-move-btn';
+        up.textContent = '↑';
+        up.title = '往前移（行程頁會更早出現）';
+        up.onclick = (e) => { e.stopPropagation(); moveCategory(key, -1); };
+        up.disabled = posInVisible <= 0;
+        const down = document.createElement('button');
+        down.className = 'cat-move-btn';
+        down.textContent = '↓';
+        down.title = '往後移（行程頁會更晚出現）';
+        down.onclick = (e) => { e.stopPropagation(); moveCategory(key, 1); };
+        down.disabled = posInVisible >= visibleKeys.length - 1;
+        row.appendChild(up);
+        row.appendChild(down);
+        row.appendChild(btn);
+        sidebar.appendChild(row);
     });
 
     const addBtn = document.createElement('button');
@@ -1054,15 +1119,11 @@ function saveLocally() {
 
 function buildFinalData() {
     if (!data) return { categories: [] };
-    const origKeys = data.categories.map(c => c.key);
     const merged = [];
-    origKeys.forEach(key => {
+    allCategoryKeysInOrder().forEach(key => {
         const d = drafts[key];
         if (d && d.__deleted) return;
         merged.push(d ? d : data.categories.find(c => c.key === key));
-    });
-    Object.keys(drafts).forEach(key => {
-        if (!origKeys.includes(key) && !drafts[key].__deleted) merged.push(drafts[key]);
     });
     return { categories: merged };
 }
@@ -1079,7 +1140,7 @@ function countStats(dataset) {
 }
 
 function startUpload() {
-    if (Object.keys(drafts).length === 0) { showNotif('沒有未上傳的修改', 'error'); return; }
+    if (realDraftCount() === 0 && !hasOrderChange()) { showNotif('沒有未上傳的修改', 'error'); return; }
 
     let finalData;
     try {
