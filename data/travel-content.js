@@ -1412,15 +1412,40 @@ const TRAVEL_CONTENT = {
       "items": [
         {
           "id": "kef-citymap",
-          "name": "雷克雅维克市区地图",
+          "name": "雷克雅未克市区地图",
           "layout": "lg",
-          "blocks": []
+          "blocks": [
+            {
+              "type": "img",
+              "src": "kef-citymap-04.webp"
+            },
+            {
+              "type": "img",
+              "src": "kef-citymap-01.webp"
+            },
+            {
+              "type": "img",
+              "src": "kef-citymap-02.webp"
+            },
+            {
+              "type": "img",
+              "src": "kef-citymap-03.webp"
+            }
+          ]
         },
         {
           "id": "hel-citymap",
           "name": "赫尔辛基市区地图",
           "layout": "lg",
           "blocks": [
+            {
+              "type": "text",
+              "value": "赫尔辛基市区景点"
+            },
+            {
+              "type": "img",
+              "src": "hel-citymap-09.webp"
+            },
             {
               "type": "img",
               "src": "hel-citymap-01.webp"
@@ -1479,6 +1504,7 @@ const TRAVEL_CONTENT = {
     }
   ]
 };
+
 
 
 
