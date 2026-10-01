@@ -1395,7 +1395,7 @@ const TRIP = {
         ],
         "desc": "著名特色是一座横跨在海面上的巨型火成岩拱桥、灯塔、黑沙滩与黑色玄武岩柱，对面就是黑沙滩。",
         "deepDesc": "",
-        "map": "Dyrholaey Iceland",
+        "map": "Reynisfjara viewpoint parking",
         "note": "",
         "deepBlocks": [
           {
@@ -1452,7 +1452,7 @@ const TRIP = {
         ],
         "desc": "冰岛很多地方都有黑沙滩，但只有这里的黑沙滩有玄武岩岩石群和人形岩石群可以欣赏。",
         "deepDesc": "",
-        "map": "Reynisfjara Black Sand Beach",
+        "map": "Reynisdrangar Cliffs",
         "note": "🅿️ 停車：1000 ISK",
         "deepBlocks": [
           {
@@ -1490,6 +1490,14 @@ const TRIP = {
           {
             "type": "img",
             "src": "reynisfjara-12.webp"
+          },
+          {
+            "type": "text",
+            "value": "雷尼斯岩（Reynisdrangar Cliffs）与雷尼斯黑沙滩（Reynisfjara Black Sand Beach）是个热门景区，当天刮风下雨，游客依然很多。此处有二个岩洞，洞口对着沙滩，另一个面海，因当时涨潮而淹没于海水中。海中耸立着雷尼斯海蚀柱。雷尼斯玄武岩和黑沙滩皆为火山喷发的产物。黑沙滩东端是雷尼斯岩，西端是迪霍拉里海岬。黑沙滩风大浪高，真可谓“阴风怒号，浊浪排空”。黑沙滩上非沙子，基本都是黑色小圆石。黑沙滩的海浪号称“疯狗浪”，小浪大浪交替而来，大浪来时，速度极快，如疯狗扑人，躲避不及，轻者湿身，重者卷入海里。"
+          },
+          {
+            "type": "img",
+            "src": "reynisfjara-13.webp"
           }
         ],
         "navTargets": [
@@ -2855,6 +2863,7 @@ const TRIP = {
     ]
   }
 };
+
 
 
 
