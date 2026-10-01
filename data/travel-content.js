@@ -663,7 +663,7 @@ const TRAVEL_CONTENT = {
           "blocks": [
             {
               "type": "text",
-              "value": "{#ff0000}Helsinki Outlet{/color}\n\n芬兰唯一的大型官方奥特莱斯，距离市中心约20公里，集合了40多个品牌，户外品牌如Helly Hansen、Haglöfs、Norrøna、Luhta折扣力度很大，设计品牌如Marimekko、Lumene以及厨具Le Creuset也很值得淘，园区是开放式小镇设计，逛起来很舒服。 (不過其實不大）\n\n交通：市中心火车站旁乘坐75路巴士直达，约30分钟；或用HSL App绑定信用卡购买公交票。营业时间：周六10:00-20:00。"
+              "value": "{#ff0000}Helsinki Outlet{/color}\n\n芬兰唯一的大型官方奥特莱斯，距离市中心约20公里，集合了40多个品牌，户外品牌如Helly Hansen、Haglöfs、Norrøna、Luhta折扣力度很大，设计品牌如Marimekko、Lumene以及厨具Le Creuset也很值得淘，园区是开放式小镇设计，逛起来很舒服。 (不過其實不大）\n\n交通：市中心火车站旁乘坐75路巴士直达，约30分钟；或用HSL App绑定信用卡购买公交票。营业时间：周六10:00-20:00。."
             },
             {
               "type": "img",
@@ -1310,6 +1310,7 @@ const TRAVEL_CONTENT = {
     }
   ]
 };
+
 
 
 
