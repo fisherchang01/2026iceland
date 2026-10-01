@@ -478,9 +478,9 @@ const TRIP = {
           "花儿与少年"
         ],
         "desc": "冰岛首都雷克雅未克的著名地标，外观以火山爆发所呈现的玄武岩熔岩流为主要意象，前卫设计让人很难与传统欧洲教堂联想在一起。",
-        "deepDesc": "{link:travel:svarta}冰岛🇮🇸花少同款面包碗Kaffid{/link}\n{link:travel:pylsur}热狗堡{/link}\n{link:travel:seabaron}Seabaron龙虾汤{/link}\n{link:travel:reykjavik-food-4}冰岛🇮🇸花少同款冰淇淋店Valdis{/link}",
+        "deepDesc": "",
         "map": "Hallgrimskirkja Reykjavik",
-        "note": "🅿️ 教堂周边原先有一些免费停车场，若找不到，亦有许多收费停车场。\n🚻 教堂内免费。",
+        "note": "🅿️ 教堂周边原先有一些免费停车场，若找不到，亦有许多收费停车场。\n🚻 教堂内免费。\n\n{link:travel:reykjavik-food-6}Turf House Iceland{/link}\n{link:travel:reykjavik-food-5}Icelandic Street Food{/link}\n{link:travel:svarta}冰岛🇮🇸花少同款面包碗Kaffid{/link}\n{link:travel:pylsur}热狗堡{/link}\n{link:travel:seabaron}Seabaron龙虾汤{/link}\n{link:travel:reykjavik-food-4}冰岛🇮🇸花少同款冰淇淋店Valdis{/link}",
         "deepBlocks": [
           {
             "type": "text",
@@ -542,7 +542,7 @@ const TRIP = {
           "laugavegur-04.webp",
           "laugavegur-05.webp"
         ],
-        "note": "{link:travel:svarta}冰岛🇮🇸花少同款面包碗Kaffid{/link}\n{link:travel:pylsur}热狗堡{/link}\n{link:travel:seabaron}Seabaron龙虾汤{/link}\n{link:travel:reykjavik-food-4}冰岛🇮🇸花少同款冰淇淋店Valdis{/link}",
+        "note": "{link:travel:reykjavik-food-6}Turf House Iceland{/link}\n{link:travel:reykjavik-food-5}Icelandic Street Food{/link}\n{link:travel:svarta}冰岛🇮🇸花少同款面包碗Kaffid{/link}\n{link:travel:pylsur}热狗堡{/link}\n{link:travel:seabaron}Seabaron龙虾汤{/link}\n{link:travel:reykjavik-food-4}冰岛🇮🇸花少同款冰淇淋店Valdis{/link}",
         "deepBlocks": [],
         "navTargets": [
           {
@@ -568,9 +568,9 @@ const TRIP = {
           "花儿与少年"
         ],
         "desc": "冰岛最重要的艺术场地，外观使用不规则玻璃片，灵感同样来自冰岛的六边形玄武岩地质。",
-        "deepDesc": "{link:travel:svarta}冰岛🇮🇸花少同款面包碗Kaffid{/link}\n{link:travel:pylsur}热狗堡{/link}\n{link:travel:seabaron}Seabaron龙虾汤{/link}\n{link:travel:reykjavik-food-4}冰岛🇮🇸花少同款冰淇淋店Valdis{/link}",
+        "deepDesc": "",
         "map": "Harpa Reykjavik",
-        "note": "{link:travel:svarta}冰島介紹{/link}\n{link:travel:pylsur}冰島介紹{/link}\n{link:travel:seabaron}冰島介紹{/link}\n{link:travel:reykjavik-food-4}冰島介紹{/link}",
+        "note": "{link:travel:reykjavik-food-6}Turf House Iceland{/link}\n{link:travel:reykjavik-food-5}Icelandic Street Food{/link}\n{link:travel:svarta}冰岛🇮🇸花少同款面包碗Kaffid{/link}\n{link:travel:pylsur}热狗堡{/link}\n{link:travel:seabaron}Seabaron龙虾汤{/link}\n{link:travel:reykjavik-food-4}冰岛🇮🇸花少同款冰淇淋店Valdis{/link}",
         "deepBlocks": [
           {
             "type": "text",
