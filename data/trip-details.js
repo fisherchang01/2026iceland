@@ -1844,7 +1844,7 @@ const TRIP = {
           "fjadrargljufur-02.webp",
           "fjadrargljufur-03.webp"
         ],
-        "note": "🅿️ 停車：1000 ISK  {#ff0000}自驾导航Fjaðrárgljúfur Viewpoint，{/color}\n🚻 廁所：下方停车场设有免费简易厕所\n💡 下方停车场设有免费的简易厕所。\n💡 停车费 ISK 1000。\n\n{link:travel:iceland-food-2}Vik的The Soup Company{/link}\n{link:travel:iceland-food-3}Vik的黑披萨Black Crust Pizzeria{/link}",
+        "note": "🅿️ 停車：1000 ISK  {#ff0000}自驾导航Fjaðrárgljúfur Viewpoint，{/color}\n🚻 廁所：下方停车场设有免费简易厕所\n💡 下方停车场设有免费的简易厕所。\n💡 停车费 ISK 1000。\n🆓免费：Fjaðrárgljúfur Parking TOP（QRHJ+RJC, 881 Kirkjubæjarklaustur, 冰岛）\n💰收费：Fjaðrárgljúfur parking（QRCH+39, 881 Kirkjubæjarklaustur, 冰岛）\n\n\n\n{link:travel:iceland-food-2}Vik的The Soup Company{/link}\n{link:travel:iceland-food-3}Vik的黑披萨Black Crust Pizzeria{/link}",
         "deepBlocks": [
           {
             "type": "text",
@@ -1883,8 +1883,8 @@ const TRIP = {
             "src": "fjadrargljufur-08.webp"
           },
           {
-            "type": "text",
-            "value": "Fjaðrárgljúfur羽毛峡谷  \n停车：Fjaðrárgljúfur Parking TOP 1000isk\n羽毛峡谷有两个停车场\n我们直接开到了上面这个"
+            "type": "img",
+            "src": "fjadrargljufur-10.webp"
           }
         ]
       },
@@ -2855,6 +2855,7 @@ const TRIP = {
     ]
   }
 };
+
 
 
 
