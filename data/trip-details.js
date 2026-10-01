@@ -943,6 +943,10 @@ const TRIP = {
           {
             "type": "img",
             "src": "gullfoss-14.webp"
+          },
+          {
+            "type": "img",
+            "src": "geysir-11.webp"
           }
         ],
         "navTargets": [
@@ -1348,7 +1352,7 @@ const TRIP = {
         "desc": "又称「彩虹瀑布」，因为有阳光的时候，约有九成的机率可以在这里看到彩虹。",
         "deepDesc": "",
         "map": "Skogafoss Iceland",
-        "note": "🅿️ 停車：1000 ISK/天\n🚻 廁所：有（免费）\n💡 停车费 1000 ISK/天。\n💡 有厕所（免费）。",
+        "note": "🅿️ 停車：1000 ISK/天\n🚻 廁所：有（免费）",
         "deepBlocks": [
           {
             "type": "text",
@@ -1413,6 +1417,10 @@ const TRIP = {
           {
             "type": "img",
             "src": "dyrholaey-04.webp"
+          },
+          {
+            "type": "img",
+            "src": "dyrholaey-05.webp"
           }
         ],
         "navTargets": [
@@ -1478,6 +1486,10 @@ const TRIP = {
           {
             "type": "text",
             "value": "四、传说如果把黑沙滩的石头带回家就会招来厄运，来这里时请静静欣赏美丽的景色就好，不要将石头捡回家。"
+          },
+          {
+            "type": "img",
+            "src": "reynisfjara-12.webp"
           }
         ],
         "navTargets": [
@@ -2843,6 +2855,7 @@ const TRIP = {
     ]
   }
 };
+
 
 
 
