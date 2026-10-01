@@ -614,7 +614,7 @@ const TRIP = {
         ],
         "desc": "离开哈帕音乐厅后，不走回头路，改沿旧港区海滨及托宁湖，徒步感受不同路径返回大教堂。",
         "deepDesc": "一、托宁湖是雷克雅未克市内最大的湖泊，沿湖畔走一圈，好多天鹅、海鸥、野鸭漫游其中，有些游客还会带饲料或面包来场喂食秀，景色相当美。\n\n二、托宁湖算是比较小众的冰岛秘境，不是每个到雷克雅未克的人都会去。湖里有超多天鹅、鸭子，很多人会直接带饲料或面包来喂食，所以被当地人称为「世界最大面包汤」。",
-        "note": "{link:travel:svarta}冰岛🇮🇸花少同款面包碗Kaffid{/link}\n{link:travel:pylsur}热狗堡{/link}\n{link:travel:seabaron}Seabaron龙虾汤{/link}\n{link:travel:reykjavik-food-4}冰岛🇮🇸花少同款冰淇淋店Valdis{/link}",
+        "note": "{link:travel:reykjavik-food-5}Icelandic Street Food{/link}\n{link:travel:svarta}冰岛🇮🇸花少同款面包碗Kaffid{/link}\n{link:travel:pylsur}热狗堡{/link}\n{link:travel:seabaron}Seabaron龙虾汤{/link}\n{link:travel:reykjavik-food-4}冰岛🇮🇸花少同款冰淇淋店Valdis{/link}",
         "map": "",
         "deepBlocks": []
       },
@@ -2840,6 +2840,7 @@ const TRIP = {
     ]
   }
 };
+
 
 
 
