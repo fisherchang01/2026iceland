@@ -1396,7 +1396,7 @@ const TRIP = {
         "desc": "著名特色是一座横跨在海面上的巨型火成岩拱桥、灯塔、黑沙滩与黑色玄武岩柱，对面就是黑沙滩。",
         "deepDesc": "",
         "map": "Reynisfjara viewpoint parking",
-        "note": "",
+        "note": "{bold}山顶停车场（推荐）​​：导航至 ​​Dyrhólaey Lighthouse Parking​​ 或 ​​Dyrhólaey View Parking Lot and WC​​。这里地势高，视野极其开阔，可以俯瞰整片黑沙滩、雷尼斯岩柱和巨大的海蚀拱门，是拍大片的最佳位置。\n\n山下停车场​​：导航至 ​​Dyrhólaey bílastæði og salerni​​。这里离海蚀拱门和悬崖底部更近，适合近距离观察海鹦和玄武岩柱，但需要走一段较长的步道上下山。{/bold}",
         "deepBlocks": [
           {
             "type": "text",
@@ -1411,6 +1411,10 @@ const TRIP = {
             "src": "dyrholaey-03.webp"
           },
           {
+            "type": "img",
+            "src": "dyrholaey-06.webp"
+          },
+          {
             "type": "text",
             "value": "三、可从高处俯瞰黑沙滩海岸线，和千年遗迹拱门状海岬，一望无际的海岸线黑白分明。山顶上还有一座像「城堡」外形的灯塔，孤傲地坐立在那里，像是这片美景的守护者。"
           },
@@ -1421,6 +1425,10 @@ const TRIP = {
           {
             "type": "img",
             "src": "dyrholaey-05.webp"
+          },
+          {
+            "type": "img",
+            "src": "dyrholaey-07.webp"
           }
         ],
         "navTargets": [
@@ -2863,6 +2871,7 @@ const TRIP = {
     ]
   }
 };
+
 
 
 
