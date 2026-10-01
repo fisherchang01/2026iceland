@@ -237,6 +237,37 @@ const TRAVEL_CONTENT = {
               "src": "supermarket-food-9-02.webp"
             }
           ]
+        },
+        {
+          "id": "supermarket-food-10",
+          "name": "冰岛海螯虾humar或是三文鱼",
+          "layout": "sm",
+          "blocks": [
+            {
+              "type": "text",
+              "value": "保冷問題：冰島自駕行程常在野外一整天，冷凍蝦買了要盡快回民宿冰凍，或自備保冷袋。\n超市選擇：Bónus 最便宜但品項少；想要海鮮選擇多一點去 Krónan，想買高級一點的食材去 Hagkaup。\n\nBónus、Krónan 的冷凍櫃就有賣海螯蝦（langoustine）——冰島在地美食導覽明確寫到，超市冷凍區有「蝦、干貝、海螯蝦、鮭魚、鱈魚」等常見海鮮。\n台灣遊客的實際經驗也證實：「超市冷凍區有整包剝好殼的小龍蝦，很方便」，拿來配鮭魚、煮海鮮義大利麵都好用。\n但新鮮整隻的幾乎買不到：冰島海螯蝦大部分供應餐廳或出口，有遊客「尋遍魚市場也沒鮮貨」，最後也是回頭買超市的冷凍小龍蝦。\n想吃新鮮現捕的，得去東南部 Höfn（赫本）——冰島的海螯蝦之都，當地漁船直送，Humarhöfnin 餐廳的海螯蝦主菜約 8,000–12,000 ISK。\n懶得煮的話，Nettó 有賣現成的小龍蝦濃湯（加熱即食，約港幣 60 元）"
+            },
+            {
+              "type": "img",
+              "src": "supermarket-food-10-01.webp"
+            },
+            {
+              "type": "img",
+              "src": "supermarket-food-10-02.webp"
+            },
+            {
+              "type": "img",
+              "src": "supermarket-food-10-03.webp"
+            },
+            {
+              "type": "img",
+              "src": "supermarket-food-10-04.webp"
+            },
+            {
+              "type": "img",
+              "src": "supermarket-food-10-05.webp"
+            }
+          ]
         }
       ]
     },
@@ -1657,6 +1688,7 @@ const TRAVEL_CONTENT = {
     }
   ]
 };
+
 
 
 
