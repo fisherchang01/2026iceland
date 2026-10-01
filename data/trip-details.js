@@ -1614,7 +1614,7 @@ const TRIP = {
           "jokulsarlon-02.webp",
           "jokulsarlon-05.webp"
         ],
-        "note": "🅿️ 停車：1000 ISK\n🚻 廁所：停车场免费\n💡 停车场可以免费使用厕所。\n💡 钻石冰沙滩东停车场、西停车场，以及杰古沙龙冰河湖停车场，这三个停车场收费皆为 ISK 1000。",
+        "note": "🅿️ 停車：1000 ISK\n🚻 廁所：停车场免费\n💡 停车场可以免费使用厕所。\n💡 钻石冰沙滩东停车场、西停车场，以及杰古沙龙冰河湖停车场，这三个停车场收费皆为 ISK 1000。\n\n{#ff0000}{link:travel:iceland-food-4}冰河湖的三家餐车{/link}{/color}",
         "deepBlocks": [
           {
             "type": "text",
@@ -2800,6 +2800,7 @@ const TRIP = {
     ]
   }
 };
+
 
 
 
