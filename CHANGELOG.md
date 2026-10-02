@@ -10,6 +10,12 @@ git diff v1.0-stable HEAD     # 跟目前狀態比對
 
 ---
 
+## v1.14 — 2026-09-28 🗂️ 工具頁編輯器入口改成折疊式
+
+`js/render-other.js` 的 `TOOL_EDITOR_SECTION_HTML`（工具總覽頁最下方的三個編輯器入口）原本是三塊大型漸層卡片＋說明文字，太突兀，改成原生 `<details>/<summary>` 折疊：收合時只有一行「🛠️ 编辑工具」，展開後三個編輯器各自只有 icon＋標題一行。樣式加在 `css/catalog-editorial.css`（`.tool-editor-section`／`.tool-editor-toggle`／`.tool-editor-list`／`.tool-editor-link`），沒有動 `css/style.css`。原本「只在工具總覽頁顯示」的 `.catalog-show-overview` 顯示/隱藏邏輯不受影響。
+
+---
+
 ## v1.13 — 2026-09-28 ↕️ 體驗／工具頁：編輯器可調分類順序
 
 - `tools/catalog-editor-core.js`（體驗、工具兩個編輯器共用）：側欄每個分類旁邊加上 ↑↓，可以調整分類在行程頁左到右／上到下出現的順序；調過的順序存成特殊草稿 `__order__`，上傳時套用，側欄會提示「順序已調整」並提供「↺ 恢復原始順序」。

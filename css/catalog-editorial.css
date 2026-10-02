@@ -446,6 +446,61 @@
     font-weight: 800;
     cursor: pointer;
   }
+  /* 編輯器入口（v1.14 折疊版）：收合時只有一行「🛠️ 编辑工具」，展開後三個編輯器
+     各自只有 icon + 標題，不再是大塊漸層卡片。見 js/render-other.js 的 TOOL_EDITOR_SECTION_HTML。 */
+  :is(#page-travel,#page-other) .tool-editor-section {
+    margin-top: 20px;
+    border: 1px solid #c8d7d9;
+    border-radius: 13px;
+    background: #edf4f3;
+    overflow: hidden;
+  }
+  :is(#page-travel,#page-other) .tool-editor-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    font-size: var(--fs-sm);
+    font-weight: 700;
+    color: #315f67;
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+  }
+  :is(#page-travel,#page-other) .tool-editor-toggle::-webkit-details-marker { display: none; }
+  :is(#page-travel,#page-other) .tool-editor-toggle::after {
+    content: '▸';
+    font-size: 12px;
+    color: #7a9398;
+    transition: transform .15s ease;
+  }
+  :is(#page-travel,#page-other) .tool-editor-section[open] .tool-editor-toggle::after {
+    transform: rotate(90deg);
+  }
+  :is(#page-travel,#page-other) .tool-editor-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 0 10px 10px;
+  }
+  :is(#page-travel,#page-other) .tool-editor-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    border: none;
+    border-left: 3px solid var(--accent, #667eea);
+    border-radius: 9px;
+    background: #fff;
+    color: #2b3a3d;
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    text-align: left;
+    cursor: pointer;
+  }
+  :is(#page-travel,#page-other) .tool-editor-link:hover {
+    background: #f6fafa;
+  }
   :is(#page-travel,#page-other) .tool-status-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0,1fr));

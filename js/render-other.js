@@ -9,44 +9,19 @@
 
 (function () {
 
-  // 編輯器入口卡片（三個彩色漸層按鈕），逐字保留自舊版 data/other-content.js 開頭區塊，
-  // 純 UI 骨架，不隨分類資料變動，因此寫死在這裡而不是放進 OTHER_CONTENT。
+  // 編輯器入口（v1.14 起改成折疊式）：純 UI 骨架，不隨分類資料變動，因此寫死在這裡
+  // 而不是放進 OTHER_CONTENT。用原生 <details>/<summary>，不用額外寫開合的 JS。
+  // 展開後每個編輯器只有「icon + 標題」一行，不再是大塊漸層卡片＋說明文字。
   var TOOL_EDITOR_SECTION_HTML =
-    '<!-- 编辑工具套件 -->\n' +
-    '    <div class="tool-editor-section" style="margin-bottom: 24px;">\n' +
-    '      <!-- 高级编辑器 (推荐) -->\n' +
-    '      <div style="padding: 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; margin-bottom: 12px; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);">\n' +
-    '        <div style="display: flex; align-items: center; justify-content: space-between;">\n' +
-    '          <div>\n' +
-    '            <div style="font-family: var(--font-display); font-size: var(--fs-base); font-weight: 600; color: white; margin-bottom: 4px;">⭐ 行程编辑器 Pro</div>\n' +
-    '            <div style="font-size: var(--fs-xs); color: rgba(255,255,255,0.85); line-height: 1.4;">选择景点 → 编辑内容 → 直接保存 GitHub，一站式完成行程编辑</div>\n' +
-    '          </div>\n' +
-    '          <button class="tool-open-btn" onclick="window.open(\'./tools/trip-editor-pro.html\', \'trip-editor-pro\', \'width=1400,height=900,resizable=yes\')" style="margin: 0; white-space: nowrap; background: white; color: #667eea; font-weight: 700;">开启编辑器</button>\n' +
-    '        </div>\n' +
+    '<!-- 编辑工具套件（折叠） -->\n' +
+    '    <details class="tool-editor-section">\n' +
+    '      <summary class="tool-editor-toggle">🛠️ 编辑工具</summary>\n' +
+    '      <div class="tool-editor-list">\n' +
+    '        <button class="tool-editor-link" style="--accent:#667eea" onclick="window.open(\'./tools/trip-editor-pro.html\', \'trip-editor-pro\', \'width=1400,height=900,resizable=yes\')">⭐ 行程编辑器 Pro</button>\n' +
+    '        <button class="tool-editor-link" style="--accent:#f5576c" onclick="window.open(\'./tools/travel-editor-pro.html\', \'travel-editor-pro\', \'width=1400,height=900,resizable=yes\')">🏔️ 体验内容编辑器</button>\n' +
+    '        <button class="tool-editor-link" style="--accent:#00c2fe" onclick="window.open(\'./tools/other-editor-pro.html\', \'other-editor-pro\', \'width=1400,height=900,resizable=yes\')">🛠️ 其他内容编辑器</button>\n' +
     '      </div>\n' +
-    '\n' +
-    '      <!-- 体验内容编辑器 -->\n' +
-    '      <div style="padding: 16px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-radius: 12px; margin-bottom: 12px; box-shadow: 0 4px 12px rgba(245, 87, 108, 0.3);">\n' +
-    '        <div style="display: flex; align-items: center; justify-content: space-between;">\n' +
-    '          <div>\n' +
-    '            <div style="font-family: var(--font-display); font-size: var(--fs-base); font-weight: 600; color: white; margin-bottom: 4px;">🏔️ 体验内容编辑器</div>\n' +
-    '            <div style="font-size: var(--fs-xs); color: rgba(255,255,255,0.85); line-height: 1.4;">编辑美食、购物、世界遗产等体验页面内容</div>\n' +
-    '          </div>\n' +
-    '          <button class="tool-open-btn" onclick="window.open(\'./tools/travel-editor-pro.html\', \'travel-editor-pro\', \'width=1400,height=900,resizable=yes\')" style="margin: 0; white-space: nowrap; background: white; color: #f5576c; font-weight: 700;">开启编辑器</button>\n' +
-    '        </div>\n' +
-    '      </div>\n' +
-    '\n' +
-    '      <!-- 其他内容编辑器 -->\n' +
-    '      <div style="padding: 16px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); border-radius: 12px; margin-bottom: 12px; box-shadow: 0 4px 12px rgba(79, 172, 254, 0.3);">\n' +
-    '        <div style="display: flex; align-items: center; justify-content: space-between;">\n' +
-    '          <div>\n' +
-    '            <div style="font-family: var(--font-display); font-size: var(--fs-base); font-weight: 600; color: white; margin-bottom: 4px;">🛠️ 其他内容编辑器</div>\n' +
-    '            <div style="font-size: var(--fs-xs); color: rgba(255,255,255,0.85); line-height: 1.4;">编辑退税、极光、加油等实用工具页面内容</div>\n' +
-    '          </div>\n' +
-    '          <button class="tool-open-btn" onclick="window.open(\'./tools/other-editor-pro.html\', \'other-editor-pro\', \'width=1400,height=900,resizable=yes\')" style="margin: 0; white-space: nowrap; background: white; color: #00f2fe; font-weight: 700;">开启编辑器</button>\n' +
-    '        </div>\n' +
-    '      </div>\n' +
-    '    </div>';
+    '    </details>';
 
   function renderOtherHTML() {
     // 編輯器入口卡片只要出現在「工具總覽」頁最下方，個別分類詳情頁不需要。
