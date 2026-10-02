@@ -2828,6 +2828,45 @@ const TRIP = {
             "src": "kamppi-chaple-08.webp"
           }
         ]
+      },
+      {
+        "icon": "📍",
+        "name": "赫尔辛基outlet",
+        "id": "outlet-hel",
+        "kind": "spot",
+        "tags": [
+          "芬兰首座大型露天outlet",
+          "规模不大",
+          "认真逛的话大概两个小时就可以逛完",
+          "如果觉得逛不够的话旁边还有IKEA。"
+        ],
+        "images": [
+          "outlet-hel-01.webp",
+          "outlet-hel-05.webp"
+        ],
+        "desc": "",
+        "isOptional": true,
+        "deepDesc": "",
+        "note": "{link:travel:finland-shopping-2}{#ff0000}赫尔辛基Outlet{/color}{/link}\n\n营业时间：10:00-20:00（周五及周六）",
+        "map": "Helsinki Outlet",
+        "deepBlocks": [
+          {
+            "type": "text",
+            "value": "​​如何到达​​：从赫尔辛基市中心出发，可乘坐75路公交直达，车程约30分钟，下车后步行10分钟即可到达。也可以使用 HSL APP 规划路线和购买车票（AB区通票即可）。\n\n​​营业时间​​：通常为 10:00-20:00，周日可能会提前到18:00关门，去之前务必确认好时间，避免跑空。\n\n品牌预期​​：Helsinki Outlet 主要是北欧本土品牌和大众户外品牌，没有 LV、爱马仕 等顶级奢侈品，如果冲着国际一线大牌去可能会失望。"
+          },
+          {
+            "type": "img",
+            "src": "outlet-hel-04.webp"
+          },
+          {
+            "type": "img",
+            "src": "outlet-hel-03.webp"
+          },
+          {
+            "type": "img",
+            "src": "outlet-hel-02.webp"
+          }
+        ]
       }
     ],
     "routeMapImg": "route-day7-01.webp"
@@ -2929,6 +2968,7 @@ const TRIP = {
     ]
   }
 };
+
 
 
 
