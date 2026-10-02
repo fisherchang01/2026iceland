@@ -2519,7 +2519,7 @@ const TRIP = {
           "centralstation-02.webp",
           "centralstation-04.webp"
         ],
-        "note": "",
+        "note": "{link:travel:finland-food-5}Fazer 百年咖啡厅{/link}\n\n{link:travel:finland-shopping-1}最便宜LV{/link}",
         "deepBlocks": [
           {
             "type": "text",
@@ -2553,7 +2553,7 @@ const TRIP = {
         "desc": "纯白色的新古典主义外观、醒目的绿顶设计以及宏伟的百级阶梯广场，内部简约而宁静，没有金箔或大理石的奢华，只有北欧风格的极致简洁。",
         "deepDesc": "",
         "map": "Helsinki Cathedral",
-        "note": "{link:travel:finland-shopping-1}最便宜LV{/link}\n\n{link:travel:finland-shopping-2}赫尔辛基Outlet{/link}",
+        "note": "{link:travel:finland-shopping-1}最便宜LV{/link}\n\n{link:travel:finland-shopping-2}赫尔辛基Outlet{/link}\n\n{link:travel:finland-food-4}驯鹿肉-白教堂旁{/link}",
         "deepBlocks": [
           {
             "type": "text",
@@ -2688,7 +2688,7 @@ const TRIP = {
           "suomenlinna-07.webp",
           "suomenlinna-08.webp"
         ],
-        "note": "🚻 廁所：游客中心有厕所",
+        "note": "🚻 廁所：游客中心有厕所\n\n{link:travel:is-fi-map-3}芬蘭堡地图{/link}\n\n{link:travel:finland-food-1}海边码头的三文鱼汤Kappeli{/link}",
         "deepBlocks": [
           {
             "type": "text",
@@ -2968,6 +2968,7 @@ const TRIP = {
     ]
   }
 };
+
 
 
 
