@@ -1683,11 +1683,27 @@ const TRAVEL_CONTENT = {
               "src": "hel-citymap-07.webp"
             }
           ]
+        },
+        {
+          "id": "is-fi-map-3",
+          "name": "芬蘭堡",
+          "layout": "sm",
+          "blocks": [
+            {
+              "type": "img",
+              "src": "is-fi-map-3-01.webp"
+            },
+            {
+              "type": "img",
+              "src": "is-fi-map-3-02.webp"
+            }
+          ]
         }
       ]
     }
   ]
 };
+
 
 
 
