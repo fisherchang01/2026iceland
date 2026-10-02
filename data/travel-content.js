@@ -1345,51 +1345,8 @@ const TRAVEL_CONTENT = {
       "size": "2x2",
       "items": [
         {
-          "id": "finland-food-1",
-          "name": "海边码头的三文鱼汤Kappeli",
-          "layout": "sm",
-          "blocks": [
-            {
-              "type": "text",
-              "value": "{#ff0000}Kappeli Restaurant{/color}\n\n价位 | 奶油鲑鱼汤 €21， 烟熏鲑鱼 €39， 烤鹿肉 €49\n地点 | Eteläesplanadi 1， 00130 Helsinki， 芬兰。 就位在老农贸市场旁边\n营业 | 午餐和晚餐 （10am-22pm）\n\n位于海边码头公园的玻璃房餐厅，环境极佳。\n三文鱼汤约16.9-17.9欧，自助按人头收费，搭配店里的方块黄油面包非常绝，可无限续杯，本地人和游客都爱去。\n\n咖啡馆区域（进门左手边）周一至周六10:00-22:00，没有正餐，有各种蛋糕、饮品，还有自助三文鱼汤；正餐餐厅通常11:00才开始供应，包含前菜、主菜（煎三文鱼与烟熏三文鱼）和甜品。"
-            },
-            {
-              "type": "img",
-              "src": "finland-food-1-01.webp"
-            },
-            {
-              "type": "img",
-              "src": "finland-food-1-02.webp"
-            },
-            {
-              "type": "img",
-              "src": "finland-food-1-06.webp"
-            },
-            {
-              "type": "text",
-              "value": "运气好，没有提前预约，walk in还能有位置，吃完大家都一致认为非常不错，是最近吃到过相比之下最好吃的白人饭之一，餐包续了一份，特别是三文鱼汤，真想问厨师要配方复刻啊，不愧是招牌！！\n\n香煎三文鱼也是，鱼皮煎得蛮香脆的，特别是素食都丸子，非常不错，超出预期，一致好评，甜品也是现做的，端上来时候还热乎的，四个人吃空盘，很满意！！！\n"
-            },
-            {
-              "type": "img",
-              "src": "finland-food-1-03.webp"
-            },
-            {
-              "type": "img",
-              "src": "finland-food-1-04.webp"
-            },
-            {
-              "type": "text",
-              "value": "KAPPELI.三文鱼汤鲜美不说，里面的三文鱼块头巨大，真心实意，关键还是可以续加。吐司虾对我来说太咸了好像在吃固体海水。面包也可以随便吃，本来想抗拒一下但是看到傍边的大奶油我还是没控制住自己！\n\n{#0066cc}三文鱼忌廉汤Lohikeitto便是家传户晓的芬兰美食，汤内有三文鱼块、薯仔、洋葱、红萝卜、莳萝，再配上黑麦面包或芬兰黑麦饼干食用，特别在冬天，芬兰人爱喝一碗三文鱼忌廉汤暖暖身。{/color}"
-            },
-            {
-              "type": "img",
-              "src": "finland-food-1-05.webp"
-            }
-          ]
-        },
-        {
           "id": "finland-food-2",
-          "name": "农贸市场的三文鱼汤Soup+More",
+          "name": "农贸市场的三文鱼汤 Soup+More",
           "layout": "sm",
           "blocks": [
             {
@@ -1435,40 +1392,6 @@ const TRAVEL_CONTENT = {
           ]
         },
         {
-          "id": "finland-food-3",
-          "name": "其他选择",
-          "layout": "sm",
-          "blocks": [
-            {
-              "type": "text",
-              "value": "{#ff0000}其他选择{/color}\n\n{#ff0000}（1）Merimakasiini{/color}——距离市中心步行约15分钟的码头旁，三文鱼汤分量足（Big Size约20欧），味道浓郁。\n\n{#ff0000}（2）南码头露天市场{/color}（Kauppatori）——露天摊位众多，各家都卖三文鱼和三文鱼汤，价格相近（约11-15欧），建议直接去靠海的摊位，边吹海风边吃。\n\n{#ff0000}（3）Cafe Regatta{/color}——赫尔辛基绝对不能错过的肉桂卷专卖店，也大推热巧克力（加一圈奶油），还可以买几个香肠在火炉旁边烤，配上湖边景色很享受，吃完还可以顺便到旁边的西贝流士公园走走。"
-            }
-          ]
-        },
-        {
-          "id": "finland-food-4",
-          "name": "Hakaniemi Market Hall市场",
-          "layout": "sm",
-          "blocks": [
-            {
-              "type": "text",
-              "value": "我推荐Hakaniemi Market Hall，是另外一间市场，价格也在14€左右，我还趁关门前买了一点生鱼片。 \n\nHakaniemi Market Hall这间市场除了海鲜和面包之外，也有蔬果、糕点、坚果、起司、茶、咖啡、香料，虽然小小的，但有公共区座位，因为饭店离这间市场比较近，我蛮喜欢早上去点一杯茶坐在公共区享受自己的时光。\n\nSOUP+MORE Hakaniemen Kauppahalli\n营业时间：11：00 – 16：00 （ 周日公休 ）"
-            },
-            {
-              "type": "img",
-              "src": "finland-food-4-01.webp"
-            },
-            {
-              "type": "text",
-              "value": "这周末去了Hakaniemi Kauppahalli，比起市中心那个比较游客化都是餐厅的Old Market Hall，这里明显更\"接地气\"，是当地人真的会拎着菜篮子来买菜的地方。摊位也是真的蔬菜水果肉鱼摊。\n\t\n门口的广场上摆着几个小摊，卖新鲜采的野莓、盆栽和刚摘的蘑菇。最有意思的是他们卖东西不称重，是用桶来算体积的，一桶多少钱，很朴素也很可爱，让我想起小时候乡下外婆们买菜的方式。\n\t\nHall里面意外地干净敞亮，拱形的天花板、暖黄的吊灯，一点没有传统市场的湿闷感。鱼摊上摆得满满当当，各种北欧本地鱼类闪着冷光，很有生命力；蔬果摊的颜色多到像打翻了调色盘，柿子椒、番茄、茄子层层叠叠堆成小山，看着就让人有食欲。"
-            },
-            {
-              "type": "img",
-              "src": "finland-food-4-02.webp"
-            }
-          ]
-        },
-        {
           "id": "finland-food-5",
           "name": "Fazer 百年咖啡厅",
           "layout": "sm",
@@ -1504,6 +1427,49 @@ const TRAVEL_CONTENT = {
             {
               "type": "img",
               "src": "finland-food-5-06.webp"
+            }
+          ]
+        },
+        {
+          "id": "finland-food-1",
+          "name": "海边码头的三文鱼汤Kappeli",
+          "layout": "sm",
+          "blocks": [
+            {
+              "type": "text",
+              "value": "{#ff0000}Kappeli Restaurant{/color}\n\n价位 | 奶油鲑鱼汤 €21， 烟熏鲑鱼 €39， 烤鹿肉 €49\n地点 | Eteläesplanadi 1， 00130 Helsinki， 芬兰。 就位在老农贸市场旁边\n营业 | 午餐和晚餐 （10am-22pm）\n\n位于海边码头公园的玻璃房餐厅，环境极佳。\n三文鱼汤约16.9-17.9欧，自助按人头收费，搭配店里的方块黄油面包非常绝，可无限续杯，本地人和游客都爱去。\n\n咖啡馆区域（进门左手边）周一至周六10:00-22:00，没有正餐，有各种蛋糕、饮品，还有自助三文鱼汤；正餐餐厅通常11:00才开始供应，包含前菜、主菜（煎三文鱼与烟熏三文鱼）和甜品。"
+            },
+            {
+              "type": "img",
+              "src": "finland-food-1-01.webp"
+            },
+            {
+              "type": "img",
+              "src": "finland-food-1-02.webp"
+            },
+            {
+              "type": "img",
+              "src": "finland-food-1-06.webp"
+            },
+            {
+              "type": "text",
+              "value": "运气好，没有提前预约，walk in还能有位置，吃完大家都一致认为非常不错，是最近吃到过相比之下最好吃的白人饭之一，餐包续了一份，特别是三文鱼汤，真想问厨师要配方复刻啊，不愧是招牌！！\n\n香煎三文鱼也是，鱼皮煎得蛮香脆的，特别是素食都丸子，非常不错，超出预期，一致好评，甜品也是现做的，端上来时候还热乎的，四个人吃空盘，很满意！！！\n"
+            },
+            {
+              "type": "img",
+              "src": "finland-food-1-03.webp"
+            },
+            {
+              "type": "img",
+              "src": "finland-food-1-04.webp"
+            },
+            {
+              "type": "text",
+              "value": "KAPPELI.三文鱼汤鲜美不说，里面的三文鱼块头巨大，真心实意，关键还是可以续加。吐司虾对我来说太咸了好像在吃固体海水。面包也可以随便吃，本来想抗拒一下但是看到傍边的大奶油我还是没控制住自己！\n\n{#0066cc}三文鱼忌廉汤Lohikeitto便是家传户晓的芬兰美食，汤内有三文鱼块、薯仔、洋葱、红萝卜、莳萝，再配上黑麦面包或芬兰黑麦饼干食用，特别在冬天，芬兰人爱喝一碗三文鱼忌廉汤暖暖身。{/color}"
+            },
+            {
+              "type": "img",
+              "src": "finland-food-1-05.webp"
             }
           ]
         }
@@ -1746,6 +1712,7 @@ const TRAVEL_CONTENT = {
     }
   ]
 };
+
 
 
 
