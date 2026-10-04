@@ -2519,7 +2519,7 @@ const TRIP = {
           "centralstation-02.webp",
           "centralstation-04.webp"
         ],
-        "note": "",
+        "note": "{link:travel:finland-food-5}Fazer 百年咖啡厅{/link}\n\n{link:travel:finland-shopping-1}最便宜LV{/link}",
         "deepBlocks": [
           {
             "type": "text",
@@ -2553,7 +2553,7 @@ const TRIP = {
         "desc": "纯白色的新古典主义外观、醒目的绿顶设计以及宏伟的百级阶梯广场，内部简约而宁静，没有金箔或大理石的奢华，只有北欧风格的极致简洁。",
         "deepDesc": "",
         "map": "Helsinki Cathedral",
-        "note": "{link:travel:finland-shopping-1}最便宜LV{/link}\n\n{link:travel:finland-shopping-2}赫尔辛基Outlet{/link}",
+        "note": "{link:travel:finland-shopping-1}最便宜LV{/link}\n\n{link:travel:finland-shopping-2}赫尔辛基Outlet{/link}\n\n{link:travel:finland-food-4}驯鹿肉-白教堂旁{/link}",
         "deepBlocks": [
           {
             "type": "text",
@@ -2671,6 +2671,75 @@ const TRIP = {
         ]
       },
       {
+        "icon": "🏰",
+        "name": "芬兰堡 Suomenlinna",
+        "id": "suomenlinna",
+        "kind": "general",
+        "tags": [
+          "世界遗产"
+        ],
+        "desc": "世界文化遗产、海上军事要塞、自然与历史融合，建于18世纪的巨大海上防御堡垒，由多个岛屿组成，从赫尔辛基市中心搭船约15分钟即可抵达。",
+        "deepDesc": "",
+        "map": "Kauppatori",
+        "images": [
+          "suomenlinna-04.webp",
+          "suomenlinna-05.webp",
+          "suomenlinna-06.webp",
+          "suomenlinna-07.webp",
+          "suomenlinna-08.webp"
+        ],
+        "note": "🚻 廁所：游客中心有厕所\n\n{link:travel:is-fi-map-3}芬蘭堡地图{/link}\n\n{link:travel:finland-food-1}海边码头的三文鱼汤Kappeli{/link}",
+        "deepBlocks": [
+          {
+            "type": "text",
+            "value": "一、芬兰堡位在芬兰外海，1991年因身为同时代军事建筑的典范，被联合国教科文组织列为世界遗产，曾经保卫过瑞典、俄罗斯和芬兰三个国家。目前仍保留相当多历史原貌，很多结构都是原始建筑，非常珍贵。"
+          },
+          {
+            "type": "text",
+            "value": "二、交通：\n搭乘前往芬兰堡的HSL渡轮，位置在市集广场旁的码头，每天都有船班，大概40分钟一班，可在现场用码头旁的自动售票机购票，也可事先下载HSL App购票，持赫尔辛基城市卡则免费。搭乘渡轮约20分钟，票价3.20欧。\n{#ff0000}交通一日票，可以继续「免费无限次搭乘」{/color} \n"
+          },
+          {
+            "type": "text",
+            "value": "三、门票：\n如果只是沿着经典路线四处走走看军事堡垒遗迹，不需要门票；若要参观岛上的博物馆群（共五座），除了海关博物馆免费之外，其他博物馆都要单独购票，可在各博物馆内购买。"
+          },
+          {
+            "type": "img",
+            "src": "suomenlinna-01.webp"
+          },
+          {
+            "type": "img",
+            "src": "suomenlinna-02.webp"
+          },
+          {
+            "type": "img",
+            "src": "suomenlinna-03.webp"
+          },
+          {
+            "type": "text",
+            "value": "四、经典蓝色路线：\n下船后沿指标先前往游客中心拿取地图（游客中心也有厕所）。\n{#0066cc}蓝色路线{/color}始于防波堤兵营前的主码头，终止于国王之门，路线长度约1.5公里。\n\n游客中心和小超市之间有条小路，是蓝色路线的起点，第一个景点就是芬兰堡教堂——建于1854年，最初是俄罗斯东正教驻军教堂，原建筑有五座洋葱顶尖塔；后来芬兰时代改建成福音路德教堂，圆顶不再是洋葱状，塔楼改为四方型。教堂尖塔内设有一座为空中和海上交通导航的灯塔，会发出四次连续闪光——摩斯电码中代表「H」，就是赫尔辛基的意思。如今芬兰堡教堂是举办婚礼、音乐会等活动的场所。"
+          },
+          {
+            "type": "text",
+            "value": "五、终点国王门：建于1753至1754年间，是堡垒的入口大门，这个位置是1752年瑞典国王阿道夫·弗雷德里克检查堡垒建设时停泊船只的地方。门的立面为凹形，门框以大理石石块镶边，使用粗石砌成；1770年代大门被改造成双吊桥，吊桥前建有码头和宽敞的阶梯，可从这里欣赏海景。从国王门码头可搭水上巴士（另外收费）或步行1.5公里回主要码头搭渡轮，往回走约20分钟。"
+          },
+          {
+            "type": "text",
+            "value": "💡 小提醒：\n很多人走到这里会想直接开始逛市集，但欧洲的市集通常要到早上 10：30 或 11：00 才会完全开。 所以可以趁早上市集还没开，先冲芬兰堡玩一圈，回来刚好可以逛市集，完美零时差！"
+          }
+        ],
+        "navTargets": [
+          {
+            "type": "walk",
+            "name": "赫爾辛基登船處"
+          },
+          {
+            "type": "drive",
+            "name": "芬蘭堡主碼頭",
+            "map": "Iso Mustasaari"
+          }
+        ]
+      },
+      {
         "icon": "🪨",
         "name": "岩石教堂 Temppeliaukio Church",
         "id": "temppeliaukio",
@@ -2714,60 +2783,88 @@ const TRIP = {
         ]
       },
       {
-        "icon": "🏰",
-        "name": "芬兰堡 Suomenlinna",
-        "id": "suomenlinna",
-        "kind": "general",
-        "tags": [
-          "世界遗产"
-        ],
-        "desc": "世界文化遗产、海上军事要塞、自然与历史融合，建于18世纪的巨大海上防御堡垒，由多个岛屿组成，从赫尔辛基市中心搭船约15分钟即可抵达。",
-        "deepDesc": "",
-        "map": "Suomenlinna Helsinki",
+        "icon": "📍",
+        "name": "静默教堂",
+        "id": "kamppi-chaple",
+        "kind": "spot",
+        "tags": [],
         "images": [
-          "suomenlinna-04.webp",
-          "suomenlinna-05.webp",
-          "suomenlinna-06.webp",
-          "suomenlinna-07.webp",
-          "suomenlinna-08.webp"
+          "kamppi-chaple-06.webp",
+          "kamppi-chaple-02.webp",
+          "kamppi-chaple-04.webp"
         ],
-        "note": "🚻 廁所：游客中心有厕所",
+        "desc": "",
+        "isOptional": true,
+        "deepDesc": "",
+        "note": "门票：成人 €5\n開放時間為週二至週六 11:00–18:00，週日、週一休館。",
+        "map": "",
+        "deepBlocks": [
+          {
+            "type": "img",
+            "src": "kamppi-chaple-01.webp"
+          },
+          {
+            "type": "text",
+            "value": "这座静默教堂和传统的教堂完全不同，从橘色椭圆柱体的外观看起来不会让人联想到是一座教堂，现代化的简洁设计让他看起来与别不同，原来它是2012年赫尔辛基世界设计之都的项目之一，落成后还拿过不少奖，好厉害！\n\n静默教堂的特色是它选用了木材为主要建筑材料，与周边的混凝土、玻璃建筑物形成对比。设计师Mikko Summanen更是擅长把木材弯曲，令整栋教堂成卵状，而不是其他建筑物的方方正正。\n\n简洁的椭圆形外观、木质结构、以及宁静的氛围。它位于赫尔辛基市中心的坎皮广场，外观和内部主要使用芬兰云杉木，呈现出温暖的色泽，并与周围环境融合。"
+          },
+          {
+            "type": "img",
+            "src": "kamppi-chaple-03.webp"
+          },
+          {
+            "type": "img",
+            "src": "kamppi-chaple-05.webp"
+          },
+          {
+            "type": "text",
+            "value": "{bold}它的入口处位在旁边的玻璃门。{/bold}\n教堂主要作为静默礼拜的场所，提供一个供人沉思冥想的空间，而非传统的宗教仪式场所。因此教堂的设计着重于营造宁静的氛围，希望访客能在喧嚣的城市中找到片刻的宁静。"
+          },
+          {
+            "type": "img",
+            "src": "kamppi-chaple-07.webp"
+          },
+          {
+            "type": "img",
+            "src": "kamppi-chaple-08.webp"
+          }
+        ]
+      },
+      {
+        "icon": "📍",
+        "name": "赫尔辛基outlet",
+        "id": "outlet-hel",
+        "kind": "spot",
+        "tags": [
+          "芬兰首座大型露天outlet",
+          "规模不大",
+          "认真逛的话大概两个小时就可以逛完",
+          "如果觉得逛不够的话旁边还有IKEA。"
+        ],
+        "images": [
+          "outlet-hel-01.webp",
+          "outlet-hel-05.webp"
+        ],
+        "desc": "",
+        "isOptional": true,
+        "deepDesc": "",
+        "note": "{link:travel:finland-shopping-2}{#ff0000}赫尔辛基Outlet{/color}{/link}\n\n营业时间：10:00-20:00（周五及周六）",
+        "map": "Helsinki Outlet",
         "deepBlocks": [
           {
             "type": "text",
-            "value": "一、芬兰堡位在芬兰外海，1991年因身为同时代军事建筑的典范，被联合国教科文组织列为世界遗产，曾经保卫过瑞典、俄罗斯和芬兰三个国家。目前仍保留相当多历史原貌，很多结构都是原始建筑，非常珍贵。"
-          },
-          {
-            "type": "text",
-            "value": "二、交通：\n搭乘前往芬兰堡的HSL渡轮，位置在市集广场旁的码头，每天都有船班，大概40分钟一班，可在现场用码头旁的自动售票机购票，也可事先下载HSL App购票，持赫尔辛基城市卡则免费。搭乘渡轮约20分钟，票价3.20欧。\n{#ff0000}交通一日票，可以继续「免费无限次搭乘」{/color} \n"
-          },
-          {
-            "type": "text",
-            "value": "三、门票：\n如果只是沿着经典路线四处走走看军事堡垒遗迹，不需要门票；若要参观岛上的博物馆群（共五座），除了海关博物馆免费之外，其他博物馆都要单独购票，可在各博物馆内购买。"
+            "value": "​​如何到达​​：从赫尔辛基市中心出发，可乘坐75路公交直达，车程约30分钟，下车后步行10分钟即可到达。也可以使用 HSL APP 规划路线和购买车票（AB区通票即可）。\n\n​​营业时间​​：通常为 10:00-20:00，周日可能会提前到18:00关门，去之前务必确认好时间，避免跑空。\n\n品牌预期​​：Helsinki Outlet 主要是北欧本土品牌和大众户外品牌，没有 LV、爱马仕 等顶级奢侈品，如果冲着国际一线大牌去可能会失望。"
           },
           {
             "type": "img",
-            "src": "suomenlinna-01.webp"
+            "src": "outlet-hel-04.webp"
           },
           {
             "type": "img",
-            "src": "suomenlinna-02.webp"
+            "src": "outlet-hel-03.webp"
           },
           {
             "type": "img",
-            "src": "suomenlinna-03.webp"
-          },
-          {
-            "type": "text",
-            "value": "四、经典蓝色路线：\n下船后沿指标先前往游客中心拿取地图（游客中心也有厕所）。\n{#0066cc}蓝色路线{/color}始于防波堤兵营前的主码头，终止于国王之门，路线长度约1.5公里。\n\n游客中心和小超市之间有条小路，是蓝色路线的起点，第一个景点就是芬兰堡教堂——建于1854年，最初是俄罗斯东正教驻军教堂，原建筑有五座洋葱顶尖塔；后来芬兰时代改建成福音路德教堂，圆顶不再是洋葱状，塔楼改为四方型。教堂尖塔内设有一座为空中和海上交通导航的灯塔，会发出四次连续闪光——摩斯电码中代表「H」，就是赫尔辛基的意思。如今芬兰堡教堂是举办婚礼、音乐会等活动的场所。"
-          },
-          {
-            "type": "text",
-            "value": "五、终点国王门：建于1753至1754年间，是堡垒的入口大门，这个位置是1752年瑞典国王阿道夫·弗雷德里克检查堡垒建设时停泊船只的地方。门的立面为凹形，门框以大理石石块镶边，使用粗石砌成；1770年代大门被改造成双吊桥，吊桥前建有码头和宽敞的阶梯，可从这里欣赏海景。从国王门码头可搭水上巴士（另外收费）或步行1.5公里回主要码头搭渡轮，往回走约20分钟。"
-          },
-          {
-            "type": "text",
-            "value": "💡 小提醒：\n很多人走到这里会想直接开始逛市集，但欧洲的市集通常要到早上 10：30 或 11：00 才会完全开。 所以可以趁早上市集还没开，先冲芬兰堡玩一圈，回来刚好可以逛市集，完美零时差！"
+            "src": "outlet-hel-02.webp"
           }
         ]
       }
@@ -2871,6 +2968,11 @@ const TRIP = {
     ]
   }
 };
+
+
+
+
+
 
 
 
