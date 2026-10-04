@@ -11,6 +11,7 @@ const BASE_SYMBOL = BUDGET.baseCurrencySymbol || (BASE_CURRENCY + ' ');
 const STORE_KEY     = BUDGET.storageKey || 'trip_expenses';
 const RATES_KEY     = STORE_KEY + '_rates';
 const PREFS_KEY     = STORE_KEY + '_prefs';
+const PENDING_DEL_KEY = STORE_KEY + '_pending_deletes';
 
 let selCat          = BUDGET.categories[0].id;
 let selPayer        = PEOPLE[0];
@@ -361,27 +362,30 @@ function deleteExpense(id) {
   persistExpenses();
   renderExpenses(); renderSummary(); refreshDailyIfOpen();
   if (window.cloudExpenses && window.cloudExpenses.available) {
+    var knownIds = cloudIdsFor(target);
     if (target.id != null) delete _cloudIdsById[target.id];
+    // 先排進待刪除清單（見上方「待刪除佇列」），不管等一下查詢成不成功都先假設
+    // 「還沒確認刪掉」，查詢成功才移除；這樣離線、關掉分頁、隔天才又有訊號，
+    // 都還是會在下次同步或下次連線時自動補刪，不會讓記錄靠一次性嘗試决定生死。
+    if (target.id != null) queuePendingDelete(target.id, knownIds);
     // 直接向雲端查詢並整批刪除，不再只靠本機記憶體裡的對照表——
     // 對照表要等第一次同步完成才有內容，太早按刪除會查到空清單，
     // 導致刪除鍵沒有真的送出任何刪除指令，那筆記錄之後又被同步救回來。
     if (typeof window.cloudExpenses.removeByAppId === 'function' && target.id != null) {
       window.cloudExpenses.removeByAppId(target.id, function(count) {
-        if (count > 0) {
+        if (count >= 0) {
+          clearPendingDelete(target.id);
           showToast(count > 1 ? '已删除（含 ' + count + ' 份云端副本）' : '已删除');
-        } else if (count === 0) {
-          showToast('已删除');
         } else {
-          // 直接查詢失敗（例如離線），退回舊方法用本機已知的雲端 ID 補刪一次
-          var ids = cloudIdsFor(target);
-          ids.forEach(function(cid){ window.cloudExpenses.remove(cid); });
-          showToast('已删除');
+          // 查詢失敗（例如離線）：先用已知的雲端 id 試著直接刪一次，但不視為成功，
+          // 留在待刪除清單裡，連線恢復後 retryPendingDeletes() 會自動再試。
+          knownIds.forEach(function(cid){ window.cloudExpenses.remove(cid); });
+          showToast('已删除（离线，恢复网路后会自动同步到云端）');
         }
       });
     } else {
-      var ids = cloudIdsFor(target);
-      ids.forEach(function(cid){ window.cloudExpenses.remove(cid); });
-      showToast(ids.length > 1 ? '已删除（含 ' + ids.length + ' 份云端副本）' : '已删除');
+      knownIds.forEach(function(cid){ window.cloudExpenses.remove(cid); });
+      showToast(knownIds.length > 1 ? '已删除（含 ' + knownIds.length + ' 份云端副本）' : '已删除');
     }
     return;
   }
@@ -400,18 +404,77 @@ function deleteExpense(id) {
 var _syncInFlight = {};      // id -> true，正在送往雲端、還沒收到回呼的記錄
 var _cloudDupes = [];        // 雲端偵測到的重複記錄（同一個 id 多筆）
 var _cloudIdsById = {};      // id -> [cloudId, ...]　同一筆消費在雲端的所有副本
-var _deletedIds = {};        // id -> 刪除時間戳（墓碑）
+var _deletedIds = {};        // id -> 刪除時間戳（墓碑，見下方說明）
 
 // 刪除一筆時，雲端每移除一份副本都會回呼一次同步。
 // 那些回呼裡還看得到尚未移除的副本，若不擋掉就會把剛刪掉的記錄又併回本機，
 // 甚至因為「雲端沒有、本機有」而被當成待上傳再送一次。
-// 因此刪除後在一分鐘內記下墓碑，同步時一律略過這個 id。
+// 因此刪除後在一分鐘內記下墓碑，同步時一律略過這個 id——這個墓碑只處理
+// 「雲端刪除指令已經送達、但回呼還沒跑完」這種幾秒等級的競速，不是真正的保護機制。
 var TOMBSTONE_MS = 60000;
 function markDeleted(id) { if (id != null) _deletedIds[id] = Date.now(); }
 function isDeleted(id) {
   if (id == null || !_deletedIds[id]) return false;
   if (Date.now() - _deletedIds[id] > TOMBSTONE_MS) { delete _deletedIds[id]; return false; }
   return true;
+}
+
+// ---------- 待刪除佇列（v1.15）：離線時刪除沒辦法真的送到雲端，要撐到下次連得上線 ----------
+// 問題：手機在冰島訊號不穩的地方按刪除，雲端查詢／刪除指令送不出去；上面的 60 秒墓碑
+// 一過期，隔天重新連線同步時，雲端那筆還在，就會被當成「別人新增的」合併回來，
+// 使用者看到「刪掉的東西隔天又跑出來」。
+// 修法：刪除指令沒拿到明確成功結果時，把這個 id 寫進 localStorage 的待刪除清單
+// （跨分頁關閉、跨天都不會丟），之後每次有網路／每次雲端同步，都會重新嘗試刪除，
+// 直到雲端真的確認刪掉才從清單移除；清單裡的 id 在這之前，合併邏輯一律當作已刪除處理。
+function loadPendingDeletes() {
+  try { return JSON.parse(localStorage.getItem(PENDING_DEL_KEY) || '{}'); } catch (e) { return {}; }
+}
+function savePendingDeletes(map) {
+  localStorage.setItem(PENDING_DEL_KEY, JSON.stringify(map));
+}
+var _pendingDeletes = loadPendingDeletes(); // id -> { cloudIds: [...], t: 記錄的時間戳 }
+function isPendingDelete(id) { return id != null && Object.prototype.hasOwnProperty.call(_pendingDeletes, id); }
+function queuePendingDelete(id, cloudIds) {
+  if (id == null) return;
+  _pendingDeletes[id] = { cloudIds: cloudIds || [], t: Date.now() };
+  savePendingDeletes(_pendingDeletes);
+}
+function clearPendingDelete(id) {
+  if (id == null || !_pendingDeletes[id]) return;
+  delete _pendingDeletes[id];
+  savePendingDeletes(_pendingDeletes);
+}
+// 把目前知道的雲端 id 併入某筆待刪除記錄（同步收到新的雲端 id 時可能會補到）
+function mergeKnownCloudIds(id, cloudIds) {
+  if (!_pendingDeletes[id] || !cloudIds || !cloudIds.length) return;
+  var set = {};
+  _pendingDeletes[id].cloudIds.concat(cloudIds).forEach(function(c){ if (c) set[c] = true; });
+  _pendingDeletes[id].cloudIds = Object.keys(set);
+  savePendingDeletes(_pendingDeletes);
+}
+// 重新嘗試清單裡所有還沒刪成功的記錄；成功（查到 >=0 筆，代表這次真的連上雲端查詢了）
+// 就從清單移除，查詢本身失敗（離線、逾時）就留著，下次再試。
+function retryPendingDeletes() {
+  if (!(window.cloudExpenses && window.cloudExpenses.available)) return;
+  Object.keys(_pendingDeletes).forEach(function(id) {
+    if (typeof window.cloudExpenses.removeByAppId === 'function') {
+      window.cloudExpenses.removeByAppId(id, function(count) {
+        if (count >= 0) { clearPendingDelete(id); return; }
+        // count === -1：查詢/刪除失敗（通常是離線），改用已知的雲端 id 試著直接刪一次，
+        // 但不能因此就當作成功——沒有收到明確的伺服器確認，這筆仍然留在待刪除清單裡，
+        // 下次同步或下次有網路時會再重試一輪查詢刪除。
+        var ids = _pendingDeletes[id] ? _pendingDeletes[id].cloudIds : [];
+        ids.forEach(function(cid){ window.cloudExpenses.remove(cid); });
+      });
+    }
+  });
+}
+// 連線剛恢復、或分頁重新變成可見時，都值得立刻補刪一次，不用乾等下一次自動同步。
+if (typeof window !== 'undefined') {
+  window.addEventListener('online', retryPendingDeletes);
+  document.addEventListener('visibilitychange', function() {
+    if (document.visibilityState === 'visible') retryPendingDeletes();
+  });
 }
 
 // 取得某筆消費在雲端的所有副本 ID。
@@ -434,8 +497,10 @@ function initCloudExpensesSync() {
     // 每一輪至少翻倍，最後變成無限增生。
     //
     // id 是存檔當下就產生、並且會一起寫進雲端的欄位，用它比對才不會誤判。
-    // 剛刪除的記錄一律排除，避免被殘餘副本的同步回呼救回來
-    remoteList = remoteList.filter(function(e){ return !isDeleted(e.id); });
+    // 剛刪除的記錄一律排除，避免被殘餘副本的同步回呼救回來；
+    // 待刪除清單（isPendingDelete）是持久化的，跟 60 秒墓碑（isDeleted）不一樣——
+    // 只要雲端那筆還沒被確認刪除，不管過了多久、重開過幾次頁面，都不能讓它合併回本機。
+    remoteList = remoteList.filter(function(e){ return !isDeleted(e.id) && !isPendingDelete(e.id); });
 
     var remoteIds = {};
     remoteList.forEach(function(e){ if (e.id != null) remoteIds[e.id] = true; });
@@ -465,6 +530,12 @@ function initCloudExpensesSync() {
 
     expenses = merged.concat(pending);
     persistExpenses();
+
+    // 順便把這一輪同步看到的雲端 id 併進待刪除清單（萬一上次刪除時還不知道某個副本的
+    // 雲端 id，這裡補上，下次 retryPendingDeletes() 才能把那個副本也刪乾淨），
+    // 並且馬上再試一次還沒刪成功的記錄。
+    Object.keys(_pendingDeletes).forEach(function(id) { mergeKnownCloudIds(id, _cloudIdsById[id]); });
+    retryPendingDeletes();
 
     // 安全閥：正常情況待上傳不會很多。異常量體先停手並提示，不要盲目寫入雲端。
     if (pending.length > 20) {
