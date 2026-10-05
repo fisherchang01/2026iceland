@@ -505,8 +505,16 @@ function initCloudExpensesSync() {
     var remoteIds = {};
     remoteList.forEach(function(e){ if (e.id != null) remoteIds[e.id] = true; });
 
+    // v1.16 修正核心 bug：這裡原本只要「雲端沒有、本機有」就當成「待上傳」補送，
+    // 沒有分辨「這筆本來就沒同步過」跟「這筆以前同步過、現在被別人刪掉了」——
+    // 結果任何裝置只要本機還留著一筆已經被刪除的舊記錄（例如旅伴的手機還沒重新整理、
+    // 或這台裝置自己舊的分頁快取），下次同步時就會把它當成新記錄「補傳」回雲端，
+    // 讓已經刪除的費用復活。真正的新記錄特徵是「從來沒有 _cloudId」；
+    // 曾經有 _cloudId、現在雲端卻查無此筆，代表已經被刪除，不是待上傳，直接在下面
+    // 的 merged.concat(pending) 消失即可，不能再送回雲端。
     var pending = expenses.filter(function(e){
-      return e.id != null && !remoteIds[e.id] && !_syncInFlight[e.id] && !isDeleted(e.id);
+      return e.id != null && !remoteIds[e.id] && !_syncInFlight[e.id] &&
+        !isDeleted(e.id) && !isPendingDelete(e.id) && !e._cloudId;
     });
 
     // 雲端同一個 id 只保留第一筆，其餘視為重複（先前的迴圈殘留）。
