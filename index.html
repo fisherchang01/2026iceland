@@ -14,9 +14,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css" />
-  <link rel="stylesheet" href="css/catalog-editorial.css" />
-  <link rel="stylesheet" href="css/aurora.css" />
+  <link rel="stylesheet" href="css/style.css?v=1" />
+  <link rel="stylesheet" href="css/catalog-editorial.css?v=1" />
+  <link rel="stylesheet" href="css/aurora.css?v=1" />
 </head>
 <body>
 
@@ -144,37 +144,43 @@
 
 <div class="toast" id="toast"></div>
 
-<!-- 資料檔案（必須排在下面的程式邏輯之前載入）。建立新旅程只修改 data/ 與 images/。 -->
-<script src="data/trip-config.js"></script>
-<script src="data/budget-config.js"></script>
-<script src="data/firebase-settings.js"></script>
-<script src="data/trip-days.js"></script>
-<script src="data/trip-details.js"></script>
-<script src="data/travel-content.js"></script>
-<script src="data/budget-content.js"></script>
-<script src="data/other-content.js"></script>
-<script src="data/catalog-config.js"></script>
-<script src="data/docs-content.js"></script>
-<script src="data/aurora-config.js"></script>
-<script src="data/weather-alerts-config.js"></script>
-<script src="data/trip-schema.js"></script>
+<!-- v1.17：每個 <script src>／<link href> 後面都加了 ?v=1 這個版本號，是刻意的快取破壞
+     （cache-busting）手段——手機瀏覽器跟 Cloudflare Pages 的 CDN 都會快取 .js/.css，
+     之前改完程式碼、部署成功，使用者手機卻「還是舊的」、感覺改了沒用，根源就是這個。
+     *** 之後只要改了任何一個 js/ 或 css/ 或 data/ 檔案，部署前務必把這個檔案裡
+     所有 ?v=1 統一改成下一個數字（全部一起改，不用分檔案各自累加），
+     否則使用者的瀏覽器可能繼續吃快取版本，看不到最新的修正。 ***
+     資料檔案（必須排在下面的程式邏輯之前載入）。建立新旅程只修改 data/ 與 images/。 -->
+<script src="data/trip-config.js?v=1"></script>
+<script src="data/budget-config.js?v=1"></script>
+<script src="data/firebase-settings.js?v=1"></script>
+<script src="data/trip-days.js?v=1"></script>
+<script src="data/trip-details.js?v=1"></script>
+<script src="data/travel-content.js?v=1"></script>
+<script src="data/budget-content.js?v=1"></script>
+<script src="data/other-content.js?v=1"></script>
+<script src="data/catalog-config.js?v=1"></script>
+<script src="data/docs-content.js?v=1"></script>
+<script src="data/aurora-config.js?v=1"></script>
+<script src="data/weather-alerts-config.js?v=1"></script>
+<script src="data/trip-schema.js?v=1"></script>
 
 <!-- 程式邏輯：依功能拆成幾個檔案，方便日後找東西改東西 -->
-<script src="js/nav.js"></script>              <!-- 導覽／頁籤切換 -->
-<script src="js/catalog-nav.js"></script>      <!-- 體驗／工具總覽、分類與詳情 -->
-<script src="js/spot-icons.js"></script>       <!-- 景點 SVG 插圖 -->
-<script src="js/render-itinerary.js"></script> <!-- 每日行程／景點詳情畫面 -->
-<script src="js/budget.js"></script>           <!-- 費用記帳 -->
-<script src="js/render-travel.js"></script>    <!-- 體驗頁渲染引擎 -->
-<script src="js/render-other.js"></script>     <!-- 工具頁渲染引擎（重用 render-travel.js 的通用渲染器） -->
-<script src="js/render-overview.js"></script>  <!-- 總覽頁與其他頁籤掛載 -->
-<script src="js/render-weather-alerts.js"></script> <!-- 今日卡：冰岛气象局天气警戒摘要 -->
-<script src="js/render-docs.js"></script>      <!-- 旅行文件清單渲染 -->
-<script src="js/render-aurora.js"></script>    <!-- 極光儀表板 -->
-<script src="js/init.js"></script>             <!-- 啟動流程，務必放最後 -->
+<script src="js/nav.js?v=1"></script>              <!-- 導覽／頁籤切換 -->
+<script src="js/catalog-nav.js?v=1"></script>      <!-- 體驗／工具總覽、分類與詳情 -->
+<script src="js/spot-icons.js?v=1"></script>       <!-- 景點 SVG 插圖 -->
+<script src="js/render-itinerary.js?v=1"></script> <!-- 每日行程／景點詳情畫面 -->
+<script src="js/budget.js?v=1"></script>           <!-- 費用記帳 -->
+<script src="js/render-travel.js?v=1"></script>    <!-- 體驗頁渲染引擎 -->
+<script src="js/render-other.js?v=1"></script>     <!-- 工具頁渲染引擎（重用 render-travel.js 的通用渲染器） -->
+<script src="js/render-overview.js?v=1"></script>  <!-- 總覽頁與其他頁籤掛載 -->
+<script src="js/render-weather-alerts.js?v=1"></script> <!-- 今日卡：冰岛气象局天气警戒摘要 -->
+<script src="js/render-docs.js?v=1"></script>      <!-- 旅行文件清單渲染 -->
+<script src="js/render-aurora.js?v=1"></script>    <!-- 極光儀表板 -->
+<script src="js/init.js?v=1"></script>             <!-- 啟動流程，務必放最後 -->
 
 <!-- 費用雲端同步（Firebase）：一定要放在最後面，且獨立於上面的載入順序，
      避免跟一般腳本的執行順序互相依賴，在部分手機瀏覽器上更穩定 -->
-<script src="js/firebase-config.js" type="module"></script>
+<script src="js/firebase-config.js?v=1" type="module"></script>
 </body>
 </html>
